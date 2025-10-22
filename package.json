@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "lint-staged": {
     "*.{ts,tsx}": [
-      "tsc --noEmit"
+      "tsc --noEmit --jsx react-jsx"
     ]
   },
   "private": true,

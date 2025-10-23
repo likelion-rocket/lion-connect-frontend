@@ -1,1 +1,20 @@
+/* app/globals.css */
 @import "tailwindcss";
+
+/* v4: 디자인 토큰은 CSS에서 정의 */
+@theme {
+  --color-primary: #ff6000;
+  --color-secondary: #f9f9f9;
+  --color-lion-black: #1c1c1c;
+  --color-base-grey: #f2ede6;
+  --color-utility-yellow: #ffe066;
+
+  --font-ko-title: "SUIT", Pretendard, system-ui, "Noto Sans KR", "Malgun Gothic", sans-serif;
+  --font-ko-body: Pretendard, system-ui, "Noto Sans KR", "Malgun Gothic", sans-serif;
+
+  --font-en-title: Montserrat, Inter, system-ui, -apple-system, Roboto, sans-serif;
+  --font-en-body: Inter, Montserrat, system-ui, -apple-system, Roboto, sans-serif;
+
+  --font-title: "SUIT", Montserrat, Pretendard, Inter, system-ui, sans-serif;
+  --font-body: Pretendard, Inter, system-ui, sans-serif;
+}

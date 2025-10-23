@@ -18,7 +18,39 @@ const eslintConfig = [
       "out/**",
       "build/**",
       "next-env.d.ts",
+      ".env*",
+      "*.log",
+      "dist/**",
     ],
+  },
+  {
+    files: ["**/*.{ts,tsx}"],
+    rules: {
+      // 필수 규칙
+      "react/no-unescaped-entities": "warn",
+      "@typescript-eslint/no-explicit-any": "warn",
+      "@typescript-eslint/no-unused-vars": [
+        "warn",
+        {
+          argsIgnorePattern: "^_",
+          varsIgnorePattern: "^_",
+        },
+      ],
+      // 성능 최적화
+      "react/display-name": "warn",
+      "react-hooks/rules-of-hooks": "error",
+      "react-hooks/exhaustive-deps": "warn",
+      // 코드 품질
+      "no-console": [
+        "warn",
+        {
+          allow: ["warn", "error"],
+        },
+      ],
+      "no-debugger": "error",
+      "prefer-const": "warn",
+      "no-var": "error",
+    },
   },
 ];
 

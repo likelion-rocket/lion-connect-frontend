@@ -14,9 +14,9 @@
     "build": "next build --turbopack",
     "start": "next start",
     "lint": "eslint . --max-warnings=0",
-    "lint:fix": "eslint . --fix && prettier --write \"**/*.{ts,tsx,json,md}\"",
-    "format": "prettier --write \"**/*.{ts,tsx,json,md}\"",
-    "format:check": "prettier --check \"**/*.{ts,tsx,json,md}\"",
+    "lint:fix": "eslint . --fix && prettier --write \"**/*.{ts,tsx,json}\"",
+    "format": "prettier --write \"**/*.{ts,tsx,json}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,json}\"",
     "type-check": "tsc --noEmit",
     "prepare": "husky"
   },

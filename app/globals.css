@@ -18,3 +18,10 @@
   --font-title: "SUIT", Montserrat, Pretendard, Inter, system-ui, sans-serif;
   --font-body: Pretendard, Inter, system-ui, sans-serif;
 }
+
+html,
+body {
+  font-family: var(--font-body);
+  color: var(--color-lion-black);
+  background-color: var(--color-secondary);
+}

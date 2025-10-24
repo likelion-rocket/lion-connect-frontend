@@ -5,7 +5,7 @@
     "*.{ts,tsx}": [
       "eslint --fix",
       "prettier --write",
-      "tsc --noEmit --jsx react-jsx"
+      "tsc --noEmit --jsx react-jsx --skipLibCheck"
     ]
   },
   "private": true,

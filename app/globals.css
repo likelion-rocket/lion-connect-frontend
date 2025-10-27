@@ -19,6 +19,9 @@
   --lc-primary-09: #3e1801; /* Primary Color-09 */
   --lc-primary-10: #291000; /* Primary Color-10 */
 
+  /* --- Blue Color Ramp (로그인/회원가입 관련 브랜드 블루) --- */
+  --lc-blue-base: #1e4ae9; /* Blue Base (로그인, 회원가입 링크) */
+  --lc-blue-hover: #002fff; /* Blue-01 */
   /* --- Background Color Roles --- */
   --bg-primary: #ffffff; /* Background Primary */
   --bg-secondary: #fafafa; /* Background Secondary */
@@ -171,6 +174,9 @@
   --color-brand-09: var(--lc-primary-09);
   --color-brand-10: var(--lc-primary-10);
 
+  /* blue ramp (로그인/회원가입 관련) */
+  --color-blue-base: var(--lc-blue-base);
+  --color-blue-hover: var(--lc-blue-hover);
   /* font families */
   --font-title: var(--font-title);
   --font-body: var(--font-body);

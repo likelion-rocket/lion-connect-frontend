@@ -34,9 +34,10 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
           ref={ref}
           type={type}
           className={`
+            lc-input
             w-full px-4 py-3 rounded-[12px]
             border border-[#E5E5E5]
-            ${error ? "border-border-error" : ""}
+            ${error ? "border-border-error!" : ""}
             placeholder-text-tertiary
             text-text-primary
             bg-[#F7FBFF]

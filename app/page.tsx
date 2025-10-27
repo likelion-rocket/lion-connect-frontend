@@ -6,5 +6,5 @@ export const metadata: Metadata = {
 };
 
 export default function Home() {
-  return <div className="font-en-title text-primary text-3xl">랜딩페이지</div>;
+  return <div className="font-ko-title text-primary text-3xl">랜딩페이지</div>;
 }

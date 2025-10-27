@@ -6,5 +6,115 @@ export const metadata: Metadata = {
 };
 
 export default function Home() {
-  return <div className="font-ko-title text-primary text-3xl">랜딩페이지</div>;
+  return (
+    <main className="min-h-screen bg-bg-primary text-text-primary p-8 space-y-12">
+      {/* 1. 기본 타이틀 / 타이포 테스트 */}
+      <section className="space-y-4">
+        <h1 className="font-ko-title text-text-primary text-5xl leading-5xl">랜딩페이지</h1>
+        <p className="font-body text-text-secondary text-base leading-base">
+          이 영역은 기본 본문 스타일입니다. (font-body / text-text-secondary)
+        </p>
+        <p className="font-ko-title text-text-accent text-3xl leading-[--text-3xl-line]">
+          브랜드 포인트 컬러 텍스트 (text-text-accent = #FF6000)
+        </p>
+        <p className="font-ko-title text-text-error text-xl leading-xl">
+          에러 텍스트 스타일 (text-text-error = #EF4444)
+        </p>
+        <p className="font-ko-title text-text-success text-xl leading-xl">
+          성공 텍스트 스타일 (text-text-success = #22C55E)
+        </p>
+      </section>
+
+      {/* 2. 카드 UI 배경/보더 컬러 테스트 */}
+      <section className="grid gap-6 sm:grid-cols-2">
+        {/* Secondary BG */}
+        <div className="rounded-lg border border-border-quaternary bg-bg-secondary p-6 text-text-primary">
+          <div className="font-ko-title text-lg leading-lg">bg-bg-secondary (#FAFAFA)</div>
+          <div className="font-body text-sm leading-sm text-text-secondary">
+            border-border-quaternary / text-text-secondary
+          </div>
+        </div>
+
+        {/* Tertiary BG */}
+        <div className="rounded-lg border border-border-tertiary bg-bg-tertiary p-6 text-text-primary">
+          <div className="font-ko-title text-lg leading-lg">bg-bg-tertiary (#F5F5F5)</div>
+          <div className="font-body text-sm leading-sm text-text-secondary">
+            border-border-tertiary / text-text-secondary
+          </div>
+        </div>
+
+        {/* Quaternary BG */}
+        <div className="rounded-lg border border-border-primary bg-bg-quaternary p-6 text-text-primary">
+          <div className="font-ko-title text-lg leading-lg">bg-bg-quaternary (#E5E5E5)</div>
+          <div className="font-body text-sm leading-sm text-text-primary">
+            border-border-primary / text-text-primary
+          </div>
+        </div>
+
+        {/* Accent BG (brand orange 카드) */}
+        <div className="rounded-lg border border-border-accent bg-bg-accent p-6 text-text-inverse-primary">
+          <div className="font-ko-title text-lg leading-lg">bg-bg-accent (#FF6000)</div>
+          <div className="font-body text-sm leading-sm text-text-inverse-primary">
+            border-border-accent / text-text-inverse-primary(=white)
+          </div>
+        </div>
+
+        {/* Second BG (utility yellow 카드) */}
+        <div className="rounded-lg border border-border-quaternary bg-bg-second p-6 text-text-primary">
+          <div className="font-ko-title text-lg leading-lg">bg-bg-second (#FFE066)</div>
+          <div className="font-body text-sm leading-sm text-text-primary">
+            Utility Yellow 배경 위 텍스트 대비 확인
+          </div>
+        </div>
+
+        {/* Inverse Primary BG (어두운 바탕 카드) */}
+        <div className="rounded-lg border border-border-inverse-primary bg-bg-inverse-primary p-6 text-text-inverse-primary">
+          <div className="font-ko-title text-lg leading-lg">bg-bg-inverse-primary (#262626)</div>
+          <div className="font-body text-sm leading-sm text-text-inverse-primary">
+            border-border-inverse-primary / inverse text (white)
+          </div>
+        </div>
+      </section>
+
+      {/* 3. 아이콘 컬러/텍스트 컬러 프리뷰 */}
+      <section className="space-y-4">
+        <div className="flex flex-wrap gap-4 text-sm leading-sm font-body">
+          <span className="text-icon-primary">● icon-primary (#262626)</span>
+          <span className="text-icon-secondary">● icon-secondary (#737373)</span>
+          <span className="text-icon-tertiary">● icon-tertiary (#A3A3A3)</span>
+          <span className="text-icon-quaternary">● icon-quaternary (#D4D4D4)</span>
+          <span className="text-icon-accent">● icon-accent (#FF6000)</span>
+          <span className="text-icon-error">● icon-error (#EF4444)</span>
+          <span className="bg-bg-inverse-primary px-2 py-1 text-icon-inverse-primary rounded">
+            ● icon-inverse-primary (white on dark)
+          </span>
+        </div>
+      </section>
+
+      {/* 4. 다크모드 미리보기 섹션 */}
+      <section className="dark rounded-xl border border-border-secondary bg-bg-primary p-6 text-text-primary shadow-inner dark:bg-bg-page dark:text-text-primary dark:*:transition-colors">
+        <div className="dark font-ko-title text-xl leading-xl">다크 모드 시뮬레이션 영역</div>
+        <p className="font-body text-sm leading-sm text-text-secondary dark:text-text-secondary">
+          여기는 부모에 className=dark를 줘서 --color-page-bg / --text-primary가 다크 토큰으로
+          치환되는지 확인하는 영역.
+        </p>
+
+        <div className="mt-4 rounded-lg border border-border-quaternary bg-bg-section p-4 text-text-primary dark:border-border-secondary">
+          <div className="font-ko-title text-lg leading-lg">
+            bg-bg-section / border-border-quaternary
+          </div>
+          <div className="font-body text-sm leading-sm text-text-secondary">
+            dark 모드 전환 후 배경, 텍스트 대비 확인
+          </div>
+        </div>
+
+        <div className="mt-4 rounded-lg border border-border-accent bg-bg-accent p-4 text-text-inverse-primary">
+          <div className="font-ko-title text-lg leading-lg">brand card (accent bg)</div>
+          <div className="font-body text-sm leading-sm text-text-inverse-primary">
+            강조 카드 여전히 브랜드 오렌지(#FF6000) 유지?
+          </div>
+        </div>
+      </section>
+    </main>
+  );
 }

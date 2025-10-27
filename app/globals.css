@@ -4,56 +4,67 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* 1. 브랜드 전용 디자인 토큰 (Light Theme 기준)  */
-/*  - Lion Connect naming: mono(ex1~ex8,lion-black), primary(ex1~ex10,vibrant-orange), secondary(...) */
-/*  - 이 값들은 디자인 스펙에서 준 Hex 그대로 고정 (oklch로 변환 안 함) */
+/* ============ 1. 브랜드 컬러 토큰 정의 (라이트 기준) ============ */
+/* 이미지 기준 역할별 팔레트 그대로 박아 넣은 상태야. */
 :root {
-  /* === MONO (grayscale) === */
-  --lc-mono-layer-white: #f9f9f9; /* LAYER WHITE */
-  --lc-mono-ex1: #e6e6e6;
-  --lc-mono-ex2: #d1d1d1;
-  --lc-mono-ex3: #b8b8b8;
-  --lc-mono-ex4: #969696;
-  --lc-mono-ex5: #787878;
-  --lc-mono-ex6: #5c5c5c;
-  --lc-mono-ex7: #424242;
-  --lc-mono-ex8: #2b2b2b;
-  --lc-mono-lion-black: #1c1c1c; /* LION BLACK */
+  /* --- Primary Color Ramp (브랜드 오렌지 단계) --- */
+  --lc-primary-01: #fff3eb; /* Primary Color-01 */
+  --lc-primary-02: #ffe0c2; /* Primary Color-02 (추정: #FFE0C2 비슷톤) */
+  --lc-primary-03: #fea770; /* Primary Color-03 */
+  --lc-primary-04: #ff8032; /* Primary Color-04 */
+  --lc-primary-05: #ff6000; /* Primary Color-05 (VIBRANT ORANGE) */
+  --lc-primary-06: #e05600; /* Primary Color-06 */
+  --lc-primary-07: #a23f00; /* Primary Color-07 */
+  --lc-primary-08: #652700; /* Primary Color-08 */
+  --lc-primary-09: #3e1801; /* Primary Color-09 */
+  --lc-primary-10: #291000; /* Primary Color-10 */
 
-  /* === SECONDARY (UI neutrals / surfaces) === */
-  --lc-secondary-layer-white: #f9f9f9;
-  --lc-secondary-lion-black: #1c1c1c;
-  --lc-secondary-base-gray: #f2ede6;
-  --lc-secondary-utility-yellow: #ffe066;
+  /* --- Background Color Roles --- */
+  --bg-primary: #ffffff; /* Background Primary */
+  --bg-secondary: #fafafa; /* Background Secondary */
+  --bg-tertiary: #f5f5f5; /* Background Tertiary */
+  --bg-quaternary: #e5e5e5; /* Background Quaternary */
+  --bg-inverse-primary: #262626; /* Background Inverse Primary */
+  --bg-accent: #ff6000; /* Background Accent (brand orange) */
+  --bg-second: #ffe066; /* Background Second (utility yellow 계열) */
 
-  /* === PRIMARY (brand orange ramp) === */
-  --lc-primary-ex1: #fff3eb;
-  --lc-primary-ex2: #ffd0b2;
-  --lc-primary-ex3: #fea770;
-  --lc-primary-ex4: #ff8032;
-  --lc-primary-vibrant-orange: #ff6000; /* main brand */
-  --lc-primary-ex6: #e05600;
-  --lc-primary-ex7: #a23f00;
-  --lc-primary-ex8: #652700;
-  --lc-primary-ex9: #3e1801;
-  --lc-primary-ex10: #291000;
+  /* --- Text Color Roles --- */
+  --text-primary: #262626; /* Text Primary */
+  --text-secondary: #737373; /* Text Secondary */
+  --text-tertiary: #a3a3a3; /* Text Tertiary */
+  --text-quaternary: #d4d4d4; /* Text Quaternary */
+  --text-inverse-primary: #ffffff; /* Text Inverse Primary */
+  --text-accent: #ff6000; /* Text Accent */
+  --text-error: #ef4444; /* Text Error */
+  --text-success: #22c55e; /* Text Success */
 
-  /* convenience aliases for app usage */
-  --color-primary: var(--lc-primary-vibrant-orange);
-  --color-primary-light: var(--lc-primary-ex3);
-  --color-primary-dark: var(--lc-primary-ex8);
+  /* --- Border Color Roles --- */
+  --border-primary: #262626; /* Border Primary */
+  --border-secondary: #737373; /* Border Secondary */
+  --border-tertiary: #a3a3a3; /* Border Tertiary */
+  --border-quaternary: #d4d4d4; /* Border Quaternary */
+  --border-inverse-primary: #ffffff; /* Border Inverse Primary */
+  --border-accent: #ff6000; /* Border Accent */
+  --border-error: #ef4444; /* Border Error */
 
-  --color-bg-page: var(--lc-secondary-layer-white); /* default page bg */
-  --color-bg-section: var(--lc-secondary-base-gray); /* subtle section bg */
-  --color-text-main: var(--lc-mono-lion-black);
-  --color-text-dimmed: var(--lc-mono-ex5);
-  --color-border-default: var(--lc-mono-ex2);
-  --color-accent-warn: var(--lc-secondary-utility-yellow);
+  /* --- Icon Color Roles --- */
+  --icon-primary: #262626; /* Icon Primary */
+  --icon-secondary: #737373; /* Icon Secondary */
+  --icon-tertiary: #a3a3a3; /* Icon Tertiary */
+  --icon-quaternary: #d4d4d4; /* Icon Quaternary */
+  --icon-inverse-primary: #ffffff; /* Icon Inverse Primary */
+  --icon-accent: #ff6000; /* Icon Accent */
+  --icon-error: #ef4444; /* Icon Error */
 
-  /* === Typography scale tokens ===
-     → 이건 tailwind 쓸 때 그대로 `text-[var(--text-xs-size)]` 식으로 쓰는 것도 가능하고,
-     아래 @theme에서 Tailwind 유틸로 직접 매핑도 할 거라 참고용으로 남겨둔다.
-  */
+  /* 편의 alias (실제 컴포넌트에서 많이 쓸 공통역할) */
+  --color-page-bg: var(--bg-primary); /* 페이지 바탕 */
+  --color-section-bg: var(--bg-tertiary); /* 영역/카드 바탕 */
+  --color-text-main: var(--text-primary); /* 본문 텍스트 */
+  --color-text-dimmed: var(--text-secondary); /* 서브 텍스트 */
+  --color-brand: var(--lc-primary-05); /* 대표 브랜드 */
+  --color-border-default: var(--border-quaternary); /* 일반 라인 */
+
+  /* ========== (기존 유지) 폰트/타이포/라운드 값들 ========== */
   --text-xs-size: 0.75rem; /* 12px */
   --text-xs-line: 1rem; /* 16px */
 
@@ -79,9 +90,8 @@
   --text-4xl-line: 2.5rem; /* 40px */
 
   --text-5xl-size: 3rem; /* 48px */
-  --text-5xl-line: 1.1; /* tightened for display */
+  --text-5xl-line: 1.1; /* display tighter */
 
-  /* font families */
   --font-ko-title: "SUIT", Pretendard, system-ui, "Noto Sans KR", "Malgun Gothic", sans-serif;
   --font-ko-body: Pretendard, system-ui, "Noto Sans KR", "Malgun Gothic", sans-serif;
 
@@ -91,72 +101,77 @@
   --font-title: "SUIT", Montserrat, Pretendard, Inter, system-ui, sans-serif;
   --font-body: Pretendard, Inter, system-ui, sans-serif;
 
-  /* radius tokens */
-  --radius: 0.625rem; /* 10px-ish base corner */
+  --radius: 0.625rem; /* 10px-ish */
 }
 
-/* 2. 다크 모드용 브랜드 토큰(선택)
-   다크일 때 배경/텍스트만 스왑하고, 브랜드 오렌지는 그대로 유지해도 된다.
-   lion-black 대신 layer-white가 올라오는 식.
-*/
+/* ============ 2. 다크 모드(역상) ============ */
+/* 다크 모드는 이미지에 명시된 건 아니니까
+   역할 기반으로 "Inverse Primary" 계열을 기본 바탕/텍스트로 치환해줄게. */
 .dark {
-  --color-bg-page: var(--lc-mono-lion-black);
-  --color-bg-section: #2b2b2b; /* mono-ex8-ish bg block */
-  --color-text-main: var(--lc-secondary-layer-white);
-  --color-text-dimmed: var(--lc-mono-ex6);
-  --color-border-default: var(--lc-mono-ex7);
-  --color-accent-warn: var(--lc-secondary-utility-yellow);
+  --color-page-bg: var(--bg-inverse-primary); /* 어두운 배경 */
+  --color-section-bg: #3a3a3a; /* primary보다 살짝 밝은 블록 */
+  --color-text-main: var(--text-inverse-primary);
+  --color-text-dimmed: var(--text-tertiary);
+  --color-brand: var(--lc-primary-05);
+  --color-border-default: var(--border-secondary);
 }
 
-/* 3. Tailwind v4 @theme 매핑
-   여기서 CSS 변수들을 Tailwind 토큰으로 노출해.
-   그럼 클래스 형태로 바로 써먹을 수 있어.
-*/
+/* ============ 3. Tailwind @theme 매핑 ============ */
+/* 여기서 CSS 변수 → Tailwind 토큰 이름을 바인딩.
+   이제부터는 bg-page, text-primary 등 유틸 바로 쓸 수 있게 된다. */
 @theme {
-  /* === colors === */
-  --color-bg-page: var(--color-bg-page);
-  --color-bg-section: var(--color-bg-section);
+  /* background roles */
+  --color-bg-page: var(--color-page-bg);
+  --color-bg-section: var(--color-section-bg);
+  --color-bg-primary: var(--bg-primary);
+  --color-bg-secondary: var(--bg-secondary);
+  --color-bg-tertiary: var(--bg-tertiary);
+  --color-bg-quaternary: var(--bg-quaternary);
+  --color-bg-inverse-primary: var(--bg-inverse-primary);
+  --color-bg-accent: var(--bg-accent);
+  --color-bg-second: var(--bg-second);
 
-  --color-text-main: var(--color-text-main);
-  --color-text-dimmed: var(--color-text-dimmed);
+  /* text roles */
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-tertiary: var(--text-tertiary);
+  --color-text-quaternary: var(--text-quaternary);
+  --color-text-inverse-primary: var(--text-inverse-primary);
+  --color-text-accent: var(--text-accent);
+  --color-text-error: var(--text-error);
+  --color-text-success: var(--text-success);
 
-  --color-border-default: var(--color-border-default);
+  /* border roles */
+  --color-border-primary: var(--border-primary);
+  --color-border-secondary: var(--border-secondary);
+  --color-border-tertiary: var(--border-tertiary);
+  --color-border-quaternary: var(--border-quaternary);
+  --color-border-inverse-primary: var(--border-inverse-primary);
+  --color-border-accent: var(--border-accent);
+  --color-border-error: var(--border-error);
 
-  --color-primary: var(--color-primary);
-  --color-primary-light: var(--color-primary-light);
-  --color-primary-dark: var(--color-primary-dark);
+  /* icon roles */
+  --color-icon-primary: var(--icon-primary);
+  --color-icon-secondary: var(--icon-secondary);
+  --color-icon-tertiary: var(--icon-tertiary);
+  --color-icon-quaternary: var(--icon-quaternary);
+  --color-icon-inverse-primary: var(--icon-inverse-primary);
+  --color-icon-accent: var(--icon-accent);
+  --color-icon-error: var(--icon-error);
 
-  --color-warn: var(--color-accent-warn);
+  /* brand ramp (필요하면 직접 쓸 수 있게 전개) */
+  --color-brand-01: var(--lc-primary-01);
+  --color-brand-02: var(--lc-primary-02);
+  --color-brand-03: var(--lc-primary-03);
+  --color-brand-04: var(--lc-primary-04);
+  --color-brand-05: var(--lc-primary-05);
+  --color-brand-06: var(--lc-primary-06);
+  --color-brand-07: var(--lc-primary-07);
+  --color-brand-08: var(--lc-primary-08);
+  --color-brand-09: var(--lc-primary-09);
+  --color-brand-10: var(--lc-primary-10);
 
-  /* grayscale ramp exposed for utility use */
-  --color-mono-layer-white: var(--lc-mono-layer-white);
-  --color-mono-ex1: var(--lc-mono-ex1);
-  --color-mono-ex2: var(--lc-mono-ex2);
-  --color-mono-ex3: var(--lc-mono-ex3);
-  --color-mono-ex4: var(--lc-mono-ex4);
-  --color-mono-ex5: var(--lc-mono-ex5);
-  --color-mono-ex6: var(--lc-mono-ex6);
-  --color-mono-ex7: var(--lc-mono-ex7);
-  --color-mono-ex8: var(--lc-mono-ex8);
-  --color-mono-lion-black: var(--lc-mono-lion-black);
-
-  --color-secondary-layer-white: var(--lc-secondary-layer-white);
-  --color-secondary-lion-black: var(--lc-secondary-lion-black);
-  --color-secondary-base-gray: var(--lc-secondary-base-gray);
-  --color-secondary-utility-yellow: var(--lc-secondary-utility-yellow);
-
-  --color-primary-ex1: var(--lc-primary-ex1);
-  --color-primary-ex2: var(--lc-primary-ex2);
-  --color-primary-ex3: var(--lc-primary-ex3);
-  --color-primary-ex4: var(--lc-primary-ex4);
-  --color-primary-vibrant: var(--lc-primary-vibrant-orange);
-  --color-primary-ex6: var(--lc-primary-ex6);
-  --color-primary-ex7: var(--lc-primary-ex7);
-  --color-primary-ex8: var(--lc-primary-ex8);
-  --color-primary-ex9: var(--lc-primary-ex9);
-  --color-primary-ex10: var(--lc-primary-ex10);
-
-  /* === font families === */
+  /* font families */
   --font-title: var(--font-title);
   --font-body: var(--font-body);
   --font-ko-title: var(--font-ko-title);
@@ -164,12 +179,7 @@
   --font-en-title: var(--font-en-title);
   --font-en-body: var(--font-en-body);
 
-  /* === typography scale === */
-  /* Tailwind will give us utilities like text-xs, leading-normal, etc.
-     We'll align them to your design tokens.
-     Note: leading-* names below are Tailwind defaults, but we'll redefine
-     sizing via --text-*-size / --text-*-line.
-  */
+  /* typography sizes/line-heights */
   --text-xs: var(--text-xs-size);
   --leading-xs: var(--text-xs-line);
 
@@ -197,80 +207,81 @@
   --text-5xl: var(--text-5xl-size);
   --leading-5xl: var(--text-5xl-line);
 
-  /* === radius === */
-  --radius-sm: calc(var(--radius) - 4px); /* 6px-ish */
-  --radius-md: calc(var(--radius) - 2px); /* 8px-ish */
-  --radius-lg: var(--radius); /* 10px base */
-  --radius-xl: calc(var(--radius) + 4px); /* 14px-ish */
+  /* radius tokens */
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
 }
 
-/* 4. 글로벌 reset + 베이스 컬러/폰트 적용 */
-html,
-body {
-  font-family: var(--font-body);
-  color: var(--color-text-main);
-  background-color: var(--color-bg-page);
-}
-
-/* 5. 유틸리티로 바로 쓰고 싶은 공용 helper 클래스들 (선택) */
-/* 예: 타이틀(한글/영문), 섹션 헤더 등 */
-.lc-heading-ko {
-  font-family: var(--font-ko-title);
-  font-weight: 600;
-  color: var(--color-text-main);
-}
-
-.lc-heading-en {
-  font-family: var(--font-en-title);
-  font-weight: 600;
-  color: var(--color-text-main);
-  letter-spacing: -0.02em;
-}
-
-.lc-body {
-  font-family: var(--font-body);
-  font-weight: 400;
-  color: var(--color-text-main);
-  line-height: var(--text-base-line);
-  font-size: var(--text-base-size);
-}
-
-/* 6. 테마 계승: 기존 shadcn-style tokens (bg-background 등)
-   지금 프로젝트에 이미 bg-background / text-foreground / border-border 같은
-   클래스들이 퍼져 있을 가능성이 높으니까,
-   그 유틸도 우리 팔레트로 덮어줘.
-*/
+/* ============ 4. shadcn-style alias ============ */
+/* bg-background / text-foreground / border-border 같은 기존 유틸 유지 */
 @theme inline {
-  --color-background: var(--color-bg-page);
-  --color-foreground: var(--color-text-main);
-  --color-card: var(--color-bg-section);
-  --color-card-foreground: var(--color-text-main);
-  --color-popover: var(--color-bg-section);
-  --color-popover-foreground: var(--color-text-main);
-  --color-primary: var(--color-primary);
-  --color-primary-foreground: var(--lc-secondary-layer-white); /* brand on orange = white */
-  --color-secondary: var(--lc-secondary-base-gray);
-  --color-secondary-foreground: var(--color-text-main);
-  --color-muted: var(--lc-mono-ex2);
-  --color-muted-foreground: var(--lc-mono-ex6);
-  --color-accent: var(--lc-secondary-utility-yellow);
-  --color-accent-foreground: var(--color-text-main);
-  --color-destructive: #d32f2f; /* 임시: 경고 레드 따로 없으니 placeholder */
+  --color-background: var(--color-page-bg);
+  --color-foreground: var(--color-text-primary);
+
+  --color-card: var(--color-section-bg);
+  --color-card-foreground: var(--color-text-primary);
+
+  --color-popover: var(--color-section-bg);
+  --color-popover-foreground: var(--color-text-primary);
+
+  --color-primary: var(--lc-primary-05); /* 브랜드 오렌지 */
+  --color-primary-foreground: #ffffff;
+
+  --color-secondary: var(--bg-second); /* 노란 느낌 */
+  --color-secondary-foreground: var(--text-primary);
+
+  --color-muted: var(--text-tertiary);
+  --color-muted-foreground: var(--text-quaternary);
+
+  --color-accent: var(--bg-accent);
+  --color-accent-foreground: #ffffff;
+
+  --color-destructive: var(--text-error);
+
   --color-border: var(--color-border-default);
   --color-input: var(--color-border-default);
-  --color-ring: var(--color-primary);
+  --color-ring: var(--lc-primary-05);
+
   --radius-sm: var(--radius-sm);
   --radius-md: var(--radius-md);
   --radius-lg: var(--radius-lg);
   --radius-xl: var(--radius-xl);
 }
 
-/* 7. base layer to apply border/text using our mapped tokens */
+/* ============ 5. base layer (reset + 전역 적용) ============ */
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
   body {
+    font-family: var(--font-body);
+    background-color: var(--color-page-bg);
+    color: var(--text-primary);
+
     @apply bg-background text-foreground;
   }
+}
+
+/* (옵션) 타이틀/본문 헬퍼 */
+.lc-heading-ko {
+  font-family: var(--font-ko-title);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.lc-heading-en {
+  font-family: var(--font-en-title);
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+}
+
+.lc-body {
+  font-family: var(--font-body);
+  font-weight: 400;
+  color: var(--text-primary);
+  font-size: var(--text-base-size);
+  line-height: var(--text-base-line);
 }

@@ -291,3 +291,8 @@
   font-size: var(--text-base-size);
   line-height: var(--text-base-line);
 }
+
+/* Input - 값이 입력되었을 때 border 색상 변경 */
+.lc-input:not(:placeholder-shown) {
+  border-color: #3a3a3a;
+}

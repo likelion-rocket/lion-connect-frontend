@@ -76,9 +76,12 @@ export default function LoginForm() {
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-4 top-1/2 -translate-y-1/2 text-icon-secondary hover:text-icon-primary transition-colors"
+            className="absolute right-4 top-1/2 -translate-y-1/2 text-icon-secondary hover:text-icon-primary transition-colors group"
             aria-label="Toggle password visibility"
           >
+            <div className="absolute bottom-[calc(100%+8px)] left-1/2 -translate-x-1/2 px-2 py-1 bg-[#162D3A] text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap after:content-[''] after:absolute after:top-full after:left-1/2 after:-translate-x-1/2 after:border-4 after:border-transparent after:border-t-[#162D3A]">
+              {showPassword ? "비밀번호 숨기기" : "비밀번호 표시"}
+            </div>
             {showPassword ? (
               <Image
                 src="/icons/solid-eye-off.svg"

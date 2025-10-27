@@ -130,7 +130,7 @@ export default function LoginForm() {
       <button
         type="submit"
         disabled={isLoading}
-        className="w-full py-3 rounded-lg bg-text-primary text-text-inverse-primary font-medium hover:bg-text-secondary disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        className="w-full py-3 rounded-[12px] bg-[#162D3A] text-text-inverse-primary font-medium hover:bg-text-secondary disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
       >
         {isLoading ? "로그인 중..." : "로그인"}
       </button>

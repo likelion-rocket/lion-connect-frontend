@@ -9,10 +9,10 @@ export const metadata: Metadata = {
 export default function SignInPage() {
   return (
     <>
-      <main className="min-h-screen flex flex-col items-center justify-between bg-bg-primary px-4 py-8">
-        <div className="w-full max-w-md">
+      <main className="h-[90vh] flex flex-col items-center bg-bg-primary px-4 py-5">
+        <div className="w-full max-w-md mt-20">
           {/* 페이지 제목 */}
-          <div className="mb-8 text-center">
+          <div className="mb-8 ">
             <h1 className="text-3xl font-bold text-text-primary mb-2">로그인 하세요</h1>
             <p className="text-text-secondary">라이언 커넥트를 이용하려면 로그인이 필요합니다.</p>
           </div>
@@ -21,7 +21,9 @@ export default function SignInPage() {
           <LoginForm />
         </div>
 
-        <p className="text-sm text-text-tertiary text-center">© 2025 ALL RIGHTS RESERVED</p>
+        <p className="text-sm text-text-tertiary text-center mt-auto mb-0">
+          © 2025 ALL RIGHTS RESERVED
+        </p>
       </main>
     </>
   );

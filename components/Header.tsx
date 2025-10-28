@@ -8,9 +8,9 @@ type NavLink = {
 };
 
 const navLinks: NavLink[] = [
-  { label: "인재탐색", href: "/talent-search" },
+  { label: "인재탐색", href: "/talents" },
   { label: "기업문의", href: "/company-inquiry" },
-  { label: "인재등록", href: "/register-talent" },
+  { label: "인재등록", href: "/talents/register" },
   { label: "참여기업", href: "/partners" },
   { label: "어드민", href: "/admin" },
 ];

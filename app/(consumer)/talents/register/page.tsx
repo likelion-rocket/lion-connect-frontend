@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import IntroComponent from "@/app/(consumer)/talents/register/components/IntroComponent";
 
 export default function RegisterTalent() {
   const router = useRouter();
@@ -11,7 +12,7 @@ export default function RegisterTalent() {
   };
 
   return (
-    <div className="w-full text-black border-b border-border-quaternary">
+    <div className="w-full text-black border-b border-border-quaternary mt-8">
       {/* Header와 동일한 마진/패딩 구조 */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         {/* 왼쪽 영역: 이전 페이지 */}
@@ -36,10 +37,18 @@ export default function RegisterTalent() {
         </div>
       </div>
 
-      {/* 아래 실제 콘텐츠 */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <p className="text-black">RegisterTalent 페이지 내용이 여기에 들어갑니다.</p>
-      </div>
+      <main className="py-8 flex flex-col gap-10 mx-40">
+        {/* 인적 사항 섹션 */}
+        <IntroComponent />
+
+        {/* 이후 다른 섹션들... */}
+        <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-text-secondary text-sm">
+            {/* placeholder for next section */}
+            여기에 다음 섹션이 들어갑니다...
+          </div>
+        </section>
+      </main>
     </div>
   );
 }

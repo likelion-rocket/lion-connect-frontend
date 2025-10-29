@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import IntroComponent from "@/app/(consumer)/talents/register/components/IntroComponent";
+import CodeRegisterComponent from "@/app/(consumer)/talents/register/components/CodeRegisterComponent";
 
 export default function RegisterTalent() {
   const router = useRouter();
@@ -40,6 +41,7 @@ export default function RegisterTalent() {
       <main className="py-8 flex flex-col gap-10 mx-40">
         {/* 인적 사항 섹션 */}
         <IntroComponent />
+        <CodeRegisterComponent />
 
         {/* 이후 다른 섹션들... */}
         <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

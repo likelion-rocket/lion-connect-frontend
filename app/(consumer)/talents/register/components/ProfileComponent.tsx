@@ -1,2 +1,22 @@
-//기본정보 입력 컴포넌트
-//이름, 각종 배지, 전화번호, 이메일 등
+"use client";
+
+import Input from "@/components/ui/input";
+
+export default function ProfileComponent() {
+  return (
+    <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12">
+      {/* 제목 */}
+      <div className="text-[18px] font-bold text-text-primary mb-4 flex items-center gap-1">
+        <span>간단 소개</span>
+        <span className="text-status-error">*</span>
+      </div>
+
+      {/* 기존 Input 재사용 */}
+      <Input
+        placeholder="간단한 자기소개를 입력해주세요."
+        type="text"
+        className="w-full h-[120px] text-[14px] leading-[150%] placeholder:text-text-tertiary text-text-primary resize-none"
+      />
+    </section>
+  );
+}

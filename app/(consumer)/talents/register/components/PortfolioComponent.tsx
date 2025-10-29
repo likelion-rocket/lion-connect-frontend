@@ -2,7 +2,7 @@
 //자신과 관련된 SNS 및 깃허브 링크를 등록하는 컴포넌트
 "use client";
 
-import PortfolioContent from "./section/RegisterPorfolio";
+import RegisterPortfolio from "./section/RegisterPortfolio";
 
 export default function PortfolioComponent() {
   return (
@@ -14,7 +14,7 @@ export default function PortfolioComponent() {
       </div>
 
       {/* 나머지 본문은 별도 파일로 분리 */}
-      <PortfolioContent />
+      <RegisterPortfolio />
     </section>
   );
 }

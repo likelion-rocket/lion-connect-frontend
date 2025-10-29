@@ -8,7 +8,7 @@ import Input from "@/components/ui/input";
 import { Plus } from "lucide-react";
 import { useRef, useState } from "react";
 
-export default function PortfolioComponent() {
+export default function RegisterPorfolio() {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [fileNames, setFileNames] = useState<string[]>([""]); // 첫 번째 인풋 1개 기본
 

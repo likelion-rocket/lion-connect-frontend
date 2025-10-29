@@ -5,6 +5,7 @@ import Image from "next/image";
 import IntroComponent from "@/app/(consumer)/talents/register/components/IntroComponent";
 import CodeRegisterComponent from "@/app/(consumer)/talents/register/components/CodeRegisterComponent";
 import ProfileComponent from "./components/ProfileComponent";
+import PortfolioComponent from "./components/PortfolioComponent";
 
 export default function RegisterTalent() {
   const router = useRouter();
@@ -44,6 +45,7 @@ export default function RegisterTalent() {
         <IntroComponent />
         <CodeRegisterComponent />
         <ProfileComponent />
+        <PortfolioComponent />
 
         {/* 이후 다른 섹션들... */}
         <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

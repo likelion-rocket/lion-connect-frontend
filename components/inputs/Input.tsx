@@ -15,7 +15,7 @@ import { forwardRef, InputHTMLAttributes } from "react";
  * <Input type="email" error />
  */
 
-export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
+export type InputProps = InputHTMLAttributes<HTMLInputElement> & {
   /**
    * 에러 상태 여부
    */
@@ -24,7 +24,7 @@ export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
    * Input 래퍼에 적용할 추가 클래스
    */
   wrapperClassName?: string;
-}
+};
 
 const Input = forwardRef<HTMLInputElement, InputProps>(
   ({ className, wrapperClassName, error, type = "text", ...props }, ref) => {

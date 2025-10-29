@@ -11,11 +11,11 @@ export default function ProfileComponent() {
         <span className="text-status-error">*</span>
       </div>
 
-      {/* 기존 Input 재사용 */}
+      {/* 멀티라인 입력 */}
       <Input
         placeholder="간단한 자기소개를 입력해주세요."
-        type="text"
-        className="w-full h-[120px] text-[14px] leading-[150%] placeholder:text-text-tertiary text-text-primary resize-none"
+        multiline
+        className="h-[120px] leading-[150%] text-start align-top"
       />
     </section>
   );

@@ -16,13 +16,13 @@ export default function CodeRegisterComponent() {
       <div className="flex flex-wrap items-start gap-8">
         {/* 이름 */}
         <div className="flex items-center gap-5">
-          <Image src="/icons/outline-user.svg" alt="user" width={20} height={20} />
+          <Image src="/icons/outline-user.svg" alt="user" width={24} height={24} />
           <Input placeholder="이름" type="text" className="min-w-[140px]" />
         </div>
 
         {/* 인재 코드 */}
         <div className="flex items-center gap-5">
-          <Image src="/icons/outline-qrcode.svg" alt="qrcode" width={20} height={20} />
+          <Image src="/icons/outline-qrcode.svg" alt="qrcode" width={24} height={24} />
           <Input placeholder="인재 코드를 입력해 주세요." type="text" className="min-w-[140px]" />
         </div>
       </div>

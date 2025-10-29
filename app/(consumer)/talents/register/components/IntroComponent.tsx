@@ -27,19 +27,19 @@ export default function IntroComponent() {
       <div className="flex flex-wrap items-start gap-8">
         {/* 전화번호 */}
         <div className="flex items-center gap-5">
-          <Image src="/icons/outline-phone.svg" alt="phone" width={20} height={20} />
+          <Image src="/icons/outline-phone.svg" alt="phone" width={24} height={24} />
           <Input placeholder="+821012345678" type="text" />
         </div>
 
         {/* 이름 */}
         <div className="flex items-center gap-5">
-          <Image src="/icons/outline-user.svg" alt="user" width={20} height={20} />
+          <Image src="/icons/outline-user.svg" alt="user" width={24} height={24} />
           <Input placeholder="이름" type="text" className="min-w-[140px]" />
         </div>
 
         {/* 이메일 */}
         <div className="flex items-center gap-5">
-          <Image src="/icons/outline-mail.svg" alt="mail" width={20} height={20} />
+          <Image src="/icons/outline-mail.svg" alt="mail" width={24} height={24} />
           <Input placeholder="email@gmail.com" type="email" />
         </div>
       </div>

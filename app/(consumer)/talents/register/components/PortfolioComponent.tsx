@@ -3,10 +3,11 @@
 "use client";
 
 import RegisterPortfolio from "./section/RegisterPortfolio";
+import RegisterJob from "./section/RegisterJob";
 
 export default function PortfolioComponent() {
   return (
-    <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12">
+    <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mp-12">
       {/* 섹션 타이틀 */}
       <div className="text-[18px] font-bold text-text-primary mb-4 flex items-center gap-1">
         <span>포트폴리오</span>
@@ -15,6 +16,8 @@ export default function PortfolioComponent() {
 
       {/* 나머지 본문은 별도 파일로 분리 */}
       <RegisterPortfolio />
+      <div className="mt-8" />
+      <RegisterJob />
     </section>
   );
 }

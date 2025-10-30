@@ -6,6 +6,7 @@ import IntroComponent from "@/app/(consumer)/talents/register/components/IntroCo
 import CodeRegisterComponent from "@/app/(consumer)/talents/register/components/CodeRegisterComponent";
 import ProfileComponent from "./components/ProfileComponent";
 import PortfolioComponent from "./components/PortfolioComponent";
+import LinkRegisterComponent from "./components/LinkComponent";
 
 export default function RegisterTalent() {
   const router = useRouter();
@@ -46,6 +47,7 @@ export default function RegisterTalent() {
         <CodeRegisterComponent />
         <ProfileComponent />
         <PortfolioComponent />
+        <LinkRegisterComponent />
 
         {/* 이후 다른 섹션들... */}
         <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

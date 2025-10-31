@@ -6,7 +6,7 @@ import Input from "@/components/ui/input";
 
 export default function CodeRegisterComponent() {
   return (
-    <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12">
+    <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       {/* 섹션 타이틀 */}
       <div className="text-[18px] font-bold text-text-primary mb-8">
         멋사 수료생 인재 등록 코드 입력
@@ -14,12 +14,6 @@ export default function CodeRegisterComponent() {
 
       {/* 인풋 행 */}
       <div className="flex flex-wrap items-start gap-8">
-        {/* 이름 */}
-        <div className="flex items-center gap-5">
-          <Image src="/icons/outline-user.svg" alt="user" width={24} height={24} />
-          <Input placeholder="이름" type="text" className="min-w-[140px]" />
-        </div>
-
         {/* 인재 코드 */}
         <div className="flex items-center gap-5">
           <Image src="/icons/outline-qrcode.svg" alt="qrcode" width={24} height={24} />

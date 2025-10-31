@@ -1,10 +1,11 @@
 "use client";
 
 import Input from "@/components/ui/input";
+import RegisterJob from "./section/RegisterJob";
 
 export default function ProfileComponent() {
   return (
-    <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12">
+    <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       {/* 제목 */}
       <div className="text-[18px] font-bold text-text-primary mb-4 flex items-center gap-1">
         <span>간단 소개</span>
@@ -17,6 +18,8 @@ export default function ProfileComponent() {
         multiline
         className="h-[120px] leading-[150%] text-start align-top"
       />
+      <div className="mt-8" />
+      <RegisterJob />
     </section>
   );
 }

@@ -3,7 +3,6 @@
 "use client";
 
 import RegisterPortfolio from "./section/RegisterPortfolio";
-import RegisterJob from "./section/RegisterJob";
 
 export default function PortfolioComponent() {
   return (
@@ -16,8 +15,6 @@ export default function PortfolioComponent() {
 
       {/* 나머지 본문은 별도 파일로 분리 */}
       <RegisterPortfolio />
-      <div className="mt-8" />
-      <RegisterJob />
     </section>
   );
 }

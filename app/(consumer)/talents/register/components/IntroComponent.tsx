@@ -17,7 +17,6 @@ export default function IntroComponent() {
       <div className="mb-8">
         <div className="text-[18px] font-bold text-text-primary mb-4 flex items-center gap-1">
           <span>인적 사항</span>
-          <span className="text-status-error">*</span>
         </div>
       </div>
       {/* 아이콘 + 제목 줄 */}
@@ -34,21 +33,21 @@ export default function IntroComponent() {
 
         {/* 인풋 세트 */}
         <div className="mt-4 mb-6">
-          <div className="flex flex-wrap items-start gap-8">
+          <div className="flex flex-wrap items-start gap-12">
             {/* 이름 */}
-            <div className="flex items-center gap-5">
+            <div className="flex items-center gap-7">
               <Image src="/icons/outline-user.svg" alt="user" width={24} height={24} />
-              <div className="min-w-[140px] text-[14px] text-[#9CA3AF] font-normal">이름</div>
+              <div className="text-[14px] text-[#9CA3AF] font-normal">이름</div>
             </div>
 
             {/* 전화번호 */}
-            <div className="flex items-center gap-5">
+            <div className="flex items-center gap-7">
               <Image src="/icons/outline-phone.svg" alt="phone" width={24} height={24} />
               <div className="text-[14px] text-[#9CA3AF] font-normal">010 0000 0000</div>
             </div>
 
             {/* 이메일 */}
-            <div className="flex items-center gap-5">
+            <div className="flex items-center gap-7">
               <Image src="/icons/outline-mail.svg" alt="mail" width={24} height={24} />
               <div className="text-[14px] text-[#9CA3AF] font-normal">email@gmail.com</div>
             </div>

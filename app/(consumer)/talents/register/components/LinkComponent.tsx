@@ -19,7 +19,7 @@ export default function RegisterLink() {
   };
 
   return (
-    <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12">
+    <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       {/* 1. 제목 */}
       <div className="text-[18px] font-bold text-text-primary mb-8">링크</div>
 

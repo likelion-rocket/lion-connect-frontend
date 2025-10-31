@@ -30,11 +30,6 @@ export default function RegisterTalent() {
 
         {/* 오른쪽 영역: 임시 저장 + 작성 완료 */}
         <div className="flex items-center gap-3">
-          {/* <Image src="/icons/outline-book-open.svg" alt="save" width={24} height={24} />
-          <Image src="/icons/outline-inbox-in.svg" alt="complete" width={24} height={24} /> */}
-          <button className="px-4 py-2 rounded-full bg-white text-black text-sm font-semibold border border-border-quaternary">
-            임시 저장
-          </button>
           <button className="px-4 py-2 rounded-full bg-[#FF6000] text-white text-sm font-semibold border border-border-quaternary">
             작성 완료
           </button>
@@ -46,16 +41,8 @@ export default function RegisterTalent() {
         <IntroComponent />
         <CodeRegisterComponent />
         <ProfileComponent />
-        <PortfolioComponent />
         <LinkRegisterComponent />
-
-        {/* 이후 다른 섹션들... */}
-        <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-text-secondary text-sm">
-            {/* placeholder for next section */}
-            여기에 다음 섹션이 들어갑니다...
-          </div>
-        </section>
+        <PortfolioComponent />
       </main>
     </div>
   );

@@ -12,10 +12,10 @@ import {
 
 const JOB_OPTIONS: Record<string, string[]> = {
   개발: ["프론트 엔드", "백엔드", "IOS", "Android", "Unity", "AI"],
-  디자인: ["UX/UI", "BX/브랜딩", "모바일 디자인", "프로덕트 디자인"],
-  "데이터 분석": ["데이터 분석가", "데이터 사이언티스트", "ML Engineer"],
-  마케팅: ["콘텐츠 마케터", "퍼포먼스 마케터", "그로스 마케터"],
-  기획: ["서비스 기획", "프로덕트 매니저", "PO"],
+  디자인: ["UX/UI"],
+  "데이터 분석": ["데이터 분석"],
+  마케팅: ["그로스 마케팅"],
+  PM: ["PM"],
 };
 
 const JOB_KEYS = Object.keys(JOB_OPTIONS);

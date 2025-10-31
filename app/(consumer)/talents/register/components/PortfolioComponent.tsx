@@ -40,7 +40,7 @@ export default function PortfolioComponent() {
   };
 
   return (
-    <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12">
+    <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       {/* 섹션 타이틀 */}
       <div className="text-[18px] font-bold text-text-primary mb-4 flex items-center gap-1">
         <span>포트폴리오</span>

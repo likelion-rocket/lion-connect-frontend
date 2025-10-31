@@ -86,7 +86,7 @@ export default function PortfolioComponent() {
           ))}
         </div>
       </div>
-      {/* 4. 링크 추가 버튼 */}
+      {/* 4. 파일 추가 버튼 */}
       <div className="flex justify-end mt-4">
         <button
           type="button"

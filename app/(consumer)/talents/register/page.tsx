@@ -9,6 +9,7 @@ import PortfolioComponent from "./components/PortfolioComponent";
 import LinkRegisterComponent from "./components/LinkComponent";
 import EducationComponent from "./components/EducationComponent";
 import CareerComponent from "./components/CareerComponent";
+import SkillComponent from "./components/SkillComponent";
 
 export default function RegisterTalent() {
   const router = useRouter();
@@ -50,6 +51,7 @@ export default function RegisterTalent() {
         <ProfileComponent />
         <EducationComponent />
         <CareerComponent />
+        <SkillComponent />
         <LinkRegisterComponent />
         <PortfolioComponent />
       </main>

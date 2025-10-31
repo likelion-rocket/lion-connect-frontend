@@ -142,9 +142,9 @@ export default function CareerComponent() {
         <button
           type="button"
           onClick={handleAddCompany}
-          className="flex items-center gap-2 text-[#FF6000] hover:opacity-80 font-bold text-[14px]"
+          className="flex items-center gap-2 text-[#FF6000] hover:opacity-80 font-bold text-[16px] leading-none"
         >
-          <Plus size={16} className="text-[#FF6000]" />
+          <Plus size={20} className="text-[#FF6000]" />
           <span>회사 추가</span>
         </button>
       </div>

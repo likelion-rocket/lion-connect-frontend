@@ -30,7 +30,9 @@ export default function RegisterLink() {
           <Image src="/icons/outline-paper-clip.svg" alt="link" width={24} height={24} />
         </div>
         {/* 오른쪽 소제목 */}
-        <div className="flex items-center h-12 text-[16px] font-medium text-text-primary">링크</div>
+        <div className="flex items-center h-12 text-[16px] font-semibold text-text-primary">
+          링크
+        </div>
         {/* 3. 인풋 리스트 → 여기부터는 map */}
         <div /> {/* 들여쓰기용 빈칸 */}
         <div className="mt-4 w-full">

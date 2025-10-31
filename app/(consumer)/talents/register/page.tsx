@@ -18,7 +18,7 @@ export default function RegisterTalent() {
   return (
     <div className="w-full text-black border-b border-border-quaternary mt-8">
       {/* Header와 동일한 마진/패딩 구조 */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         {/* 왼쪽 영역: 이전 페이지 */}
         <button
           onClick={handleGoBack}
@@ -27,6 +27,11 @@ export default function RegisterTalent() {
           <Image src="/icons/outline-cheveron-left.svg" alt="back" width={24} height={24} />
           <span className="text-lg font-bold text-black">이전 페이지</span>
         </button>
+
+        {/* ✅ 가운데 영역: 인재 등록 페이지 */}
+        <h1 className="absolute left-1/2 -translate-x-1/2 text-lg font-bold text-black">
+          인재 등록 페이지
+        </h1>
 
         {/* 오른쪽 영역: 임시 저장 + 작성 완료 */}
         <div className="flex items-center gap-3">

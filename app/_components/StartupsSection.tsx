@@ -1,0 +1,48 @@
+"use client";
+
+import { useState } from "react";
+import Marquee from "react-fast-marquee";
+import { STARTUPS } from "@/constants/startups";
+import StartupCard from "@/components/cards/StartupCard";
+
+/**
+ * 멋쟁이사자처럼에서 탄생한 스타트업들을 소개하는 섹션
+ * - 제목, 부제목, 스타트업 카드 무한 슬라이드로 구성
+ * - react-fast-marquee를 사용한 부드러운 무한 스크롤
+ * - 카드별 위치 기반 투명도 페이드 효과
+ */
+export default function StartupsSection() {
+  const [isHovered, setIsHovered] = useState(false);
+
+  return (
+    <section className="relative flex flex-col items-center bg-linear-to-b from-white to-brand-01 px-[83px] py-[67px]">
+      {/* 제목 및 설명 컨테이너 */}
+      <div className="mb-[111px]  flex max-w-[1280px] flex-col items-center gap-8">
+        {/* 메인 제목 */}
+        <h2 className="whitespace-pre-line text-center text-5xl font-bold leading-tight text-text-accent">
+          멋쟁이사자처럼의 인재들로부터{"\n"}독보적인 스타트업들이 탄생하였습니다.
+        </h2>
+
+        {/* 부제목 */}
+        <p className="text-center text-lg font-normal leading-normal text-text-primary">
+          *멋쟁이사자처럼의 인재들이 탄생시킨 스타트업을 확인해보세요
+        </p>
+      </div>
+
+      {/* 스타트업 카드 무한 슬라이드 */}
+      <div
+        className="max-w-7xl overflow-hidden"
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+      >
+        <Marquee speed={40} autoFill play={!isHovered}>
+          {STARTUPS.map((startup, index) => (
+            <div key={`startup-${index}`} className="px-4">
+              <StartupCard startup={startup} index={index} totalCards={STARTUPS.length} />
+            </div>
+          ))}
+        </Marquee>
+      </div>
+    </section>
+  );
+}

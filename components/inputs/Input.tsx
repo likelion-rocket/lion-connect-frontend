@@ -1,4 +1,4 @@
-import { forwardRef, InputHTMLAttributes } from "react";
+import { InputHTMLAttributes, Ref } from "react";
 
 /**
  * Input 컴포넌트
@@ -16,46 +16,37 @@ import { forwardRef, InputHTMLAttributes } from "react";
  */
 
 export type InputProps = InputHTMLAttributes<HTMLInputElement> & {
-  /**
-   * 에러 상태 여부
-   */
   error?: boolean;
-  /**
-   * Input 래퍼에 적용할 추가 클래스
-   */
   wrapperClassName?: string;
+  ref?: Ref<HTMLInputElement>;
 };
 
-const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ className, wrapperClassName, error, type = "text", ...props }, ref) => {
-    return (
-      <div className={wrapperClassName}>
-        <input
-          ref={ref}
-          type={type}
-          className={`
-            lc-input
-            w-full px-4 py-3 rounded-[12px]
-            border border-[#E5E5E5]
-            ${error ? "border-border-error!" : ""}
-            placeholder-text-tertiary
-            text-text-primary
-            bg-[#F7FBFF]
-            focus:outline-none
-            focus:border-blue-base
-            hover:border-blue-base
-            transition-colors
-            disabled:opacity-50
-            disabled:cursor-not-allowed
-            ${className || ""}
-          `}
-          {...props}
-        />
-      </div>
-    );
-  }
-);
-
-Input.displayName = "Input";
+function Input({ className, wrapperClassName, error, type = "text", ref, ...props }: InputProps) {
+  return (
+    <div className={wrapperClassName}>
+      <input
+        ref={ref}
+        type={type}
+        className={`
+          lc-input
+          w-full px-4 py-3 rounded-[12px]
+          border border-[#E5E5E5]
+          ${error ? "border-border-error!" : ""}
+          placeholder-text-tertiary
+          text-text-primary
+          bg-[#F7FBFF]
+          focus:outline-none
+          focus:border-blue-base
+          hover:border-blue-base
+          transition-colors
+          disabled:opacity-50
+          disabled:cursor-not-allowed
+          ${className || ""}
+        `}
+        {...props}
+      />
+    </div>
+  );
+}
 
 export default Input;

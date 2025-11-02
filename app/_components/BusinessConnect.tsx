@@ -81,9 +81,10 @@ export default function BusinessConnect() {
             )}
 
             <ul className="space-y-2 text-sm text-[#666] ml-6">
-              <li className="list-disc">수집 주체:(주)멋쟁이사자처럼</li>
-              <li className="list-disc">수집 항목:교육 문의 내용에 대한 확인 및 답변</li>
-              <li className="list-disc">보유기간:교육 문의 내용에 대한 확인 및 답변</li>
+              <li className="list-disc">수집 주체 : (주)멋쟁이사자처럼 라이언 커넥트</li>
+              <li className="list-disc">수집 목적 : 기업 문의 내용에 대한 확인 및 답변</li>
+              <li className="list-disc">수집 항목 : 기업 문의 내용에 대한 확인 및 답변</li>
+              <li className="list-disc">보유기간 : 기업 문의 내용에 대한 확인 및 답변</li>
             </ul>
           </div>
 

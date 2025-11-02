@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import CountUp from "react-countup";
 import { extractNumber, extractUnit } from "@/lib/formatNumber";
+import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 
 /**
  * StatItem Component
@@ -83,10 +84,22 @@ type ProgramCardProps = {
 };
 
 function ProgramCard({ logoSrc, logoAlt, stats }: ProgramCardProps) {
+  const { ref: cardRef, isVisible } = useScrollAnimation<HTMLDivElement>({ threshold: 0.2 });
+
   return (
-    <div className="self-stretch p-8 bg-white rounded-lg shadow-[0px_4px_6px_-2px_rgba(0,0,0,0.05)] inline-flex justify-start items-center gap-16">
-      {/* Logo Section */}
-      <div className="w-72 h-12 relative overflow-hidden">
+    <div
+      ref={cardRef}
+      className={`self-stretch p-8 bg-white rounded-lg shadow-[0px_4px_6px_-2px_rgba(0,0,0,0.05)] inline-flex justify-start items-center gap-16
+        transition-all duration-1000 ease-out
+        ${isVisible ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-12"}`}
+    >
+      {/* Logo Section - 페이드인 */}
+      <div
+        className={`w-72 h-12 relative overflow-hidden transition-all duration-1000 ease-out ${
+          isVisible ? "opacity-100 scale-100" : "opacity-0 scale-90"
+        }`}
+        style={{ transitionDelay: "200ms" }}
+      >
         <Image src={logoSrc} alt={logoAlt} fill className="object-contain" sizes="288px" />
       </div>
 
@@ -111,6 +124,10 @@ function ProgramCard({ logoSrc, logoAlt, stats }: ProgramCardProps) {
  * <ProgramStatsSection />
  */
 export default function ProgramStatsSection() {
+  const { ref: headerRef, isVisible: isHeaderVisible } = useScrollAnimation<HTMLDivElement>({
+    threshold: 0.2,
+  });
+
   // 멋사대학 통계 데이터
   const universityStats: StatItemProps[] = [
     { value: "13년", label: "시작된 지" },
@@ -126,24 +143,41 @@ export default function ProgramStatsSection() {
   ];
 
   return (
-    <section className="w-full py-28 bg-gradient-to-b from-white to-orange-50 flex justify-center items-start">
+    <section className="w-full py-28 bg-linear-to-b from-white to-orange-50 flex justify-center items-start">
       <div className="w-full max-w-[1443px] px-20 flex flex-col justify-start items-center gap-12">
         {/* Header Section */}
-        <div className="flex flex-col justify-start items-center gap-20">
+        <div ref={headerRef} className="flex flex-col justify-start items-center gap-20">
           <div className="self-stretch flex flex-col justify-start items-center gap-8">
             <div className="w-full max-w-[1280px] flex flex-col justify-start items-center gap-16">
               {/* Title and Subtitle */}
               <div className="self-stretch flex flex-col justify-start items-center gap-8">
-                <div className="self-stretch text-center justify-start text-zinc-600 text-xl font-bold leading-7">
+                {/* 서브타이틀 - 페이드인 + 슬라이드업 */}
+                <div
+                  className={`self-stretch text-center justify-start text-zinc-600 text-xl font-bold leading-7
+                    transition-all duration-1000 ease-out
+                    ${isHeaderVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}
+                  style={{ transitionDelay: "100ms" }}
+                >
                   Participating Student
                 </div>
-                <h2 className="self-stretch text-center justify-start text-orange-600 text-5xl font-bold leading-[60px]">
+                {/* 메인 타이틀 - 서브타이틀보다 늦게 등장 */}
+                <h2
+                  className={`self-stretch text-center justify-start text-orange-600 text-5xl font-bold leading-[60px]
+                    transition-all duration-1000 ease-out
+                    ${isHeaderVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
+                  style={{ transitionDelay: "300ms" }}
+                >
                   멋사 부트캠프, 멋사 대학 출신 학생 수 누적 25,000명 +
                 </h2>
               </div>
 
-              {/* Description */}
-              <p className="w-full max-w-[788px] text-center justify-start text-neutral-800 text-lg font-normal leading-7">
+              {/* Description - 마지막에 등장 */}
+              <p
+                className={`w-full max-w-[788px] text-center justify-start text-neutral-800 text-lg font-normal leading-7
+                  transition-all duration-1000 ease-out
+                  ${isHeaderVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}
+                style={{ transitionDelay: "500ms" }}
+              >
                 멋쟁이사자처럼 활동을 함께하는 대학의 인재들과
                 <br />
                 멋사 부트캠프를 통해 우수한 실력을 갖춘 인재들이 기다리고 있습니다.

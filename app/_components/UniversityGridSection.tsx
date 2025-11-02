@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useState } from "react";
 import { UNIVERSITIES, REGIONS, type University, type Region } from "@/constants/universities";
 import CTAButton from "@/components/buttons/CTAButton";
+import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 
 /**
  * UniversityCard Component
@@ -11,13 +12,24 @@ import CTAButton from "@/components/buttons/CTAButton";
  */
 type UniversityCardProps = {
   university: University;
+  index: number;
 };
 
-function UniversityCard({ university }: UniversityCardProps) {
+function UniversityCard({ university, index }: UniversityCardProps) {
+  const { ref: cardRef, isVisible } = useScrollAnimation<HTMLDivElement>({ threshold: 0.1 });
+
   return (
-    <div className="flex flex-col items-center gap-3">
+    <div
+      ref={cardRef}
+      className={`flex flex-col items-center gap-3 transition-all duration-700 ease-out ${
+        isVisible ? "opacity-100 translate-y-0 scale-100" : "opacity-0 translate-y-6 scale-95"
+      }`}
+      style={{
+        transitionDelay: `${Math.min(index * 50, 500)}ms`, // 최대 500ms까지만 지연
+      }}
+    >
       {/* 대학 로고 */}
-      <div className="w-24 h-24 relative rounded-full overflow-hidden bg-white shadow-md">
+      <div className="w-24 h-24 relative rounded-full overflow-hidden bg-white shadow-md transition-transform duration-300 hover:scale-110 hover:shadow-lg">
         <Image
           src={university.logoPath}
           alt={`${university.name} 로고`}
@@ -74,6 +86,13 @@ export default function UniversityGridSection() {
   const [selectedRegion, setSelectedRegion] = useState<Region>("전체");
   const [showAll, setShowAll] = useState(false);
 
+  const { ref: headerRef, isVisible: isHeaderVisible } = useScrollAnimation<HTMLDivElement>({
+    threshold: 0.2,
+  });
+  const { ref: filterRef, isVisible: isFilterVisible } = useScrollAnimation<HTMLDivElement>({
+    threshold: 0.2,
+  });
+
   // 선택된 지역에 따라 대학교 필터링
   const filteredUniversities =
     selectedRegion === "전체"
@@ -89,28 +108,44 @@ export default function UniversityGridSection() {
   return (
     <section className="w-full py-28 bg-white flex justify-center items-start">
       <div className="w-full max-w-[1280px] px-20 flex flex-col justify-start items-center gap-16">
-        {/* Header Section */}
-        <div className="flex flex-col justify-start items-center gap-4">
-          <h2 className="text-orange-600 text-5xl font-bold leading-[60px]">
+        {/* Header Section - 페이드인 + 슬라이드업 */}
+        <div ref={headerRef} className="flex flex-col justify-start items-center gap-4">
+          <h2
+            className={`text-orange-600 text-5xl font-bold leading-[60px] transition-all duration-1000 ease-out ${
+              isHeaderVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+            }`}
+          >
             멋쟁이사자처럼 활동 대학
           </h2>
-          <p className="text-neutral-800 text-lg font-normal leading-7">
+          <p
+            className={`text-neutral-800 text-lg font-normal leading-7 transition-all duration-1000 ease-out ${
+              isHeaderVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
+            }`}
+            style={{ transitionDelay: "200ms" }}
+          >
             멋쟁이사자처럼 동아리가 있는 대학들을 소개합니다.
           </p>
         </div>
 
-        {/* Region Filter Buttons */}
-        <div className="flex justify-center items-center gap-3 flex-wrap">
-          {REGIONS.map((region) => (
-            <RegionFilterButton
+        {/* Region Filter Buttons - 순차적 페이드인 */}
+        <div ref={filterRef} className="flex justify-center items-center gap-3 flex-wrap">
+          {REGIONS.map((region, index) => (
+            <div
               key={region}
-              region={region}
-              isActive={selectedRegion === region}
-              onClick={() => {
-                setSelectedRegion(region);
-                setShowAll(false); // 지역 변경 시 더보기 초기화
-              }}
-            />
+              className={`transition-all duration-700 ease-out ${
+                isFilterVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+              }`}
+              style={{ transitionDelay: `${index * 50}ms` }}
+            >
+              <RegionFilterButton
+                region={region}
+                isActive={selectedRegion === region}
+                onClick={() => {
+                  setSelectedRegion(region);
+                  setShowAll(false); // 지역 변경 시 더보기 초기화
+                }}
+              />
+            </div>
           ))}
         </div>
 
@@ -122,8 +157,8 @@ export default function UniversityGridSection() {
               !showAll && hasMore ? "max-h-[600px] overflow-hidden" : ""
             }`}
           >
-            {displayedUniversities.map((university) => (
-              <UniversityCard key={university.id} university={university} />
+            {displayedUniversities.map((university, index) => (
+              <UniversityCard key={university.id} university={university} index={index} />
             ))}
           </div>
 

@@ -1,4 +1,12 @@
+import Footer from "@/components/Footer";
 import { Metadata } from "next";
+import BusinessConnect from "./_components/BusinessConnect";
+import HeroSection from "./_components/HeroSection";
+import BenefitsSection from "./_components/BenefitsSection";
+import ProgramStatsSection from "./_components/ProgramStatsSection";
+import UniversityGridSection from "./_components/UniversityGridSection";
+import StartupsSection from "./_components/StartupsSection";
+import CompanyLogosSection from "./_components/CompanyLogosSection";
 
 export const metadata: Metadata = {
   title: "랜딩페이지",
@@ -6,5 +14,16 @@ export const metadata: Metadata = {
 };
 
 export default function Home() {
-  return <main>메인페이지</main>;
+  return (
+    <main>
+      <HeroSection />
+      <BenefitsSection />
+      <ProgramStatsSection />
+      <UniversityGridSection />
+      <StartupsSection />
+      <CompanyLogosSection />
+      <BusinessConnect />
+      <Footer />
+    </main>
+  );
 }

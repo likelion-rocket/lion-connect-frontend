@@ -4,6 +4,7 @@ import { useState } from "react";
 import Marquee from "react-fast-marquee";
 import { STARTUPS } from "@/constants/startups";
 import StartupCard from "@/components/cards/StartupCard";
+import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 
 /**
  * 멋쟁이사자처럼에서 탄생한 스타트업들을 소개하는 섹션
@@ -13,18 +14,30 @@ import StartupCard from "@/components/cards/StartupCard";
  */
 export default function StartupsSection() {
   const [isHovered, setIsHovered] = useState(false);
+  const { ref: headerRef, isVisible: isHeaderVisible } = useScrollAnimation<HTMLDivElement>({
+    threshold: 0.2,
+  });
 
   return (
     <section className="relative flex flex-col items-center bg-linear-to-b from-white to-brand-01 px-[83px] py-[67px]">
-      {/* 제목 및 설명 컨테이너 */}
-      <div className="mb-[111px]  flex max-w-[1280px] flex-col items-center gap-8">
+      {/* 제목 및 설명 컨테이너 - 페이드인 + 슬라이드업 */}
+      <div ref={headerRef} className="mb-[111px] flex max-w-[1280px] flex-col items-center gap-8">
         {/* 메인 제목 */}
-        <h2 className="whitespace-pre-line text-center text-5xl font-bold leading-tight text-text-accent">
+        <h2
+          className={`whitespace-pre-line text-center text-5xl font-bold leading-tight text-text-accent
+            transition-all duration-1000 ease-out
+            ${isHeaderVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
+        >
           멋쟁이사자처럼의 인재들로부터{"\n"}독보적인 스타트업들이 탄생하였습니다.
         </h2>
 
         {/* 부제목 */}
-        <p className="text-center text-lg font-normal leading-normal text-text-primary">
+        <p
+          className={`text-center text-lg font-normal leading-normal text-text-primary
+            transition-all duration-1000 ease-out
+            ${isHeaderVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}
+          style={{ transitionDelay: "300ms" }}
+        >
           *멋쟁이사자처럼의 인재들이 탄생시킨 스타트업을 확인해보세요
         </p>
       </div>

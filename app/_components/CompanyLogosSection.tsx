@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Marquee from "react-fast-marquee";
+import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 
 /**
  * CompanyLogosSection Component
@@ -36,25 +37,48 @@ const COMPANY_LOGOS = {
     "/landing/company-logos/google.png", // Google
     "/landing/company-logos/meta.png", // Meta
     "/landing/company-logos/carrot.png", // 당근마켓
-    "/landing/company-logos/here.png", // here
   ],
 };
 
 export default function CompanyLogosSection() {
+  const { ref: headerRef, isVisible: isHeaderVisible } = useScrollAnimation<HTMLDivElement>({
+    threshold: 0.2,
+  });
+
   return (
     <section className="relative w-full bg-brand-01 px-20 py-[60px] flex flex-col items-center gap-12">
-      {/* Section Header */}
-      <div className="w-full max-w-[1283px] flex flex-col items-center gap-8 text-center">
+      {/* Section Header - 페이드인 + 슬라이드업 */}
+      <div
+        ref={headerRef}
+        className="w-full max-w-[1283px] flex flex-col items-center gap-8 text-center"
+      >
         {/* 상단 레이블 */}
-        <p className="text-[#5c5c5c] text-xl font-bold leading-[27.5px]">Employed Company</p>
+        <p
+          className={`text-[#5c5c5c] text-xl font-bold leading-[27.5px]
+            transition-all duration-1000 ease-out
+            ${isHeaderVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}
+          style={{ transitionDelay: "100ms" }}
+        >
+          Employed Company
+        </p>
 
         {/* 메인 제목 */}
-        <h2 className="text-text-accent text-5xl font-bold leading-[60px]">
+        <h2
+          className={`text-text-accent text-5xl font-bold leading-[60px]
+            transition-all duration-1000 ease-out
+            ${isHeaderVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
+          style={{ transitionDelay: "300ms" }}
+        >
           멋사 대학 및 부트캠프 출신 재직 기업
         </h2>
 
         {/* 부제목 */}
-        <p className="text-text-primary text-lg font-normal leading-7">
+        <p
+          className={`text-text-primary text-lg font-normal leading-7
+            transition-all duration-1000 ease-out
+            ${isHeaderVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}
+          style={{ transitionDelay: "500ms" }}
+        >
           *실제 멋사 대학 및 멋사 부트캠프 수료생 재직 기업입니다.
         </p>
       </div>

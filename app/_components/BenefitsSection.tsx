@@ -1,4 +1,7 @@
+"use client";
+
 import Image from "next/image";
+import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 
 type BenefitCardProps = {
   title: string;
@@ -6,52 +9,114 @@ type BenefitCardProps = {
   imageSrc: string;
   imageAlt: string;
   imagePosition: "left" | "right";
+  index: number;
 };
 
 /**
  * BenefitCard Component
- * @description 반응형 디자인 적용, 공백 최소화
- * - Mobile: 세로 스택, 최소 패딩
- * - Tablet: 중간 패딩, 세로 스택 유지
- * - Desktop: 가로 레이아웃, 적절한 간격
+ * @description 스크롤 트리거 애니메이션이 적용된 혜택 카드
+ * - useScrollAnimation 훅으로 화면 진입 시 애니메이션 시작
+ * - 텍스트: 페이드인 + 슬라이드업 (순차 등장)
+ * - 이미지: 줌인 + 페이드인
+ * - 반응형 디자인 유지
  */
-function BenefitCard({ title, description, imageSrc, imageAlt, imagePosition }: BenefitCardProps) {
+function BenefitCard({
+  title,
+  description,
+  imageSrc,
+  imageAlt,
+  imagePosition,
+  index,
+}: BenefitCardProps) {
+  const { ref: cardRef, isVisible } = useScrollAnimation<HTMLDivElement>({
+    threshold: 0.2,
+    rootMargin: "0px 0px -50px 0px",
+  });
+
   return (
     <div
+      ref={cardRef}
       className={`w-full px-4 py-6 sm:px-8 sm:py-10 md:px-16 md:py-12 lg:px-24 lg:py-16 xl:px-[80px] xl:py-[80px]
         flex flex-col gap-6 sm:gap-10 md:gap-12 lg:gap-16 xl:gap-[80px]
         lg:flex-row lg:justify-center lg:items-center
         ${imagePosition === "right" ? "lg:flex-row-reverse" : ""}`}
     >
-      {/* 텍스트 영역 */}
-      <div className="flex flex-col gap-6 sm:gap-8 md:gap-10 lg:gap-12 xl:gap-[48px] w-full lg:w-auto lg:flex-1 lg:max-w-[463px]">
-        <h3 className="text-text-primary text-2xl sm:text-3xl md:text-4xl lg:text-4xl xl:text-[36px] font-bold leading-tight xl:leading-tight">
+      {/* 텍스트 영역 - 페이드인 + 슬라이드업 */}
+      <div
+        className={`flex flex-col gap-6 sm:gap-8 md:gap-10 lg:gap-12 xl:gap-[48px] w-full lg:w-auto lg:flex-1 lg:max-w-[463px]
+          transition-all duration-1000 ease-out
+          ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
+        style={{
+          transitionDelay: `${100 + index * 100}ms`, // 순차 등장 (카드별 지연)
+        }}
+      >
+        {/* 타이틀 - 순차 등장 */}
+        <h3
+          className={`text-text-primary text-2xl sm:text-3xl md:text-4xl lg:text-4xl xl:text-[36px] font-bold leading-tight xl:leading-tight
+            transition-all duration-1000 ease-out
+            ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}
+          style={{
+            transitionDelay: `${200 + index * 100}ms`,
+          }}
+        >
           {title}
         </h3>
-        <p className="text-text-primary text-sm sm:text-base md:text-base lg:text-base xl:text-base font-normal leading-relaxed xl:leading-normal whitespace-pre-line">
+
+        {/* 설명 - 타이틀보다 늦게 등장 */}
+        <p
+          className={`text-text-primary text-sm sm:text-base md:text-base lg:text-base xl:text-base font-normal leading-relaxed xl:leading-normal whitespace-pre-line
+            transition-all duration-1000 ease-out
+            ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}
+          style={{
+            transitionDelay: `${400 + index * 100}ms`,
+          }}
+        >
           {description}
         </p>
       </div>
 
-      {/* 이미지 영역 */}
+      {/* 이미지 영역 - 줌인 + 페이드인 */}
       <div
-        className="w-full h-[280px] sm:h-[340px] md:h-[380px] lg:w-[500px] lg:h-[350px] xl:w-[600px] xl:h-[420px]
-        relative rounded-lg overflow-hidden shrink-0"
+        className={`w-full h-[280px] sm:h-[340px] md:h-[380px] lg:w-[500px] lg:h-[350px] xl:w-[600px] xl:h-[420px]
+          relative rounded-lg overflow-hidden shrink-0
+          transition-all duration-1000 ease-out
+          ${isVisible ? "opacity-100 scale-100" : "opacity-0 scale-95"}`}
+        style={{
+          transitionDelay: `${300 + index * 100}ms`,
+        }}
       >
         <Image
           src={imageSrc}
           alt={imageAlt}
           fill
-          className="object-cover"
+          className={`object-cover transition-transform duration-1200 ease-out ${
+            isVisible ? "scale-100" : "scale-110"
+          }`}
           sizes="(max-width: 768px) 100vw, (max-width: 1024px) 500px, 600px"
+          style={{
+            transitionDelay: `${300 + index * 100}ms`,
+          }}
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/0 to-black/60" />
+        {/* 그라데이션 오버레이 - 점진적 페이드인 */}
+        <div
+          className={`absolute inset-0 bg-linear-to-b from-black/60 via-black/0 to-black/60
+            transition-opacity duration-1000 ease-out
+            ${isVisible ? "opacity-100" : "opacity-0"}`}
+          style={{
+            transitionDelay: `${500 + index * 100}ms`,
+          }}
+        />
       </div>
     </div>
   );
 }
 
 function BenefitsSection() {
+  const { ref: titleRef, isVisible: isTitleVisible } = useScrollAnimation<HTMLHeadingElement>({
+    threshold: 0.3,
+    rootMargin: "0px 0px -100px 0px",
+  });
+
   const benefits = [
     {
       title: "적합한 인재 탐색",
@@ -74,15 +139,20 @@ function BenefitsSection() {
   return (
     <section className="w-full max-w-[1443px] mx-auto pt-12 sm:pt-16 md:pt-20 lg:pt-24 xl:pt-28 bg-bg-primary flex flex-col justify-start items-start">
       <div className="self-stretch flex flex-col justify-start items-center gap-8 sm:gap-12 md:gap-16 lg:gap-20">
-        {/* Section Title - 반응형 타이틀 */}
-        <h2 className="self-stretch px-4 text-center text-text-accent text-2xl sm:text-3xl lg:text-4xl font-bold leading-tight">
+        {/* Section Title - 페이드인 + 슬라이드업 애니메이션 */}
+        <h2
+          ref={titleRef}
+          className={`self-stretch px-4 text-center text-text-accent text-2xl sm:text-3xl lg:text-4xl font-bold leading-tight
+            transition-all duration-1000 ease-out
+            ${isTitleVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
+        >
           왜 라이언 커넥트를 사용해야 할까요?
         </h2>
 
         {/* Benefits Cards Container */}
         <div className="self-stretch flex flex-col justify-start items-center">
           {benefits.map((benefit, index) => (
-            <BenefitCard key={index} {...benefit} />
+            <BenefitCard key={index} {...benefit} index={index} />
           ))}
         </div>
       </div>

@@ -16,10 +16,25 @@ const TENDENCY_ROWS: TendencyPair[] = [
   { id: "method", left: "매뉴얼형", right: "워터폴형" },
   { id: "rule", left: "규칙형", right: "창의형" },
   { id: "lead", left: "리더형", right: "팔로워형" },
-  { id: "list", left: "스프린트 리스트형", right: "개니멀 리스트형" },
+  { id: "list", left: "스프린트 리스트형", right: "제너럴 리스트형" },
   { id: "focus", left: "결과 중심형", right: "과정 중심형" },
   { id: "lifestyle", left: "현실주의형", right: "이상주의형" },
 ];
+
+// ✅ 띄어쓰기 기준으로 줄바꿈해주는 헬퍼
+function LabelWithBreak({ text }: { text: string }) {
+  const parts = text.split(" ");
+  return (
+    <span className="whitespace-pre-line">
+      {parts.map((part, idx) => (
+        <span key={idx}>
+          {part}
+          {idx < parts.length - 1 ? <br /> : null}
+        </span>
+      ))}
+    </span>
+  );
+}
 
 export default function TendencyComponent() {
   const [selected, setSelected] = useState<Record<string, "left" | "right" | null>>(
@@ -45,15 +60,14 @@ export default function TendencyComponent() {
         <span>성향</span>
       </div>
 
-      {/* 한 줄에 2쌍 */}
       <div className="grid grid-cols-2 gap-x-12 gap-y-8">
         {TENDENCY_ROWS.map((row) => (
           <div key={row.id} className="relative h-16">
-            {/* 1) 가운데 라인: 체크박스 사이만 그려지게 좌우 여백 줌 */}
+            {/* 선 */}
             <div className="absolute top-[22px] left-14 right-14 h-[3px] bg-[#D0D5DD] rounded-full" />
 
-            {/* 2) 왼쪽 옵션 (절대 위치) */}
-            <div className="absolute top-0 left-0 flex flex-col items-center gap-1 w-14">
+            {/* 왼쪽 */}
+            <div className="absolute top-0 left-0 flex flex-col items-center gap-1 w-16">
               <div className="w-12 h-12 flex items-center justify-center">
                 <Checkbox
                   checked={selected[row.id] === "left"}
@@ -63,14 +77,14 @@ export default function TendencyComponent() {
               <button
                 type="button"
                 onClick={() => handleSelect(row.id, "left")}
-                className="w-20 text-center text-[13px] leading-5 text-[#1c1c1c] wrap-break-words"
+                className="w-[88px] text-center text-[13px] leading-5 text-[#1c1c1c]"
               >
-                {row.left}
+                <LabelWithBreak text={row.left} />
               </button>
             </div>
 
-            {/* 3) 오른쪽 옵션 (절대 위치) */}
-            <div className="absolute top-0 right-0 flex flex-col items-center gap-1 w-14">
+            {/* 오른쪽 */}
+            <div className="absolute top-0 right-0 flex flex-col items-center gap-1 w-16">
               <div className="w-12 h-12 flex items-center justify-center">
                 <Checkbox
                   checked={selected[row.id] === "right"}
@@ -80,9 +94,9 @@ export default function TendencyComponent() {
               <button
                 type="button"
                 onClick={() => handleSelect(row.id, "right")}
-                className="w-20 text-center text-[13px] leading-5 text-[#1c1c1c] wrap-break-words"
+                className="w-[88px] text-center text-[13px] leading-5 text-[#1c1c1c]"
               >
-                {row.right}
+                <LabelWithBreak text={row.right} />
               </button>
             </div>
           </div>

@@ -23,10 +23,11 @@ export default function LoginForm() {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isValid },
     reset,
   } = useForm<LoginSchemaType>({
     resolver: zodResolver(loginSchema),
+    mode: "onChange", // 실시간 유효성 검사
   });
 
   // 로그인 성공 시 리다이렉트
@@ -133,7 +134,9 @@ export default function LoginForm() {
       <button
         type="submit"
         disabled={isLoading}
-        className="w-full py-3 rounded-[12px] bg-[#162D3A] text-text-inverse-primary font-medium hover:bg-text-secondary disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        className={`w-full py-3 rounded-[12px] text-text-inverse-primary font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-colors ${
+          isValid ? "bg-bg-accent hover:bg-brand-06" : "bg-icon-tertiary hover:bg-icon-secondary"
+        }`}
       >
         {isLoading ? "로그인 중..." : "로그인"}
       </button>

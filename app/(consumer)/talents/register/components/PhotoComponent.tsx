@@ -24,7 +24,6 @@ export default function PhotoComponent() {
 
     if (!ext || !allowed.includes(ext)) {
       alert("jpg 또는 png 파일만 업로드할 수 있습니다.");
-      // 선택 취소
       e.target.value = "";
       return;
     }
@@ -56,9 +55,9 @@ export default function PhotoComponent() {
         </div>
 
         {/* 오른쪽 내용 */}
-        <div className="flex items-center justify-between gap-6">
-          {/* 입력창 영역 */}
-          <div onClick={openFileDialog} className="flex-1 cursor-pointer">
+        <div className="flex items-center gap-8">
+          {/* 인풋 */}
+          <div onClick={openFileDialog} className="cursor-pointer flex-1 max-w-[480px]">
             <Input
               readOnly
               type="text"
@@ -68,8 +67,7 @@ export default function PhotoComponent() {
             />
           </div>
 
-          {/* 추가 버튼 */}
-
+          {/* 버튼 */}
           <button
             type="button"
             onClick={openFileDialog}

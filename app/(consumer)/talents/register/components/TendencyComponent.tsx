@@ -11,9 +11,9 @@ type TendencyPair = {
 
 const TENDENCY_ROWS: TendencyPair[] = [
   { id: "company_type", left: "안정 기업형", right: "성장 기업형" },
-  { id: "task_style", left: "수직적 문서형", right: "수평적 문서형" },
+  { id: "task_style", left: "수직적 문화형", right: "수평적 문화형" },
   { id: "work_speed", left: "속도형", right: "퀄리티형" },
-  { id: "method", left: "매뉴얼형", right: "워터폴형" },
+  { id: "method", left: "에자일형", right: "워터폴형" },
   { id: "rule", left: "규칙형", right: "창의형" },
   { id: "lead", left: "리더형", right: "팔로워형" },
   { id: "list", left: "스프린트 리스트형", right: "제너럴 리스트형" },

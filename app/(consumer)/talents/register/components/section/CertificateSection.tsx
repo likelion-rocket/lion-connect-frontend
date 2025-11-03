@@ -36,7 +36,7 @@ export default function CertificateSection() {
             {index === 0 ? (
               <>
                 {/* 아이콘 */}
-                <div className="w-12 h-12 rounded-[6px] bg-[#F5F5F5] border border-border-quaternary flex items-center justify-center">
+                <div className="w-12 h-12 rounded-md bg-[#F5F5F5] border border-border-quaternary flex items-center justify-center">
                   <Image src="/icons/outline-star.svg" alt="certificate" width={24} height={24} />
                 </div>
                 {/* 타이틀 + 버튼 */}

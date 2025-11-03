@@ -14,6 +14,7 @@ import CareerComponent from "./components/CareerComponent";
 import SkillComponent from "./components/SkillComponent";
 import QualificationComponent from "./components/QualificationComponent";
 import TendencyComponent from "./components/TendencyComponent";
+import PhotoComponent from "./components/PhotoComponent";
 
 export default function RegisterTalent() {
   const router = useRouter();
@@ -70,10 +71,10 @@ export default function RegisterTalent() {
         {/* ✅ 이름 입력값을 위로 올린다 */}
         <IntroComponent onNameChange={setName} />
 
+        <PhotoComponent />
         <CodeRegisterComponent />
         {/* ✅ 간단 소개도 위로 올린다 */}
         <ProfileComponent onIntroChange={setIntro} />
-
         <TendencyComponent />
         <EducationComponent />
         <CareerComponent />

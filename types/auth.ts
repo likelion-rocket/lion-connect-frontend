@@ -5,6 +5,15 @@ export type LoginFormData = {
   rememberMe?: boolean;
 };
 
+// 회원가입 폼 데이터 타입
+export type SignupFormData = {
+  email: string;
+  password: string;
+  confirmPassword: string;
+  phone: string;
+  agreeTerms: boolean;
+};
+
 // API 응답 타입
 export type LoginResponse = {
   success: boolean;
@@ -14,6 +23,17 @@ export type LoginResponse = {
     id: string;
     email: string;
     name: string;
+  };
+};
+
+// 회원가입 API 응답 타입
+export type SignupResponse = {
+  success: boolean;
+  message: string;
+  user?: {
+    id: string;
+    email: string;
+    phone: string;
   };
 };
 

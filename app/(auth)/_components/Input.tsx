@@ -30,11 +30,11 @@ function Input({ className, wrapperClassName, error, type = "text", ref, ...prop
         className={`
           lc-input
           w-full px-4 py-3 rounded-[12px]
-          border border-[#E5E5E5]
+          border border-border-quaternary
           ${error ? "border-border-error!" : ""}
           placeholder-text-tertiary
           text-text-primary
-          bg-[#F7FBFF]
+          bg-bg-primary
           focus:outline-none
           focus:border-blue-base
           hover:border-blue-base

@@ -1,4 +1,6 @@
 import Footer from "@/components/Footer";
+import ScrollToHash from "@/components/ScrollToHash";
+import ScrollToTopButton from "@/components/ScrollToTopButton";
 import { Metadata } from "next";
 import dynamic from "next/dynamic";
 import HeroSection from "./_components/HeroSection";
@@ -16,6 +18,9 @@ export const metadata: Metadata = landingMetadata;
 export default function Home() {
   return (
     <main className="min-h-screen">
+      <ScrollToHash />
+      <ScrollToTopButton />
+
       {/* Hero Section - 페이지 최상단 */}
       <HeroSection />
 

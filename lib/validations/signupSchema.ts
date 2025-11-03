@@ -2,10 +2,6 @@ import { z } from "zod";
 
 export const signupSchema = z
   .object({
-    name: z
-      .string()
-      .min(1, { message: "이름을 입력해주세요" })
-      .min(2, { message: "이름은 최소 2자 이상이어야 합니다" }),
     email: z
       .string()
       .min(1, { message: "이메일을 입력해주세요" })

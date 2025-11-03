@@ -14,7 +14,7 @@ export default function EducationComponent() {
       {/* 아이콘 + 내용 그리드 (이전 컴포넌트들이랑 동일 패턴) */}
       <div className="grid grid-cols-[48px_auto] gap-x-4">
         {/* 왼쪽 아이콘 박스 */}
-        <div className="w-12 h-12 rounded-[6px] bg-[#F5F5F5] border border-border-quaternary flex items-center justify-center">
+        <div className="w-12 h-12 rounded-md bg-[#F5F5F5] border border-border-quaternary flex items-center justify-center">
           <Image src="/icons/outline-library.svg" alt="library" width={24} height={24} />
         </div>
 

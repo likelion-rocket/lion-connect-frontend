@@ -33,7 +33,7 @@ export default function RegisterJob() {
   return (
     <section>
       <div className="grid grid-cols-[48px_auto] gap-x-4">
-        <div className="w-12 h-12 rounded-[6px] bg-[#F5F5F5] border border-border-quaternary flex items-center justify-center">
+        <div className="w-12 h-12 rounded-md bg-[#F5F5F5] border border-border-quaternary flex items-center justify-center">
           <Image src="/icons/outline-clipboard.svg" alt="job" width={24} height={24} />
         </div>
         <div className="flex items-center h-12 text-[16px] font-semibold text-text-primary">
@@ -45,7 +45,7 @@ export default function RegisterJob() {
           {/* 직군 선택 */}
           <div className="flex-1">
             <Select value={selectedJobGroup} onValueChange={setSelectedJobGroup}>
-              <SelectTrigger className="w-full h-[52px] rounded-[6px] bg-[#F5F5F5] border border-border-quaternary justify-between">
+              <SelectTrigger className="w-full h-[52px] rounded-md bg-[#F5F5F5] border border-border-quaternary justify-between">
                 <div className="flex items-center justify-between w-full">
                   <SelectValue placeholder="직군 선택" />
                   <Image
@@ -57,7 +57,7 @@ export default function RegisterJob() {
                   />
                 </div>
               </SelectTrigger>
-              <SelectContent className="bg-white rounded-[6px] border border-border-quaternary">
+              <SelectContent className="bg-white rounded-md border border-border-quaternary">
                 {JOB_KEYS.map((job) => (
                   <SelectItem key={job} value={job}>
                     {job}
@@ -75,7 +75,7 @@ export default function RegisterJob() {
               // 직군 안 고르면 선택 막기
               disabled={!selectedJobGroup}
             >
-              <SelectTrigger className="w-full h-[52px] rounded-[6px] bg-[#F5F5F5] border border-border-quaternary justify-between">
+              <SelectTrigger className="w-full h-[52px] rounded-md bg-[#F5F5F5] border border-border-quaternary justify-between">
                 <div className="flex items-center justify-between w-full">
                   <SelectValue placeholder="직무 선택" />
                   <Image
@@ -87,7 +87,7 @@ export default function RegisterJob() {
                   />
                 </div>
               </SelectTrigger>
-              <SelectContent className="bg-white rounded-[6px] border border-border-quaternary">
+              <SelectContent className="bg-white rounded-md border border-border-quaternary">
                 {(JOB_OPTIONS[selectedJobGroup] ?? []).map((item) => (
                   <SelectItem key={item} value={item}>
                     {item}

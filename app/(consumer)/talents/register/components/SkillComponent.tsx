@@ -31,7 +31,7 @@ export default function SkillComponent() {
       {/* 아이콘 + 설명 */}
       <div className="grid grid-cols-[48px_auto] gap-x-4">
         {/* 왼쪽 아이콘 */}
-        <div className="w-12 h-12 rounded-[6px] bg-[#F5F5F5] border border-border-quaternary flex items-center justify-center">
+        <div className="w-12 h-12 rounded-md bg-[#F5F5F5] border border-border-quaternary flex items-center justify-center">
           <Image src="/icons/outline-code.svg" alt="skill" width={24} height={24} />
         </div>
 

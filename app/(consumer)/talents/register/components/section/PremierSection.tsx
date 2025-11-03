@@ -37,7 +37,7 @@ export default function PremierSection() {
             {/* 첫 줄: 아이콘 + 타이틀 */}
             {index === 0 ? (
               <>
-                <div className="w-12 h-12 rounded-[6px] bg-[#F5F5F5] border border-border-quaternary flex items-center justify-center">
+                <div className="w-12 h-12 rounded-md bg-[#F5F5F5] border border-border-quaternary flex items-center justify-center">
                   <Image src="/icons/outline-star.svg" alt="award" width={24} height={24} />
                 </div>
                 <div className="flex items-center justify-between h-12 text-[16px] font-semibold text-text-primary">

@@ -26,7 +26,7 @@ export default function RegisterLink() {
       {/* 2. 아이콘 + 소제목은 한 번만 */}
       <div className="grid grid-cols-[48px_auto] gap-x-4">
         {/* 아이콘 */}
-        <div className="w-12 h-12 rounded-[6px] bg-[#F5F5F5] border border-border-quaternary flex items-center justify-center">
+        <div className="w-12 h-12 rounded-md bg-[#F5F5F5] border border-border-quaternary flex items-center justify-center">
           <Image src="/icons/outline-paper-clip.svg" alt="link" width={24} height={24} />
         </div>
         {/* 오른쪽 소제목 */}
@@ -42,7 +42,7 @@ export default function RegisterLink() {
                 value={link.value}
                 onChange={(e) => handleChange(link.id, e.target.value)}
                 placeholder="https:// 또는 포트폴리오, 깃허브, 노션 링크를 입력하세요"
-                className="w-full h-12 bg-[#F5F5F5] border border-border-quaternary rounded-[6px] text-[14px]"
+                className="w-full h-12 bg-[#F5F5F5] border border-border-quaternary rounded-md text-[14px]"
               />
             </div>
           ))}

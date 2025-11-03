@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Input from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -11,7 +12,18 @@ const EXPERIENCES = [
   { id: "major", label: "전공자" },
 ];
 
-export default function IntroComponent() {
+type IntroProps = {
+  onNameChange?: (value: string) => void;
+};
+
+export default function IntroComponent({ onNameChange }: IntroProps) {
+  const [name, setName] = useState("");
+
+  // 이름 바뀔 때마다 부모에 알려주기
+  useEffect(() => {
+    onNameChange?.(name);
+  }, [name, onNameChange]);
+
   return (
     <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       {/* 섹션 타이틀 */}
@@ -24,7 +36,7 @@ export default function IntroComponent() {
       {/* 1️⃣ 인적 사항 블록 */}
       <div className="grid grid-cols-[48px_auto] gap-x-4">
         {/* 아이콘 */}
-        <div className="w-12 h-12 rounded-[6px] bg-[#F5F5F5] border border-border-quaternary flex items-center justify-center">
+        <div className="w-12 h-12 rounded-md bg-[#F5F5F5] border border-border-quaternary flex items-center justify-center">
           <Image src="/icons/outline-user-circle.svg" alt="user-circle" width={24} height={24} />
         </div>
 
@@ -46,6 +58,8 @@ export default function IntroComponent() {
                 type="text"
                 placeholder="이름을 입력하세요"
                 className="text-[14px] text-[#1c1c1c]"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
               />
             </div>
 
@@ -67,7 +81,7 @@ export default function IntroComponent() {
       {/* 2️⃣ 관련 경험 선택 블록 */}
       <div className="grid grid-cols-[48px_auto] gap-x-4">
         {/* 아이콘 */}
-        <div className="w-12 h-12 rounded-[6px] bg-[#F5F5F5] border border-border-quaternary flex items-center justify-center">
+        <div className="w-12 h-12 rounded-md bg-[#F5F5F5] border border-border-quaternary flex items-center justify-center">
           <Image src="/icons/outline-pencil-alt.svg" alt="pencil-alt" width={24} height={24} />
         </div>
 

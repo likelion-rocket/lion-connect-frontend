@@ -3,6 +3,7 @@
 import { useRef, useState } from "react";
 import Image from "next/image";
 import Input from "@/components/ui/input";
+import { Plus } from "lucide-react";
 
 export default function PhotoComponent() {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -83,13 +84,14 @@ export default function PhotoComponent() {
             {error && <p className="mt-2 text-[13px] text-[#FF3B30]">{error}</p>}
           </div>
 
-          {/* 업로드 버튼 */}
+          {/* 4. 링크 추가 버튼 */}
+
           <button
             type="button"
             onClick={openFileDialog}
-            className="flex items-center gap-2 text-[#FF6000] hover:opacity-80 font-semibold text-[14px] whitespace-nowrap"
+            className="flex items-center gap-2 text-[#FF6000] hover:opacity-80 font-bold text-[16px] leading-none"
           >
-            <span className="text-[20px] leading-none">+</span>
+            <Plus size={20} className="text-[#FF6000]" />
             <span>사진 파일 업로드</span>
           </button>
         </div>

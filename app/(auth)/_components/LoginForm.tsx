@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation";
 import { loginSchema, LoginSchemaType } from "@/lib/validations/loginSchema";
 import { useLogin } from "@/hooks/useLogin";
 import Image from "next/image";
-import Input from "@/components/inputs/Input";
+import Input from "@/app/(auth)/_components/Input";
 
 /**
  * 로그인 폼 컴포넌트

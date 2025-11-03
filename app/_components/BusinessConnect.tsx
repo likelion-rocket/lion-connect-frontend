@@ -7,7 +7,7 @@ export default function BusinessConnect() {
   const { register, handleSubmit, errors } = useBusinessConnect();
 
   return (
-    <section className="w-full bg-[#F5F5F5] py-20 px-4">
+    <section id="business-connect" className="w-full bg-[#F5F5F5] py-20 px-4">
       <div className="max-w-[960px] mx-auto">
         <h2 className="text-[32px] font-bold text-[#FF5C00] text-center mb-3">
           멋쟁이사자처럼과 함께 어떤 혁신을 이뤄보고 싶으신가요?

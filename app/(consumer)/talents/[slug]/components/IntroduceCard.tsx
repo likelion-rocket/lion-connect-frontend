@@ -99,7 +99,7 @@ export default async function IntroduceCard({
                 <div className="flex items-center gap-10">
                   <span className="text-[#888] w-[72px]">직무/직군</span>
                   <span className="text-[#111] font-medium">
-                    {job ?? "-"} {jobGroup && `/${jobGroup}`}
+                    {jobGroup ?? "-"} {job && `/${job}`}
                   </span>
                 </div>
               )}

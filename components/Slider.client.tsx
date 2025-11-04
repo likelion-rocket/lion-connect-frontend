@@ -1,4 +1,4 @@
-// components/talent/TendencySlider.client.tsx
+// components/talent/Slider.client.tsx
 "use client";
 
 import { useEffect, useRef, useState } from "react";

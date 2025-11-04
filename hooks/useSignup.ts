@@ -3,12 +3,13 @@
 import { useMutation } from "@tanstack/react-query";
 import { SignupFormData, SignupResponse } from "@/types/auth";
 import { signupAPI } from "@/lib/api/auth";
+import { ApiError } from "@/lib/apiClient";
 import { useRouter } from "next/navigation";
 
 /**
  * 회원가입 Mutation 훅 (TanStack Query 기반)
- * - 자동 에러 처리
- * - 자동 재시도
+ * - 자동 에러 처리 (네트워크, 타임아웃, HTTP 에러)
+ * - 조건부 재시도 (네트워크 에러만 재시도)
  * - 로딩 상태 자동 관리
  * - 성공 시 자동 라우팅
  */
@@ -21,23 +22,45 @@ export function useSignup() {
       return result;
     },
     onError: (error: Error) => {
-      // 에러 발생 시 자동으로 처리됨
-      console.error("Signup error:", error.message);
+      // 민감한 정보를 제외한 로깅
+      if (error instanceof ApiError) {
+        console.error("Signup failed:", {
+          code: error.code,
+          statusCode: error.statusCode,
+        });
+      } else {
+        console.error("Signup error:", error.name);
+      }
     },
     onSuccess: (_data: SignupResponse) => {
-      // 회원가입 성공 시 처리
+      // 회원가입 성공 로깅
+      console.log("Signup successful");
+
       // TODO: 성공 메시지 표시 (Toast 등)
 
-      // TODO: 필요시 토큰 저장 또는 환영 메시지 표시
-      // if (_data.token) {
-      //   localStorage.setItem("authToken", _data.token);
+      // 토큰이 있으면 저장 (선택적)
+      // if (data.token) {
+      //   localStorage.setItem("authToken", data.token);
       // }
 
       // 로그인 페이지로 이동
       router.push("/login");
     },
-    retry: 1, // 실패 시 1회 재시도
-    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+    // 조건부 재시도: 네트워크 오류나 타임아웃만 재시도
+    retry: (failureCount, error) => {
+      // 최대 1회 재시도
+      if (failureCount >= 1) return false;
+
+      // ApiError인 경우 에러 코드 확인
+      if (error instanceof ApiError) {
+        // 네트워크 오류나 타임아웃만 재시도
+        return error.code === "NETWORK_ERROR" || error.code === "TIMEOUT";
+      }
+
+      // 기타 에러는 재시도하지 않음
+      return false;
+    },
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 3000),
   });
 
   return {
@@ -47,5 +70,6 @@ export function useSignup() {
     error: mutation.error?.message || null,
     data: mutation.data,
     isSuccess: mutation.isSuccess,
+    reset: mutation.reset,
   };
 }

@@ -46,7 +46,7 @@ export default function ResumeCard({
   certificates,
   links,
   className = "",
-  defaultOpen = true,
+  defaultOpen = false,
 }: ResumeCardProps) {
   return (
     <details

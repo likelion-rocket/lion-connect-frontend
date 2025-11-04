@@ -88,7 +88,7 @@ export default function TalentDetailPage() {
         <ResumeCard {...resumeData} />
       </div>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
-        <PortfolioCard />
+        <PortfolioCard fileName="frontend-portfolio.pdf" fileUrl="/files/frontend-portfolio.pdf" />
       </div>
     </div>
   );

@@ -33,7 +33,7 @@ export default function RegisterTalent() {
     name.trim().length > 0 && intro.trim().length > 0 && portfolioFile.trim().length > 0;
 
   return (
-    <div className="w-full text-black border-b border-border-quaternary mt-8">
+    <div className="w-full text-black mt-8">
       {/* Header */}
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         {/* 왼쪽: 이전 페이지 */}

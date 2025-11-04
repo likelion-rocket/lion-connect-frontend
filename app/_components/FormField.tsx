@@ -8,6 +8,7 @@ type FormFieldProps = {
   required?: boolean;
   type?: "text" | "email" | "tel";
   register: any;
+  className?: string;
 };
 
 export function FormField({
@@ -18,9 +19,10 @@ export function FormField({
   required = false,
   type = "text",
   register,
+  className,
 }: FormFieldProps) {
   return (
-    <div className="bg-white p-6 rounded-lg">
+    <div className={`bg-white p-6 rounded-lg ${className || ""}`}>
       <label className="block text-sm font-medium mb-2">
         {label} {required && <span className="text-[#FF5C00]">*</span>}
       </label>

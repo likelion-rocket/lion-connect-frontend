@@ -2,6 +2,7 @@ import { z } from "zod";
 
 export const businessConnectSchema = z.object({
   companyName: z.string().min(1, "회사명을 입력해주세요."),
+  managerName: z.string().min(1, "담당자명을 입력해주세요."),
   department: z.string().min(1, "부서/직책을 입력해주세요."),
   email: z.string().min(1, "이메일을 입력해주세요.").email("올바른 이메일 형식이 아닙니다."),
   contact: z.string().min(1, "연락처를 입력해주세요."),

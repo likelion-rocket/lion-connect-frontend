@@ -2,6 +2,8 @@ import { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import IntroduceCard from "./components/IntroduceCard";
+import ResumeCard from "./components/ResumeCard";
+import PortfolioCard from "./components/PorfolioCard";
 
 export const metadata: Metadata = {
   title: "탤런트 상세 페이지",
@@ -25,10 +27,10 @@ export default function TalentDetailPage() {
       </div>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
         <IntroduceCard
-          name="유한성"
-          phone="010 0000 0000"
-          email="dfdfds@naver.com"
-          university="한국대"
+          name="이규원"
+          phone="010 5226 9456"
+          email="woni0114@naver.com"
+          university="숭실대"
           major="소프트웨어"
           job="프론트엔드"
           jobGroup="개발"
@@ -52,6 +54,12 @@ export default function TalentDetailPage() {
           ]}
           skills={["JavaScript", "TypeScript", "React", "Next.js", "Tailwind CSS", "Zustand"]}
         />
+      </div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
+        <ResumeCard />
+      </div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
+        <PortfolioCard />
       </div>
     </div>
   );

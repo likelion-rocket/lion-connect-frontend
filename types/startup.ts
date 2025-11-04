@@ -6,4 +6,5 @@ export type Startup = {
   generation: string;
   description: string;
   logoUrl: string;
+  websiteUrl: string;
 };

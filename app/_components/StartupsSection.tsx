@@ -18,6 +18,10 @@ export default function StartupsSection() {
     threshold: 0.2,
   });
 
+  /**
+   * 카드 클릭 시 해당 스타트업 웹사이트로 이동
+   */
+
   return (
     <section className="relative flex flex-col items-center bg-linear-to-b from-white to-brand-01 px-[83px] py-[67px]">
       {/* 제목 및 설명 컨테이너 - 페이드인 + 슬라이드업 */}

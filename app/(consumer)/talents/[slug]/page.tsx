@@ -11,6 +11,35 @@ export const metadata: Metadata = {
 };
 
 export default function TalentDetailPage() {
+  const resumeData = {
+    summary: "문제 해결과 UI/UX 개선에 집중하는 프론트엔드 개발자입니다.",
+    education: {
+      school: "숭실대학교",
+      start: "2018.03",
+      end: "2024.02",
+      major: "소프트웨어",
+      graduate: "졸업",
+      note: "이것저것 했습니다.",
+    },
+    careers: [
+      {
+        company: "OOO 스타트업",
+        start: "2023.01",
+        end: "2024.10",
+        deptOrTeam: "프론트엔드팀",
+        title: "프론트엔드 엔지니어",
+        rank: "인턴",
+        desc: "Next.js 15 + Tailwind 기반의 SPA 구축 및 성능 최적화 담당.",
+      },
+    ],
+    awards: [
+      { title: "해커톤 장려상", start: "2022.07", end: "2022.07", desc: "팀 프로젝트 수행" },
+    ],
+    languages: [{ name: "TOEIC", start: "2020.01", end: "현재" }],
+    certificates: [{ name: "정보처리기사", start: "2022.06", end: "2022.06" }],
+    links: [{ url: "https://github.com/gyuwonlee" }, { url: "https://gyuwon.dev" }],
+  };
+
   return (
     <div className="w-full text-black mt-8">
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
@@ -56,7 +85,7 @@ export default function TalentDetailPage() {
         />
       </div>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
-        <ResumeCard />
+        <ResumeCard {...resumeData} />
       </div>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
         <PortfolioCard />

@@ -11,6 +11,7 @@ export function useBusinessConnect() {
     resolver: zodResolver(businessConnectSchema),
     defaultValues: {
       companyName: "",
+      managerName: "",
       department: "",
       email: "",
       contact: "",

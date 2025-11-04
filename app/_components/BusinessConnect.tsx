@@ -27,6 +27,14 @@ export default function BusinessConnect() {
               register={register}
             />
             <FormField
+              label="담당자명"
+              name="managerName"
+              placeholder="담당자명을 입력해주세요."
+              error={errors.managerName}
+              required
+              register={register}
+            />
+            <FormField
               label="부서/직책"
               name="department"
               placeholder="부서/직책을 입력해주세요."
@@ -51,6 +59,7 @@ export default function BusinessConnect() {
               error={errors.contact}
               required
               register={register}
+              className="md:col-span-2"
             />
           </div>
 

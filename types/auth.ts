@@ -5,13 +5,20 @@ export type LoginFormData = {
   rememberMe?: boolean;
 };
 
-// 회원가입 폼 데이터 타입
+// 회원가입 폼 데이터 타입 (UI용)
 export type SignupFormData = {
   email: string;
   password: string;
   confirmPassword: string;
   phone: string;
   agreeTerms: boolean;
+};
+
+// 회원가입 API 요청 타입 (서버로 전송되는 데이터)
+export type SignupRequestData = {
+  email: string;
+  password: string;
+  phone: string;
 };
 
 // API 응답 타입

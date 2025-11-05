@@ -1,34 +1,44 @@
 import Pager from "@/components/Pager";
+import TalentSearchHeader from "./_components/TalentSearchHeader";
 
 type TalentsPageProps = {
   searchParams?:
     | {
         page?: string;
+        q?: string;
+        group?: string;
+        job?: string;
       }
     | Promise<{
         page?: string;
+        q?: string;
+        group?: string;
+        job?: string;
       }>;
 };
 
 export default async function TalentsPage(props: TalentsPageProps) {
-  // 1) searchParams가 Promise일 수도 있다고 보고 안전하게 처리
   const resolvedSearchParams =
     props.searchParams instanceof Promise ? await props.searchParams : (props.searchParams ?? {});
-
-  // 2) page 문자열 꺼내고 기본값 처리
   const pageParam = resolvedSearchParams.page;
   const currentPage = pageParam ? Number(pageParam) : 1;
 
-  // 3) 페이지네이션 전체 페이지 수 (예시값)
+  // 실제 서비스에선 resolvedSearchParams(q, group, job)를 사용해 서버에서 검색/필터 후 총 인원 계산
   const totalPages = 20;
+  const totalCount = 6; // 스샷 예시값
 
   return (
-    <main className="max-w-7xl mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold text-text-primary mb-6">인재탐색</h1>
-
+    <main className="py-8 flex flex-col gap-10 mx-40">
       <section className="mb-8 space-y-4">
+        <TalentSearchHeader totalCount={totalCount} />
+
         <div className="border border-border-quaternary rounded-lg p-4">
           현재 {currentPage} 페이지 데이터
+          <div className="mt-2 text-sm text-[#666]">
+            (q: <strong>{resolvedSearchParams.q ?? "-"}</strong>, group:{" "}
+            <strong>{resolvedSearchParams.group ?? "-"}</strong>, job:{" "}
+            <strong>{resolvedSearchParams.job ?? "-"}</strong>)
+          </div>
         </div>
       </section>
 

@@ -20,7 +20,7 @@ export default function PorfolioCard({
   return (
     <details
       className={cn(
-        "group w-[910px] mx-auto rounded-2xl border border-border-quaternary bg-white open:bg-white",
+        "group w-[910px] mx-auto rounded-2xl border border-border-quaternary bg-white open:bg-white mb-30",
         className
       )}
       {...(defaultOpen ? { open: true } : {})}

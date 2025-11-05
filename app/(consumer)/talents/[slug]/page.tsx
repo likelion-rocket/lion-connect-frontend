@@ -1,9 +1,9 @@
 import { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
-import IntroduceCard from "./components/IntroduceCard";
-import ResumeCard from "./components/ResumeCard";
-import PortfolioCard from "./components/PorfolioCard";
+import IntroduceCard from "./_components/IntroduceCard";
+import ResumeCard from "./_components/ResumeCard";
+import PortfolioCard from "./_components/PorfolioCard";
 
 export const metadata: Metadata = {
   title: "탤런트 상세 페이지",

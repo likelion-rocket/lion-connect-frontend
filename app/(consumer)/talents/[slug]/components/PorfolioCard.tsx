@@ -1,5 +1,5 @@
-// components/talent/PorfolioCard.tsx
 import React from "react";
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 
 export type PorfolioCardProps = {
@@ -20,7 +20,7 @@ export default function PorfolioCard({
   return (
     <details
       className={cn(
-        "w-[910px] mx-auto rounded-2xl border border-border-quaternary bg-white open:bg-white",
+        "group w-[910px] mx-auto rounded-2xl border border-border-quaternary bg-white open:bg-white",
         className
       )}
       {...(defaultOpen ? { open: true } : {})}
@@ -29,15 +29,30 @@ export default function PorfolioCard({
       <summary className="list-none cursor-pointer">
         <div className="flex items-center justify-between px-6 py-4">
           <h3 className="text-[16px] font-bold text-black">포트폴리오</h3>
-          <div className="h-8 px-3 rounded-md border border-border-quaternary bg-white text-[13px] flex items-center">
-            펼치기/접기
+
+          {/* ▼ 아이콘 전환 */}
+          <div className="relative w-5 h-5">
+            {/* 닫힘(기본) 아이콘 */}
+            <Image
+              src="/icons/outline-cheveron-down.svg"
+              alt="펼치기"
+              fill
+              className="absolute inset-0 transition-opacity duration-150 opacity-100 group-open:opacity-0"
+            />
+            {/* 열림 아이콘 */}
+            <Image
+              src="/icons/outline-cheveron-up.svg"
+              alt="접기"
+              fill
+              className="absolute inset-0 transition-opacity duration-150 opacity-0 group-open:opacity-100"
+            />
           </div>
         </div>
       </summary>
 
       {/* 본문 */}
       <div className="px-6 pb-6">
-        {/* 파일명: 라벨/보더 없이 바로 텍스트만 */}
+        {/* 파일명 */}
         <p
           className={cn(
             "text-[14px] leading-[1.7] break-all mb-3",
@@ -48,7 +63,7 @@ export default function PorfolioCard({
           {fileName || "선택된 파일이 없습니다."}
         </p>
 
-        {/* PDF 미리보기: 파일명 바로 아래에 붙어서 렌더 */}
+        {/* PDF 미리보기 */}
         <div className="w-full rounded-xl border border-border-quaternary bg-white overflow-hidden">
           {fileUrl ? (
             <object
@@ -58,7 +73,6 @@ export default function PorfolioCard({
               style={{ height }}
               aria-label="포트폴리오 PDF 미리보기"
             >
-              {/* object 미지원/차단 시 대체 */}
               <div className="p-4 text-sm text-[#666]">
                 브라우저에서 PDF 미리보기를 지원하지 않습니다.{" "}
                 <a

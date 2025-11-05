@@ -1,5 +1,6 @@
 // components/talent/ResumeCard.tsx
 import IconCard from "./IconCard";
+import Image from "next/image";
 
 export type Education = {
   school: string;
@@ -50,17 +51,28 @@ export default function ResumeCard({
 }: ResumeCardProps) {
   return (
     <details
-      className={`w-[910px] mx-auto rounded-2xl border border-border-quaternary bg-white open:bg-white ${className}`}
+      className={`group w-[910px] mx-auto rounded-2xl border border-border-quaternary bg-white ${className}`}
       {...(defaultOpen ? { open: true } : {})}
     >
-      {/* 헤더 */}
       <summary className="list-none cursor-pointer">
         <div className="flex items-center justify-between px-6 py-4">
-          <div className="flex items-center gap-3">
-            <h3 className="text-[16px] font-bold text-black">이력서</h3>
-          </div>
-          <div className="h-8 px-3 rounded-md border border-border-quaternary bg-white text-[13px] flex items-center">
-            펼치기/접기
+          <h3 className="text-[16px] font-bold text-black">이력서</h3>
+
+          <div className="relative w-5 h-5">
+            {/* 닫힘(기본) 아이콘 */}
+            <Image
+              src="/icons/outline-cheveron-down.svg"
+              alt="펼치기"
+              fill
+              className="absolute inset-0 transition-opacity duration-150 opacity-100 group-open:opacity-0"
+            />
+            {/* 열림 아이콘 */}
+            <Image
+              src="/icons/outline-cheveron-up.svg"
+              alt="접기"
+              fill
+              className="absolute inset-0 transition-opacity duration-150 opacity-0 group-open:opacity-100"
+            />
           </div>
         </div>
       </summary>
@@ -89,7 +101,7 @@ export default function ResumeCard({
             </h4>
           </div>
 
-          <IconCard icon="/icons/outline-library.svg" alt="education">
+          <IconCard icon="/icons/outline-library.svg" alt="education" className="border-0">
             {!education ? (
               <div className="text-[14px] text-[#111]">입력받은 학교명이 뜹니다.</div>
             ) : (
@@ -122,7 +134,12 @@ export default function ResumeCard({
           ) : (
             <div className="space-y-3">
               {careers.map((c, i) => (
-                <IconCard key={i} icon="/icons/solid-briefcase.svg" alt="career">
+                <IconCard
+                  key={i}
+                  icon="/icons/solid-briefcase.svg"
+                  alt="career"
+                  className="border-0"
+                >
                   <div className="text-[14px] font-semibold text-[#111]">{c.company}</div>
 
                   <div className="grid grid-cols-4 gap-6 text-[13px] text-[#444]">
@@ -158,7 +175,7 @@ export default function ResumeCard({
           ) : (
             <div className="space-y-3">
               {awards.map((a, i) => (
-                <IconCard key={i} icon="/icons/solid-star.svg" alt="award">
+                <IconCard key={i} icon="/icons/solid-star.svg" alt="award" className="border-0">
                   <div className="text-[14px] font-medium text-[#111]">{a.title}</div>
                   <div className="text-[13px] text-[#666]">
                     {a.start} - {a.end}
@@ -185,7 +202,7 @@ export default function ResumeCard({
           ) : (
             <div className="space-y-3">
               {languages.map((l, i) => (
-                <IconCard key={i} icon="/icons/solid-globe.svg" alt="language">
+                <IconCard key={i} icon="/icons/solid-globe.svg" alt="language" className="border-0">
                   <div className="grid grid-cols-4 gap-6 text-[13px] text-[#444]">
                     <div className="font-medium">{l.name}</div>
                     <div>{`${l.start} - ${l.end}`}</div>
@@ -213,7 +230,12 @@ export default function ResumeCard({
           ) : (
             <div className="space-y-3">
               {certificates.map((c, i) => (
-                <IconCard key={i} icon="/icons/outline-star.svg" alt="certificate">
+                <IconCard
+                  key={i}
+                  icon="/icons/outline-star.svg"
+                  alt="certificate"
+                  className="border-0"
+                >
                   <div className="grid grid-cols-4 gap-6 text-[13px] text-[#444]">
                     <div className="font-medium">{c.name}</div>
                     <div>{`${c.start} - ${c.end}`}</div>
@@ -241,7 +263,12 @@ export default function ResumeCard({
           ) : (
             <div className="space-y-3">
               {links.map((l, i) => (
-                <IconCard key={i} icon="/icons/outline-paper-clip.svg" alt="link">
+                <IconCard
+                  key={i}
+                  icon="/icons/outline-paper-clip.svg"
+                  alt="link"
+                  className="border-0"
+                >
                   <a
                     href={l.url}
                     target="_blank"

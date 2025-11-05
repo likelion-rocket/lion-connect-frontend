@@ -4,8 +4,8 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { useState } from "react";
 
-import IntroComponent from "@/app/(consumer)/talents/register/_components/IntroComponent";
-import CodeRegisterComponent from "@/app/(consumer)/talents/register/_components/CodeRegisterComponent";
+import IntroComponent from "@/app/(base)/talents/register/_components/IntroComponent";
+import CodeRegisterComponent from "@/app/(base)/talents/register/_components/CodeRegisterComponent";
 import ProfileComponent from "./_components/ProfileComponent";
 import PortfolioComponent from "./_components/PortfolioComponent";
 import LinkRegisterComponent from "./_components/LinkComponent";

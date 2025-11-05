@@ -4,17 +4,17 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { useState } from "react";
 
-import IntroComponent from "@/app/(consumer)/talents/register/components/IntroComponent";
-import CodeRegisterComponent from "@/app/(consumer)/talents/register/components/CodeRegisterComponent";
-import ProfileComponent from "./components/ProfileComponent";
-import PortfolioComponent from "./components/PortfolioComponent";
-import LinkRegisterComponent from "./components/LinkComponent";
-import EducationComponent from "./components/EducationComponent";
-import CareerComponent from "./components/CareerComponent";
-import SkillComponent from "./components/SkillComponent";
-import QualificationComponent from "./components/QualificationComponent";
-import TendencyComponent from "./components/TendencyComponent";
-import PhotoComponent from "./components/PhotoComponent";
+import IntroComponent from "@/app/(consumer)/talents/register/_components/IntroComponent";
+import CodeRegisterComponent from "@/app/(consumer)/talents/register/_components/CodeRegisterComponent";
+import ProfileComponent from "./_components/ProfileComponent";
+import PortfolioComponent from "./_components/PortfolioComponent";
+import LinkRegisterComponent from "./_components/LinkComponent";
+import EducationComponent from "./_components/EducationComponent";
+import CareerComponent from "./_components/CareerComponent";
+import SkillComponent from "./_components/SkillComponent";
+import QualificationComponent from "./_components/QualificationComponent";
+import TendencyComponent from "./_components/TendencyComponent";
+import PhotoComponent from "./_components/PhotoComponent";
 
 export default function RegisterTalent() {
   const router = useRouter();

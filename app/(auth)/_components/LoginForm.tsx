@@ -34,7 +34,7 @@ export default function LoginForm() {
   useEffect(() => {
     if (isSuccess) {
       reset();
-      router.push("/dashboard");
+      router.push("/");
     }
   }, [isSuccess, reset, router]);
 

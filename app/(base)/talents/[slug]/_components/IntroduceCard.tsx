@@ -98,7 +98,7 @@ export default async function IntroduceCard({
               ].join(" ")}
               aria-hidden={viewCount == null}
             >
-              <Image src="/icons/outline-eye.svg" alt="views" width={16} height={16} />
+              <span className="text-[#666]">조회수</span>
               {/* 폭 역동성 줄이려고 tabular-nums + min-w 지정 */}
               <span className="tabular-nums min-w-8 text-center">
                 {(viewCount ?? 0).toLocaleString()}

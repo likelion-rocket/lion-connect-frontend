@@ -3,10 +3,12 @@
  * - 중앙화된 fetch 래퍼
  * - 에러 핸들링 (네트워크 오류, 타임아웃, HTTP 에러)
  * - 요청/응답 인터셉터
- * - 보안 헤더 자동 추가
+ * - Zustand에서 액세스 토큰 자동 추가
+ * - 401 에러 시 자동 토큰 리프레시
  */
 
 import { API_BASE_URL, API_CONFIG, API_ERROR_MESSAGES, HTTP_STATUS } from "@/constants/api";
+import { useAuthStore } from "@/store/authStore";
 
 // API 에러 클래스
 export class ApiError extends Error {
@@ -23,7 +25,27 @@ export class ApiError extends Error {
 // 요청 옵션 타입
 type RequestOptions = RequestInit & {
   timeout?: number;
+  skipAuth?: boolean; // 인증 헤더 스킵 옵션 (로그인/회원가입 등)
 };
+
+// 리프레시 토큰 요청 중 플래그 (중복 방지)
+let isRefreshing = false;
+let refreshSubscribers: ((token: string) => void)[] = [];
+
+/**
+ * 리프레시 완료 후 대기 중인 요청들에게 새 토큰 전달
+ */
+function onRefreshed(token: string) {
+  refreshSubscribers.forEach((callback) => callback(token));
+  refreshSubscribers = [];
+}
+
+/**
+ * 리프레시 대기열에 추가
+ */
+function addRefreshSubscriber(callback: (token: string) => void) {
+  refreshSubscribers.push(callback);
+}
 
 /**
  * 타임아웃 기능이 있는 fetch 래퍼
@@ -112,7 +134,38 @@ async function handleResponseError(response: Response): Promise<never> {
 }
 
 /**
+ * 토큰 리프레시 함수
+ */
+async function refreshAccessToken(): Promise<string> {
+  const response = await fetch(`${API_BASE_URL}/auth/refresh`, {
+    method: "POST",
+    credentials: "include", // 리프레시 토큰 쿠키 포함
+  });
+
+  if (!response.ok) {
+    // 리프레시 실패 시 로그아웃 처리
+    useAuthStore.getState().clearAuth();
+    throw new ApiError("세션이 만료되었습니다. 다시 로그인해주세요.", 401, "REFRESH_FAILED");
+  }
+
+  // Authorization 헤더에서 새 액세스 토큰 추출
+  const authHeader = response.headers.get("Authorization");
+  const newAccessToken = authHeader?.replace("Bearer ", "") || "";
+
+  if (!newAccessToken) {
+    throw new ApiError("토큰 갱신에 실패했습니다.", 401, "NO_ACCESS_TOKEN");
+  }
+
+  // Zustand에 새 토큰 저장
+  useAuthStore.getState().updateAccessToken(newAccessToken);
+
+  return newAccessToken;
+}
+
+/**
  * API 요청을 보내는 범용 함수
+ * - Zustand에서 액세스 토큰 자동 추가
+ * - 401 에러 시 자동 토큰 리프레시 및 재시도
  */
 export async function apiRequest<T>(endpoint: string, options: RequestOptions = {}): Promise<T> {
   // URL 구성 (endpoint가 절대 경로인 경우 그대로 사용, 상대 경로인 경우 BASE_URL 추가)
@@ -123,11 +176,11 @@ export async function apiRequest<T>(endpoint: string, options: RequestOptions = 
     "Content-Type": "application/json",
   };
 
-  // 토큰이 있으면 Authorization 헤더 추가
-  if (typeof window !== "undefined") {
-    const token = localStorage.getItem("authToken");
-    if (token) {
-      headers["Authorization"] = `Bearer ${token}`;
+  // Zustand에서 액세스 토큰 가져와서 Authorization 헤더 추가
+  if (!options.skipAuth) {
+    const accessToken = useAuthStore.getState().accessToken;
+    if (accessToken) {
+      headers["Authorization"] = `Bearer ${accessToken}`;
     }
   }
 
@@ -145,7 +198,63 @@ export async function apiRequest<T>(endpoint: string, options: RequestOptions = 
     const response = await fetchWithTimeout(url, {
       ...options,
       headers,
+      credentials: "include", // 리프레시 토큰 쿠키 포함
     });
+
+    // 401 Unauthorized 처리 (토큰 만료)
+    if (response.status === HTTP_STATUS.UNAUTHORIZED && !options.skipAuth) {
+      // 이미 리프레시 중이면 대기
+      if (isRefreshing) {
+        return new Promise((resolve, reject) => {
+          addRefreshSubscriber((token: string) => {
+            // 새 토큰으로 재시도
+            headers["Authorization"] = `Bearer ${token}`;
+            fetchWithTimeout(url, { ...options, headers, credentials: "include" })
+              .then((retryResponse) => {
+                if (retryResponse.ok) {
+                  return retryResponse.json();
+                }
+                return handleResponseError(retryResponse);
+              })
+              .then(resolve)
+              .catch(reject);
+          });
+        });
+      }
+
+      // 리프레시 시작
+      isRefreshing = true;
+
+      try {
+        const newAccessToken = await refreshAccessToken();
+        isRefreshing = false;
+        onRefreshed(newAccessToken);
+
+        // 새 토큰으로 원래 요청 재시도
+        headers["Authorization"] = `Bearer ${newAccessToken}`;
+        const retryResponse = await fetchWithTimeout(url, {
+          ...options,
+          headers,
+          credentials: "include",
+        });
+
+        if (!retryResponse.ok) {
+          await handleResponseError(retryResponse);
+        }
+
+        // 204 No Content 처리
+        if (retryResponse.status === HTTP_STATUS.NO_CONTENT) {
+          return {} as T;
+        }
+
+        const data = await retryResponse.json();
+        return data as T;
+      } catch (refreshError) {
+        isRefreshing = false;
+        refreshSubscribers = [];
+        throw refreshError;
+      }
+    }
 
     // 응답 상태 확인
     if (!response.ok) {

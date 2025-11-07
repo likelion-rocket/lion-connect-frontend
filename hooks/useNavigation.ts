@@ -64,7 +64,8 @@ export function useNavigation(navLinks: NavLink[]) {
         width: 0,
       });
     }
-  }, [pathname, currentHash, navLinks]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname, currentHash]);
 
   /**
    * 네비게이션 클릭 핸들러

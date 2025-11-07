@@ -22,14 +22,17 @@ export type SignupRequestData = {
 };
 
 // API 응답 타입
+// 백엔드에서 액세스 토큰은 Authorization 헤더로, 리프레시 토큰은 HttpOnly 쿠키로 전달
 export type LoginResponse = {
   success: boolean;
   message: string;
-  token?: string;
-  user?: {
-    id: string;
+  accessToken: string; // Authorization 헤더에서 추출
+  user: {
+    id: number;
     email: string;
-    name: string;
+    phoneNumber: string | null;
+    phoneVerified: boolean;
+    roles: string[];
   };
 };
 

@@ -3,20 +3,28 @@
 import { useMutation } from "@tanstack/react-query";
 import { LoginFormData, LoginResponse } from "@/types/auth";
 import { loginAPI } from "@/lib/api/auth";
+import { useAuthStore } from "@/store/authStore";
 
 /**
  * 로그인 Mutation 훅 (TanStack Query 기반)
  * - 자동 에러 처리
  * - 자동 재시도
  * - 로딩 상태 자동 관리
- * - 낙관적 업데이트 지원
+ * - Zustand에 액세스 토큰 및 사용자 정보 저장
+ *
+ * 보안 개선사항:
+ * - 액세스 토큰: Zustand 메모리에 저장 (sessionStorage persist)
+ * - 리프레시 토큰: 백엔드에서 HttpOnly 쿠키로 설정
+ * - XSS 공격 시에도 리프레시 토큰은 완전히 보호됨
  */
 export function useLogin() {
+  const setAuth = useAuthStore((state) => state.setAuth);
+
   const mutation = useMutation({
     mutationFn: async (data: LoginFormData) => {
       const result = await loginAPI(data);
 
-      // rememberMe 처리
+      // rememberMe 처리 (이메일만 localStorage에 저장)
       if (data.rememberMe) {
         localStorage.setItem("rememberEmail", data.email);
       } else {
@@ -30,13 +38,11 @@ export function useLogin() {
       console.error("Login error:", error.message);
     },
     onSuccess: (data: LoginResponse) => {
-      // 로그인 성공 시 처리
+      // 로그인 성공 시 Zustand에 토큰과 사용자 정보 저장
       console.log("Login success:", data.message);
 
-      // TODO: 토큰 저장
-      // if (data.token) {
-      //   localStorage.setItem("authToken", data.token);
-      // }
+      // Zustand store에 액세스 토큰과 사용자 정보 저장
+      setAuth(data.accessToken, data.user);
     },
     retry: 1, // 실패 시 1회 재시도
     retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),

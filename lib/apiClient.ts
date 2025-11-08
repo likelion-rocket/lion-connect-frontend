@@ -7,7 +7,13 @@
  * - 401 에러 시 자동 토큰 리프레시
  */
 
-import { API_BASE_URL, API_CONFIG, API_ERROR_MESSAGES, HTTP_STATUS } from "@/constants/api";
+import {
+  API_BASE_URL,
+  API_CONFIG,
+  API_ERROR_MESSAGES,
+  HTTP_STATUS,
+  API_ENDPOINTS,
+} from "@/constants/api";
 import { useAuthStore } from "@/store/authStore";
 
 // API 에러 클래스
@@ -29,7 +35,7 @@ type RequestOptions = RequestInit & {
 };
 
 // 리프레시 토큰 요청 중 플래그 (중복 방지)
-let isRefreshing = false;
+let isRefreshing: boolean = false;
 let refreshSubscribers: ((token: string) => void)[] = [];
 
 /**
@@ -137,7 +143,7 @@ async function handleResponseError(response: Response): Promise<never> {
  * 토큰 리프레시 함수
  */
 async function refreshAccessToken(): Promise<string> {
-  const response = await fetch(`${API_BASE_URL}/auth/refresh`, {
+  const response = await fetch(`${API_BASE_URL}${API_ENDPOINTS.AUTH.REFRESH_TOKEN}`, {
     method: "POST",
     credentials: "include", // 리프레시 토큰 쿠키 포함
   });

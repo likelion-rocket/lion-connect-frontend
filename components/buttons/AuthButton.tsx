@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuthStore } from "@/store/authStore";
 import { useLogout } from "@/hooks/useLogout";
 
 type AuthButtonProps = {
@@ -14,7 +14,7 @@ type AuthButtonProps = {
  * - 로그인 후: "로그아웃" 버튼
  */
 export default function AuthButton({ className = "" }: AuthButtonProps) {
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated } = useAuthStore();
   const { logout, isLoading } = useLogout();
 
   const defaultClassName =

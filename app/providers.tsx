@@ -1,6 +1,7 @@
 "use client";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { useInitializeAuth } from "@/hooks/useInitializeAuth";
 import { ReactNode } from "react";
 
 /**
@@ -17,9 +18,26 @@ const queryClient = new QueryClient({
 });
 
 /**
+ * 앱 초기화 컴포넌트
+ * - 페이지 새로고침 후 토큰 복구
+ */
+function InitializeApp() {
+  useInitializeAuth();
+  return null;
+}
+
+/**
  * QueryClientProvider 컴포넌트
  * 앱 최상단에서 감싸서 전체 앱에서 TanStack Query 사용 가능
+ *
+ * 추가 기능:
+ * - InitializeApp 컴포넌트로 앱 초기화 (토큰 복구)
  */
 export function Providers({ children }: { children: ReactNode }) {
-  return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
+  return (
+    <QueryClientProvider client={queryClient}>
+      <InitializeApp />
+      {children}
+    </QueryClientProvider>
+  );
 }

@@ -4,15 +4,15 @@ import Link from "next/link";
 import AuthButton from "./buttons/AuthButton";
 import Image from "next/image";
 import { useNavigation, NavLink } from "@/hooks/useNavigation";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuthStore } from "@/store/authStore";
 import { UserRole } from "@/lib/rbac";
 
 /**
  * 네비게이션 링크 타입 확장 (역할 기반 접근 제어)
  */
-interface RoleBasedNavLink extends NavLink {
+type RoleBasedNavLink = NavLink & {
   requiredRoles?: UserRole[]; // 이 링크를 볼 수 있는 역할들 (없으면 모두 볼 수 있음)
-}
+};
 
 /**
  * 네비게이션 링크 정의
@@ -35,7 +35,7 @@ const navLinks: RoleBasedNavLink[] = [
  * - 역할 기반 네비게이션 표시/숨김
  */
 export default function Header() {
-  const { user } = useAuth();
+  const { user } = useAuthStore();
   const userRoles = user?.roles;
 
   // 사용자 역할에 따라 표시할 링크 필터링

@@ -68,8 +68,8 @@ export async function loginAPI(data: LoginFormData): Promise<LoginResponse> {
  * @throws ApiError - API 요청 실패 시
  *
  * 백엔드에서:
- * - 리프레시 토큰 세션 삭제
- * - 리프레시 토큰 쿠키 삭제
+ * - HttpOnly 쿠키에 저장된 리프레시 토큰 삭제
+ * - 클라이언트에서는 Zustand 저장소의 액세스 토큰 및 사용자 정보 삭제
  */
 export async function logoutAPI(): Promise<{ success: boolean; message: string }> {
   return post(
@@ -99,4 +99,50 @@ export async function signupAPI(data: SignupFormData): Promise<SignupResponse> {
   };
 
   return post<SignupResponse>(API_ENDPOINTS.AUTH.SIGNUP, requestData, { skipAuth: true });
+}
+
+/**
+ * 토큰 복구 API 호출 (페이지 새로고침 또는 브라우저 재시작 후 액세스 토큰 복구)
+ *
+ * 목적: 앱 초기화 시 한 번만 호출 (useInitializeAuth 훅에서)
+ * - HttpOnly 쿠키의 리프레시 토큰으로 새 액세스 토큰 발급
+ * - 사용자 정보는 localStorage에서 자동 복구됨 (Zustand persist)
+ * - 성공 시: 응답 body의 accessToken 반환
+ * - 실패 시: 에러 발생 (리프레시 토큰 없음 또는 만료)
+ *
+ * 상태 복구 흐름:
+ * 1. localStorage에서 user 자동 복구 (Zustand persist)
+ * 2. recoverTokenAPI() 호출 → HttpOnly 쿠키의 리프레시 토큰으로 새 accessToken 발급
+ * 3. updateAccessToken(accessToken)으로 상태 업데이트
+ *
+ * 응답 형식:
+ * - 요청: HttpOnly 쿠키의 refreshToken 자동 포함 (백엔드가 읽음)
+ * - 응답 body: { accessToken: "..." }
+ *
+ * @returns 액세스 토큰 문자열
+ * @throws Error - 리프레시 토큰 없음 또는 만료된 경우
+ */
+export async function recoverTokenAPI(): Promise<string> {
+  const response = await fetch(`${API_BASE_URL}${API_ENDPOINTS.AUTH.REFRESH_TOKEN}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include", // HttpOnly 리프레시 토큰 쿠키 포함
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.message || "세션 복구에 실패했습니다");
+  }
+
+  // 응답 body에서 accessToken 추출
+  const responseData = await response.json();
+  const accessToken = responseData.accessToken;
+
+  if (!accessToken) {
+    throw new Error("액세스 토큰을 받지 못했습니다");
+  }
+
+  return accessToken;
 }

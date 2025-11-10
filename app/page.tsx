@@ -5,6 +5,7 @@ import { Metadata } from "next";
 import dynamic from "next/dynamic";
 import HeroSection from "./_components/HeroSection";
 import { landingMetadata } from "./seo";
+import Banner from "./_components/Banner";
 
 const BenefitsSection = dynamic(() => import("./_components/BenefitsSection"));
 const ProgramStatsSection = dynamic(() => import("./_components/ProgramStatsSection"));
@@ -31,6 +32,7 @@ export default function Home() {
         <UniversityGridSection />
         <StartupsSection />
         <CompanyLogosSection />
+        <Banner />
       </article>
 
       {/* CTA Section */}

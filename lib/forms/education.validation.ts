@@ -1,6 +1,7 @@
 // lib/forms/education.validation.ts
 import { parseYYYYMMRange } from "@/lib/date/ym";
 import type { EducationRequest } from "@/lib/api/educations";
+import { koToEnum } from "@/lib/education/statusMap";
 
 export type EducationFormState = {
   schoolName: string;
@@ -73,14 +74,15 @@ export function buildEducationPayload(
 
   const { startDate, endDate } = parseYYYYMMRange(f.periodText) ?? {};
 
-  const statusCode = normalizeStatusToCode(f.status);
   const trimOrUndef = (s: string) => (s?.trim() ? s.trim() : undefined);
+  // ✅ status는 한글/영문 모두 허용하되, 서버로는 enum으로 보냄
+  const statusEnum = koToEnum(f.status) ?? koToEnum(f.status.toUpperCase()) ?? undefined;
 
   return {
     shouldSubmit: true,
     payload: {
       schoolName: f.schoolName.trim(),
-      status: statusCode, // ✅ 서버 enum 코드로 전송
+      ...(statusEnum ? { status: statusEnum } : {}), // 인식 못하면 아예 빼서 400 방지
       major: trimOrUndef(f.major),
       description: trimOrUndef(f.description),
       ...(startDate && { startDate }),

@@ -20,8 +20,10 @@ import PhotoComponent from "./_components/PhotoComponent";
 import { useEducationSection } from "@/hooks/useEducationSection";
 import { createEducation } from "@/lib/api/educations";
 import { useMyProfile } from "@/hooks/useMyProfile";
+import { useMyEducations } from "@/hooks/useMyEducation";
 import { createProfile, updateMyProfile, type ProfileRequest } from "@/lib/api/profiles";
 import { ApiError } from "@/lib/apiClient";
+import { enumToKo } from "@/lib/education/statusMap";
 
 export default function RegisterTalent() {
   const router = useRouter();
@@ -36,29 +38,78 @@ export default function RegisterTalent() {
   // 학력 섹션 훅
   const edu = useEducationSection();
 
-  // 내 프로필 호출 (로그인 안되면 내부에서 호출 X)
+  // 내 프로필 / 학력 호출
   const { data: myProfile } = useMyProfile();
+  const { data: myEducations } = useMyEducations(); // ✅ 추가
 
-  // ✅ 같은 값이면 state를 갱신하지 않는 no-op setter
+  // ===== 프로필 프리필 =====
   const setNameSafe = (v: string) => setName((prev) => (prev === v ? prev : v));
   const setIntroSafe = (v: string) => setIntro((prev) => (prev === v ? prev : v));
   const setPortfolioFileSafe = (v: string) => setPortfolioFile((prev) => (prev === v ? prev : v));
   const setLikelionCodeSafe = (v: string) => setLikelionCode((prev) => (prev === v ? prev : v));
 
-  // ✅ 프리필은 계정별 1회만 수행
-  const prefilledRef = useRef(false);
+  const prefilledProfileRef = useRef(false);
   useEffect(() => {
     if (!myProfile) return;
-    if (prefilledRef.current) return; // 이미 프리필 했으면 스킵
+    if (prefilledProfileRef.current) return;
 
-    // 비어있는 필드만 채우기 + 동일값이면 no-op setter가 막아줌
     if (!name.trim()) setNameSafe(myProfile.name ?? "");
     if (!intro.trim()) setIntroSafe(myProfile.introduction ?? "");
     if (!portfolioFile.trim()) setPortfolioFileSafe(myProfile.storageUrl ?? "");
     if (!likelionCode.trim()) setLikelionCodeSafe(myProfile.likelionCode ?? "");
 
-    prefilledRef.current = true;
-  }); // 의도적으로 state deps 미포함(1회 프리필)
+    prefilledProfileRef.current = true;
+  }); // 의도적으로 state deps 제외
+
+  // ===== 학력 프리필 =====
+  // YYYY-MM-DD -> YYYY.MM 로 바꾸는 헬퍼
+  const fmtYM = (d?: string | null) => {
+    if (!d) return "";
+    // d: "YYYY-MM-DD"
+    const [y, m] = d.split("-");
+    if (!y || !m) return "";
+    return `${y}.${m}`;
+  };
+
+  const prefilledEduRef = useRef(false);
+  useEffect(() => {
+    if (!myEducations || myEducations.length === 0) return; // 학력 없음 → 스킵
+    if (prefilledEduRef.current) return;
+
+    // 가장 최근(업데이트 최신) 항목 하나 선택
+    const sorted = [...myEducations].sort((a, b) =>
+      (b.updatedAt || "").localeCompare(a.updatedAt || "")
+    );
+    const e = sorted[0];
+
+    // 현재 폼 값이 비어있는 항목만 채움 (사용자 입력 보호)
+    const next = { ...edu.form };
+
+    if (!next.schoolName.trim()) next.schoolName = e.schoolName ?? "";
+    if (!next.status.trim()) next.status = enumToKo(e.status) || ""; // ✅ 한글로 표시
+    if (!next.major.trim()) next.major = e.major ?? "";
+    if (!next.description.trim()) next.description = e.description ?? "";
+
+    if (!next.periodText.trim()) {
+      const s = fmtYM(e.startDate);
+      const t = fmtYM(e.endDate);
+      // endDate 없으면 오른쪽 비워둠
+      next.periodText = s || t ? `${s} - ${t}` : "";
+    }
+
+    // 실제 반영 (변경 없으면 no-op)
+    if (
+      next.schoolName !== edu.form.schoolName ||
+      next.status !== edu.form.status ||
+      next.major !== edu.form.major ||
+      next.description !== edu.form.description ||
+      next.periodText !== edu.form.periodText
+    ) {
+      edu.setForm(next);
+    }
+
+    prefilledEduRef.current = true;
+  }); // edu.form을 deps에 넣지 않음(1회 프리필 보장)
 
   const handleGoBack = () => router.back();
 
@@ -75,7 +126,6 @@ export default function RegisterTalent() {
         ...(likelionCode.trim() ? { likelionCode: likelionCode.trim() } : {}),
       };
 
-      // ✅ myProfile이 있고, 최소 하나라도 값이 존재하면 "수정(PUT)"
       const hasExistingProfile =
         !!myProfile &&
         !!(
@@ -141,7 +191,6 @@ export default function RegisterTalent() {
 
       {/* 본문 */}
       <main className="py-8 flex flex-col gap-10 mx-40">
-        {/* 자식에 "값 + 변경함수" 전달 (UI 그대로) */}
         <IntroComponent name={name} onNameChange={setNameSafe} />
         <PhotoComponent />
         <CodeRegisterComponent code={likelionCode} onCodeChange={setLikelionCodeSafe} />

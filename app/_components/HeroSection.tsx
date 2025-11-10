@@ -134,7 +134,7 @@ export default function HeroSection({
         aria-label="다음 섹션으로 스크롤"
       >
         <Image
-          src="/landing/outline-cheveron-down-gray.svg"
+          src="/landing/icons/outline-cheveron-down-gray.svg"
           alt="Scroll Down"
           width={32}
           height={32}

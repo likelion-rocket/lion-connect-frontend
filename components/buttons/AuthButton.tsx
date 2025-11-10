@@ -18,19 +18,16 @@ export default function AuthButton({ className = "" }: AuthButtonProps) {
   const { logout, isLoading } = useLogout();
 
   const defaultClassName =
-    "bg-brand-01 text-text-accent px-6 py-2 rounded-full border border-border-accent hover:bg-brand-02 transition-colors font-medium";
+    "w-32 h-9 px-4 py-2 bg-accent rounded-lg inline-flex justify-center items-center gap-2 text-text-inverse-primary text-sm font-semibold hover:opacity-90 transition-opacity";
 
   const buttonClassName = className || defaultClassName;
 
   // 로그인된 경우 로그아웃 버튼
   if (isAuthenticated) {
     return (
-      <>
-        {/* 로그아웃 버튼 */}
-        <button onClick={() => logout()} disabled={isLoading} className={buttonClassName}>
-          {isLoading ? "로그아웃 중..." : "로그아웃"}
-        </button>
-      </>
+      <button onClick={() => logout()} disabled={isLoading} className={buttonClassName}>
+        {isLoading ? "로그아웃 중..." : "로그아웃"}
+      </button>
     );
   }
 

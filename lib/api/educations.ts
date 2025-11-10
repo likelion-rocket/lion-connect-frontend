@@ -1,5 +1,5 @@
 // lib/api/educations.ts
-import { post, get } from "@/lib/apiClient";
+import { post, get, put } from "@/lib/apiClient";
 import { API_ENDPOINTS } from "@/constants/api";
 
 export type EducationRequest = {
@@ -38,6 +38,13 @@ export function createEducation(body: EducationRequest): Promise<EducationRespon
 /** ✅ 내 학력 목록 조회 (GET /api/profile/educations) */
 export function fetchMyEducations(): Promise<EducationListItem[]> {
   return get<EducationListItem[]>(API_ENDPOINTS.EDUCATIONS.LIST, {
+    credentials: "include",
+  });
+}
+
+/** ✅ 학력 수정 (PUT /api/profile/educations/{id}) */
+export function updateEducation(id: number, body: EducationRequest): Promise<EducationResponse> {
+  return put<EducationResponse>(API_ENDPOINTS.EDUCATIONS.UPDATE(id), body, {
     credentials: "include",
   });
 }

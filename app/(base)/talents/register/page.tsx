@@ -18,7 +18,7 @@ import TendencyComponent from "./_components/TendencyComponent";
 import PhotoComponent from "./_components/PhotoComponent";
 
 import { useEducationSection } from "@/hooks/useEducationSection";
-import { createEducation } from "@/lib/api/educations";
+import { createEducation, updateEducation } from "@/lib/api/educations";
 import { useMyProfile } from "@/hooks/useMyProfile";
 import { useMyEducations } from "@/hooks/useMyEducation";
 import { createProfile, updateMyProfile, type ProfileRequest } from "@/lib/api/profiles";
@@ -143,8 +143,39 @@ export default function RegisterTalent() {
         console.log(`[프로필] 등록 완료 id=${created.id}`);
       }
 
+      const coreFilled =
+        edu.form.schoolName.trim() &&
+        edu.form.periodText.trim() &&
+        edu.form.status.trim() &&
+        edu.form.major.trim();
+
+      const coreEmpty =
+        !edu.form.schoolName.trim() &&
+        !edu.form.periodText.trim() &&
+        !edu.form.status.trim() &&
+        !edu.form.major.trim() &&
+        !edu.form.description.trim();
+
       const built = edu.validateAndBuild();
-      if (built !== null && built.shouldSubmit) {
+
+      // 서버에 이미 학력이 1개 있다고 가정 → 첫 항목 id 사용
+      const existingEduId = myEducations?.[0]?.id;
+
+      if (coreFilled && existingEduId && built && "shouldSubmit" in built && built.shouldSubmit) {
+        // ✅ 모두 채워져 있고 기존 학력이 있으면 수정(put)
+        const res = await updateEducation(existingEduId, built.payload);
+        console.log(`[학력] 수정 완료 id=${res.id}`);
+      } else if (coreEmpty) {
+        // ✅ 전부 빈칸이면 생성(post) — 서버가 허용하지 않으면 무시됨
+        // 안전장치: build 실패(날짜 파싱 등)면 넘기지 않음
+        if (built && "shouldSubmit" in built && built.shouldSubmit) {
+          const res = await createEducation(built.payload);
+          console.log(`[학력] 등록 완료 id=${res.id}`);
+        } else {
+          console.log("[학력] 전부 빈칸 + 유효 payload 없음 → 생성 스킵");
+        }
+      } else if (built && "shouldSubmit" in built && built.shouldSubmit) {
+        // 그 외 케이스: 기존 로직대로 입력이 있으면 생성(post)
         const res = await createEducation(built.payload);
         console.log(`[학력] 등록 완료 id=${res.id}`);
       } else {

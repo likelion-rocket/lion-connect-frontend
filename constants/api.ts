@@ -33,7 +33,7 @@ export const API_ENDPOINTS = {
     // DELETE: (id: number | string) => `/profile/educations/${id}`,
   },
   PROFILES: {
-    CREATE: "/api/profile/me", // ✅ 여기 추가
+    CREATE: "/profile/me", // ✅ 여기 추가
   },
 } as const;
 

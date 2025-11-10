@@ -29,11 +29,13 @@ export default function HeroSection({
   }, []);
 
   const scrollToNextSection = () => {
-    const heroHeight = window.innerHeight;
-    window.scrollTo({
-      top: heroHeight,
-      behavior: "smooth",
-    });
+    const benefitsSection = document.getElementById("benefits-section");
+    if (benefitsSection) {
+      benefitsSection.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }
   };
 
   return (

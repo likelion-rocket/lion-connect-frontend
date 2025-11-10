@@ -1,6 +1,6 @@
+// app/(base)/talents/register/_components/IntroComponent.tsx
 "use client";
 
-import { useState, useEffect } from "react";
 import Image from "next/image";
 import Input from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -13,45 +13,32 @@ const EXPERIENCES = [
 ];
 
 type IntroProps = {
+  name: string; // ✅ 부모가 내려주는 값
   onNameChange?: (value: string) => void;
 };
 
-export default function IntroComponent({ onNameChange }: IntroProps) {
-  const [name, setName] = useState("");
-
-  // 이름 바뀔 때마다 부모에 알려주기
-  useEffect(() => {
-    onNameChange?.(name);
-  }, [name, onNameChange]);
-
+export default function IntroComponent({ name, onNameChange }: IntroProps) {
   return (
     <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      {/* 섹션 타이틀 */}
       <div className="mb-8">
         <div className="text-[18px] font-bold text-text-primary mb-4 flex items-center gap-1">
           <span>인적 사항</span>
         </div>
       </div>
 
-      {/* 1️⃣ 인적 사항 블록 */}
       <div className="grid grid-cols-[48px_auto] gap-x-4">
-        {/* 아이콘 */}
         <div className="w-12 h-12 rounded-md bg-[#F5F5F5] border border-border-quaternary flex items-center justify-center">
           <Image src="/icons/outline-user-circle.svg" alt="user-circle" width={24} height={24} />
         </div>
 
-        {/* 타이틀 */}
         <div className="flex items-center justify-between h-12 text-[16px] font-semibold text-text-primary">
           <span>이름</span>
         </div>
 
-        {/* 아이콘 자리 채움용 */}
         <div />
 
-        {/* 인풋 세트 */}
         <div className="mt-4 mb-6">
           <div className="flex items-center justify-start gap-20">
-            {/* 이름 */}
             <div className="flex items-center gap-4">
               <Image src="/icons/outline-user.svg" alt="user" width={20} height={20} />
               <Input
@@ -59,17 +46,15 @@ export default function IntroComponent({ onNameChange }: IntroProps) {
                 placeholder="이름을 입력하세요"
                 className="text-[14px] text-[#1c1c1c]"
                 value={name}
-                onChange={(e) => setName(e.target.value)}
+                onChange={(e) => onNameChange?.(e.target.value)}
               />
             </div>
 
-            {/* 전화번호 */}
             <div className="flex items-center gap-4">
               <Image src="/icons/outline-phone.svg" alt="phone" width={20} height={20} />
               <span className="text-[14px] text-[#9CA3AF] font-normal">010 0000 0000</span>
             </div>
 
-            {/* 이메일 */}
             <div className="flex items-center gap-4">
               <Image src="/icons/outline-mail.svg" alt="mail" width={20} height={20} />
               <span className="text-[14px] text-[#9CA3AF] font-normal">email@gmail.com</span>
@@ -78,22 +63,14 @@ export default function IntroComponent({ onNameChange }: IntroProps) {
         </div>
       </div>
 
-      {/* 2️⃣ 관련 경험 선택 블록 */}
       <div className="grid grid-cols-[48px_auto] gap-x-4">
-        {/* 아이콘 */}
         <div className="w-12 h-12 rounded-md bg-[#F5F5F5] border border-border-quaternary flex items-center justify-center">
           <Image src="/icons/outline-pencil-alt.svg" alt="pencil-alt" width={24} height={24} />
         </div>
-
-        {/* 타이틀 */}
         <div className="flex items-center justify-between h-12 text-[16px] font-semibold text-text-primary">
           <span>관련 경험 선택</span>
         </div>
-
-        {/* 아이콘 자리 채움용 */}
         <div />
-
-        {/* 체크박스 */}
         <div className="mt-4 mb-2 flex flex-wrap gap-[140px]">
           {EXPERIENCES.map((item) => (
             <label

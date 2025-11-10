@@ -1,5 +1,5 @@
 // lib/api/profiles.ts
-import { post, get } from "@/lib/apiClient";
+import { post, get, put } from "@/lib/apiClient";
 import { API_ENDPOINTS } from "@/constants/api";
 
 /** ✅ 요청 타입 */
@@ -36,5 +36,15 @@ export function createProfile(body: ProfileRequest): Promise<ProfileResponse> {
 export function fetchMyProfile(): Promise<ProfileResponse> {
   return get<ProfileResponse>(API_ENDPOINTS.PROFILES.GET, {
     credentials: "include", // 세션/쿠키로 인증한다면 유지
+  });
+}
+
+/** ✅ 내 프로필 수정 (PUT /api/profile/me) */
+export function updateMyProfile(body: ProfileRequest): Promise<ProfileResponse> {
+  const cleanBody = { ...body };
+  if (!cleanBody.likelionCode) delete cleanBody.likelionCode;
+
+  return put<ProfileResponse>(API_ENDPOINTS.PROFILES.UPDATE, cleanBody, {
+    credentials: "include", // 세션/쿠키 기반이면 유지
   });
 }

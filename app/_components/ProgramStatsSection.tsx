@@ -131,7 +131,7 @@ export default function ProgramStatsSection() {
   // 멋사대학 통계 데이터
   const universityStats: StatItemProps[] = [
     { value: "13년", label: "시작된 지" },
-    { value: "11,947명", label: "출신 학생 수" },
+    { value: "14,000명", label: "출신 학생 수" },
     { value: "1,800개", label: "누적 프로젝트 수" },
   ];
 
@@ -143,7 +143,7 @@ export default function ProgramStatsSection() {
   ];
 
   return (
-    <section className="w-full py-28 bg-linear-to-b from-white to-orange-50 flex justify-center items-start">
+    <section className="w-full min-w-[1444px] py-28 bg-linear-to-b from-white to-orange-50 flex justify-center items-start">
       <div className="w-full max-w-[1443px] px-20 flex flex-col justify-start items-center gap-12">
         {/* Header Section */}
         <div ref={headerRef} className="flex flex-col justify-start items-center gap-20">

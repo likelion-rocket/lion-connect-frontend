@@ -30,10 +30,10 @@ const termsLinks = [
 
 export default function Footer() {
   return (
-    <footer className="w-full bg-bg-quaternary border-t border-border-secondary">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <footer className="w-full min-w-[1444px] bg-bg-quaternary border-t border-border-secondary">
+      <div className="max-w-7xl mx-auto px-8 py-12">
         {/* Logo and Links Section */}
-        <div className="flex flex-col md:flex-row justify-between gap-8 mb-8">
+        <div className="flex justify-between gap-8 mb-8">
           {/* Logo */}
           <div className="shrink-0">
             <Link href="/" className="flex items-center gap-2">
@@ -78,7 +78,7 @@ export default function Footer() {
         </div>
 
         {/* Terms Links */}
-        <div className="flex flex-wrap gap-4 mb-6 text-xs text-text-tertiary">
+        <div className="flex gap-4 mb-6 text-xs text-text-tertiary">
           {termsLinks.map((link, index) => (
             <span key={link.href} className="flex items-center gap-4">
               <Link href={link.href} className="hover:text-text-secondary transition-colors">

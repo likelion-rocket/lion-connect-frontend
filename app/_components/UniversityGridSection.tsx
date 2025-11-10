@@ -106,7 +106,7 @@ export default function UniversityGridSection() {
   const hasMore = filteredUniversities.length > 28;
 
   return (
-    <section className="w-full py-28 bg-white flex justify-center items-start">
+    <section className="w-full min-w-[1444px] py-28 bg-white flex justify-center items-start">
       <div className="w-full max-w-[1280px] px-20 flex flex-col justify-start items-center gap-16">
         {/* Header Section - 페이드인 + 슬라이드업 */}
         <div ref={headerRef} className="flex flex-col justify-start items-center gap-4">

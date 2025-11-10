@@ -36,25 +36,24 @@ function BenefitCard({
   return (
     <div
       ref={cardRef}
-      className={`w-full px-4 py-6 sm:px-8 sm:py-10 md:px-16 md:py-12 lg:px-24 lg:py-16 xl:px-[80px] xl:py-[80px]
-        flex flex-col gap-6 sm:gap-10 md:gap-12 lg:gap-16 xl:gap-[80px]
-        lg:flex-row lg:justify-center lg:items-center
-        ${imagePosition === "right" ? "lg:flex-row-reverse" : ""}`}
+      className={`w-full px-[80px] py-[80px] flex gap-[80px] justify-center items-center ${
+        imagePosition === "right" ? "flex-row-reverse" : ""
+      }`}
     >
       {/* 텍스트 영역 - 페이드인 + 슬라이드업 */}
       <div
-        className={`flex flex-col gap-6 sm:gap-8 md:gap-10 lg:gap-12 xl:gap-[48px] w-full lg:w-auto lg:flex-1 lg:max-w-[463px]
-          transition-all duration-1000 ease-out
-          ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
+        className={`flex flex-col gap-[48px] flex-1 max-w-[463px] transition-all duration-1000 ease-out ${
+          isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+        }`}
         style={{
-          transitionDelay: `${100 + index * 100}ms`, // 순차 등장 (카드별 지연)
+          transitionDelay: `${100 + index * 100}ms`,
         }}
       >
         {/* 타이틀 - 순차 등장 */}
         <h3
-          className={`text-text-primary text-2xl sm:text-3xl md:text-4xl lg:text-4xl xl:text-[36px] font-bold leading-tight xl:leading-tight
-            transition-all duration-1000 ease-out
-            ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}
+          className={`text-text-primary text-[36px] font-bold leading-tight transition-all duration-1000 ease-out ${
+            isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
+          }`}
           style={{
             transitionDelay: `${200 + index * 100}ms`,
           }}
@@ -64,9 +63,9 @@ function BenefitCard({
 
         {/* 설명 - 타이틀보다 늦게 등장 */}
         <p
-          className={`text-text-primary text-sm sm:text-base md:text-base lg:text-base xl:text-base font-normal leading-relaxed xl:leading-normal whitespace-pre-line
-            transition-all duration-1000 ease-out
-            ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}
+          className={`text-text-primary text-base font-normal leading-normal whitespace-pre-line transition-all duration-1000 ease-out ${
+            isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
+          }`}
           style={{
             transitionDelay: `${400 + index * 100}ms`,
           }}
@@ -77,10 +76,9 @@ function BenefitCard({
 
       {/* 이미지 영역 - 줌인 + 페이드인 */}
       <div
-        className={`w-full h-[280px] sm:h-[340px] md:h-[380px] lg:w-[500px] lg:h-[350px] xl:w-[600px] xl:h-[420px]
-          relative rounded-lg overflow-hidden shrink-0
-          transition-all duration-1000 ease-out
-          ${isVisible ? "opacity-100 scale-100" : "opacity-0 scale-95"}`}
+        className={`w-[600px] h-[420px] relative rounded-lg overflow-hidden shrink-0 transition-all duration-1000 ease-out ${
+          isVisible ? "opacity-100 scale-100" : "opacity-0 scale-95"
+        }`}
         style={{
           transitionDelay: `${300 + index * 100}ms`,
         }}
@@ -92,7 +90,7 @@ function BenefitCard({
           className={`object-cover transition-transform duration-1200 ease-out ${
             isVisible ? "scale-100" : "scale-110"
           }`}
-          sizes="(max-width: 768px) 100vw, (max-width: 1024px) 500px, 600px"
+          sizes="600px"
           style={{
             transitionDelay: `${300 + index * 100}ms`,
           }}
@@ -137,14 +135,14 @@ function BenefitsSection() {
   ];
 
   return (
-    <section className="w-full max-w-[1443px] mx-auto pt-12 sm:pt-16 md:pt-20 lg:pt-24 xl:pt-28 bg-bg-primary flex flex-col justify-start items-start">
-      <div className="self-stretch flex flex-col justify-start items-center gap-8 sm:gap-12 md:gap-16 lg:gap-20">
+    <section className="w-full min-w-[1444px] max-w-[1443px] mx-auto pt-28 bg-bg-primary flex flex-col justify-start items-start">
+      <div className="self-stretch flex flex-col justify-start items-center gap-20">
         {/* Section Title - 페이드인 + 슬라이드업 애니메이션 */}
         <h2
           ref={titleRef}
-          className={`self-stretch px-4 text-center text-text-accent text-2xl sm:text-3xl lg:text-4xl font-bold leading-tight
-            transition-all duration-1000 ease-out
-            ${isTitleVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
+          className={`self-stretch text-center text-text-accent text-4xl font-bold leading-tight transition-all duration-1000 ease-out ${
+            isTitleVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+          }`}
         >
           왜 라이언 커넥트를 사용해야 할까요?
         </h2>

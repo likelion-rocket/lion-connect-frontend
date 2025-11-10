@@ -108,9 +108,15 @@ export default function HeroSection({
         >
           <Link
             href="/talents"
-            className="h-12 px-6 bg-bg-accent rounded-full inline-flex items-center justify-center hover:opacity-90 transition-opacity text-text-inverse-primary text-lg font-semibold leading-7"
+            className="h-12 gap-4 px-6 bg-bg-accent rounded-full inline-flex items-center justify-center hover:opacity-90 transition-opacity text-text-inverse-primary text-lg font-semibold leading-7"
           >
-            인재 탐색 시작하기
+            <span>인재 탐색 시작하기</span>
+            <Image
+              src="/landing/icons/outline-arrow-right.svg"
+              alt="Arrow"
+              width={16}
+              height={16}
+            />
           </Link>
           <button className="h-12 px-8 bg-white/10 rounded-full outline-[0.80px] outline-offset-[-0.80px] outline-white/30 inline-flex justify-center items-center hover:bg-white/20 transition-colors text-text-inverse-primary text-lg font-semibold leading-7">
             기업 문의하기

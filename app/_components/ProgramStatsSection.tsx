@@ -167,7 +167,7 @@ export default function ProgramStatsSection() {
                     ${isHeaderVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
                   style={{ transitionDelay: "300ms" }}
                 >
-                  멋사 부트캠프, 멋사 대학 출신 학생 수 누적 25,000명 +
+                  멋사 부트캠프, 멋사 대학 출신 학생 수 누적 29,000명 +
                 </h2>
               </div>
 

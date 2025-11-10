@@ -20,7 +20,7 @@ import PhotoComponent from "./_components/PhotoComponent";
 import { useEducationSection } from "@/hooks/useEducationSection";
 import { createEducation } from "@/lib/api/educations";
 import { useMyProfile } from "@/hooks/useMyProfile";
-import { createProfile } from "@/lib/api/profiles";
+import { createProfile, updateMyProfile, type ProfileRequest } from "@/lib/api/profiles";
 import { ApiError } from "@/lib/apiClient";
 
 export default function RegisterTalent() {
@@ -68,15 +68,30 @@ export default function RegisterTalent() {
   const handleSubmitAll = async (): Promise<void> => {
     try {
       startTransition(() => {});
-      const payload = {
+      const payload: ProfileRequest = {
         name: name.trim(),
         introduction: intro.trim(),
         storageUrl: portfolioFile.trim(),
         ...(likelionCode.trim() ? { likelionCode: likelionCode.trim() } : {}),
       };
 
-      const profileRes = await createProfile(payload);
-      console.log(`[프로필] 등록 완료 id=${profileRes.id}`);
+      // ✅ myProfile이 있고, 최소 하나라도 값이 존재하면 "수정(PUT)"
+      const hasExistingProfile =
+        !!myProfile &&
+        !!(
+          myProfile.name ||
+          myProfile.introduction ||
+          myProfile.storageUrl ||
+          myProfile.likelionCode
+        );
+
+      if (hasExistingProfile) {
+        const updated = await updateMyProfile(payload);
+        console.log(`[프로필] 수정 완료 id=${updated.id}`);
+      } else {
+        const created = await createProfile(payload);
+        console.log(`[프로필] 등록 완료 id=${created.id}`);
+      }
 
       const built = edu.validateAndBuild();
       if (built !== null && built.shouldSubmit) {

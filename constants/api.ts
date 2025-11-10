@@ -34,6 +34,7 @@ export const API_ENDPOINTS = {
   },
   PROFILES: {
     CREATE: "/profile/me", // ✅ 여기 추가
+    GET: "/profile/me", // GET
   },
 } as const;
 

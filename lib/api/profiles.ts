@@ -1,5 +1,5 @@
 // lib/api/profiles.ts
-import { post } from "@/lib/apiClient";
+import { post, get } from "@/lib/apiClient";
 import { API_ENDPOINTS } from "@/constants/api";
 
 /** ✅ 요청 타입 */
@@ -29,5 +29,12 @@ export function createProfile(body: ProfileRequest): Promise<ProfileResponse> {
   return post<ProfileResponse>(API_ENDPOINTS.PROFILES.CREATE, body, {
     // 세션 기반 인증이라면 유지
     credentials: "include",
+  });
+}
+
+// Swagger: GET /api/profile/me
+export function fetchMyProfile(): Promise<ProfileResponse> {
+  return get<ProfileResponse>(API_ENDPOINTS.PROFILES.GET, {
+    credentials: "include", // 세션/쿠키로 인증한다면 유지
   });
 }

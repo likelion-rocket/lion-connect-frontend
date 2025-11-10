@@ -5,11 +5,11 @@ import Image from "next/image";
 import Input from "@/components/ui/input";
 
 type Props = {
-  code?: string;
+  code: string; // ✅ 필수로 받도록
   onCodeChange?: (v: string) => void;
 };
 
-export default function CodeRegisterComponent({ code = "", onCodeChange }: Props) {
+export default function CodeRegisterComponent({ code, onCodeChange }: Props) {
   return (
     <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="text-[18px] font-bold text-text-primary mb-8">

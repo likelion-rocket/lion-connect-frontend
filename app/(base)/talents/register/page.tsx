@@ -3,7 +3,7 @@
 
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 
 import IntroComponent from "./_components/IntroComponent";
 import CodeRegisterComponent from "./_components/CodeRegisterComponent";
@@ -19,6 +19,7 @@ import PhotoComponent from "./_components/PhotoComponent";
 
 import { useEducationSection } from "@/hooks/useEducationSection";
 import { createEducation } from "@/lib/api/educations";
+import { useMyProfile } from "@/hooks/useMyProfile";
 import { createProfile } from "@/lib/api/profiles";
 import { ApiError } from "@/lib/apiClient";
 
@@ -35,6 +36,30 @@ export default function RegisterTalent() {
   // 학력 섹션 훅
   const edu = useEducationSection();
 
+  // 내 프로필 호출 (로그인 안되면 내부에서 호출 X)
+  const { data: myProfile } = useMyProfile();
+
+  // ✅ 같은 값이면 state를 갱신하지 않는 no-op setter
+  const setNameSafe = (v: string) => setName((prev) => (prev === v ? prev : v));
+  const setIntroSafe = (v: string) => setIntro((prev) => (prev === v ? prev : v));
+  const setPortfolioFileSafe = (v: string) => setPortfolioFile((prev) => (prev === v ? prev : v));
+  const setLikelionCodeSafe = (v: string) => setLikelionCode((prev) => (prev === v ? prev : v));
+
+  // ✅ 프리필은 계정별 1회만 수행
+  const prefilledRef = useRef(false);
+  useEffect(() => {
+    if (!myProfile) return;
+    if (prefilledRef.current) return; // 이미 프리필 했으면 스킵
+
+    // 비어있는 필드만 채우기 + 동일값이면 no-op setter가 막아줌
+    if (!name.trim()) setNameSafe(myProfile.name ?? "");
+    if (!intro.trim()) setIntroSafe(myProfile.introduction ?? "");
+    if (!portfolioFile.trim()) setPortfolioFileSafe(myProfile.storageUrl ?? "");
+    if (!likelionCode.trim()) setLikelionCodeSafe(myProfile.likelionCode ?? "");
+
+    prefilledRef.current = true;
+  }); // 의도적으로 state deps 미포함(1회 프리필)
+
   const handleGoBack = () => router.back();
 
   const isComplete =
@@ -43,18 +68,16 @@ export default function RegisterTalent() {
   const handleSubmitAll = async (): Promise<void> => {
     try {
       startTransition(() => {});
-      // 1) 프로필
       const payload = {
         name: name.trim(),
         introduction: intro.trim(),
         storageUrl: portfolioFile.trim(),
-        ...(likelionCode.trim() ? { likelionCode: likelionCode.trim() } : {}), // ✅ 값 있을 때만 포함
+        ...(likelionCode.trim() ? { likelionCode: likelionCode.trim() } : {}),
       };
 
       const profileRes = await createProfile(payload);
       console.log(`[프로필] 등록 완료 id=${profileRes.id}`);
 
-      // 2) 학력 (있으면)
       const built = edu.validateAndBuild();
       if (built !== null && built.shouldSubmit) {
         const res = await createEducation(built.payload);
@@ -62,9 +85,6 @@ export default function RegisterTalent() {
       } else {
         console.log("[학력] 입력 없음 → 스킵");
       }
-
-      // 완료 후 이동(원하는 경로로 조정)
-      // router.push(`/talents/${profileRes.id}`); // slug 기반이면 바꾸기
     } catch (err) {
       if (err instanceof ApiError) {
         console.log(`${err.message}${err.statusCode ? ` (code ${err.statusCode})` : ""}`);
@@ -106,10 +126,11 @@ export default function RegisterTalent() {
 
       {/* 본문 */}
       <main className="py-8 flex flex-col gap-10 mx-40">
-        <IntroComponent onNameChange={setName} />
+        {/* 자식에 "값 + 변경함수" 전달 (UI 그대로) */}
+        <IntroComponent name={name} onNameChange={setNameSafe} />
         <PhotoComponent />
-        <CodeRegisterComponent code={likelionCode} onCodeChange={setLikelionCode} />
-        <ProfileComponent onIntroChange={setIntro} />
+        <CodeRegisterComponent code={likelionCode} onCodeChange={setLikelionCodeSafe} />
+        <ProfileComponent intro={intro} onIntroChange={setIntroSafe} />
         <TendencyComponent />
 
         <EducationComponent
@@ -130,7 +151,7 @@ export default function RegisterTalent() {
         <SkillComponent />
         <QualificationComponent />
         <LinkRegisterComponent />
-        <PortfolioComponent onFileSelect={setPortfolioFile} />
+        <PortfolioComponent fileName={portfolioFile} onFileSelect={setPortfolioFileSafe} />
       </main>
     </div>
   );

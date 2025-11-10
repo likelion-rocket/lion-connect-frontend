@@ -32,6 +32,9 @@ export const API_ENDPOINTS = {
     // UPDATE: (id: number | string) => `/profile/educations/${id}`,
     // DELETE: (id: number | string) => `/profile/educations/${id}`,
   },
+  PROFILES: {
+    CREATE: "/api/profile/me", // ✅ 여기 추가
+  },
 } as const;
 
 // HTTP 메서드

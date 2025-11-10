@@ -19,18 +19,20 @@ import PhotoComponent from "./_components/PhotoComponent";
 
 import { useEducationSection } from "@/hooks/useEducationSection";
 import { createEducation } from "@/lib/api/educations";
+import { createProfile } from "@/lib/api/profiles";
 import { ApiError } from "@/lib/apiClient";
 
 export default function RegisterTalent() {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
 
-  // 상단 3개
+  // 상단 3개 + 인재 코드
   const [name, setName] = useState("");
   const [intro, setIntro] = useState("");
   const [portfolioFile, setPortfolioFile] = useState("");
+  const [likelionCode, setLikelionCode] = useState("");
 
-  // ✅ 학력 섹션 훅
+  // 학력 섹션 훅
   const edu = useEducationSection();
 
   const handleGoBack = () => router.back();
@@ -41,15 +43,28 @@ export default function RegisterTalent() {
   const handleSubmitAll = async (): Promise<void> => {
     try {
       startTransition(() => {});
-      const built = edu.validateAndBuild();
+      // 1) 프로필
+      const payload = {
+        name: name.trim(),
+        introduction: intro.trim(),
+        storageUrl: portfolioFile.trim(),
+        ...(likelionCode.trim() ? { likelionCode: likelionCode.trim() } : {}), // ✅ 값 있을 때만 포함
+      };
 
-      if (built === null) return; // 에러 → 화면에 표시됨
-      if (built.shouldSubmit) {
+      const profileRes = await createProfile(payload);
+      console.log(`[프로필] 등록 완료 id=${profileRes.id}`);
+
+      // 2) 학력 (있으면)
+      const built = edu.validateAndBuild();
+      if (built !== null && built.shouldSubmit) {
         const res = await createEducation(built.payload);
         console.log(`[학력] 등록 완료 id=${res.id}`);
       } else {
         console.log("[학력] 입력 없음 → 스킵");
       }
+
+      // 완료 후 이동(원하는 경로로 조정)
+      // router.push(`/talents/${profileRes.id}`); // slug 기반이면 바꾸기
     } catch (err) {
       if (err instanceof ApiError) {
         console.log(`${err.message}${err.statusCode ? ` (code ${err.statusCode})` : ""}`);
@@ -82,11 +97,7 @@ export default function RegisterTalent() {
             disabled={!isComplete || pending}
             onClick={handleSubmitAll}
             className={`px-4 py-2 rounded-md text-sm font-semibold border border-border-quaternary transition
-              ${
-                isComplete && !pending
-                  ? "bg-[#FF6000] text-white hover:opacity-90"
-                  : "bg-[#E5E7EB] text-[#9CA3AF] cursor-not-allowed"
-              }`}
+              ${isComplete && !pending ? "bg-[#FF6000] text-white hover:opacity-90" : "bg-[#E5E7EB] text-[#9CA3AF] cursor-not-allowed"}`}
           >
             {pending ? "작성 중..." : "작성 완료"}
           </button>
@@ -97,7 +108,7 @@ export default function RegisterTalent() {
       <main className="py-8 flex flex-col gap-10 mx-40">
         <IntroComponent onNameChange={setName} />
         <PhotoComponent />
-        <CodeRegisterComponent />
+        <CodeRegisterComponent code={likelionCode} onCodeChange={setLikelionCode} />
         <ProfileComponent onIntroChange={setIntro} />
         <TendencyComponent />
 
@@ -112,7 +123,6 @@ export default function RegisterTalent() {
           onChangeMajor={edu.onChangeMajor}
           description={edu.form.description}
           onChangeDescription={edu.onChangeDescription}
-          // 에러 전달
           errors={edu.errors}
         />
 

@@ -46,14 +46,14 @@ export default function SignupForm() {
           <Input
             id="email"
             type="email"
-            placeholder="00000@email.com"
+            placeholder="이메일을 입력해주세요."
             error={!!errors.email}
             {...register("email")}
           />
         </div>
         {errors.email && <p className="text-xs text-text-secondary">*{errors.email.message}</p>}
         {!errors.email && (
-          <p className="text-sm text-text-secondary">*기업에게 스카우트 받을 이메일을 입력하세요</p>
+          <p className="text-sm text-brand-05">*기업에게 스카우트 받을 이메일을 입력하세요</p>
         )}
       </div>
 
@@ -61,6 +61,7 @@ export default function SignupForm() {
       <PasswordInput
         id="password"
         label="비밀번호"
+        placeholder="비밀번호를 입력해주세요."
         error={errors.password}
         register={register("password")}
       />
@@ -69,6 +70,7 @@ export default function SignupForm() {
       <PasswordInput
         id="confirmPassword"
         label="비밀번호 확인"
+        placeholder="비밀번호를 한번 더 입력해주세요."
         error={errors.confirmPassword}
         register={register("confirmPassword")}
       />
@@ -86,6 +88,9 @@ export default function SignupForm() {
           {...register("phone")}
         />
         {errors.phone && <p className="text-sm text-text-error">{errors.phone.message}</p>}
+        {!errors.phone && (
+          <p className="text-sm text-brand-05">*기업에게 스카우트 받을 전화번호를 입력하세요</p>
+        )}
       </div>
 
       {/* 이용약관 동의 체크박스 */}

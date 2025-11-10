@@ -53,7 +53,7 @@ export default function LoginForm() {
         <Input
           id="email"
           type="email"
-          placeholder="Example@email.com"
+          placeholder="이메일을 입력해주세요."
           error={!!errors.email}
           {...register("email")}
         />
@@ -69,7 +69,7 @@ export default function LoginForm() {
           <Input
             id="password"
             type={showPassword ? "text" : "password"}
-            placeholder="password"
+            placeholder="비밀번호를 입력해주세요."
             error={!!errors.password}
             className="pr-12"
             {...register("password")}

@@ -96,7 +96,7 @@ export default function EducationComponent({
         <div className="mb-3 flex gap-4 w-full">
           <div className="w-full">
             <Input
-              placeholder="졸업 상태"
+              placeholder="졸업 상태(졸업,수료,재학)"
               type="text"
               className={`w-full ${errors.status ? "border-red-500" : ""}`}
               value={status}

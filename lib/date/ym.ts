@@ -1,32 +1,32 @@
 // lib/date/ym.ts
-/** "2025", "11" -> "2025-11-01" */
-export function ymToYYYYMMDD(year: string, month: string) {
-  const y = (year || "").trim();
-  const m = (month || "").trim().padStart(2, "0");
-  return `${y}-${m}-01`;
-}
+// "YYYY.MM - YYYY.MM" 또는 "YYYY.MM - 재학|현재"를 파싱해
+// startDate = 해당월 1일, endDate = 해당월 말일(또는 재학/현재면 undefined)로 반환
+export function parseYYYYMMRange(text: string): { startDate: string; endDate?: string } | null {
+  const raw = (text || "").trim();
+  const m =
+    raw.match(/^(\d{4})\.(\d{2})\s*-\s*(\d{4})\.(\d{2})$/) ||
+    raw.match(/^(\d{4})\.(\d{2})\s*-\s*(재학|현재)$/);
 
-/** 개월 수 차이(음수 방지) */
-export function diffInMonths(aYYYYMM: [string, string], bYYYYMM: [string, string]) {
-  const [ay, am] = aYYYYMM.map((v) => parseInt(v || "0", 10));
-  const [by, bm] = bYYYYMM.map((v) => parseInt(v || "0", 10));
-  if (!ay || !am || !by || !bm) return 0;
-  return Math.max(0, (by - ay) * 12 + (bm - am));
-}
-
-/** 0개월 -> "0년 0개월" */
-export function monthsToKorLabel(total: number) {
-  const y = Math.floor(total / 12);
-  const m = total % 12;
-  return `${y}년 ${m}개월`;
-}
-
-export function parseYYYYMMRange(input: string) {
-  // 허용 포맷: "2021.03 - 2025.02" (공백 유연)
-  const m = input.match(/^\s*(\d{4})\.(\d{2})\s*-\s*(\d{4})\.(\d{2})\s*$/);
   if (!m) return null;
-  const [, sy, sm, ey, em] = m;
-  const startDate = `${sy}-${sm}-01`;
-  const endDate = `${ey}-${em}-01`; // 일(day)은 01로 고정
-  return { startDate, endDate };
+
+  const toStart = (y: string, mm: string) => `${y}-${mm}-01`;
+  const toEnd = (y: string, mm: string) => {
+    const year = Number(y);
+    const month = Number(mm); // 1~12
+    const last = new Date(year, month, 0).getDate(); // 다음달 0일 = 말일
+    const two = (n: number) => (n < 10 ? `0${n}` : `${n}`);
+    return `${y}-${mm}-${two(last)}`;
+  };
+
+  // case 1: YYYY.MM - YYYY.MM
+  if (m.length === 5) {
+    const [, y1, m1, y2, m2] = m;
+    return { startDate: toStart(y1, m1), endDate: toEnd(y2, m2) };
+  }
+  // case 2: YYYY.MM - 재학|현재
+  if (m.length === 4) {
+    const [, y1, m1] = m;
+    return { startDate: toStart(y1, m1), endDate: undefined };
+  }
+  return null;
 }

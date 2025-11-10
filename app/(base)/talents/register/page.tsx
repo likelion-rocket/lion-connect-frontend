@@ -17,7 +17,7 @@ import QualificationComponent from "./_components/QualificationComponent";
 import TendencyComponent from "./_components/TendencyComponent";
 import PhotoComponent from "./_components/PhotoComponent";
 
-import { buildEducationPayload } from "@/lib/forms/buildEducation";
+import { useEducationSection } from "@/hooks/useEducationSection";
 import { createEducation } from "@/lib/api/educations";
 import { ApiError } from "@/lib/apiClient";
 
@@ -30,102 +30,22 @@ export default function RegisterTalent() {
   const [intro, setIntro] = useState("");
   const [portfolioFile, setPortfolioFile] = useState("");
 
-  // 학력 폼 상태
-  const [eduSchoolName, setEduSchoolName] = useState("");
-  const [eduPeriodText, setEduPeriodText] = useState("");
-  const [eduStatus, setEduStatus] = useState("");
-  const [eduMajor, setEduMajor] = useState("");
-  const [eduDescription, setEduDescription] = useState("");
-
-  // page.tsx
-  const [eduErrors, setEduErrors] = useState<{
-    schoolName?: string;
-    periodText?: string;
-    status?: string;
-    major?: string;
-    // description은 선택값으로 둘게요(원하면 이것도 필수로 바꿔줄 수 있어요)
-  }>({});
+  // ✅ 학력 섹션 훅
+  const edu = useEducationSection();
 
   const handleGoBack = () => router.back();
 
   const isComplete =
     name.trim().length > 0 && intro.trim().length > 0 && portfolioFile.trim().length > 0;
 
-  // 간단 검증 헬퍼
-  const validateEducation = () => {
-    const errors: {
-      schoolName?: string;
-      periodText?: string;
-      status?: string;
-      major?: string;
-      description?: string;
-    } = {};
-
-    const anyInput =
-      !!eduSchoolName.trim() ||
-      !!eduPeriodText.trim() ||
-      !!eduStatus.trim() ||
-      !!eduMajor.trim() ||
-      !!eduDescription.trim();
-
-    if (!anyInput) {
-      // 입력 없음 → 에러 없음
-      return errors;
-    }
-
-    if (!eduSchoolName.trim()) {
-      errors.schoolName = "학교명을 입력해주세요.";
-    }
-
-    if (eduPeriodText.trim()) {
-      const ok = /^\s*\d{4}\.\d{2}\s*-\s*\d{4}\.\d{2}\s*$/.test(eduPeriodText);
-      if (!ok) {
-        errors.periodText = "재학 기간은 'YYYY.MM - YYYY.MM' 형식으로 입력해주세요.";
-      }
-    }
-
-    if (!eduPeriodText.trim()) {
-      errors.periodText = "재학 날짜를 입력해주세요.";
-    }
-
-    // 필수값: 졸업 여부(status)
-    if (!eduStatus.trim()) {
-      errors.status = "졸업 상태를 입력해주세요.";
-    }
-
-    // 필수값: 전공(major)
-    if (!eduMajor.trim()) {
-      errors.major = "전공을 입력해주세요.";
-    }
-    if (!eduDescription.trim()) {
-      errors.description = "활동 내용을 입력해주세요.";
-    }
-
-    return errors;
-  };
-
   const handleSubmitAll = async (): Promise<void> => {
     try {
       startTransition(() => {});
+      const built = edu.validateAndBuild();
 
-      // ✅ 1) 에러 계산
-      const errors = validateEducation();
-      setEduErrors(errors);
-
-      // 에러가 있으면 제출 중단
-      if (Object.keys(errors).length > 0) return;
-
-      // ✅ 2) 선택 섹션 빌더로 payload 생성/스킵 판단
-      const eduResult = buildEducationPayload({
-        schoolName: eduSchoolName,
-        periodText: eduPeriodText,
-        status: eduStatus,
-        major: eduMajor,
-        description: eduDescription,
-      });
-
-      if (eduResult.shouldSubmit) {
-        const res = await createEducation(eduResult.payload);
+      if (built === null) return; // 에러 → 화면에 표시됨
+      if (built.shouldSubmit) {
+        const res = await createEducation(built.payload);
         console.log(`[학력] 등록 완료 id=${res.id}`);
       } else {
         console.log("[학력] 입력 없음 → 스킵");
@@ -139,24 +59,6 @@ export default function RegisterTalent() {
         console.log("알 수 없는 오류가 발생했습니다.");
       }
     }
-  };
-
-  // ✅ 인풋 변경 시 해당 에러 즉시 제거
-  const onSchoolName = (v: string) => {
-    setEduSchoolName(v);
-    if (eduErrors.schoolName) setEduErrors((e) => ({ ...e, schoolName: undefined }));
-  };
-  const onPeriodText = (v: string) => {
-    setEduPeriodText(v);
-    if (eduErrors.periodText) setEduErrors((e) => ({ ...e, periodText: undefined }));
-  };
-  const onStatus = (v: string) => {
-    setEduStatus(v);
-    if (eduErrors.status) setEduErrors((e) => ({ ...e, status: undefined }));
-  };
-  const onMajor = (v: string) => {
-    setEduMajor(v);
-    if (eduErrors.major) setEduErrors((e) => ({ ...e, major: undefined }));
   };
 
   return (
@@ -200,17 +102,18 @@ export default function RegisterTalent() {
         <TendencyComponent />
 
         <EducationComponent
-          schoolName={eduSchoolName}
-          onChangeSchoolName={onSchoolName}
-          periodText={eduPeriodText}
-          onChangePeriodText={onPeriodText}
-          status={eduStatus}
-          onChangeStatus={onStatus}
-          major={eduMajor}
-          onChangeMajor={onMajor}
-          description={eduDescription}
-          onChangeDescription={setEduDescription}
-          errors={eduErrors}
+          schoolName={edu.form.schoolName}
+          onChangeSchoolName={edu.onChangeSchoolName}
+          periodText={edu.form.periodText}
+          onChangePeriodText={edu.onChangePeriodText}
+          status={edu.form.status}
+          onChangeStatus={edu.onChangeStatus}
+          major={edu.form.major}
+          onChangeMajor={edu.onChangeMajor}
+          description={edu.form.description}
+          onChangeDescription={edu.onChangeDescription}
+          // 에러 전달
+          errors={edu.errors}
         />
 
         <CareerComponent />

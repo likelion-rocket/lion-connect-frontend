@@ -54,8 +54,8 @@ export default function Header() {
   const { navRefs, indicatorStyle, handleNavClick, isLinkActive } = useNavigation(visibleLinks);
 
   return (
-    <header className="w-full min-w-[1444px] bg-bg-primary py-3">
-      <nav className="max-w-7xl mx-auto px-8 h-16 flex items-center justify-between">
+    <header className="w-full  bg-bg-primary py-3">
+      <nav className="max-w-7xl min-w-[1444px] mx-auto px-8 h-16 flex items-center justify-between">
         {/* Logo */}
         <Link href="/" className="shrink-0 flex items-center gap-2">
           <Image

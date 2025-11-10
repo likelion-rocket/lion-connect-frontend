@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 export default function SignUpPage() {
   return (
     <>
-      <main className="min-h-screen flex flex-col items-center justify-center bg-bg-primary px-4 py-8">
+      <main className=" h-[1000px] flex flex-col items-center justify-center bg-bg-primary px-4 py-8">
         {/* 제목 및 설명 섹션 */}
         <div className="w-96 mb-12">
           <div className="space-y-8 mb-8">
@@ -36,7 +36,7 @@ export default function SignUpPage() {
           로그인으로 돌아가기
         </Link>
 
-        <p className="text-center text-base text-text-tertiary mt-auto mb-8">
+        <p className="text-center text-base text-text-tertiary mt-auto mb-4">
           © 2025 ALL RIGHTS RESERVED
         </p>
       </main>

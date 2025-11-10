@@ -7,7 +7,7 @@ export default function BusinessConnect() {
   const { register, handleSubmit, errors } = useBusinessConnect();
 
   return (
-    <section id="business-connect" className="w-full bg-[#F5F5F5] py-20 px-4">
+    <section id="business-connect" className="w-full min-w-[1444px] bg-[#F5F5F5] py-20">
       <div className="max-w-[960px] mx-auto">
         <h2 className="text-[32px] font-bold text-[#FF5C00] text-center mb-3">
           멋쟁이사자처럼과 함께 어떤 혁신을 이뤄보고 싶으신가요?
@@ -17,7 +17,7 @@ export default function BusinessConnect() {
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-2 gap-6">
             <FormField
               label="회사명"
               name="companyName"
@@ -59,7 +59,7 @@ export default function BusinessConnect() {
               error={errors.contact}
               required
               register={register}
-              className="md:col-span-2"
+              className="col-span-2"
             />
           </div>
 

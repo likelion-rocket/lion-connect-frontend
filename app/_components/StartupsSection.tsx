@@ -23,7 +23,7 @@ export default function StartupsSection() {
    */
 
   return (
-    <section className="relative flex flex-col items-center bg-linear-to-b from-white to-brand-01 px-[83px] py-[67px]">
+    <section className="relative min-w-[1444px] flex flex-col items-center bg-linear-to-b from-white to-brand-01 px-[83px] py-[67px]">
       {/* 제목 및 설명 컨테이너 - 페이드인 + 슬라이드업 */}
       <div ref={headerRef} className="mb-[111px] flex max-w-[1280px] flex-col items-center gap-8">
         {/* 메인 제목 */}

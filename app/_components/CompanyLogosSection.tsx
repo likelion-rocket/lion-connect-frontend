@@ -46,7 +46,7 @@ export default function CompanyLogosSection() {
   });
 
   return (
-    <section className="relative w-full bg-brand-01 px-20 py-[60px] flex flex-col items-center gap-12">
+    <section className="relative w-full min-w-[1444px] bg-brand-01 px-20 py-[60px] flex flex-col items-center gap-12">
       {/* Section Header - 페이드인 + 슬라이드업 */}
       <div
         ref={headerRef}
@@ -131,10 +131,10 @@ export default function CompanyLogosSection() {
       </div>
 
       {/* 좌측 그라데이션 오버레이 */}
-      <div className="absolute bottom-0 left-0 w-[202px] h-[528px] bg-gradient-to-r from-brand-01 from-[52.885%] to-transparent pointer-events-none" />
+      <div className="absolute bottom-0 left-0 w-[202px] h-[528px] bg-linear-to-r from-brand-01 from-[52.885%] to-transparent pointer-events-none" />
 
       {/* 우측 그라데이션 오버레이 */}
-      <div className="absolute bottom-0 right-0 w-[202px] h-[528px] bg-gradient-to-l from-brand-01 from-[52.885%] to-transparent pointer-events-none" />
+      <div className="absolute bottom-0 right-0 w-[202px] h-[528px] bg-linear-to-l from-brand-01 from-[52.885%] to-transparent pointer-events-none" />
     </section>
   );
 }

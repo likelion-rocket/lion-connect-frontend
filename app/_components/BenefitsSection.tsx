@@ -135,7 +135,10 @@ function BenefitsSection() {
   ];
 
   return (
-    <section className="w-full min-w-[1444px] max-w-[1443px] mx-auto pt-28 bg-bg-primary flex flex-col justify-start items-start">
+    <section
+      id="benefits-section"
+      className="w-full min-w-[1444px] max-w-[1443px] mx-auto pt-28 bg-bg-primary flex flex-col justify-start items-start"
+    >
       <div className="self-stretch flex flex-col justify-start items-center gap-20">
         {/* Section Title - 페이드인 + 슬라이드업 애니메이션 */}
         <h2

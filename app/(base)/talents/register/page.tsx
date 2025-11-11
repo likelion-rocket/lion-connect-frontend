@@ -26,9 +26,11 @@ import { ApiError } from "@/lib/apiClient";
 import { enumToKo } from "@/lib/education/statusMap";
 import { useUpdateTendencies } from "@/hooks/useUpdateTendencies";
 import { useCareerSection } from "@/hooks/useCareerSection";
-import { createExperience } from "@/lib/api/experiences";
+import { createExperience, updateExperience } from "@/lib/api/experiences";
 import { useMyExperiences } from "@/hooks/useMyExperiences";
 import type { CompanyForm } from "@/hooks/useCareerSection";
+// 상단 import 목록에 추가
+import { parseYYYYMMRange } from "@/lib/date/ym";
 
 export default function RegisterTalent() {
   const router = useRouter();
@@ -63,7 +65,10 @@ export default function RegisterTalent() {
   const [currentEduId, setCurrentEduId] = useState<number | null>(null);
 
   // ✅ 내 경력 불러오기
-  const { data: myExperiences } = useMyExperiences();
+  const { data: myExperiences, refetch: refetchExperiences } = useMyExperiences();
+
+  // ✅ 프리필한 각 행의 DB id를 인덱스에 맞춰 저장
+  const [experienceIds, setExperienceIds] = useState<number[]>([]);
 
   const prefilledProfileRef = useRef(false);
   useEffect(() => {
@@ -89,7 +94,6 @@ export default function RegisterTalent() {
   };
 
   // ===== 학력 프리필 ===== (기존 effect 안에서 id도 같이 세팅)
-  // ===== 학력 프리필 =====
   const prefilledEduRef = useRef(false);
   useEffect(() => {
     if (!myEducations || myEducations.length === 0) return;
@@ -141,7 +145,6 @@ export default function RegisterTalent() {
     if (prefilledCareerRef.current) return;
 
     if (myExperiences.length === 0) {
-      // 서버에 아무것도 없으면 기본 1행(빈칸) 유지
       prefilledCareerRef.current = true;
       return;
     }
@@ -163,6 +166,7 @@ export default function RegisterTalent() {
 
     career.setCompanies(rows);
     career.setErrors(new Array(rows.length).fill({})); // 에러 초기화
+    setExperienceIds(myExperiences.map((e) => e.id)); // ✅ 인덱스 매칭용 id 저장
     prefilledCareerRef.current = true;
   }, [myExperiences, career]);
 
@@ -240,16 +244,67 @@ export default function RegisterTalent() {
       await updateTendencies.mutateAsync({ ids: tendencyIds });
       console.log("[성향] 갱신 완료", tendencyIds);
 
-      const builtExp = career.validateAndBuild();
-      if (builtExp.shouldSubmit) {
-        // 호출부는 네가 원할 때 직접 실행
-        for (const payload of builtExp.payloads) {
-          await createExperience(payload);
+      // 4) 경력 처리 (PUT/POST 분기)
+      // ✅ unused-var 경고 제거: 변수에 담지 않고 호출만 하여 에러 세팅 트리거
+      career.validateAndBuild();
+
+      // 인덱스 기준으로 각 행을 검사
+      for (let i = 0; i < career.companies.length; i += 1) {
+        const row = career.companies[i];
+
+        // 완전 빈 행은 스킵
+        const hasAny =
+          row.company.trim() ||
+          row.period.trim() ||
+          row.dept.trim() ||
+          row.role.trim() ||
+          row.desc.trim();
+        if (!hasAny) continue;
+
+        // 에러가 있는 행은 스킵 (실제 에러 메시지가 있는 경우에만)
+        const rowErr = career.errors?.[i];
+        const hasRealError =
+          !!rowErr && Object.values(rowErr).some((v) => typeof v === "string" && v.length > 0);
+        if (hasRealError) {
+          console.log(`[경력] ${i}번 행 유효성 오류 → 스킵`, rowErr);
+          continue;
         }
-        console.log("[경력] 유효 payloads", builtExp.payloads);
-      } else {
-        console.log("[경력] 입력 없음 → 스킵");
+
+        // 기간 파싱 (월 단위)
+        const parsed = parseYYYYMMRange(row.period);
+        if (!parsed) {
+          console.log(`[경력] ${i}번 행 기간 파싱 실패 → 스킵`);
+          continue;
+        }
+
+        // API payload
+        const payload = {
+          companyName: row.company.trim(),
+          department: row.dept.trim() || undefined,
+          position: row.role.trim(),
+          startDate: parsed.startDate, // YYYY-MM-01
+          endDate: parsed.endDate ?? null, // 현재/재직이면 null
+          isCurrent: parsed.endDate === undefined,
+          description: row.desc.trim() || undefined,
+        } as const;
+
+        const id = experienceIds[i];
+
+        if (id) {
+          // ✅ 기존 행이면 수정(put)
+          const res = await updateExperience(id, payload);
+          console.log(`[경력] 수정 완료 id=${res.id}`);
+        } else {
+          // ✅ 신규 행이면 생성(post)
+          const res = await createExperience(payload);
+          console.log(`[경력] 등록 완료 id=${res.id}`);
+        }
       }
+
+      // ✅ 경력 저장 이후: 목록 재조회 → 폼/ids 재프리필 (한 번만)
+      prefilledCareerRef.current = false;
+      await refetchExperiences();
+      console.log("[경력] 서버 데이터 재조회 완료");
     } catch (err) {
       if (err instanceof ApiError) {
         console.log(`${err.message}${err.statusCode ? ` (code ${err.statusCode})` : ""}`);
@@ -264,7 +319,7 @@ export default function RegisterTalent() {
   return (
     <div className="w-full text-black mt-8">
       {/* Header */}
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items_center justify-between">
         <button
           onClick={handleGoBack}
           className="flex items-center gap-1 hover:opacity-80 transition"

@@ -192,21 +192,13 @@ export default function UniversityGridSection() {
             className="px-8 py-3 bg-white border-2 border-orange-600 rounded-full text-orange-600 text-base font-bold hover:bg-orange-50 transition-colors flex items-center gap-2"
           >
             접기
-            <svg
-              width="12"
-              height="8"
-              viewBox="0 0 12 8"
-              fill="none"
+            <Image
+              src="/icons/chevron-down.svg"
+              alt="접기"
+              width={12}
+              height={8}
               className="transform rotate-180"
-            >
-              <path
-                d="M1 1.5L6 6.5L11 1.5"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
+            />
           </button>
         )}
       </div>

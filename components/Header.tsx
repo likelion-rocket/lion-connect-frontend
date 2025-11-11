@@ -28,6 +28,24 @@ const navLinks: RoleBasedNavLink[] = [
 ];
 
 /**
+ * 역할 기반 링크 필터링 함수
+ * - requiredRoles가 없으면 모두에게 표시
+ * - requiredRoles가 있으면 사용자가 해당 역할 중 하나를 가지고 있는지 확인
+ */
+function filterLinksByRole(links: RoleBasedNavLink[], userRoles?: string[]): RoleBasedNavLink[] {
+  return links.filter((link) => {
+    // 역할 요구사항이 없으면 모두에게 표시
+    if (!link.requiredRoles?.length) return true;
+
+    // 사용자 역할이 없으면 숨김
+    if (!userRoles?.length) return false;
+
+    // 필요한 역할 중 하나라도 있으면 표시
+    return link.requiredRoles.some((role) => userRoles.includes(role));
+  });
+}
+
+/**
  * 헤더 컴포넌트
  * - 로고, 네비게이션 링크, 로그인 버튼 포함
  * - 활성화된 링크에 대한 시각적 표시 (indicator)
@@ -36,21 +54,7 @@ const navLinks: RoleBasedNavLink[] = [
  */
 export default function Header() {
   const { user } = useAuthStore();
-  const userRoles = user?.roles;
-
-  // 사용자 역할에 따라 표시할 링크 필터링
-  const visibleLinks = navLinks.filter((link) => {
-    // requiredRoles가 없으면 모두에게 표시
-    if (!link.requiredRoles || link.requiredRoles.length === 0) {
-      return true;
-    }
-    // requiredRoles가 있으면 사용자가 해당 역할 중 하나를 가지고 있는지 확인
-    if (!userRoles) {
-      return false;
-    }
-    return link.requiredRoles.some((role) => userRoles.includes(role));
-  });
-
+  const visibleLinks = filterLinksByRole(navLinks, user?.roles);
   const { navRefs, indicatorStyle, handleNavClick, isLinkActive } = useNavigation(visibleLinks);
 
   return (
@@ -82,8 +86,8 @@ export default function Header() {
                   navRefs.current[index] = el;
                 }}
                 onClick={(e) => handleNavClick(e, link.href)}
-                className={`text-text-secondary hover:text-text-accent transition-colors font-medium py-1 ${
-                  isActive ? "text-text-accent" : ""
+                className={`font-medium py-1 transition-colors ${
+                  isActive ? "text-text-accent" : "text-text-secondary hover:text-text-accent"
                 }`}
               >
                 {link.label}

@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   UNIVERSITY_REGION_GROUPS,
   getUniversitiesByRegionGroup,
@@ -16,24 +17,24 @@ import { useScrollAnimation } from "@/hooks/useScrollAnimation";
  */
 type UniversityCardProps = {
   university: University;
-  index: number;
 };
 
-function UniversityCard({ university, index }: UniversityCardProps) {
-  const { ref: cardRef, isVisible } = useScrollAnimation<HTMLAnchorElement>({ threshold: 0.1 });
-
+function UniversityCard({ university }: UniversityCardProps) {
   return (
-    <a
+    <motion.a
       href={university.link}
       target="_blank"
       rel="noopener noreferrer"
-      ref={cardRef}
-      className={`flex flex-col items-center gap-3 transition-all duration-700 ease-out cursor-pointer ${
-        isVisible ? "opacity-100 translate-y-0 scale-100" : "opacity-0 translate-y-6 scale-95"
-      }`}
-      style={{
-        transitionDelay: `${Math.min(index * 50, 500)}ms`, // 최대 500ms까지만 지연
+      layout // FLIP 애니메이션의 핵심!
+      initial={{ opacity: 0, scale: 0.8 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.8 }}
+      transition={{
+        layout: { duration: 0.5, ease: "easeInOut" }, // 위치 이동 애니메이션
+        opacity: { duration: 0.3 }, // 페이드 애니메이션
+        scale: { duration: 0.3 }, // 스케일 애니메이션
       }}
+      className="flex flex-col items-center gap-3 cursor-pointer"
     >
       {/* 대학 로고 */}
       <div
@@ -54,7 +55,7 @@ function UniversityCard({ university, index }: UniversityCardProps) {
         <p className="text-neutral-800 text-base font-bold">{university.name}</p>
         <p className="text-neutral-500 text-sm">{university.region}</p>
       </div>
-    </a>
+    </motion.a>
   );
 }
 
@@ -163,17 +164,27 @@ export default function UniversityGridSection() {
         {/* University Grid Container */}
         <div className="w-full relative">
           {/* University Grid - 마지막 줄 가운데 정렬을 위해 flex wrap 사용 */}
-          <div
-            className={`w-full flex flex-wrap justify-center gap-x-8 gap-y-12 transition-all duration-700 ease-in-out ${
+          <motion.div
+            layout
+            className={`w-full flex flex-wrap justify-center gap-x-8 gap-y-12 ${
               !showAll && hasMore ? "max-h-[600px] overflow-hidden" : ""
             }`}
           >
-            {displayedUniversities.map((university, index) => (
-              <div key={university.id} style={{ width: "120px" }}>
-                <UniversityCard university={university} index={index} />
-              </div>
-            ))}
-          </div>
+            <AnimatePresence mode="popLayout">
+              {displayedUniversities.map((university) => (
+                <motion.div
+                  key={university.id}
+                  layout
+                  style={{ width: "120px" }}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                >
+                  <UniversityCard university={university} />
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </motion.div>
 
           {/* Gradient Overlay + More Button */}
           {hasMore && !showAll && (

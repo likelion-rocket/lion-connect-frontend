@@ -72,7 +72,7 @@ function RegionFilterButton({ region, isActive, onClick }: RegionFilterButtonPro
   return (
     <button
       onClick={onClick}
-      className={`px-6 py-2.5 rounded-full text-base font-bold transition-colors ${
+      className={`px-6 py-2.5 rounded-full hover:cursor-pointer text-base font-bold transition-colors ${
         isActive
           ? "bg-orange-600 text-white"
           : "bg-white text-orange-600 border-2 border-orange-600 hover:bg-orange-50"
@@ -177,10 +177,8 @@ export default function UniversityGridSection() {
 
           {/* Gradient Overlay + More Button */}
           {hasMore && !showAll && (
-            <div className="w-full h-56 absolute bottom-0 left-0 bg-linear-to-b from-white/0 to-white pointer-events-none flex justify-center items-center">
-              <div className="pointer-events-auto pt-20">
-                <CTAButton onClick={() => setShowAll(true)}>더보기</CTAButton>
-              </div>
+            <div className="w-full h-56 absolute bottom-0 left-0 bg-linear-to-b from-white/0 to-white flex justify-center items-end pb-8">
+              <CTAButton onClick={() => setShowAll(true)}>더보기</CTAButton>
             </div>
           )}
         </div>
@@ -189,11 +187,11 @@ export default function UniversityGridSection() {
         {showAll && (
           <button
             onClick={() => setShowAll(false)}
-            className="px-8 py-3 bg-white border-2 border-orange-600 rounded-full text-orange-600 text-base font-bold hover:bg-orange-50 transition-colors flex items-center gap-2"
+            className=" hover:cursor-pointer px-8 py-3 bg-white border-2 border-orange-600 rounded-full text-orange-600 text-base font-bold hover:bg-orange-50 transition-colors flex items-center gap-2"
           >
             접기
             <Image
-              src="/icons/chevron-down.svg"
+              src="/icons/chevron-down-orange.svg"
               alt="접기"
               width={12}
               height={8}

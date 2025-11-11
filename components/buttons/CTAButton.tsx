@@ -41,7 +41,7 @@ export default function CTAButton({
   ...buttonProps
 }: CTAButtonProps) {
   const defaultClassName =
-    "inline-flex items-center justify-center gap-2 bg-bg-accent text-text-inverse-primary px-8 py-4 rounded-full font-bold text-lg hover:bg-brand-06 transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105";
+    "inline-flex hover:cursor-pointer items-center justify-center gap-2 bg-bg-accent text-text-inverse-primary px-8 py-4 rounded-full font-bold text-lg hover:bg-brand-06 transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105";
 
   const finalClassName = className || defaultClassName;
 

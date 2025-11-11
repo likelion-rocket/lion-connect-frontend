@@ -1,9 +1,14 @@
 "use client";
 
+import { useState } from "react";
 import Image from "next/image";
 import Input from "@/components/ui/input";
+import { deleteEducation } from "@/lib/api/educations";
 
 type Props = {
+  /** ✅ DB Row PK (있으면 삭제 API 호출, 없으면 단순 초기화) */
+  educationId?: number | null;
+
   schoolName: string;
   onChangeSchoolName: (v: string) => void;
   periodText: string;
@@ -14,6 +19,10 @@ type Props = {
   onChangeMajor: (v: string) => void;
   description: string;
   onChangeDescription: (v: string) => void;
+
+  /** ✅ 삭제 성공 후 상위에서 목록/상태 갱신 */
+  onDeleted?: () => void;
+
   errors?: {
     schoolName?: string;
     periodText?: string;
@@ -24,6 +33,7 @@ type Props = {
 };
 
 export default function EducationComponent({
+  educationId,
   schoolName,
   onChangeSchoolName,
   periodText,
@@ -34,8 +44,11 @@ export default function EducationComponent({
   onChangeMajor,
   description,
   onChangeDescription,
+  onDeleted,
   errors = {},
 }: Props) {
+  const [isDeleting, setIsDeleting] = useState(false);
+
   const hasAnyValue =
     !!schoolName?.trim() ||
     !!periodText?.trim() ||
@@ -43,7 +56,6 @@ export default function EducationComponent({
     !!major?.trim() ||
     !!description?.trim();
 
-  // 섹션(입력영역) UI: hover/값있음만 주황 테두리, pressed에서는 테두리 투명 + 그림자
   const sectionClasses =
     "relative w-full rounded-xl bg-white transition-all " +
     (hasAnyValue
@@ -60,6 +72,28 @@ export default function EducationComponent({
     onChangeDescription("");
   };
 
+  const handleClickTrash = async () => {
+    // id 없으면 입력만 초기화
+    if (!educationId) {
+      clearAll();
+      return;
+    }
+
+    // if (!window.confirm("학력 정보를 삭제할까요?")) return;
+
+    try {
+      setIsDeleting(true);
+      await deleteEducation(educationId);
+      clearAll();
+      onDeleted?.(); // 상위에서 refetch 등
+    } catch (err) {
+      console.error(err);
+      alert("삭제에 실패했어요. 잠시 후 다시 시도해 주세요.");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
   return (
     <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       {/* 타이틀 */}
@@ -67,7 +101,7 @@ export default function EducationComponent({
         <span>학력</span>
       </div>
 
-      {/* ✅ 아이콘 + 제목: 섹션 밖 (테두리/그림자 영향 없음) */}
+      {/* 아이콘 + 제목 */}
       <div className="grid grid-cols-[48px_auto] gap-x-4 mb-4">
         <div className="w-12 h-12 rounded-md bg-[#F5F5F5] border border-border-quaternary flex items-center justify-center">
           <Image src="/icons/outline-library.svg" alt="library" width={24} height={24} />
@@ -77,7 +111,7 @@ export default function EducationComponent({
         </div>
       </div>
 
-      {/* ✅ 실제 입력 필드 섹션 */}
+      {/* 입력 섹션 */}
       <div className={sectionClasses}>
         <div className="p-4">
           <div className="grid grid-cols-[48px_auto] gap-x-4">
@@ -166,8 +200,10 @@ export default function EducationComponent({
         <div className="flex justify-end p-3 pt-0">
           <button
             type="button"
-            onClick={clearAll}
-            className="inline-flex items-center gap-2 rounded-sm border border-[#FF6000]/20 bg-[#FFF3EB] px-2 py-1 text-[#FF6000] hover:opacity-90"
+            onClick={handleClickTrash}
+            disabled={isDeleting}
+            className="inline-flex items-center gap-2 rounded-sm border border-[#FF6000]/20 bg-[#FFF3EB] px-2 py-1 text-[#FF6000] hover:opacity-90 disabled:opacity-60"
+            aria-busy={isDeleting}
           >
             <Image src="/icons/outline-trash.svg" alt="삭제" width={24} height={24} />
           </button>

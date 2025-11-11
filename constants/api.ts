@@ -28,6 +28,7 @@ export const API_ENDPOINTS = {
     CREATE: "/profile/educations", // POST
     LIST: "/profile/educations",
     UPDATE: (id: number | string) => `/profile/educations/${id}`,
+    DELETE: (id: number | string) => `/profile/educations/${id}`,
   },
   PROFILES: {
     CREATE: "/profile/me", // ✅ 여기 추가

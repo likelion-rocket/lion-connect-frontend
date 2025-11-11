@@ -9,7 +9,9 @@ import Banner from "./_components/Banner";
 
 const BenefitsSection = dynamic(() => import("./_components/BenefitsSection"));
 const ProgramStatsSection = dynamic(() => import("./_components/ProgramStatsSection"));
-const UniversityGridSection = dynamic(() => import("./_components/UniversityGridSection"));
+const UniversityGridSection = dynamic(
+  () => import("./_components/UniversityGridSection/UniversityGridSection")
+);
 const StartupsSection = dynamic(() => import("./_components/StartupsSection"));
 const CompanyLogosSection = dynamic(() => import("./_components/CompanyLogosSection"));
 const BusinessConnect = dynamic(() => import("./_components/BusinessConnect"));

@@ -19,14 +19,27 @@ export default function PortfolioComponent({ fileName, onFileSelect }: Portfolio
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      let name = file.name;
-      if (!name.toLowerCase().endsWith(".pdf")) {
-        const baseName = name.replace(/\.[^/.]+$/, "");
-        name = `${baseName}.pdf`;
-      }
-      onFileSelect?.(name); // ✅ 부모로만 전달
+    if (!file) return;
+
+    const ext = file.name.split(".").pop()?.toLowerCase();
+    if (ext !== "pdf") {
+      alert("PDF 형식의 파일만 업로드할 수 있습니다.");
+      e.target.value = "";
+      return;
     }
+
+    let name = file.name;
+    if (!name.toLowerCase().endsWith(".pdf")) {
+      const baseName = name.replace(/\.[^/.]+$/, "");
+      name = `${baseName}.pdf`;
+    }
+    onFileSelect?.(name);
+  };
+
+  // ✅ 휴지통에서 실제 파일 및 부모 상태 동시 초기화
+  const handleFileClear = () => {
+    if (fileInputRef.current) fileInputRef.current.value = "";
+    onFileSelect?.("");
   };
 
   return (
@@ -53,13 +66,16 @@ export default function PortfolioComponent({ fileName, onFileSelect }: Portfolio
         </div>
         <div />
         <div className="mt-4 w-full">
+          {/* 인풋을 클릭하면 파일 선택창 오픈 */}
           <div onClick={handleOpenFileDialog} className="cursor-pointer">
             <Input
-              placeholder="pdf."
+              placeholder="PDF 파일을 업로드해주세요."
               type="text"
               className="w-full cursor-pointer"
               readOnly
               value={fileName}
+              showClearWhenFilled
+              onFileClear={handleFileClear} // ✅ 휴지통 연결
             />
           </div>
         </div>

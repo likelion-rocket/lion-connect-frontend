@@ -25,6 +25,8 @@ import { createProfile, updateMyProfile, type ProfileRequest } from "@/lib/api/p
 import { ApiError } from "@/lib/apiClient";
 import { enumToKo } from "@/lib/education/statusMap";
 import { useUpdateTendencies } from "@/hooks/useUpdateTendencies";
+import { useCareerSection } from "@/hooks/useCareerSection";
+import { createExperience } from "@/lib/api/experiences";
 
 export default function RegisterTalent() {
   const router = useRouter();
@@ -38,6 +40,7 @@ export default function RegisterTalent() {
 
   // 학력 섹션 훅
   const edu = useEducationSection();
+  const career = useCareerSection(); // ✅ 경력 훅
 
   // 내 프로필 / 학력 호출
   const { data: myProfile } = useMyProfile();
@@ -199,6 +202,17 @@ export default function RegisterTalent() {
       // 3) 성향 PUT: 선택이 없어도 []로 자연스레 갱신
       await updateTendencies.mutateAsync({ ids: tendencyIds });
       console.log("[성향] 갱신 완료", tendencyIds);
+
+      const builtExp = career.validateAndBuild();
+      if (builtExp.shouldSubmit) {
+        // 호출부는 네가 원할 때 직접 실행
+        for (const payload of builtExp.payloads) {
+          await createExperience(payload);
+        }
+        console.log("[경력] 유효 payloads", builtExp.payloads);
+      } else {
+        console.log("[경력] 입력 없음 → 스킵");
+      }
     } catch (err) {
       if (err instanceof ApiError) {
         console.log(`${err.message}${err.statusCode ? ` (code ${err.statusCode})` : ""}`);
@@ -267,7 +281,14 @@ export default function RegisterTalent() {
           errors={edu.errors}
         />
 
-        <CareerComponent />
+        <CareerComponent
+          companies={career.companies}
+          errors={career.errors}
+          hasAnyValue={career.hasAnyValue}
+          onChange={career.onChange}
+          onAdd={career.addCompany}
+          onClear={career.clearCompany}
+        />
         <SkillComponent />
         <QualificationComponent />
         <LinkRegisterComponent />

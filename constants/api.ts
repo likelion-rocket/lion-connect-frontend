@@ -38,6 +38,12 @@ export const API_ENDPOINTS = {
   TENDENCIES: {
     UPDATE: "/profile/tendencies", // PUT
   },
+  EXPERIENCES: {
+    CREATE: "/profile/experiences",
+    LIST: "/profile/experiences",
+    UPDATE: (id: number) => `/profile/experiences/${id}`,
+    DELETE: (id: number) => `/profile/experiences/${id}`,
+  },
 } as const;
 
 // HTTP 메서드

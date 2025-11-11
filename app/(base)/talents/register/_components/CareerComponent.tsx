@@ -1,52 +1,31 @@
+// app/(base)/talents/register/_components/CareerComponent.tsx
 "use client";
 
-import { useState } from "react";
 import Image from "next/image";
 import Input from "@/components/ui/input";
 import { Plus } from "lucide-react";
+import type { CompanyForm, CompanyErrors } from "@/hooks/useCareerSection";
 
-type CompanyForm = {
-  company: string;
-  period: string;
-  dept: string;
-  role: string;
-  desc: string;
+type Props = {
+  companies: CompanyForm[];
+  errors?: CompanyErrors[];
+  hasAnyValue: (c: CompanyForm) => boolean;
+  onChange: (
+    index: number,
+    field: keyof CompanyForm
+  ) => (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onAdd: () => void;
+  onClear: (index: number) => void;
 };
 
-export default function CareerComponent() {
-  const [companies, setCompanies] = useState<CompanyForm[]>([
-    { company: "", period: "", dept: "", role: "", desc: "" },
-  ]);
-
-  const handleAddCompany = () => {
-    setCompanies((prev) => [...prev, { company: "", period: "", dept: "", role: "", desc: "" }]);
-  };
-
-  const handleChange =
-    (index: number, field: keyof CompanyForm) => (e: React.ChangeEvent<HTMLInputElement>) => {
-      const value = e.target.value;
-      setCompanies((prev) => {
-        const next = [...prev];
-        next[index] = { ...next[index], [field]: value };
-        return next;
-      });
-    };
-
-  const clearCompany = (index: number) => {
-    setCompanies((prev) => {
-      const next = [...prev];
-      next[index] = { company: "", period: "", dept: "", role: "", desc: "" };
-      return next;
-    });
-  };
-
-  const hasAnyValue = (c: CompanyForm) =>
-    !!c.company.trim() ||
-    !!c.period.trim() ||
-    !!c.dept.trim() ||
-    !!c.role.trim() ||
-    !!c.desc.trim();
-
+export default function CareerComponent({
+  companies,
+  errors = [],
+  hasAnyValue,
+  onChange,
+  onAdd,
+  onClear,
+}: Props) {
   return (
     <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       {/* 섹션 타이틀 */}
@@ -62,6 +41,8 @@ export default function CareerComponent() {
             : "hover:border hover:border-[#FF6000]/50 active:border-transparent ") +
           "focus-within:shadow-[0_4px_6px_-2px_rgba(0,0,0,0.05),0_10px_15px_-3px_rgba(0,0,0,0.10)] " +
           "active:shadow-[0_4px_6px_-2px_rgba(0,0,0,0.05),0_10px_15px_-3px_rgba(0,0,0,0.10)]";
+
+        const e = errors[index] ?? {};
 
         return (
           <div key={index} className="mb-8 last:mb-0">
@@ -89,7 +70,7 @@ export default function CareerComponent() {
               )}
             </div>
 
-            {/* ✅ 실제 입력 필드 섹션 */}
+            {/* 입력 섹션 */}
             <div className={sectionClasses}>
               <div className="p-4">
                 <div className="grid grid-cols-[48px_auto] gap-x-4">
@@ -101,42 +82,50 @@ export default function CareerComponent() {
                       showClearWhenFilled={false}
                       placeholder="회사명을 입력해주세요"
                       type="text"
-                      className="w-full mb-3"
+                      className="w-full mb-1"
                       value={item.company}
-                      onChange={handleChange(index, "company")}
+                      onChange={onChange(index, "company")}
                     />
+                    {e.company && <p className="mt-1 mb-2 text-red-500 text-xs">{e.company}</p>}
 
                     {/* 근무 기간 */}
                     <Input
                       sectionControlled
                       showClearWhenFilled={false}
-                      placeholder="YYYY . MM ~ YYYY . MM (n년 n개월)"
+                      placeholder="YYYY . MM ~ YYYY . MM (또는 ~ 현재)"
                       type="text"
-                      className="w-full mb-3"
+                      className="w-full mb-1"
                       value={item.period}
-                      onChange={handleChange(index, "period")}
+                      onChange={onChange(index, "period")}
                     />
+                    {e.period && <p className="mt-1 mb-2 text-red-500 text-xs">{e.period}</p>}
 
                     {/* 부서/직무 + 직급·직책 */}
-                    <div className="flex gap-4 mb-3">
-                      <Input
-                        sectionControlled
-                        showClearWhenFilled={false}
-                        placeholder="부서 · 직무"
-                        type="text"
-                        className="w-full"
-                        value={item.dept}
-                        onChange={handleChange(index, "dept")}
-                      />
-                      <Input
-                        sectionControlled
-                        showClearWhenFilled={false}
-                        placeholder="직급 · 직책"
-                        type="text"
-                        className="w-full"
-                        value={item.role}
-                        onChange={handleChange(index, "role")}
-                      />
+                    <div className="flex gap-4 mb-1">
+                      <div className="w-full">
+                        <Input
+                          sectionControlled
+                          showClearWhenFilled={false}
+                          placeholder="부서 · 직무"
+                          type="text"
+                          className="w-full"
+                          value={item.dept}
+                          onChange={onChange(index, "dept")}
+                        />
+                        {e.dept && <p className="mt-1 text-red-500 text-xs">{e.dept}</p>}
+                      </div>
+                      <div className="w-full">
+                        <Input
+                          sectionControlled
+                          showClearWhenFilled={false}
+                          placeholder="직급 · 직책"
+                          type="text"
+                          className="w-full"
+                          value={item.role}
+                          onChange={onChange(index, "role")}
+                        />
+                        {e.role && <p className="mt-1 text-red-500 text-xs">{e.role}</p>}
+                      </div>
                     </div>
 
                     {/* 담당 업무 */}
@@ -147,8 +136,9 @@ export default function CareerComponent() {
                       type="text"
                       className="w-full"
                       value={item.desc}
-                      onChange={handleChange(index, "desc")}
+                      onChange={onChange(index, "desc")}
                     />
+                    {e.desc && <p className="mt-1 text-red-500 text-xs">{e.desc}</p>}
                   </div>
                 </div>
               </div>
@@ -157,7 +147,7 @@ export default function CareerComponent() {
               <div className="flex justify-end p-3 pt-0">
                 <button
                   type="button"
-                  onClick={() => clearCompany(index)}
+                  onClick={() => onClear(index)}
                   className="inline-flex items-center gap-2 rounded-sm border border-[#FF6000]/20 bg-[#FFF3EB] px-2 py-1 text-[#FF6000] hover:opacity-90"
                 >
                   <Image src="/icons/outline-trash.svg" alt="삭제" width={24} height={24} />
@@ -172,7 +162,7 @@ export default function CareerComponent() {
       <div className="flex justify-end">
         <button
           type="button"
-          onClick={handleAddCompany}
+          onClick={onAdd}
           className="flex items-center gap-2 text-[#FF6000] hover:opacity-80 font-bold text-[16px] leading-none"
         >
           <Plus size={20} className="text-[#FF6000]" />

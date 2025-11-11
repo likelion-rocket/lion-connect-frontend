@@ -24,6 +24,7 @@ import { useMyEducations } from "@/hooks/useMyEducation";
 import { createProfile, updateMyProfile, type ProfileRequest } from "@/lib/api/profiles";
 import { ApiError } from "@/lib/apiClient";
 import { enumToKo } from "@/lib/education/statusMap";
+import { useUpdateTendencies } from "@/hooks/useUpdateTendencies";
 
 export default function RegisterTalent() {
   const router = useRouter();
@@ -47,6 +48,9 @@ export default function RegisterTalent() {
   const setIntroSafe = (v: string) => setIntro((prev) => (prev === v ? prev : v));
   const setPortfolioFileSafe = (v: string) => setPortfolioFile((prev) => (prev === v ? prev : v));
   const setLikelionCodeSafe = (v: string) => setLikelionCode((prev) => (prev === v ? prev : v));
+  // 컴포넌트 내부
+  const [tendencyIds, setTendencyIds] = useState<number[]>([]);
+  const updateTendencies = useUpdateTendencies();
 
   const prefilledProfileRef = useRef(false);
   useEffect(() => {
@@ -181,6 +185,10 @@ export default function RegisterTalent() {
       } else {
         console.log("[학력] 입력 없음 → 스킵");
       }
+
+      // 3) 성향 PUT: 선택이 없어도 []로 자연스레 갱신
+      await updateTendencies.mutateAsync({ ids: tendencyIds });
+      console.log("[성향] 갱신 완료", tendencyIds);
     } catch (err) {
       if (err instanceof ApiError) {
         console.log(`${err.message}${err.statusCode ? ` (code ${err.statusCode})` : ""}`);
@@ -226,7 +234,7 @@ export default function RegisterTalent() {
         <PhotoComponent />
         <CodeRegisterComponent code={likelionCode} onCodeChange={setLikelionCodeSafe} />
         <ProfileComponent intro={intro} onIntroChange={setIntroSafe} />
-        <TendencyComponent />
+        <TendencyComponent onChangeSelectedIds={setTendencyIds} />
 
         <EducationComponent
           schoolName={edu.form.schoolName}

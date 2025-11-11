@@ -11,7 +11,6 @@ export type PorfolioCardProps = {
 };
 
 export default function PorfolioCard({
-  fileName,
   fileUrl,
   height = 520,
   className = "",
@@ -52,17 +51,6 @@ export default function PorfolioCard({
 
       {/* 본문 */}
       <div className="px-6 pb-6">
-        {/* 파일명 */}
-        <p
-          className={cn(
-            "text-[14px] leading-[1.7] break-all mb-3",
-            fileName ? "text-[#333]" : "text-[#999]"
-          )}
-          title={fileName}
-        >
-          {fileName || "선택된 파일이 없습니다."}
-        </p>
-
         {/* PDF 미리보기 */}
         <div className="w-full rounded-xl border border-border-quaternary bg-white overflow-hidden">
           {fileUrl ? (

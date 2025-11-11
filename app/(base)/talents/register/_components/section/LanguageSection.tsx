@@ -67,7 +67,7 @@ export default function LanguageSection() {
             <div />
             <div>
               <Input
-                placeholder="0000.mm - 0000.mm(0년 0개월)"
+                placeholder="0000.mm"
                 type="text"
                 className="w-full"
                 value={item.period}

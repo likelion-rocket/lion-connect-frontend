@@ -45,9 +45,17 @@ export default async function TalentsPage(props: TalentsPageProps) {
       ],
       tendencies: ["속도형", "수직적 문화형", "결과 중심형"],
       skills: ["JavaScript", "TypeScript", "React", "Next.js", "Tailwind CSS", "Zustand"],
-      summary:
-        "저는 문제를 해결하며 가치를 창출하는 프론트엔드 개발자입니다. 학부 시절 프로젝트와 인턴 경험으로...",
+      summary: `
+      저는 문제를 해결하며 가치를 창출하는 프론트엔드 개발자입니다.
+      사용자 경험을 최우선으로 고려하며, 복잡한 UI를 효율적이고 유지보수 가능한 구조로 만드는 것에 관심이 많습니다.
+      협업 과정에서 커뮤니케이션을 중시하며, 디자이너 및 백엔드 개발자와의 긴밀한 협업을 통해 더 나은 제품을 만드는 것을 즐깁니다.
+      최근에는 성능 최적화와 접근성 개선, 그리고 디자인 시스템 구축에도 깊은 관심을 두고 있습니다.asdfasdfasdff
+      fffffffffffffffffffffffffffffffffff.
+      fffffffffffffffffffffffffffffasdfasdfasdfa
+      sdfasdfasdfasdfasdfasdf
+    `,
     },
+    // 나머지 항목은 그대로
     {
       slug: "kim-yujin",
       name: "김유진",

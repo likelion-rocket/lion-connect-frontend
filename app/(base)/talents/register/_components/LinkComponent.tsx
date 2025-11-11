@@ -42,7 +42,7 @@ export default function RegisterLink() {
                 value={link.value}
                 onChange={(e) => handleChange(link.id, e.target.value)}
                 placeholder="https:// 또는 포트폴리오, 깃허브, 노션 링크를 입력하세요"
-                className="w-full h-12 bg-[#F5F5F5] border border-border-quaternary rounded-md text-[14px]"
+                className="w-full h-12 bg-[#F5F5F5]  border-border-quaternary rounded-md text-[14px]"
               />
             </div>
           ))}

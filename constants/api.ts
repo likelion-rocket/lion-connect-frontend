@@ -26,16 +26,16 @@ export const API_ENDPOINTS = {
   // ✅ 학력
   EDUCATIONS: {
     CREATE: "/profile/educations", // POST
-    // 필요해지면 READ/LIST/UPDATE/DELETE도 여기에 추가
     LIST: "/profile/educations",
-    // DETAIL: (id: number | string) => `/profile/educations/${id}`,
     UPDATE: (id: number | string) => `/profile/educations/${id}`,
-    // DELETE: (id: number | string) => `/profile/educations/${id}`,
   },
   PROFILES: {
     CREATE: "/profile/me", // ✅ 여기 추가
     GET: "/profile/me", // GET
     UPDATE: "/profile/me", // ✅ 추가 (PUT)
+  },
+  TENDENCIES: {
+    UPDATE: "/profile/tendencies", // PUT
   },
 } as const;
 

@@ -1,13 +1,11 @@
+// app/(base)/talents/register/_components/TendencyComponent.tsx
 "use client";
 
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
+import { TENDENCY_ID_MAP } from "@/lib/tendencies/map";
 
-type TendencyPair = {
-  id: string;
-  left: string;
-  right: string;
-};
+type TendencyPair = { id: string; left: string; right: string };
 
 const TENDENCY_ROWS: TendencyPair[] = [
   { id: "company_type", left: "안정 기업형", right: "성장 기업형" },
@@ -21,7 +19,6 @@ const TENDENCY_ROWS: TendencyPair[] = [
   { id: "lifestyle", left: "현실주의형", right: "이상주의형" },
 ];
 
-// ✅ 띄어쓰기 기준으로 줄바꿈해주는 헬퍼
 function LabelWithBreak({ text }: { text: string }) {
   const parts = text.split(" ");
   return (
@@ -36,7 +33,14 @@ function LabelWithBreak({ text }: { text: string }) {
   );
 }
 
-export default function TendencyComponent() {
+type Props = {
+  /** 선택된 항목 id 배열을 부모에 전달 (PUT 바디용) */
+  onChangeSelectedIds?: (ids: number[]) => void;
+  /** (옵션) 초기 선택: 백엔드 ids → 컴포넌트 state로 역매핑하고 싶을 때 사용 */
+  initialIds?: number[];
+};
+
+export default function TendencyComponent({ onChangeSelectedIds, initialIds }: Props) {
   const [selected, setSelected] = useState<Record<string, "left" | "right" | null>>(
     TENDENCY_ROWS.reduce(
       (acc, cur) => {
@@ -47,12 +51,43 @@ export default function TendencyComponent() {
     )
   );
 
+  // (옵션) initialIds가 있으면 처음 렌더 때 역매핑해 초기 체크 세팅
+  useEffect(() => {
+    if (!initialIds || initialIds.length === 0) return;
+    setSelected((prev) => {
+      const next = { ...prev };
+      for (const row of TENDENCY_ROWS) {
+        const map = TENDENCY_ID_MAP[row.id];
+        if (!map) continue;
+        if (initialIds.includes(map.leftId)) next[row.id] = "left";
+        else if (initialIds.includes(map.rightId)) next[row.id] = "right";
+      }
+      return next;
+    });
+  }, [initialIds]);
+
   const handleSelect = (id: string, side: "left" | "right") => {
     setSelected((prev) => {
       if (prev[id] === side) return { ...prev, [id]: null };
       return { ...prev, [id]: side };
     });
   };
+
+  // 선택 상태 → 백엔드 ids[]로 변환해서 부모에 전달
+  const selectedIds = useMemo(() => {
+    const ids: number[] = [];
+    for (const [key, side] of Object.entries(selected)) {
+      if (!side) continue;
+      const map = TENDENCY_ID_MAP[key];
+      if (!map) continue;
+      ids.push(side === "left" ? map.leftId : map.rightId);
+    }
+    return ids;
+  }, [selected]);
+
+  useEffect(() => {
+    onChangeSelectedIds?.(selectedIds);
+  }, [selectedIds, onChangeSelectedIds]);
 
   return (
     <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -63,10 +98,8 @@ export default function TendencyComponent() {
       <div className="grid grid-cols-2 gap-x-12 gap-y-8">
         {TENDENCY_ROWS.map((row) => (
           <div key={row.id} className="relative h-16">
-            {/* 선 */}
             <div className="absolute top-[22px] left-14 right-14 h-[3px] bg-[#D0D5DD] rounded-full" />
 
-            {/* 왼쪽 */}
             <div className="absolute top-0 left-0 flex flex-col items-center gap-1 w-16">
               <div className="w-12 h-12 flex items-center justify-center">
                 <Checkbox
@@ -83,7 +116,6 @@ export default function TendencyComponent() {
               </button>
             </div>
 
-            {/* 오른쪽 */}
             <div className="absolute top-0 right-0 flex flex-col items-center gap-1 w-16">
               <div className="w-12 h-12 flex items-center justify-center">
                 <Checkbox

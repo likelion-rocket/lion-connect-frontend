@@ -12,7 +12,7 @@ export function Checkbox({ className, ...props }: CheckboxProps) {
     <CheckboxPrimitive.Root
       className={cn(
         // 레이어 정리용
-        "group relative inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-[4px] border overflow-visible",
+        "group relative inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-sm border overflow-visible",
         // 기본
         "border-[#D0D5DD] bg-white",
         // 포커스
@@ -40,7 +40,7 @@ export function Checkbox({ className, ...props }: CheckboxProps) {
       <span
         className={cn(
           // 안쪽 네모
-          "absolute z-10 flex h-5 w-5 items-center justify-center rounded-[4px] bg-[#FF6000] text-white",
+          "absolute z-10 flex h-5 w-5 items-center justify-center rounded-sm bg-[#FF6000] text-white",
           // 기본은 안 보임
           "opacity-0 scale-90 transition duration-150",
           // hover하면 보임

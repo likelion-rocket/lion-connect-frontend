@@ -16,16 +16,25 @@ const leftLinks = [
 ];
 
 const rightLinks: FooterLink[] = [
-  { label: "회사 소개", href: "/about" },
-  { label: "브랜드 웹사이트", href: "/brand-website", icon: true },
-  { label: "브랜드 가이드라인", href: "/brand-guidelines", icon: true },
-  { label: "채용", href: "/careers" },
+  { label: "브랜드 웹사이트", href: "https://likelion.career.greetinghr.com/ko/home", icon: true },
+  {
+    label: "브랜드 가이드라인",
+    href: "https://likelion.notion.site/LIKELION-BRAND-GUIDELINE-942a09c286b1401b83f9193c0787759e",
+    icon: true,
+  },
+  { label: "채용", href: "https://likelion.career.greetinghr.com/ko/career", icon: true },
 ];
 
 const termsLinks = [
-  { label: "이용약관", href: "/terms" },
-  { label: "개인정보처리방침", href: "/privacy" },
-  { label: "환불규정", href: "/refund" },
+  { label: "이용약관", href: "https://likelion.notion.site/89ba1354b98d4825af14109aebdd3af9" },
+  {
+    label: "개인정보처리방침",
+    href: "https://likelion.notion.site/4d3c7ce22a724b3c99950e853dc7589b",
+  },
+  {
+    label: "환불규정",
+    href: "https://likelion.notion.site/LIKELION-e9139bf291ad4e0b88f8b99f8597d04a",
+  },
 ];
 
 export default function Footer() {
@@ -37,7 +46,7 @@ export default function Footer() {
           {/* Logo */}
           <Link href="/" className="shrink-0">
             <Image
-              src="/landing/icons/LIKELION_logo_Primary.png"
+              src="/landing/icons/LIKELION_logo_Primary.svg"
               alt="LikelionConnect Logo"
               width={200}
               height={40}
@@ -46,28 +55,22 @@ export default function Footer() {
 
           {/* Links Container */}
           <div className="flex justify-end items-start gap-12 flex-1">
-            {/* Left Links */}
-            <div className="flex flex-col gap-4">
-              {leftLinks.map((link) => (
-                <p key={link.label} className="text-text-primary text-sm font-normal">
-                  {link.label}
-                </p>
-              ))}
-            </div>
-
             {/* Right Links */}
             <div className="flex flex-col gap-4">
+              {/* 회사 소개 - 링크 아닌 텍스트 레이블 */}
+              <div className="text-text-secondary text-xs font-normal leading-4">회사 소개</div>
+
               {rightLinks.map((link) => (
-                <div key={link.href} className="flex items-center gap-4">
+                <div key={link.href} className="flex items-center gap-2">
                   <Link
                     href={link.href}
-                    className="text-text-primary hover:text-text-accent transition-colors text-sm font-normal"
+                    className="text-text-primary hover:text-text-accent transition-colors text-sm font-normal leading-5"
                   >
                     {link.label}
                   </Link>
                   {link.icon && (
                     <Image
-                      src="/icons/outline-save.svg"
+                      src="/icons/outline-external-link.svg"
                       alt="external link"
                       width={16}
                       height={16}
@@ -92,20 +95,24 @@ export default function Footer() {
                 <Link href={link.href} className="hover:text-text-secondary transition-colors">
                   {link.label}
                 </Link>
-                {index < termsLinks.length - 1 && <span className="mx-2">|</span>}
+                {index < termsLinks.length - 1 && <span className="mx-2">&middot;</span>}
               </span>
             ))}
           </div>
 
           {/* Company Details */}
           <p className="text-text-tertiary text-sm leading-tight">
-            상호명: 멋쟁이사자처럼 ㅣ대표: 나성영 contact@likelion.net 사업자 번호:
-            264-88-01106통신판매업신고번호: 2022-서울종로-1534
+            상호명: 멋쟁이사자처럼 ㅣ 대표: 나성영 | contact@likelion.net | 사업자 번호:
+            264-88-01106 | 통신판매업신고번호: 2022-서울종로-1534
           </p>
-          <p className="text-text-tertiary text-sm leading-tight">
-            주소 : 서울 종로구 종로3길17, 광화문D타워 D1동16층, 17층Copyright2022 멋쟁이사자처럼
-            Alrights reserved
-          </p>
+          <div className="flex gap-2">
+            <p className="text-text-tertiary text-sm leading-tight">
+              주소 : 서울 종로구 종로3길17, 광화문D타워 D1동16층, 17층
+            </p>
+            <p className="text-text-tertiary text-sm leading-tight">
+              Copyright2022 멋쟁이사자처럼 Alrights reserved
+            </p>
+          </div>
         </div>
       </div>
     </footer>

@@ -1,5 +1,5 @@
 // lib/api/educations.ts
-import { post, get, put } from "@/lib/apiClient";
+import { post, get, put, del } from "@/lib/apiClient";
 import { API_ENDPOINTS } from "@/constants/api";
 
 export type EducationRequest = {
@@ -45,6 +45,13 @@ export function fetchMyEducations(): Promise<EducationListItem[]> {
 /** ✅ 학력 수정 (PUT /api/profile/educations/{id}) */
 export function updateEducation(id: number, body: EducationRequest): Promise<EducationResponse> {
   return put<EducationResponse>(API_ENDPOINTS.EDUCATIONS.UPDATE(id), body, {
+    credentials: "include",
+  });
+}
+
+/** ✅ 학력 삭제 (DELETE /api/profile/educations/{id}) → 204 No Content */
+export async function deleteEducation(id: number): Promise<void> {
+  await del<void>(API_ENDPOINTS.EDUCATIONS.DELETE(id), {
     credentials: "include",
   });
 }

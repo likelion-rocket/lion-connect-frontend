@@ -41,7 +41,9 @@ export default function RegisterTalent() {
 
   // 내 프로필 / 학력 호출
   const { data: myProfile } = useMyProfile();
-  const { data: myEducations } = useMyEducations(); // ✅ 추가
+  const { data: myEducations, refetch: refetchEducations } = useMyEducations();
+  // ✅ effect 밖에서 setter만 뽑기 (객체 전체가 아니라 함수만)
+  const { setForm } = edu;
 
   // ===== 프로필 프리필 =====
   const setNameSafe = (v: string) => setName((prev) => (prev === v ? prev : v));
@@ -51,6 +53,9 @@ export default function RegisterTalent() {
   // 컴포넌트 내부
   const [tendencyIds, setTendencyIds] = useState<number[]>([]);
   const updateTendencies = useUpdateTendencies();
+
+  // 추가
+  const [currentEduId, setCurrentEduId] = useState<number | null>(null);
 
   const prefilledProfileRef = useRef(false);
   useEffect(() => {
@@ -75,45 +80,51 @@ export default function RegisterTalent() {
     return `${y}.${m}`;
   };
 
+  // ===== 학력 프리필 ===== (기존 effect 안에서 id도 같이 세팅)
+  // ===== 학력 프리필 =====
   const prefilledEduRef = useRef(false);
   useEffect(() => {
-    if (!myEducations || myEducations.length === 0) return; // 학력 없음 → 스킵
+    if (!myEducations || myEducations.length === 0) return;
     if (prefilledEduRef.current) return;
 
-    // 가장 최근(업데이트 최신) 항목 하나 선택
+    // 최신(업데이트 최신) 하나 선택
     const sorted = [...myEducations].sort((a, b) =>
       (b.updatedAt || "").localeCompare(a.updatedAt || "")
     );
     const e = sorted[0];
 
-    // 현재 폼 값이 비어있는 항목만 채움 (사용자 입력 보호)
-    const next = { ...edu.form };
+    // 삭제/수정 대상 id 저장
+    setCurrentEduId(e.id);
 
-    if (!next.schoolName.trim()) next.schoolName = e.schoolName ?? "";
-    if (!next.status.trim()) next.status = enumToKo(e.status) || ""; // ✅ 한글로 표시
-    if (!next.major.trim()) next.major = e.major ?? "";
-    if (!next.description.trim()) next.description = e.description ?? "";
+    // ✅ prev를 사용해 변경이 필요한 필드만 채우기
+    setForm((prev) => {
+      const next = { ...prev };
 
-    if (!next.periodText.trim()) {
-      const s = fmtYM(e.startDate);
-      const t = fmtYM(e.endDate);
-      // endDate 없으면 오른쪽 비워둠
-      next.periodText = s || t ? `${s} - ${t}` : "";
-    }
+      if (!prev.schoolName.trim()) next.schoolName = e.schoolName ?? "";
+      if (!prev.status.trim()) next.status = enumToKo(e.status) || "";
+      if (!prev.major.trim()) next.major = e.major ?? "";
+      if (!prev.description.trim()) next.description = e.description ?? "";
 
-    // 실제 반영 (변경 없으면 no-op)
-    if (
-      next.schoolName !== edu.form.schoolName ||
-      next.status !== edu.form.status ||
-      next.major !== edu.form.major ||
-      next.description !== edu.form.description ||
-      next.periodText !== edu.form.periodText
-    ) {
-      edu.setForm(next);
-    }
+      if (!prev.periodText.trim()) {
+        const s = fmtYM(e.startDate);
+        const t = fmtYM(e.endDate);
+        next.periodText = s || t ? `${s} - ${t}` : "";
+      }
 
-    prefilledEduRef.current = true;
-  }); // edu.form을 deps에 넣지 않음(1회 프리필 보장)
+      // 변경이 없으면 prev 그대로 반환 (불필요 렌더 방지)
+      const changed =
+        next.schoolName !== prev.schoolName ||
+        next.status !== prev.status ||
+        next.major !== prev.major ||
+        next.description !== prev.description ||
+        next.periodText !== prev.periodText;
+
+      // 이 ref는 deps에 안 걸리므로 여기서 셋업해도 OK
+      prefilledEduRef.current = true;
+
+      return changed ? next : prev;
+    });
+  }, [myEducations, setForm]); // ✅ 더 이상 'edu'가 필요 없음
 
   const handleGoBack = () => router.back();
 
@@ -162,8 +173,7 @@ export default function RegisterTalent() {
 
       const built = edu.validateAndBuild();
 
-      // 서버에 이미 학력이 1개 있다고 가정 → 첫 항목 id 사용
-      const existingEduId = myEducations?.[0]?.id;
+      const existingEduId = currentEduId ?? undefined;
 
       if (coreFilled && existingEduId && built && "shouldSubmit" in built && built.shouldSubmit) {
         // ✅ 모두 채워져 있고 기존 학력이 있으면 수정(put)
@@ -237,6 +247,7 @@ export default function RegisterTalent() {
         <TendencyComponent onChangeSelectedIds={setTendencyIds} />
 
         <EducationComponent
+          educationId={currentEduId}
           schoolName={edu.form.schoolName}
           onChangeSchoolName={edu.onChangeSchoolName}
           periodText={edu.form.periodText}
@@ -247,6 +258,12 @@ export default function RegisterTalent() {
           onChangeMajor={edu.onChangeMajor}
           description={edu.form.description}
           onChangeDescription={edu.onChangeDescription}
+          onDeleted={() => {
+            // ✅ 삭제 후: 선택 id 초기화 + 프리필 허용 + 서버 목록 새로고침
+            setCurrentEduId(null);
+            prefilledEduRef.current = false;
+            refetchEducations();
+          }}
           errors={edu.errors}
         />
 

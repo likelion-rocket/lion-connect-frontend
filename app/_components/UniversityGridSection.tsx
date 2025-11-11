@@ -2,7 +2,11 @@
 
 import Image from "next/image";
 import { useState } from "react";
-import { UNIVERSITIES, REGIONS, type University, type Region } from "@/constants/universities";
+import {
+  UNIVERSITY_REGION_GROUPS,
+  getUniversitiesByRegionGroup,
+  type University,
+} from "@/constants/universities";
 import CTAButton from "@/components/buttons/CTAButton";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 
@@ -16,12 +20,15 @@ type UniversityCardProps = {
 };
 
 function UniversityCard({ university, index }: UniversityCardProps) {
-  const { ref: cardRef, isVisible } = useScrollAnimation<HTMLDivElement>({ threshold: 0.1 });
+  const { ref: cardRef, isVisible } = useScrollAnimation<HTMLAnchorElement>({ threshold: 0.1 });
 
   return (
-    <div
+    <a
+      href={university.link}
+      target="_blank"
+      rel="noopener noreferrer"
       ref={cardRef}
-      className={`flex flex-col items-center gap-3 transition-all duration-700 ease-out ${
+      className={`flex flex-col items-center gap-3 transition-all duration-700 ease-out cursor-pointer ${
         isVisible ? "opacity-100 translate-y-0 scale-100" : "opacity-0 translate-y-6 scale-95"
       }`}
       style={{
@@ -29,12 +36,16 @@ function UniversityCard({ university, index }: UniversityCardProps) {
       }}
     >
       {/* 대학 로고 */}
-      <div className="w-24 h-24 relative rounded-full overflow-hidden bg-white shadow-md transition-transform duration-300 hover:scale-110 hover:shadow-lg">
+      <div
+        className={`w-24 h-24 relative rounded-full overflow-hidden shadow-md transition-transform duration-300 hover:scale-110 hover:shadow-lg ${
+          university.name === "삼육대" ? "bg-black" : ""
+        }`}
+      >
         <Image
-          src={university.logoPath}
+          src={university.logo}
           alt={`${university.name} 로고`}
           fill
-          className="object-contain p-2"
+          className={`${university.name === "숭실대" ? "object-contain p-3" : "object-cover"}`}
           sizes="96px"
         />
       </div>
@@ -43,7 +54,7 @@ function UniversityCard({ university, index }: UniversityCardProps) {
         <p className="text-neutral-800 text-base font-bold">{university.name}</p>
         <p className="text-neutral-500 text-sm">{university.region}</p>
       </div>
-    </div>
+    </a>
   );
 }
 
@@ -52,7 +63,7 @@ function UniversityCard({ university, index }: UniversityCardProps) {
  * 지역 필터 버튼 컴포넌트
  */
 type RegionFilterButtonProps = {
-  region: Region;
+  region: string;
   isActive: boolean;
   onClick: () => void;
 };
@@ -83,7 +94,7 @@ function RegionFilterButton({ region, isActive, onClick }: RegionFilterButtonPro
  * <UniversityGridSection />
  */
 export default function UniversityGridSection() {
-  const [selectedRegion, setSelectedRegion] = useState<Region>("전체");
+  const [selectedRegion, setSelectedRegion] = useState<string>("전체");
   const [showAll, setShowAll] = useState(false);
 
   const { ref: headerRef, isVisible: isHeaderVisible } = useScrollAnimation<HTMLDivElement>({
@@ -93,11 +104,11 @@ export default function UniversityGridSection() {
     threshold: 0.2,
   });
 
-  // 선택된 지역에 따라 대학교 필터링
-  const filteredUniversities =
-    selectedRegion === "전체"
-      ? UNIVERSITIES
-      : UNIVERSITIES.filter((uni) => uni.region === selectedRegion);
+  // 지역 그룹 목록 (전체, 서울, 경기·인천, 경상, 충청, 전라)
+  const regions = UNIVERSITY_REGION_GROUPS;
+
+  // 선택된 지역 그룹에 따라 대학교 필터링
+  const filteredUniversities = getUniversitiesByRegionGroup(selectedRegion);
 
   // 더보기 버튼 상태에 따라 표시할 대학교 결정
   const displayedUniversities = showAll ? filteredUniversities : filteredUniversities.slice(0, 28);
@@ -129,7 +140,7 @@ export default function UniversityGridSection() {
 
         {/* Region Filter Buttons - 순차적 페이드인 */}
         <div ref={filterRef} className="flex justify-center items-center gap-3 flex-wrap">
-          {REGIONS.map((region, index) => (
+          {regions.map((region, index) => (
             <div
               key={region}
               className={`transition-all duration-700 ease-out ${
@@ -151,14 +162,16 @@ export default function UniversityGridSection() {
 
         {/* University Grid Container */}
         <div className="w-full relative">
-          {/* University Grid */}
+          {/* University Grid - 마지막 줄 가운데 정렬을 위해 flex wrap 사용 */}
           <div
-            className={`w-full grid grid-cols-7 gap-x-8 gap-y-12 transition-all duration-700 ease-in-out ${
+            className={`w-full flex flex-wrap justify-center gap-x-8 gap-y-12 transition-all duration-700 ease-in-out ${
               !showAll && hasMore ? "max-h-[600px] overflow-hidden" : ""
             }`}
           >
             {displayedUniversities.map((university, index) => (
-              <UniversityCard key={university.id} university={university} index={index} />
+              <div key={university.id} style={{ width: "120px" }}>
+                <UniversityCard university={university} index={index} />
+              </div>
             ))}
           </div>
 
@@ -174,13 +187,27 @@ export default function UniversityGridSection() {
 
         {/* Show Less Button */}
         {showAll && (
-          <CTAButton
+          <button
             onClick={() => setShowAll(false)}
-            className="px-8 py-3 bg-neutral-200 rounded-full text-neutral-800 text-2xl font-bold hover:bg-neutral-300 transition-colors"
-            showArrow={false}
+            className="px-8 py-3 bg-white border-2 border-orange-600 rounded-full text-orange-600 text-base font-bold hover:bg-orange-50 transition-colors flex items-center gap-2"
           >
             접기
-          </CTAButton>
+            <svg
+              width="12"
+              height="8"
+              viewBox="0 0 12 8"
+              fill="none"
+              className="transform rotate-180"
+            >
+              <path
+                d="M1 1.5L6 6.5L11 1.5"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </button>
         )}
       </div>
     </section>

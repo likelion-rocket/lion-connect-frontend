@@ -5,84 +5,13 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   UNIVERSITY_REGION_GROUPS,
+  LIKELION_UNIVERSITIES,
   getUniversitiesByRegionGroup,
-  type University,
 } from "@/constants/universities";
 import CTAButton from "@/components/buttons/CTAButton";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
-
-/**
- * UniversityCard Component
- * 개별 대학교 카드를 표시하는 컴포넌트
- */
-type UniversityCardProps = {
-  university: University;
-};
-
-function UniversityCard({ university }: UniversityCardProps) {
-  return (
-    <motion.a
-      href={university.link}
-      target="_blank"
-      rel="noopener noreferrer"
-      layout // FLIP 애니메이션의 핵심!
-      initial={{ opacity: 0, scale: 0.8 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.8 }}
-      transition={{
-        layout: { duration: 0.5, ease: "easeInOut" }, // 위치 이동 애니메이션
-        opacity: { duration: 0.3 }, // 페이드 애니메이션
-        scale: { duration: 0.3 }, // 스케일 애니메이션
-      }}
-      className="flex flex-col items-center gap-3 cursor-pointer"
-    >
-      {/* 대학 로고 */}
-      <div
-        className={`w-24 h-24 relative rounded-full overflow-hidden shadow-md transition-transform duration-300 hover:scale-110 hover:shadow-lg ${
-          university.name === "삼육대" ? "bg-black" : ""
-        }`}
-      >
-        <Image
-          src={university.logo}
-          alt={`${university.name} 로고`}
-          fill
-          className={`${university.name === "숭실대" ? "object-contain p-3" : "object-cover"}`}
-          sizes="96px"
-        />
-      </div>
-      {/* 대학명 */}
-      <div className="flex flex-col items-center gap-0.5">
-        <p className="text-neutral-800 text-base font-bold">{university.name}</p>
-        <p className="text-neutral-500 text-sm">{university.region}</p>
-      </div>
-    </motion.a>
-  );
-}
-
-/**
- * RegionFilterButton Component
- * 지역 필터 버튼 컴포넌트
- */
-type RegionFilterButtonProps = {
-  region: string;
-  isActive: boolean;
-  onClick: () => void;
-};
-
-function RegionFilterButton({ region, isActive, onClick }: RegionFilterButtonProps) {
-  return (
-    <button
-      onClick={onClick}
-      className={`px-6 py-2.5 rounded-full hover:cursor-pointer text-base font-bold transition-colors ${
-        isActive
-          ? "bg-orange-600 text-white"
-          : "bg-white text-orange-600 border-2 border-orange-600 hover:bg-orange-50"
-      }`}
-    >
-      {region}
-    </button>
-  );
-}
+import UniversityCard from "./UniversityCard";
+import RegionFilterButton from "./RegionFilterButton";
 
 /**
  * UniversityGridSection Component
@@ -105,7 +34,6 @@ export default function UniversityGridSection() {
     threshold: 0.2,
   });
 
-  // 지역 그룹 목록 (전체, 서울, 경기·인천, 경상, 충청, 전라)
   const regions = UNIVERSITY_REGION_GROUPS;
 
   // 선택된 지역 그룹에 따라 대학교 필터링
@@ -186,7 +114,7 @@ export default function UniversityGridSection() {
             </AnimatePresence>
           </motion.div>
 
-          {/* Gradient Overlay + More Button */}
+          {/* 더보기 버튼 */}
           {hasMore && !showAll && (
             <div className="w-full h-56 absolute bottom-0 left-0 bg-linear-to-b from-white/0 to-white flex justify-center items-end pb-8">
               <CTAButton onClick={() => setShowAll(true)}>더보기</CTAButton>
@@ -194,7 +122,7 @@ export default function UniversityGridSection() {
           )}
         </div>
 
-        {/* Show Less Button */}
+        {/* 접기 버튼 */}
         {showAll && (
           <button
             onClick={() => setShowAll(false)}

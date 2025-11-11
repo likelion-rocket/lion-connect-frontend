@@ -2,7 +2,7 @@
 "use client";
 
 import Image from "next/image";
-import { ChangeEventHandler, useEffect, useRef, useState, ChangeEvent } from "react";
+import { ChangeEventHandler, useEffect, useRef, useState, ChangeEvent, MouseEvent } from "react";
 
 type FieldEl = HTMLInputElement | HTMLTextAreaElement;
 
@@ -17,6 +17,9 @@ type InputProps = {
   onChange?: ChangeEventHandler<FieldEl>;
   sectionControlled?: boolean;
   showClearWhenFilled?: boolean;
+
+  // ✅ 추가: 파일명 인풋 같은 케이스에서 외부에서 삭제 처리하도록 콜백
+  onFileClear?: () => void;
 };
 
 export default function Input({
@@ -30,6 +33,7 @@ export default function Input({
   onChange,
   sectionControlled = false,
   showClearWhenFilled = true,
+  onFileClear,
 }: InputProps) {
   const fieldRef = useRef<FieldEl | null>(null);
 
@@ -52,7 +56,7 @@ export default function Input({
     onChange?.(e);
   };
 
-  const handleClear = () => {
+  const handleClearInternal = () => {
     const el = fieldRef.current;
     if (!el) return;
     el.value = "";
@@ -68,19 +72,16 @@ export default function Input({
     }
   };
 
-  // 휴지통 버튼 표시 여부 (한 번만 계산)
-  const showClear = !sectionControlled && !readOnly && showClearWhenFilled && hasValue;
+  // ✅ readOnly라도 onFileClear가 있으면 휴지통을 보여주도록 허용
+  const showClear =
+    !sectionControlled && showClearWhenFilled && hasValue && (onFileClear || !readOnly);
 
-  // 섹션 제어 모드면 인풋 래퍼는 투명/무보더로 고정
   const wrapperClasses = sectionControlled
     ? "relative w-full rounded-[6px] bg-transparent"
     : "relative w-full rounded-[6px] bg-white transition-all " +
-      // 값이 있으면 항상 주황 테두리, 하지만 pressed(active)에서는 테두리 색 투명화
       (hasValue
         ? "border border-[#FF6000] active:border-transparent "
-        : // 값이 없으면 hover 때만 주황 테두리, pressed(active)에서는 테두리 색 투명화
-          "hover:border hover:border-[#FF6000]/50 active:border-transparent ") +
-      // pressed/focus 시에는 카드와 동일한 그림자
+        : "hover:border hover:border-[#FF6000]/50 active:border-transparent ") +
       "focus-within:shadow-[0_4px_6px_-2px_rgba(0,0,0,0.05),0_10px_15px_-3px_rgba(0,0,0,0.10)] " +
       "active:shadow-[0_4px_6px_-2px_rgba(0,0,0,0.05),0_10px_15px_-3px_rgba(0,0,0,0.10)]";
 
@@ -88,8 +89,22 @@ export default function Input({
     "block w-full bg-transparent rounded-[6px] px-4 py-3 text-[14px] " +
     "text-text-primary placeholder:text-text-tertiary outline-none ring-0 border-0";
 
-  // 휴지통이 있을 때만 오른쪽 패딩 추가해 겹침 방지
   const fieldWithGuardSpace = `${baseField} ${showClear ? "pr-12" : ""}`;
+
+  const onClearClick = (e: MouseEvent<HTMLButtonElement>) => {
+    // ✅ 부모 onClick(파일열기)로 버블링되는 것을 차단
+    e.stopPropagation();
+    e.preventDefault();
+
+    if (onFileClear) {
+      onFileClear();
+      // 외부에서 상태를 지우므로 내부 값 동기화(보수적으로)
+      setHasValue(false);
+      if (fieldRef.current) fieldRef.current.value = "";
+    } else {
+      handleClearInternal();
+    }
+  };
 
   return (
     <div className={wrapperClasses}>
@@ -139,7 +154,7 @@ export default function Input({
         <button
           type="button"
           aria-label="입력 내용 삭제"
-          onClick={handleClear}
+          onClick={onClearClick}
           className="absolute right-2 top-1/2 -translate-y-1/2 rounded-sm border border-[#FF6000]/20 bg-[#FFF3EB] p-1 transition hover:opacity-90 z-10"
           tabIndex={-1}
         >

@@ -86,8 +86,8 @@ export default function ResumeCard({
               간단소개
             </h4>
           </div>
-          <div className="w-full rounded-xl border border-border-quaternary bg-white p-5">
-            <p className="text-[14px] leading-[1.7] text-[#333] whitespace-pre-wrap">
+          <div className="w-full">
+            <p className="mt-1 text-[14px] leading-[1.7] text-[#333] whitespace-pre-wrap">
               {summary || "간단 소개가 없습니다."}
             </p>
           </div>
@@ -160,11 +160,11 @@ export default function ResumeCard({
           )}
         </section>
 
-        {/* 수상 */}
+        {/* 수상 / 활동 / 기타 */}
         <section aria-labelledby="resume-award">
           <div className="py-3 border-t border-border-quaternary">
             <h4 id="resume-award" className="text-[14px] font-semibold text-[#333]">
-              수상
+              수상 / 활동 / 기타
             </h4>
           </div>
 
@@ -177,9 +177,7 @@ export default function ResumeCard({
               {awards.map((a, i) => (
                 <IconCard key={i} icon="/icons/solid-star.svg" alt="award" className="border-0">
                   <div className="text-[14px] font-medium text-[#111]">{a.title}</div>
-                  <div className="text-[13px] text-[#666]">
-                    {a.start} - {a.end}
-                  </div>
+                  <div className="text-[13px] text-[#666]">획득일: {a.start}</div>
                   {a.desc && <p className="text-[13px] text-[#555] mt-1">{a.desc}</p>}
                 </IconCard>
               ))}
@@ -205,9 +203,7 @@ export default function ResumeCard({
                 <IconCard key={i} icon="/icons/solid-globe.svg" alt="language" className="border-0">
                   <div className="grid grid-cols-4 gap-6 text-[13px] text-[#444]">
                     <div className="font-medium">{l.name}</div>
-                    <div>{`${l.start} - ${l.end}`}</div>
-                    <div />
-                    <div />
+                    <div>획득일: {l.start}</div>
                   </div>
                 </IconCard>
               ))}
@@ -238,9 +234,7 @@ export default function ResumeCard({
                 >
                   <div className="grid grid-cols-4 gap-6 text-[13px] text-[#444]">
                     <div className="font-medium">{c.name}</div>
-                    <div>{`${c.start} - ${c.end}`}</div>
-                    <div />
-                    <div />
+                    <div>획득일: {c.start}</div>
                   </div>
                 </IconCard>
               ))}

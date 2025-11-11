@@ -38,6 +38,7 @@ export default function RegisterJob() {
         </div>
         <div className="flex items-center h-12 text-[16px] font-semibold text-text-primary">
           직군 및 직무 선택
+          <span className="text-status-error">*</span>
         </div>
 
         <div />

@@ -10,7 +10,7 @@ export default function QualificationComponent() {
     <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       {/* 섹션 타이틀 */}
       <div className="text-[18px] font-bold text-text-primary mb-4 flex items-center gap-1">
-        <span>수상 / 자격증 / 기타</span>
+        <span>수상 / 활동 / 기타</span>
       </div>
 
       {/* 1. 수상 / 활동 */}

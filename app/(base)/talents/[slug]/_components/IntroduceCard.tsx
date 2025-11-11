@@ -128,17 +128,17 @@ export default async function IntroduceCard(props: IntroduceCardProps) {
             <div className="mt-6 flex flex-col gap-2 text-[14px]">
               {(university || major) && (
                 <div className="flex items-center gap-10">
-                  <span className="text-[#888] w-[72px]">학교/전공</span>
+                  <span className="text-[#888] w-[72px]">학교 · 전공</span>
                   <span className="text-[#111] font-medium">
-                    {university ?? "-"} {major && `/${major}`}
+                    {university ?? "-"} {major && ` · ${major}`}
                   </span>
                 </div>
               )}
               {(job || jobGroup) && (
                 <div className="flex items-center gap-10">
-                  <span className="text-[#888] w-[72px]">직무/직군</span>
+                  <span className="text-[#888] w-[72px]">직무 · 직군</span>
                   <span className="text-[#111] font-medium">
-                    {jobGroup ?? "-"} {job && `/${job}`}
+                    {jobGroup ?? "-"} {job && ` · ${job}`}
                   </span>
                 </div>
               )}

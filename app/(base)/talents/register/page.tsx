@@ -26,7 +26,7 @@ import { ApiError } from "@/lib/apiClient";
 import { enumToKo } from "@/lib/education/statusMap";
 import { useUpdateTendencies } from "@/hooks/useUpdateTendencies";
 import { useCareerSection } from "@/hooks/useCareerSection";
-import { createExperience, updateExperience } from "@/lib/api/experiences";
+import { createExperience, updateExperience, deleteExperience } from "@/lib/api/experiences";
 import { useMyExperiences } from "@/hooks/useMyExperiences";
 import type { CompanyForm } from "@/hooks/useCareerSection";
 // 상단 import 목록에 추가
@@ -69,6 +69,41 @@ export default function RegisterTalent() {
 
   // ✅ 프리필한 각 행의 DB id를 인덱스에 맞춰 저장
   const [experienceIds, setExperienceIds] = useState<number[]>([]);
+
+  // 각 행 휴지통 버튼 클릭 시
+  const handleDeleteExperience = async (index: number) => {
+    const id = experienceIds[index];
+
+    // 1) 화면 먼저 초기화(섹션은 남겨둠)
+    career.clearCompany(index); // company/period/dept/role/desc 전부 ""
+
+    // 에러 메시지도 깨끗하게(이미 clearCompany에서 errors[index]도 비운다면 생략 가능)
+    career.setErrors((prev) => {
+      const next = [...prev];
+      next[index] = {};
+      return next;
+    });
+
+    // 2) 이 칸은 이제 "신규"로 취급되도록 id를 비워둠
+    setExperienceIds((prev) => {
+      const next = [...prev];
+      next[index] = undefined as unknown as number;
+      return next;
+    });
+
+    // 3) 서버에 저장된 행이었으면 DELETE 호출
+    try {
+      if (id) {
+        await deleteExperience(id);
+      }
+      console.log(`[경력] 삭제 완료 (index=${index}, id=${id ?? "없음"})`);
+    } catch (e) {
+      console.error(e);
+      alert("경력 삭제 중 오류가 발생했어요. 잠시 후 다시 시도해 주세요.");
+    }
+
+    // ✅ refetch는 하지 않습니다. (섹션 개수 유지)
+  };
 
   const prefilledProfileRef = useRef(false);
   useEffect(() => {
@@ -305,6 +340,9 @@ export default function RegisterTalent() {
       prefilledCareerRef.current = false;
       await refetchExperiences();
       console.log("[경력] 서버 데이터 재조회 완료");
+
+      // 🔄 모든 작업 완료 후 새로고침
+      window.location.reload();
     } catch (err) {
       if (err instanceof ApiError) {
         console.log(`${err.message}${err.statusCode ? ` (code ${err.statusCode})` : ""}`);
@@ -380,6 +418,7 @@ export default function RegisterTalent() {
           onChange={career.onChange}
           onAdd={career.addCompany}
           onClear={career.clearCompany}
+          onDelete={handleDeleteExperience} // ✅ 전달
         />
         <SkillComponent />
         <QualificationComponent />

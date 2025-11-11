@@ -3,12 +3,11 @@
 
 import Image from "next/image";
 import Input from "@/components/ui/input";
-import { Plus } from "lucide-react";
 import type { CompanyForm, CompanyErrors } from "@/hooks/useCareerSection";
 
 type Props = {
   companies: CompanyForm[];
-  errors?: CompanyErrors[];
+  errors: CompanyErrors[];
   hasAnyValue: (c: CompanyForm) => boolean;
   onChange: (
     index: number,
@@ -16,6 +15,8 @@ type Props = {
   ) => (e: React.ChangeEvent<HTMLInputElement>) => void;
   onAdd: () => void;
   onClear: (index: number) => void;
+  /** ✅ 추가: 휴지통 클릭 시 호출 (서버 삭제 + 폼 초기화) */
+  onDelete?: (index: number) => Promise<void> | void;
 };
 
 export default function CareerComponent({
@@ -25,15 +26,14 @@ export default function CareerComponent({
   onChange,
   onAdd,
   onClear,
+  onDelete, // ✅
 }: Props) {
   return (
     <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      {/* 🔸 섹션 타이틀 — 한 번만 */}
+      {/* 제목/아이콘은 1회만 노출 */}
       <div className="text-[18px] font-bold text-text-primary mb-4 flex items-center gap-1">
         <span>경력</span>
       </div>
-
-      {/* 🔸 아이콘 + 제목 — 한 번만 */}
       <div className="grid grid-cols-[48px_auto] gap-x-4 mb-4">
         <div className="w-12 h-12 rounded-md bg-[#F5F5F5] border border-border-quaternary flex items-center justify-center">
           <Image
@@ -48,7 +48,6 @@ export default function CareerComponent({
         </div>
       </div>
 
-      {/* 🔸 입력 섹션 카드 — 개수만큼 */}
       {companies.map((item, index) => {
         const sectionClasses =
           "relative w-full rounded-xl bg-white transition-all " +
@@ -58,42 +57,41 @@ export default function CareerComponent({
           "focus-within:shadow-[0_4px_6px_-2px_rgba(0,0,0,0.05),0_10px_15px_-3px_rgba(0,0,0,0.10)] " +
           "active:shadow-[0_4px_6px_-2px_rgba(0,0,0,0.05),0_10px_15px_-3px_rgba(0,0,0,0.10)]";
 
-        const e = errors[index] ?? {};
-
         return (
           <div key={index} className="mb-8 last:mb-0">
+            {/* 입력 섹션만 반복 */}
             <div className={sectionClasses}>
               <div className="p-4">
-                {/* 아이콘 영역 폭(48px)만큼 들여쓰기 정렬 유지 */}
                 <div className="grid grid-cols-[48px_auto] gap-x-4">
-                  <div /> {/* 왼쪽 비움: 위 아이콘과 라벨과 시각 정렬용 */}
+                  <div />
                   <div className="mt-1">
-                    {/* 회사명 */}
                     <Input
                       sectionControlled
                       showClearWhenFilled={false}
                       placeholder="회사명을 입력해주세요"
                       type="text"
-                      className="w-full mb-1"
+                      className="w-full mb-3"
                       value={item.company}
                       onChange={onChange(index, "company")}
                     />
-                    {e.company && <p className="mt-1 text-red-500 text-xs">{e.company}</p>}
+                    {errors[index]?.company && (
+                      <p className="mt-1 text-xs text-red-500">{errors[index]?.company}</p>
+                    )}
 
-                    {/* 근무 기간 */}
                     <Input
                       sectionControlled
                       showClearWhenFilled={false}
-                      placeholder="YYYY.MM - YYYY.MM (또는 YYYY.MM - 현재)"
+                      placeholder="YYYY . MM ~ YYYY . MM (n년 n개월)"
                       type="text"
-                      className="w-full mb-1"
+                      className="w-full mb-3"
                       value={item.period}
                       onChange={onChange(index, "period")}
                     />
-                    {e.period && <p className="mt-1 text-red-500 text-xs">{e.period}</p>}
+                    {errors[index]?.period && (
+                      <p className="mt-1 text-xs text-red-500">{errors[index]?.period}</p>
+                    )}
 
-                    {/* 부서/직무 + 직급·직책 */}
-                    <div className="flex gap-4 mb-1">
+                    <div className="flex gap-4 mb-3">
                       <div className="w-full">
                         <Input
                           sectionControlled
@@ -104,7 +102,9 @@ export default function CareerComponent({
                           value={item.dept}
                           onChange={onChange(index, "dept")}
                         />
-                        {e.dept && <p className="mt-1 text-red-500 text-xs">{e.dept}</p>}
+                        {errors[index]?.dept && (
+                          <p className="mt-1 text-xs text-red-500">{errors[index]?.dept}</p>
+                        )}
                       </div>
                       <div className="w-full">
                         <Input
@@ -116,11 +116,12 @@ export default function CareerComponent({
                           value={item.role}
                           onChange={onChange(index, "role")}
                         />
-                        {e.role && <p className="mt-1 text-red-500 text-xs">{e.role}</p>}
+                        {errors[index]?.role && (
+                          <p className="mt-1 text-xs text-red-500">{errors[index]?.role}</p>
+                        )}
                       </div>
                     </div>
 
-                    {/* 담당 업무 */}
                     <Input
                       sectionControlled
                       showClearWhenFilled={false}
@@ -130,7 +131,9 @@ export default function CareerComponent({
                       value={item.desc}
                       onChange={onChange(index, "desc")}
                     />
-                    {e.desc && <p className="mt-1 text-red-500 text-xs">{e.desc}</p>}
+                    {errors[index]?.desc && (
+                      <p className="mt-1 text-xs text-red-500">{errors[index]?.desc}</p>
+                    )}
                   </div>
                 </div>
               </div>
@@ -139,7 +142,7 @@ export default function CareerComponent({
               <div className="flex justify-end p-3 pt-0">
                 <button
                   type="button"
-                  onClick={() => onClear(index)}
+                  onClick={() => (onDelete ? onDelete(index) : onClear(index))}
                   className="inline-flex items-center gap-2 rounded-sm border border-[#FF6000]/20 bg-[#FFF3EB] px-2 py-1 text-[#FF6000] hover:opacity-90"
                 >
                   <Image src="/icons/outline-trash.svg" alt="삭제" width={24} height={24} />
@@ -157,7 +160,7 @@ export default function CareerComponent({
           onClick={onAdd}
           className="flex items-center gap-2 text-[#FF6000] hover:opacity-80 font-bold text-[16px] leading-none"
         >
-          <Plus size={20} className="text-[#FF6000]" />
+          <Image src="/icons/outline-plus.svg" alt="추가" width={20} height={20} />
           <span>회사 추가</span>
         </button>
       </div>

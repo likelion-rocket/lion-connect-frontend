@@ -28,11 +28,27 @@ export default function CareerComponent({
 }: Props) {
   return (
     <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      {/* 섹션 타이틀 */}
+      {/* 🔸 섹션 타이틀 — 한 번만 */}
       <div className="text-[18px] font-bold text-text-primary mb-4 flex items-center gap-1">
         <span>경력</span>
       </div>
 
+      {/* 🔸 아이콘 + 제목 — 한 번만 */}
+      <div className="grid grid-cols-[48px_auto] gap-x-4 mb-4">
+        <div className="w-12 h-12 rounded-md bg-[#F5F5F5] border border-border-quaternary flex items-center justify-center">
+          <Image
+            src="/icons/outline-office-building.svg"
+            alt="office-building"
+            width={24}
+            height={24}
+          />
+        </div>
+        <div className="flex items-center h-12 text-[16px] font-semibold text-text-primary">
+          회사
+        </div>
+      </div>
+
+      {/* 🔸 입력 섹션 카드 — 개수만큼 */}
       {companies.map((item, index) => {
         const sectionClasses =
           "relative w-full rounded-xl bg-white transition-all " +
@@ -46,35 +62,11 @@ export default function CareerComponent({
 
         return (
           <div key={index} className="mb-8 last:mb-0">
-            {/* 아이콘 + 제목 (섹션 밖) */}
-            <div className="grid grid-cols-[48px_auto] gap-x-4 mb-4">
-              {index === 0 ? (
-                <>
-                  <div className="w-12 h-12 rounded-md bg-[#F5F5F5] border border-border-quaternary flex items-center justify-center">
-                    <Image
-                      src="/icons/outline-office-building.svg"
-                      alt="office-building"
-                      width={24}
-                      height={24}
-                    />
-                  </div>
-                  <div className="flex items-center h-12 text-[16px] font-semibold text-text-primary">
-                    회사
-                  </div>
-                </>
-              ) : (
-                <>
-                  <div />
-                  <div />
-                </>
-              )}
-            </div>
-
-            {/* 입력 섹션 */}
             <div className={sectionClasses}>
               <div className="p-4">
+                {/* 아이콘 영역 폭(48px)만큼 들여쓰기 정렬 유지 */}
                 <div className="grid grid-cols-[48px_auto] gap-x-4">
-                  <div />
+                  <div /> {/* 왼쪽 비움: 위 아이콘과 라벨과 시각 정렬용 */}
                   <div className="mt-1">
                     {/* 회사명 */}
                     <Input
@@ -86,19 +78,19 @@ export default function CareerComponent({
                       value={item.company}
                       onChange={onChange(index, "company")}
                     />
-                    {e.company && <p className="mt-1 mb-2 text-red-500 text-xs">{e.company}</p>}
+                    {e.company && <p className="mt-1 text-red-500 text-xs">{e.company}</p>}
 
                     {/* 근무 기간 */}
                     <Input
                       sectionControlled
                       showClearWhenFilled={false}
-                      placeholder="YYYY . MM ~ YYYY . MM (또는 ~ 현재)"
+                      placeholder="YYYY.MM - YYYY.MM (또는 YYYY.MM - 현재)"
                       type="text"
                       className="w-full mb-1"
                       value={item.period}
                       onChange={onChange(index, "period")}
                     />
-                    {e.period && <p className="mt-1 mb-2 text-red-500 text-xs">{e.period}</p>}
+                    {e.period && <p className="mt-1 text-red-500 text-xs">{e.period}</p>}
 
                     {/* 부서/직무 + 직급·직책 */}
                     <div className="flex gap-4 mb-1">

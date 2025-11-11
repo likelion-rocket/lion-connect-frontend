@@ -27,6 +27,8 @@ import { enumToKo } from "@/lib/education/statusMap";
 import { useUpdateTendencies } from "@/hooks/useUpdateTendencies";
 import { useCareerSection } from "@/hooks/useCareerSection";
 import { createExperience } from "@/lib/api/experiences";
+import { useMyExperiences } from "@/hooks/useMyExperiences";
+import type { CompanyForm } from "@/hooks/useCareerSection";
 
 export default function RegisterTalent() {
   const router = useRouter();
@@ -59,6 +61,9 @@ export default function RegisterTalent() {
 
   // 추가
   const [currentEduId, setCurrentEduId] = useState<number | null>(null);
+
+  // ✅ 내 경력 불러오기
+  const { data: myExperiences } = useMyExperiences();
 
   const prefilledProfileRef = useRef(false);
   useEffect(() => {
@@ -128,6 +133,38 @@ export default function RegisterTalent() {
       return changed ? next : prev;
     });
   }, [myEducations, setForm]); // ✅ 더 이상 'edu'가 필요 없음
+
+  // ===== 경력 프리필 =====
+  const prefilledCareerRef = useRef(false);
+  useEffect(() => {
+    if (!myExperiences) return;
+    if (prefilledCareerRef.current) return;
+
+    if (myExperiences.length === 0) {
+      // 서버에 아무것도 없으면 기본 1행(빈칸) 유지
+      prefilledCareerRef.current = true;
+      return;
+    }
+
+    // 서버 응답 → UI 폼으로 매핑
+    const rows: CompanyForm[] = myExperiences.map((e) => {
+      const start = fmtYM(e.startDate);
+      const end = e.isCurrent || !e.endDate ? "현재" : fmtYM(e.endDate);
+      const period = start ? `${start} - ${end}` : "";
+
+      return {
+        company: e.companyName ?? "",
+        period,
+        dept: e.department ?? "",
+        role: e.position ?? "",
+        desc: e.description ?? "",
+      };
+    });
+
+    career.setCompanies(rows);
+    career.setErrors(new Array(rows.length).fill({})); // 에러 초기화
+    prefilledCareerRef.current = true;
+  }, [myExperiences, career]);
 
   const handleGoBack = () => router.back();
 

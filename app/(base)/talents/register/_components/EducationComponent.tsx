@@ -43,24 +43,12 @@ export default function EducationComponent({
     !!major?.trim() ||
     !!description?.trim();
 
-  // const sectionClasses =
-  //   "relative w-full rounded-xl bg-white transition-all " +
-  //   (hasAnyValue
-  //     ? "border border-[#FF6000] "
-  //     : "hover:border hover:border-[#FF6000]/50 focus-within:border focus-within:border-[#FF6000] ") +
-  //   // ✅ IntroduceCard의 그림자 (pressed/focus 시)
-  //   "focus-within:shadow-[0_4px_6px_-2px_rgba(0,0,0,0.05),0_10px_15px_-3px_rgba(0,0,0,0.10)] " +
-  //   "active:shadow-[0_4px_6px_-2px_rgba(0,0,0,0.05),0_10px_15px_-3px_rgba(0,0,0,0.10)]";
-
-  // ✅ 변경
+  // 섹션(입력영역) UI: hover/값있음만 주황 테두리, pressed에서는 테두리 투명 + 그림자
   const sectionClasses =
     "relative w-full rounded-xl bg-white transition-all " +
     (hasAnyValue
-      ? // 값이 있으면 주황 테두리 고정, 단 pressed 때는 투명 처리
-        "border border-[#FF6000] active:border-transparent "
-      : // 값이 없으면 hover에서만 주황 테두리, pressed 때는 투명 처리
-        "hover:border hover:border-[#FF6000]/50 active:border-transparent ") +
-    // IntroduceCard와 동일한 pressed/focus 그림자
+      ? "border border-[#FF6000] active:border-transparent "
+      : "hover:border hover:border-[#FF6000]/50 active:border-transparent ") +
     "focus-within:shadow-[0_4px_6px_-2px_rgba(0,0,0,0.05),0_10px_15px_-3px_rgba(0,0,0,0.10)] " +
     "active:shadow-[0_4px_6px_-2px_rgba(0,0,0,0.05),0_10px_15px_-3px_rgba(0,0,0,0.10)]";
 
@@ -79,24 +67,24 @@ export default function EducationComponent({
         <span>학력</span>
       </div>
 
-      {/* ✅ 섹션 효과 */}
+      {/* ✅ 아이콘 + 제목: 섹션 밖 (테두리/그림자 영향 없음) */}
+      <div className="grid grid-cols-[48px_auto] gap-x-4 mb-4">
+        <div className="w-12 h-12 rounded-md bg-[#F5F5F5] border border-border-quaternary flex items-center justify-center">
+          <Image src="/icons/outline-library.svg" alt="library" width={24} height={24} />
+        </div>
+        <div className="flex items-center h-12 text-[16px] font-semibold text-text-primary">
+          학교
+        </div>
+      </div>
+
+      {/* ✅ 실제 입력 필드 섹션 */}
       <div className={sectionClasses}>
         <div className="p-4">
           <div className="grid grid-cols-[48px_auto] gap-x-4">
-            {/* 아이콘 */}
-            <div className="w-12 h-12 rounded-md bg-[#F5F5F5] border border-border-quaternary flex items-center justify-center">
-              <Image src="/icons/outline-library.svg" alt="library" width={24} height={24} />
-            </div>
-
-            {/* 제목 */}
-            <div className="flex items-center justify-between h-12 text-[16px] font-semibold text-text-primary">
-              <span>학교</span>
-            </div>
-
             <div />
 
             {/* 1) 학교명 */}
-            <div className="mt-4 mb-3">
+            <div className="mt-1 mb-3">
               <Input
                 sectionControlled
                 showClearWhenFilled={false}

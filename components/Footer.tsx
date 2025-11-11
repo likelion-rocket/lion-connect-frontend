@@ -7,14 +7,6 @@ type FooterLink = {
   icon?: boolean;
 };
 
-const leftLinks = [
-  { label: "모든 교육 경험" },
-  { label: "국비 지원 부트캠프" },
-  { label: "멋사 대학" },
-  { label: "이벤트" },
-  { label: "기업문의" },
-];
-
 const rightLinks: FooterLink[] = [
   { label: "브랜드 웹사이트", href: "https://likelion.career.greetinghr.com/ko/home", icon: true },
   {
@@ -39,7 +31,7 @@ const termsLinks = [
 
 export default function Footer() {
   return (
-    <footer className="w-full bg-bg-quaternary border-t border-border-secondary py-16">
+    <footer className="w-full border-t border-border-secondary py-16 bg-white">
       <div className="max-w-7xl mx-auto px-8">
         {/* Logo and Links Section */}
         <div className="flex justify-between items-start gap-8 mb-12">

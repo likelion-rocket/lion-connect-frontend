@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 const menuItems = [
   {
     label: "기업 문의 리스팅",
-    href: "/admin/companies",
+    href: "/admin/inquiries",
   },
   {
     label: "직군 직무 관리",
@@ -28,7 +28,7 @@ export function AdminSidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="ml-[34px] mt-[68px] mb-[214px] relative rounded-tr-lg h-[1344px] w-60 bg-white shadow-lg  border border-gray-200">
+    <aside className="ml-[34px] mt-[68px] mb-[214px] relative rounded-tr-lg h-[550px] min-w-[238px] w-60 bg-white shadow-lg  border border-gray-200">
       {/* Logo Section */}
       <div className="flex h-[66px] items-center justify-center border-b-[0.6px] border-neutral-200">
         <Image

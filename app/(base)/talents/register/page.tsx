@@ -70,6 +70,15 @@ export default function RegisterTalent() {
   // ✅ 프리필한 각 행의 DB id를 인덱스에 맞춰 저장
   const [experienceIds, setExperienceIds] = useState<number[]>([]);
 
+  // 추가: 직군/직무 상태
+  const [jobGroup, setJobGroup] = useState("");
+  const [job, setJob] = useState("");
+
+  // 직군이 바뀌면 직무 리셋
+  useEffect(() => {
+    setJob("");
+  }, [jobGroup]);
+
   // 각 행 휴지통 버튼 클릭 시
   const handleDeleteExperience = async (index: number) => {
     const id = experienceIds[index];
@@ -208,7 +217,11 @@ export default function RegisterTalent() {
   const handleGoBack = () => router.back();
 
   const isComplete =
-    name.trim().length > 0 && intro.trim().length > 0 && portfolioFile.trim().length > 0;
+    name.trim().length > 0 &&
+    intro.trim().length > 0 &&
+    portfolioFile.trim().length > 0 &&
+    jobGroup.trim().length > 0 && // ✅ 추가
+    job.trim().length > 0; // ✅ 추가;
 
   const handleSubmitAll = async (): Promise<void> => {
     try {
@@ -387,7 +400,14 @@ export default function RegisterTalent() {
         <IntroComponent name={name} onNameChange={setNameSafe} />
         <PhotoComponent />
         <CodeRegisterComponent code={likelionCode} onCodeChange={setLikelionCodeSafe} />
-        <ProfileComponent intro={intro} onIntroChange={setIntroSafe} />
+        <ProfileComponent
+          intro={intro}
+          onIntroChange={setIntroSafe}
+          jobGroup={jobGroup} // ✅ 추가
+          job={job} // ✅ 추가
+          onChangeJobGroup={setJobGroup} // ✅ 추가
+          onChangeJob={setJob} // ✅ 추가
+        />
         <TendencyComponent onChangeSelectedIds={setTendencyIds} />
 
         <EducationComponent

@@ -1,3 +1,4 @@
+// app/(base)/talents/register/_components/section/RegisterJob.tsx
 "use client";
 
 import Image from "next/image";
@@ -17,19 +18,16 @@ const JOB_OPTIONS: Record<string, string[]> = {
   마케팅: ["그로스 마케팅"],
   PM: ["PM"],
 };
-
 const JOB_KEYS = Object.keys(JOB_OPTIONS);
 
-export default function RegisterJob() {
-  // 👇 처음엔 둘 다 빈 값으로
-  const [selectedJobGroup, setSelectedJobGroup] = React.useState<string>("");
-  const [selectedJob, setSelectedJob] = React.useState<string>("");
+type Props = {
+  jobGroup: string;
+  job: string;
+  onChangeJobGroup: (v: string) => void;
+  onChangeJob: (v: string) => void;
+};
 
-  // 직군이 바뀌면 직무는 다시 비워주기만 함
-  React.useEffect(() => {
-    setSelectedJob("");
-  }, [selectedJobGroup]);
-
+export default function RegisterJob({ jobGroup, job, onChangeJobGroup, onChangeJob }: Props) {
   return (
     <section>
       <div className="grid grid-cols-[48px_auto] gap-x-4">
@@ -45,7 +43,13 @@ export default function RegisterJob() {
         <div className="mt-4 flex gap-4 w-full overflow-visible">
           {/* 직군 선택 */}
           <div className="flex-1">
-            <Select value={selectedJobGroup} onValueChange={setSelectedJobGroup}>
+            <Select
+              value={jobGroup}
+              onValueChange={(v) => {
+                onChangeJob(""); // ✅ 직군 변경 시 직무 리셋
+                onChangeJobGroup(v);
+              }}
+            >
               <SelectTrigger className="w-full h-[52px] rounded-md bg-[#F5F5F5] border border-border-quaternary justify-between">
                 <div className="flex items-center justify-between w-full">
                   <SelectValue placeholder="직군 선택" />
@@ -59,9 +63,9 @@ export default function RegisterJob() {
                 </div>
               </SelectTrigger>
               <SelectContent className="bg-white rounded-md border border-border-quaternary">
-                {JOB_KEYS.map((job) => (
-                  <SelectItem key={job} value={job}>
-                    {job}
+                {JOB_KEYS.map((jg) => (
+                  <SelectItem key={jg} value={jg}>
+                    {jg}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -70,12 +74,7 @@ export default function RegisterJob() {
 
           {/* 직무 선택 */}
           <div className="flex-1">
-            <Select
-              value={selectedJob}
-              onValueChange={setSelectedJob}
-              // 직군 안 고르면 선택 막기
-              disabled={!selectedJobGroup}
-            >
+            <Select value={job} onValueChange={onChangeJob} disabled={!jobGroup}>
               <SelectTrigger className="w-full h-[52px] rounded-md bg-[#F5F5F5] border border-border-quaternary justify-between">
                 <div className="flex items-center justify-between w-full">
                   <SelectValue placeholder="직무 선택" />
@@ -89,7 +88,7 @@ export default function RegisterJob() {
                 </div>
               </SelectTrigger>
               <SelectContent className="bg-white rounded-md border border-border-quaternary">
-                {(JOB_OPTIONS[selectedJobGroup] ?? []).map((item) => (
+                {(JOB_OPTIONS[jobGroup] ?? []).map((item) => (
                   <SelectItem key={item} value={item}>
                     {item}
                   </SelectItem>

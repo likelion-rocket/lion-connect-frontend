@@ -29,6 +29,10 @@ import { useCareerSection } from "@/hooks/useCareerSection";
 import { createExperience, updateExperience, deleteExperience } from "@/lib/api/experiences";
 import { useMyExperiences } from "@/hooks/useMyExperiences";
 import type { CompanyForm } from "@/hooks/useCareerSection";
+// 상단 import 추가
+import { useLanguageSection } from "@/hooks/useLanguageSection";
+import { useMyLanguages } from "@/hooks/useMyLanguages";
+import { createLanguage, updateLanguage, deleteLanguage } from "@/lib/api/languages";
 // 상단 import 목록에 추가
 import { parseYYYYMMRange } from "@/lib/date/ym";
 
@@ -214,6 +218,81 @@ export default function RegisterTalent() {
     prefilledCareerRef.current = true;
   }, [myExperiences, career]);
 
+  // ✅ 어학 섹션 훅
+  const lang = useLanguageSection();
+
+  // ✅ 내 어학 불러오기
+  const { data: myLanguages, refetch: refetchLanguages } = useMyLanguages();
+
+  // ✅ 프리필한 각 행의 DB id를 인덱스에 맞춰 저장
+  const [languageIds, setLanguageIds] = useState<number[]>([]);
+
+  // YYYY.MM -> "YYYY-MM-01"
+  const toYYYYMM01 = (ym: string) => {
+    const m = ym.trim().match(/^(\d{4})\.(0[1-9]|1[0-2])$/);
+    if (!m) return "";
+    return `${m[1]}-${m[2]}-01`;
+  };
+
+  // ===== 어학 프리필 =====
+  const prefilledLangRef = useRef(false);
+  useEffect(() => {
+    if (!myLanguages) return;
+    if (prefilledLangRef.current) return;
+
+    if (myLanguages.length === 0) {
+      // 서버 데이터 없으면 기본 1칸 유지
+      setLanguageIds([]);
+      prefilledLangRef.current = true;
+      return;
+    }
+
+    const rows = myLanguages.map((l) => {
+      // 서버 issueDate가 "YYYY-MM-DD"라면 화면은 "YYYY.MM"으로
+      const ymd = (l.issueDate ?? "").split("T")[0] || l.issueDate || "";
+      let ym = "";
+      if (ymd && /^\d{4}-\d{2}-\d{2}$/.test(ymd)) {
+        const [y, m] = ymd.split("-");
+        ym = `${y}.${m}`;
+      } else if (/^\d{4}\.(0[1-9]|1[0-2])$/.test(l.issueDate)) {
+        ym = l.issueDate; // 이미 YYYY.MM 형태를 지원할 수도 있음
+      }
+      return {
+        name: l.languageName ?? "",
+        issueDate: ym,
+      };
+    });
+
+    lang.setLangs(rows);
+    lang.setErrors(new Array(rows.length).fill({}));
+    setLanguageIds(myLanguages.map((l) => l.id));
+    prefilledLangRef.current = true;
+  }, [myLanguages, lang]);
+
+  // ===== 어학: 휴지통(서버 삭제 포함) =====
+  const handleDeleteLanguage = async (index: number) => {
+    const id = languageIds[index];
+
+    // 1) 화면 먼저 초기화
+    lang.clear(index);
+
+    // 2) 이 칸은 신규로 취급되도록 id 제거
+    setLanguageIds((prev) => {
+      const next = [...prev];
+      next[index] = undefined as unknown as number;
+      return next;
+    });
+
+    // 3) 서버 삭제
+    try {
+      if (id) await deleteLanguage(id);
+      console.log(`[어학] 삭제 완료 (index=${index}, id=${id ?? "없음"})`);
+    } catch (e) {
+      console.error(e);
+      alert("어학 삭제 중 오류가 발생했어요. 잠시 후 다시 시도해 주세요.");
+    }
+  };
+
   const handleGoBack = () => router.back();
 
   const isComplete =
@@ -354,6 +433,44 @@ export default function RegisterTalent() {
       await refetchExperiences();
       console.log("[경력] 서버 데이터 재조회 완료");
 
+      // 4.5) 어학 유효성 체크
+      const v = lang.validateAndBuild();
+      if (!v.ok) {
+        console.log("[어학] 유효성 오류 → 저장 스킵");
+      } else {
+        // 인덱스 기준 저장
+        for (let i = 0; i < lang.langs.length; i += 1) {
+          const row = lang.langs[i];
+          const hasAny = row.name.trim() || row.issueDate.trim();
+          if (!hasAny) continue; // 완전 빈 행 스킵
+
+          const issue = toYYYYMM01(row.issueDate);
+          if (!issue) {
+            console.log(`[어학] ${i}번 행 취득월 포맷 오류 → 스킵`);
+            continue;
+          }
+
+          const payload = {
+            languageName: row.name.trim(),
+            issueDate: issue, // 서버는 YYYY-MM-01 형태로 수신
+            // level은 UI가 없으므로 생략
+          } as const;
+
+          const id = languageIds[i];
+          if (id) {
+            const res = await updateLanguage(id, payload);
+            console.log(`[어학] 수정 완료 id=${res.id}`);
+          } else {
+            const res = await createLanguage(payload);
+            console.log(`[어학] 등록 완료 id=${res.id}`);
+          }
+        }
+
+        // 저장 뒤 서버 데이터 재조회 → 폼/ids 재프리필 (한 번만)
+        prefilledLangRef.current = false;
+        await refetchLanguages();
+        console.log("[어학] 서버 데이터 재조회 완료");
+      }
       // 🔄 모든 작업 완료 후 새로고침
       window.location.reload();
     } catch (err) {
@@ -441,7 +558,16 @@ export default function RegisterTalent() {
           onDelete={handleDeleteExperience} // ✅ 전달
         />
         <SkillComponent />
-        <QualificationComponent />
+        <QualificationComponent
+          // 어학 섹션 프롭
+          langs={lang.langs}
+          langErrors={lang.errors}
+          hasAnyValue={lang.hasAnyValue}
+          onLangChange={lang.onChange}
+          onLangAdd={lang.add}
+          onLangClear={lang.clear}
+          onLangDelete={handleDeleteLanguage}
+        />
         <LinkRegisterComponent />
         <PortfolioComponent fileName={portfolioFile} onFileSelect={setPortfolioFileSafe} />
       </main>

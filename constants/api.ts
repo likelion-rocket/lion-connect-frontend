@@ -44,6 +44,18 @@ export const API_ENDPOINTS = {
     UPDATE: (id: number) => `/profile/experiences/${id}`,
     DELETE: (id: number) => `/profile/experiences/${id}`,
   },
+  LANGUAGES: {
+    CREATE: "/profile/languages",
+    LIST: "/profile/languages",
+    UPDATE: (id: number) => `/profile/languages/${id}`,
+    DELETE: (id: number) => `/profile/languages/${id}`,
+  },
+  CERTIFICATIONS: {
+    CREATE: "/profile/certifications",
+    LIST: "/profile/certifications",
+    UPDATE: (id: number) => `/profile/certifications/${id}`,
+    DELETE: (id: number) => `/profile/certifications/${id}`,
+  },
 } as const;
 
 // HTTP 메서드

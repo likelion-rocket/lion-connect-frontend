@@ -62,6 +62,7 @@ export default function PhotoComponent() {
               placeholder="jpg / png 파일을 업로드 해주세요. (업로드 시 파일명이 표시됩니다)"
               onChange={handleFileChange}
               onFileClear={clearExternalState}
+              hideClear
               showClearWhenFilled
               className={`w-full cursor-pointer ${
                 error ? "border border-[#FF3B30] text-[#FF3B30]" : "text-[#6B7280]"

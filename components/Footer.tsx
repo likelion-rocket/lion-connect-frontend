@@ -31,7 +31,7 @@ const termsLinks = [
 
 export default function Footer() {
   return (
-    <footer className="w-full border-t border-border-secondary py-16 bg-white">
+    <footer className="relative z-50 w-full border-t border-border-secondary py-16 bg-white">
       <div className="max-w-7xl mx-auto px-8">
         {/* Logo and Links Section */}
         <div className="flex justify-between items-start gap-8 mb-12">

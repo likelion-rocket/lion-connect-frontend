@@ -7,9 +7,21 @@ import RegisterJob from "./section/RegisterJob";
 type ProfileProps = {
   intro: string; // ✅ 부모가 내려주는 값
   onIntroChange?: (value: string) => void;
+  // ✅ 추가: 직군/직무 제어용
+  jobGroup: string;
+  job: string;
+  onChangeJobGroup: (v: string) => void;
+  onChangeJob: (v: string) => void;
 };
 
-export default function ProfileComponent({ intro, onIntroChange }: ProfileProps) {
+export default function ProfileComponent({
+  intro,
+  onIntroChange,
+  jobGroup,
+  job,
+  onChangeJobGroup,
+  onChangeJob,
+}: ProfileProps) {
   return (
     <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="text-[18px] font-bold text-text-primary mb-4 flex items-center gap-1">
@@ -27,7 +39,12 @@ export default function ProfileComponent({ intro, onIntroChange }: ProfileProps)
       />
 
       <div className="mt-8" />
-      <RegisterJob />
+      <RegisterJob
+        jobGroup={jobGroup} // ✅ 전달
+        job={job} // ✅ 전달
+        onChangeJobGroup={onChangeJobGroup}
+        onChangeJob={onChangeJob}
+      />
     </section>
   );
 }

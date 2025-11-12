@@ -4,6 +4,7 @@
 import Image from "next/image";
 import Input from "@/components/ui/input";
 import type { CompanyForm, CompanyErrors } from "@/hooks/useCareerSection";
+import { Plus } from "lucide-react";
 
 type Props = {
   companies: CompanyForm[];
@@ -153,15 +154,15 @@ export default function CareerComponent({
         );
       })}
 
-      {/* 회사 추가 버튼 */}
-      <div className="flex justify-end">
+      {/* 4. 링크 추가 버튼 */}
+      <div className="flex justify-end mt-4">
         <button
           type="button"
           onClick={onAdd}
           className="flex items-center gap-2 text-[#FF6000] hover:opacity-80 font-bold text-[16px] leading-none"
         >
-          <Image src="/icons/outline-plus.svg" alt="추가" width={20} height={20} />
-          <span>회사 추가</span>
+          <Plus size={20} className="text-[#FF6000]" />
+          <span>경력 추가</span>
         </button>
       </div>
     </section>

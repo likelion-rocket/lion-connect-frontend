@@ -1,40 +1,31 @@
-// app/(consumer)/talents/register/components/qualification/LanguageSection.tsx
 "use client";
 
-import { useState } from "react";
 import Image from "next/image";
 import Input from "@/components/ui/input";
+import type { LangForm, LangError } from "@/hooks/useLanguageSection";
 
-type LangItem = {
-  name: string;
-  issueDate: string; // 취득월
+type Props = {
+  langs: LangForm[];
+  errors?: LangError[];
+  hasAnyValue: (item: LangForm) => boolean;
+  onChange: (
+    index: number,
+    field: keyof LangForm
+  ) => (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onAdd: () => void;
+  onClear: (index: number) => void; // 화면만 초기화
+  onDelete: (index: number) => void; // 서버 삭제까지 (id가 있으면)
 };
 
-export default function LanguageSection() {
-  const [langs, setLangs] = useState<LangItem[]>([{ name: "", issueDate: "" }]);
-
-  const handleAdd = () => setLangs((prev) => [...prev, { name: "", issueDate: "" }]);
-
-  const handleChange =
-    (index: number, field: keyof LangItem) => (e: React.ChangeEvent<HTMLInputElement>) => {
-      const value = e.target.value;
-      setLangs((prev) => {
-        const copy = [...prev];
-        copy[index] = { ...copy[index], [field]: value };
-        return copy;
-      });
-    };
-
-  const handleClear = (index: number) => {
-    setLangs((prev) => {
-      const copy = [...prev];
-      copy[index] = { name: "", issueDate: "" };
-      return copy;
-    });
-  };
-
-  const hasAnyValue = (item: LangItem) => !!item.name.trim() || !!item.issueDate.trim();
-
+export default function LanguageSection({
+  langs,
+  errors = [],
+  hasAnyValue,
+  onChange,
+  onAdd,
+  onClear,
+  onDelete,
+}: Props) {
   return (
     <div>
       {langs.map((item, index) => {
@@ -48,7 +39,6 @@ export default function LanguageSection() {
 
         return (
           <div key={index} className="mb-8 last:mb-0">
-            {/* 아이콘 + 소제목 (첫 번째만 출력) */}
             {index === 0 && (
               <div className="grid grid-cols-[48px_auto] gap-x-4 mb-4">
                 <div className="w-12 h-12 rounded-md bg-[#F5F5F5] border border-border-quaternary flex items-center justify-center">
@@ -60,7 +50,6 @@ export default function LanguageSection() {
               </div>
             )}
 
-            {/* 입력 영역 */}
             <div className={sectionClasses}>
               <div className="p-4">
                 <div className="grid grid-cols-[48px_auto] gap-x-4">
@@ -74,8 +63,11 @@ export default function LanguageSection() {
                       type="text"
                       className="w-full"
                       value={item.name}
-                      onChange={handleChange(index, "name")}
+                      onChange={onChange(index, "name")}
                     />
+                    {errors?.[index]?.name && (
+                      <p className="mt-1 text-red-500 text-xs">{errors[index]!.name}</p>
+                    )}
                   </div>
 
                   <div />
@@ -88,18 +80,22 @@ export default function LanguageSection() {
                       type="text"
                       className="w-full"
                       value={item.issueDate}
-                      onChange={handleChange(index, "issueDate")}
+                      onChange={onChange(index, "issueDate")}
                     />
+                    {errors?.[index]?.issueDate && (
+                      <p className="mt-1 text-red-500 text-xs">{errors[index]!.issueDate}</p>
+                    )}
                   </div>
                 </div>
               </div>
 
               {/* 휴지통 버튼 */}
-              <div className="flex justify-end p-3 pt-0">
+              <div className="flex justify-end p-3 pt-0 gap-2">
                 <button
                   type="button"
-                  onClick={() => handleClear(index)}
+                  onClick={() => (onDelete ? onDelete(index) : onClear(index))}
                   className="inline-flex items-center gap-2 rounded-sm border border-[#FF6000]/20 bg-[#FFF3EB] px-2 py-1 text-[#FF6000] hover:opacity-90"
+                  title="서버에서 삭제"
                 >
                   <Image src="/icons/outline-trash.svg" alt="삭제" width={24} height={24} />
                 </button>
@@ -113,7 +109,7 @@ export default function LanguageSection() {
       <div className="flex justify-end">
         <button
           type="button"
-          onClick={handleAdd}
+          onClick={onAdd}
           className="flex items-center gap-2 text-[#FF6000] hover:opacity-80 font-bold text-[16px] leading-none"
         >
           <svg

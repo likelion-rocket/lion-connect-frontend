@@ -1,6 +1,8 @@
 // components/talent/ResumeCard.tsx
-import IconCard from "./IconCard";
+"use client";
+
 import Image from "next/image";
+import IconCard from "./IconCard";
 
 export type Education = {
   school: string;
@@ -38,6 +40,33 @@ export type ResumeCardProps = {
   defaultOpen?: boolean;
 };
 
+// 섹션 헤더
+function SectionHeader({ id, children }: { id: string; children: React.ReactNode }) {
+  return (
+    <div className="py-3 border-t border-border-quaternary">
+      <h4 id={id} className="text-[14px] font-semibold text-[#333]">
+        {children}
+      </h4>
+    </div>
+  );
+}
+
+// "·" 구분자 메타 라인
+function MetaLine({ items }: { items: (string | undefined | null)[] }) {
+  const list = items.filter(Boolean) as string[];
+  if (list.length === 0) return null;
+  return (
+    <>
+      {list.map((t, i) => (
+        <span key={`${t}-${i}`}>
+          {i > 0 && <span className="mx-1.5">·</span>}
+          {t}
+        </span>
+      ))}
+    </>
+  );
+}
+
 export default function ResumeCard({
   summary,
   education,
@@ -57,16 +86,13 @@ export default function ResumeCard({
       <summary className="list-none cursor-pointer">
         <div className="flex items-center justify-between px-6 py-4">
           <h3 className="text-[16px] font-bold text-black">이력서</h3>
-
           <div className="relative w-5 h-5">
-            {/* 닫힘(기본) 아이콘 */}
             <Image
               src="/icons/outline-cheveron-down.svg"
               alt="펼치기"
               fill
               className="absolute inset-0 transition-opacity duration-150 opacity-100 group-open:opacity-0"
             />
-            {/* 열림 아이콘 */}
             <Image
               src="/icons/outline-cheveron-up.svg"
               alt="접기"
@@ -78,200 +104,178 @@ export default function ResumeCard({
       </summary>
 
       {/* 본문 */}
-      <div className="px-6 pb-6 space-y-6">
+      <div className="px-6 pb-6 space-y-6 text-[14px] leading-6 text-[#333]">
         {/* 간단소개 */}
         <section aria-labelledby="resume-summary">
-          <div className="py-3 border-t border-border-quaternary">
-            <h4 id="resume-summary" className="text-[14px] font-semibold text-[#333]">
-              간단소개
-            </h4>
-          </div>
-          <div className="w-full">
-            <p className="mt-1 text-[14px] leading-[1.7] text-[#333] whitespace-pre-wrap">
-              {summary || "간단 소개가 없습니다."}
-            </p>
-          </div>
+          <SectionHeader id="resume-summary">간단소개</SectionHeader>
+          <p className="whitespace-pre-wrap">{summary || "간단 소개가 없습니다."}</p>
         </section>
-
-        {/* 학력 (IconCard 패턴, 단일) */}
+        {/* 학력 (단일) */}
         <section aria-labelledby="resume-edu">
-          <div className="py-3 border-t border-border-quaternary">
-            <h4 id="resume-edu" className="text-[14px] font-semibold text-[#333]">
-              학력
-            </h4>
-          </div>
+          <SectionHeader id="resume-edu">학력</SectionHeader>
 
-          <IconCard icon="/icons/outline-library.svg" alt="education" className="border-0">
-            {!education ? (
-              <div className="text-[14px] text-[#111]">입력받은 학교명이 뜹니다.</div>
-            ) : (
-              <div className="space-y-1">
-                <div className="text-[14px] font-medium text-[#111]">{education.school}</div>
-                <div className="grid grid-cols-4 gap-6 text-[13px] text-[#444]">
-                  <div>{`${education.start} - ${education.end}`}</div>
-                  <div>{education.major ? `전공(${education.major})` : ""}</div>
-                  <div>{education.graduate ? education.graduate : ""}</div>
-                  <div />
-                </div>
-                {education.note && <p className="text-[13px] text-[#666]">{education.note}</p>}
-              </div>
-            )}
-          </IconCard>
+          {education ? (
+            <IconCard
+              icon="/icons/outline-library.svg"
+              alt="education"
+              className="border-0"
+              title={education.school}
+              subtitle={
+                <span>
+                  <MetaLine
+                    items={[
+                      `${education.start} - ${education.end}`,
+                      education.major ? `전공(${education.major})` : undefined,
+                      education.graduate,
+                    ]}
+                  />
+                </span>
+              }
+            >
+              {education.note && (
+                <p className="text-[13px] text-[#666] leading-5">{education.note}</p>
+              )}
+            </IconCard>
+          ) : (
+            <IconCard
+              icon="/icons/outline-library.svg"
+              alt="education"
+              className="border-0"
+              title="입력받은 학교명이 뜹니다."
+            />
+          )}
         </section>
-
         {/* 경력 */}
         <section aria-labelledby="resume-career">
-          <div className="py-3 border-t border-border-quaternary">
-            <h4 id="resume-career" className="text-[14px] font-semibold text-[#333]">
-              경력
-            </h4>
-          </div>
+          <SectionHeader id="resume-career">경력</SectionHeader>
 
           {careers.length === 0 ? (
-            <IconCard icon="/icons/solid-briefcase.svg" alt="career">
-              <div className="text-[14px] text-[#111]">입력받은 회사명이 뜹니다.</div>
-            </IconCard>
+            <IconCard
+              icon="/icons/solid-briefcase.svg"
+              alt="career"
+              title="입력받은 회사명이 뜹니다."
+            />
           ) : (
             <div className="space-y-3">
               {careers.map((c, i) => (
                 <IconCard
-                  key={i}
+                  key={`${c.company}-${i}`}
                   icon="/icons/solid-briefcase.svg"
                   alt="career"
                   className="border-0"
+                  title={c.company}
+                  subtitle={
+                    <span>
+                      {/* ✅ 직급(rank) 제거 */}
+                      <MetaLine items={[`${c.start} - ${c.end}`, c.deptOrTeam, c.title]} />
+                    </span>
+                  }
                 >
-                  <div className="text-[14px] font-semibold text-[#111]">{c.company}</div>
-
-                  <div className="grid grid-cols-4 gap-6 text-[13px] text-[#444]">
-                    <div>{`${c.start} - ${c.end}`}</div>
-                  </div>
-
-                  <div className="grid grid-cols-4 gap-6 text-[13px] text-[#444] mt-1">
-                    <div>{c.deptOrTeam || ""}</div>
-                    <div>{c.rank || ""}</div>
-                    <div>{c.title || ""}</div>
-                    <div />
-                  </div>
-
-                  {c.desc && <p className="text-[13px] text-[#555] mt-2">{c.desc}</p>}
+                  {c.desc && <p className="text-[13px] text-[#555] leading-5">{c.desc}</p>}
                 </IconCard>
               ))}
             </div>
           )}
         </section>
-
         {/* 수상 / 활동 / 기타 */}
         <section aria-labelledby="resume-award">
-          <div className="py-3 border-t border-border-quaternary">
-            <h4 id="resume-award" className="text-[14px] font-semibold text-[#333]">
-              수상 / 활동 / 기타
-            </h4>
-          </div>
+          <SectionHeader id="resume-award">수상 / 활동 / 기타</SectionHeader>
 
           {awards.length === 0 ? (
-            <IconCard icon="/icons/solid-star.svg" alt="award">
-              <div className="text-[14px] text-[#111]">활동명이 뜹니다.</div>
-            </IconCard>
+            <IconCard icon="/icons/solid-star.svg" alt="award" title="활동명이 뜹니다." />
           ) : (
             <div className="space-y-3">
               {awards.map((a, i) => (
-                <IconCard key={i} icon="/icons/solid-star.svg" alt="award" className="border-0">
-                  <div className="text-[14px] font-medium text-[#111]">{a.title}</div>
-                  <div className="text-[13px] text-[#666]">획득일: {a.start}</div>
-                  {a.desc && <p className="text-[13px] text-[#555] mt-1">{a.desc}</p>}
+                <IconCard
+                  key={`${a.title}-${i}`}
+                  icon="/icons/solid-star.svg"
+                  alt="award"
+                  className="border-0"
+                  title={a.title}
+                  subtitle={<span>획득일: {a.start}</span>}
+                >
+                  {a.desc && <p className="text-[13px] text-[#555] leading-5">{a.desc}</p>}
                 </IconCard>
               ))}
             </div>
           )}
         </section>
-
         {/* 언어 */}
         <section aria-labelledby="resume-lang">
-          <div className="py-3 border-t border-border-quaternary">
-            <h4 id="resume-lang" className="text-[14px] font-semibold text-[#333]">
-              언어
-            </h4>
-          </div>
+          <SectionHeader id="resume-lang">언어</SectionHeader>
 
           {languages.length === 0 ? (
-            <IconCard icon="/icons/solid-globe.svg" alt="language">
-              <div className="text-[14px] text-[#111]">언어명이 뜹니다.</div>
-            </IconCard>
+            <IconCard icon="/icons/solid-globe.svg" alt="language" title="언어명이 뜹니다." />
           ) : (
             <div className="space-y-3">
               {languages.map((l, i) => (
-                <IconCard key={i} icon="/icons/solid-globe.svg" alt="language" className="border-0">
-                  <div className="grid grid-cols-4 gap-6 text-[13px] text-[#444]">
-                    <div className="font-medium">{l.name}</div>
-                    <div>획득일: {l.start}</div>
-                  </div>
-                </IconCard>
+                <IconCard
+                  key={`${l.name}-${i}`}
+                  icon="/icons/solid-globe.svg"
+                  alt="language"
+                  className="border-0"
+                  title={l.name}
+                  subtitle={<span>획득일: {l.start}</span>}
+                />
               ))}
             </div>
           )}
         </section>
-
         {/* 자격증 */}
         <section aria-labelledby="resume-cert">
-          <div className="py-3 border-t border-border-quaternary">
-            <h4 id="resume-cert" className="text-[14px] font-semibold text-[#333]">
-              자격증
-            </h4>
-          </div>
+          <SectionHeader id="resume-cert">자격증</SectionHeader>
 
           {certificates.length === 0 ? (
-            <IconCard icon="/icons/outline-star.svg" alt="certificate">
-              <div className="text-[14px] text-[#111]">입력받은 자격증명이 뜹니다.</div>
-            </IconCard>
+            <IconCard
+              icon="/icons/outline-star.svg"
+              alt="certificate"
+              title="입력받은 자격증명이 뜹니다."
+            />
           ) : (
             <div className="space-y-3">
               {certificates.map((c, i) => (
                 <IconCard
-                  key={i}
+                  key={`${c.name}-${i}`}
                   icon="/icons/outline-star.svg"
                   alt="certificate"
                   className="border-0"
-                >
-                  <div className="grid grid-cols-4 gap-6 text-[13px] text-[#444]">
-                    <div className="font-medium">{c.name}</div>
-                    <div>획득일: {c.start}</div>
-                  </div>
-                </IconCard>
+                  title={c.name}
+                  subtitle={<span>획득일: {c.start}</span>}
+                />
               ))}
             </div>
           )}
         </section>
-
         {/* 링크 */}
         <section aria-labelledby="resume-link">
-          <div className="py-3 border-t border-border-quaternary">
-            <h4 id="resume-link" className="text-[14px] font-semibold text-[#333]">
-              링크
-            </h4>
-          </div>
+          <SectionHeader id="resume-link">링크</SectionHeader>
 
           {links.length === 0 ? (
-            <IconCard icon="/icons/outline-paper-clip.svg" alt="link">
-              <div className="text-[14px] text-[#111]">입력받은 링크 주소가 뜹니다.</div>
-            </IconCard>
+            <IconCard
+              icon="/icons/outline-paper-clip.svg"
+              alt="link"
+              title="입력받은 링크 주소가 뜹니다."
+            />
           ) : (
             <div className="space-y-3">
               {links.map((l, i) => (
                 <IconCard
-                  key={i}
+                  key={`${l.url}-${i}`}
                   icon="/icons/outline-paper-clip.svg"
                   alt="link"
                   className="border-0"
-                >
-                  <a
-                    href={l.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-[#0b5fff] underline break-all"
-                  >
-                    {l.url}
-                  </a>
-                </IconCard>
+                  // 한 줄 카드: 헤더에 바로 링크를 title로
+                  title={
+                    <a
+                      href={l.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-[#0b5fff] underline break-all font-medium"
+                    >
+                      {l.url}
+                    </a>
+                  }
+                />
               ))}
             </div>
           )}

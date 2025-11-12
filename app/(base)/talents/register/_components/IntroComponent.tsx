@@ -47,6 +47,7 @@ export default function IntroComponent({ name, onNameChange }: IntroProps) {
                 className="text-[14px] text-[#1c1c1c]"
                 value={name}
                 onChange={(e) => onNameChange?.(e.target.value)}
+                hideClear
               />
             </div>
 

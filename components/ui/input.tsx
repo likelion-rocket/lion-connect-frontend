@@ -18,8 +18,11 @@ type InputProps = {
   sectionControlled?: boolean;
   showClearWhenFilled?: boolean;
 
-  // ✅ 추가: 파일명 인풋 같은 케이스에서 외부에서 삭제 처리하도록 콜백
+  // 파일명 인풋 같은 케이스에서 외부에서 삭제 처리하도록 콜백
   onFileClear?: () => void;
+
+  // ✅ 추가: 휴지통 아이콘 강제 숨김
+  hideClear?: boolean;
 };
 
 export default function Input({
@@ -34,6 +37,7 @@ export default function Input({
   sectionControlled = false,
   showClearWhenFilled = true,
   onFileClear,
+  hideClear = false, // ✅ 기본값 false
 }: InputProps) {
   const fieldRef = useRef<FieldEl | null>(null);
 
@@ -72,12 +76,17 @@ export default function Input({
     }
   };
 
-  // ✅ readOnly라도 onFileClear가 있으면 휴지통을 보여주도록 허용
+  // ✅ readOnly라도 onFileClear가 있으면 휴지통을 보여주던 기존 로직에
+  //    hideClear가 true면 무조건 숨기도록 한 줄 추가
   const showClear =
-    !sectionControlled && showClearWhenFilled && hasValue && (onFileClear || !readOnly);
+    !hideClear &&
+    !sectionControlled &&
+    showClearWhenFilled &&
+    hasValue &&
+    (onFileClear || !readOnly);
 
   const wrapperClasses = sectionControlled
-    ? "relative w-full rounded-[6px] bg-transparent"
+    ? "relative w/full rounded-[6px] bg-transparent"
     : "relative w-full rounded-[6px] bg-white transition-all " +
       (hasValue
         ? "border border-[#FF6000] active:border-transparent "
@@ -92,13 +101,11 @@ export default function Input({
   const fieldWithGuardSpace = `${baseField} ${showClear ? "pr-12" : ""}`;
 
   const onClearClick = (e: MouseEvent<HTMLButtonElement>) => {
-    // ✅ 부모 onClick(파일열기)로 버블링되는 것을 차단
     e.stopPropagation();
     e.preventDefault();
 
     if (onFileClear) {
       onFileClear();
-      // 외부에서 상태를 지우므로 내부 값 동기화(보수적으로)
       setHasValue(false);
       if (fieldRef.current) fieldRef.current.value = "";
     } else {

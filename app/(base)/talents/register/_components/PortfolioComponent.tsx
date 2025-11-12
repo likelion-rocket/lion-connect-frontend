@@ -76,6 +76,7 @@ export default function PortfolioComponent({ fileName, onFileSelect }: Portfolio
               value={fileName}
               showClearWhenFilled
               onFileClear={handleFileClear} // ✅ 휴지통 연결
+              hideClear
             />
           </div>
         </div>

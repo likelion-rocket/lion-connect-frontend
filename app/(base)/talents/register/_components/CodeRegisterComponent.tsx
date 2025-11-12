@@ -25,6 +25,7 @@ export default function CodeRegisterComponent({ code, onCodeChange }: Props) {
             className="min-w-[140px]"
             value={code}
             onChange={(e) => onCodeChange?.(e.target.value)}
+            hideClear
           />
         </div>
       </div>

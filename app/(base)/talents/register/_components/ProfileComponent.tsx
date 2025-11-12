@@ -23,6 +23,7 @@ export default function ProfileComponent({ intro, onIntroChange }: ProfileProps)
         className="h-[120px] leading-[150%] text-start align-top"
         value={intro}
         onChange={(e) => onIntroChange?.(e.target.value)}
+        hideClear
       />
 
       <div className="mt-8" />

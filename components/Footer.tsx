@@ -53,10 +53,10 @@ export default function Footer() {
               <div className="text-text-secondary text-xs font-normal leading-4">회사 소개</div>
 
               {rightLinks.map((link) => (
-                <div key={link.href} className="flex items-center gap-2">
+                <div key={link.href} className="flex items-center gap-4">
                   <Link
                     href={link.href}
-                    className="text-text-primary hover:text-text-accent transition-colors text-sm font-normal leading-5"
+                    className="text-text-primary w-full hover:text-text-accent transition-colors text-sm font-bold leading-5 "
                   >
                     {link.label}
                   </Link>

@@ -150,7 +150,7 @@ export default function ProgramStatsSection() {
 
   return (
     <section
-      className="w-full min-w-[1444px] py-28 flex justify-center items-start"
+      className="w-full min-w-[1444px] flex justify-center items-start pb-[133px]"
       style={{ background: "linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, #FFF3EB 65%)" }}
     >
       <div className="w-full max-w-[1443px] px-20 flex flex-col items-center gap-[140px]">

@@ -46,7 +46,7 @@ export default function CompanyLogosSection() {
   });
 
   return (
-    <section className="relative w-full min-w-[1444px] px-20 py-[60px] flex flex-col items-center gap-12">
+    <section className="relative w-full min-w-[1444px] px-20 flex flex-col items-center gap-12">
       {/* Section Header - 페이드인 + 슬라이드업 */}
       <div
         ref={headerRef}

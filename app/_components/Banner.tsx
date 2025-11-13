@@ -9,7 +9,7 @@ import Image from "next/image";
  */
 export default function Banner() {
   return (
-    <section className="relative h-[282px] w-full min-w-[1444px] py-8 px-[335px] flex justify-center items-center overflow-hidden">
+    <section className="relative h-[282px] w-full min-w-[1444px] px-[335px] flex justify-center items-center overflow-hidden">
       {/* Background Image with Overlay */}
       <div className="absolute inset-0 -z-10">
         <Image

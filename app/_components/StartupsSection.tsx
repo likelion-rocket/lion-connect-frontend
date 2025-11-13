@@ -23,38 +23,43 @@ export default function StartupsSection() {
    */
 
   return (
-    <section className="relative min-w-[1444px] flex flex-col items-center bg-linear-to-b from-white to-brand-01 px-[83px] py-[67px]">
+    <section className="relative min-w-[1444px] flex flex-col items-center px-[83px] py-[67px]">
       {/* 제목 및 설명 컨테이너 - 페이드인 + 슬라이드업 */}
-      <div ref={headerRef} className="mb-[111px] flex max-w-[1280px] flex-col items-center gap-8">
-        {/* 메인 제목 */}
-        <h2
-          className={`whitespace-pre-line text-center text-5xl font-bold leading-tight text-text-accent
-            transition-all duration-1000 ease-out
-            ${isHeaderVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
-        >
-          멋쟁이사자처럼의 인재들로부터{"\n"}독보적인 스타트업들이 탄생하였습니다.
-        </h2>
+      <div
+        ref={headerRef}
+        className="mb-[111px] flex max-w-[1280px] flex-col items-center gap-[35px] w-full"
+      >
+        {/* 메인 제목 컨테이너 */}
+        <div className="flex flex-col items-center gap-3">
+          <h2
+            className={`text-center text-4xl font-bold leading-[45px] text-text-accent
+              transition-all duration-1000 ease-out
+              ${isHeaderVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
+          >
+            멋쟁이 사자처럼의 인재들로부터 독보적인 스타트업들이 탄생하였습니다.
+          </h2>
+        </div>
 
         {/* 부제목 */}
         <p
-          className={`text-center text-lg font-normal leading-normal text-text-primary
+          className={`text-center text-sm font-medium leading-[21px] text-text-secondary
             transition-all duration-1000 ease-out
             ${isHeaderVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}
           style={{ transitionDelay: "300ms" }}
         >
-          *멋쟁이사자처럼의 인재들이 탄생시킨 스타트업을 확인해보세요
+          *멋쟁이 사자처럼의 인재들이 탄생시킨 스타트업을 확인해보세요
         </p>
       </div>
 
       {/* 스타트업 카드 무한 슬라이드 */}
       <div
-        className="max-w-7xl overflow-hidden"
+        className="max-w-7xl overflow-x-hidden overflow-y-visible py-6"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
-        <Marquee speed={40} autoFill play={!isHovered}>
+        <Marquee speed={40} autoFill play={!isHovered} style={{ overflow: "visible" }}>
           {STARTUPS.map((startup, index) => (
-            <div key={`startup-${index}`} className="px-4">
+            <div key={`startup-${index}`} className="px-4 py-4">
               <StartupCard startup={startup} index={index} totalCards={STARTUPS.length} />
             </div>
           ))}

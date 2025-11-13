@@ -31,7 +31,7 @@ export default function UniversityCard({ university }: UniversityCardProps) {
     >
       {/* 대학 로고 */}
       <div
-        className={`w-24 h-24 relative rounded-full overflow-hidden shadow-md transition-transform duration-300 hover:scale-110 hover:shadow-lg ${
+        className={`w-24 h-24 -shadow-lg relative rounded-full overflow-hidden shadow-md transition-transform duration-300 hover:scale-110 hover:shadow-lg ${
           university.name === "삼육대" ? "bg-black" : ""
         }`}
       >

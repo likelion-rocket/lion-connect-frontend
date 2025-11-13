@@ -49,21 +49,21 @@ export default function UniversityGridSection() {
     <section className="w-full min-w-[1444px] py-28 bg-white flex justify-center items-start">
       <div className="w-full max-w-[1280px] px-20 flex flex-col justify-start items-center gap-16">
         {/* Header Section - 페이드인 + 슬라이드업 */}
-        <div ref={headerRef} className="flex flex-col justify-start items-center gap-4">
+        <div ref={headerRef} className="flex flex-col items-center gap-8 w-full">
           <h2
-            className={`text-orange-600 text-5xl font-bold leading-[60px] transition-all duration-1000 ease-out ${
+            className={`text-text-accent text-4xl font-bold leading-[45px] transition-all duration-1000 ease-out ${
               isHeaderVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
             }`}
           >
             멋쟁이사자처럼 활동 대학
           </h2>
           <p
-            className={`text-neutral-800 text-lg font-normal leading-7 transition-all duration-1000 ease-out ${
+            className={`text-text-secondary text-sm font-medium leading-[21px] transition-all duration-1000 ease-out ${
               isHeaderVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
             }`}
             style={{ transitionDelay: "200ms" }}
           >
-            멋쟁이사자처럼 동아리가 있는 대학들을 소개합니다.
+            멋사 대학(멋쟁이사자처럼 IT 동아리)가 있는 대학들을 소개합니다.
           </p>
         </div>
 

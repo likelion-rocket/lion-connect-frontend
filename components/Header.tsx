@@ -58,15 +58,15 @@ export default function Header() {
   const { navRefs, indicatorStyle, handleNavClick, isLinkActive } = useNavigation(visibleLinks);
 
   return (
-    <header className="w-full  bg-bg-primary py-3">
-      <nav className="max-w-7xl min-w-[1444px] mx-auto px-8 h-16 flex items-center justify-between">
+    <header className="fixed top-0 left-0 right-0 z-50 w-full bg-bg-primary/95 backdrop-blur-sm">
+      <nav className="max-w-7xl min-w-[1444px] mx-auto px-8 h-20 flex items-center justify-between">
         {/* Logo */}
         <Link href="/" className="shrink-0 flex items-center gap-2">
           <Image
             src="/icons/likelion-favicon-60.svg"
             alt="LikelionConnect Logo"
-            width={60}
-            height={60}
+            width={32}
+            height={32}
           />
           <span className="text-text-accent font-bold text-[24px] leading-[138%] tracking-[0]">
             라이언 커넥트
@@ -74,7 +74,7 @@ export default function Header() {
         </Link>
 
         {/* Navigation Links */}
-        <div className="flex gap-8 relative">
+        <div className="flex gap-36 relative">
           {visibleLinks.map((link, index) => {
             const isActive = isLinkActive(link);
 

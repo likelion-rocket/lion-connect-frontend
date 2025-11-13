@@ -7,10 +7,7 @@ export default function BusinessConnect() {
   const { register, handleSubmit, errors } = useBusinessConnect();
 
   return (
-    <section
-      id="business-connect"
-      className="w-full min-w-[1444px] py-20 flex flex-col items-center"
-    >
+    <section id="business-connect" className="w-full min-w-[1444px] flex flex-col items-center">
       {/* Header */}
       <div className="max-w-[1078px] flex flex-col items-center gap-8 mb-[142px]">
         <h2 className="text-center text-4xl font-bold leading-[45px]">

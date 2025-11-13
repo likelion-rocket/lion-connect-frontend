@@ -23,7 +23,7 @@ export default function StartupsSection() {
    */
 
   return (
-    <section className="relative min-w-[1444px] flex flex-col items-center px-[83px] py-[67px]">
+    <section className="relative min-w-[1444px] flex flex-col items-center px-[83px]">
       {/* 제목 및 설명 컨테이너 - 페이드인 + 슬라이드업 */}
       <div
         ref={headerRef}

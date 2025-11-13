@@ -28,22 +28,33 @@ export default function Home() {
       <HeroSection />
 
       {/* Main Content Sections */}
-      <article>
-        <BenefitsSection />
-        <ProgramStatsSection />
-        <UniversityGridSection />
+      <article className="flex flex-col">
+        <div className="pt-[258px]">
+          <BenefitsSection />
+        </div>
+
+        <div className="pt-60">
+          <ProgramStatsSection />
+        </div>
+
+        <div className="pt-[107px]">
+          <UniversityGridSection />
+        </div>
 
         {/* StartupsSection + CompanyLogosSection 공통 그라데이션 배경 */}
-        <div className="relative bg-gradient-to-b from-transparent via-brand-01 via-[41.695%] to-[83.386%] to-[rgba(255,249,245,0)]">
+        <div className="relative flex flex-col pt-60 gap-60 bg-linear-to-b from-transparent via-brand-01 via-[41.695%] to-[83.386%] to-[rgba(255,249,245,0)]">
           <StartupsSection />
           <CompanyLogosSection />
         </div>
 
-        <Banner />
+        <div className="pt-[276px]">
+          <Banner />
+        </div>
       </article>
 
-      {/* CTA Section */}
-      <BusinessConnect />
+      <div className="pt-60 pb-[127px]">
+        <BusinessConnect />
+      </div>
 
       {/* Footer */}
       <Footer />

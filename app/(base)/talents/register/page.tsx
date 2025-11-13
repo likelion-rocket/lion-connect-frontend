@@ -346,28 +346,32 @@ export default function RegisterTalent() {
   // 8-1. 경력 삭제 (개별 행)
   const handleDeleteExperience = async (index: number) => {
     const id = experienceIds[index];
+    const hasMultiple = career.companies.length > 1;
 
-    // 화면 먼저 초기화
-    career.clearCompany(index);
-    career.setErrors((prev) => {
-      const next = [...prev];
-      next[index] = {};
-      return next;
-    });
+    if (hasMultiple) {
+      // ✅ 섹션이 여러 개면: 해당 행 자체 제거
+      const nextCompanies = career.companies.filter((_, i) => i !== index);
+      const nextErrors = (career.errors ?? []).filter((_, i) => i !== index);
+      const nextIds = experienceIds.filter((_, i) => i !== index);
 
-    // id 제거 -> 신규 취급
-    setExperienceIds((prev) => {
-      const next = [...prev];
-      next[index] = undefined as unknown as number;
-      return next;
-    });
+      career.setCompanies(nextCompanies);
+      career.setErrors(nextErrors);
+      setExperienceIds(nextIds);
+    } else {
+      // ✅ 섹션이 1개면: 행은 유지하고 값만 초기화
+      career.clearCompany(index); // company, period, dept, role, desc 전부 ""
+      career.setErrors([{}]); // 에러도 깨끗하게
+      setExperienceIds([undefined as unknown as number]); // id는 비워둠(신규 취급)
+    }
 
-    // 서버 삭제
+    // 📡 서버에 저장된 행이었으면 DELETE 호출
     try {
       if (id) {
         await deleteExperience(id);
       }
-      console.log(`[경력] 삭제 완료 (index=${index}, id=${id ?? "없음"})`);
+      console.log(
+        `[경력] 삭제 완료 (index=${index}, id=${id ?? "없음"}, hasMultiple=${hasMultiple})`
+      );
     } catch (e) {
       console.error(e);
       alert("경력 삭제 중 오류가 발생했어요. 잠시 후 다시 시도해 주세요.");
@@ -377,18 +381,29 @@ export default function RegisterTalent() {
   // 8-2. 어학 삭제
   const handleDeleteLanguage = async (index: number) => {
     const id = languageIds[index];
+    const hasMultiple = lang.langs.length > 1;
 
-    lang.clear(index);
+    if (hasMultiple) {
+      // ✅ 섹션 여러 개면: 해당 행 자체 제거
+      const nextLangs = lang.langs.filter((_, i) => i !== index);
+      const nextErrors = (lang.errors ?? []).filter((_, i) => i !== index);
+      const nextIds = languageIds.filter((_, i) => i !== index);
 
-    setLanguageIds((prev) => {
-      const next = [...prev];
-      next[index] = undefined as unknown as number;
-      return next;
-    });
+      lang.setLangs(nextLangs);
+      lang.setErrors(nextErrors);
+      setLanguageIds(nextIds);
+    } else {
+      // ✅ 섹션 1개면: 값만 초기화
+      lang.clear(index);
+      lang.setErrors([{}]);
+      setLanguageIds([undefined as unknown as number]);
+    }
 
     try {
       if (id) await deleteLanguage(id);
-      console.log(`[어학] 삭제 완료 (index=${index}, id=${id ?? "없음"})`);
+      console.log(
+        `[어학] 삭제 완료 (index=${index}, id=${id ?? "없음"}, hasMultiple=${hasMultiple})`
+      );
     } catch (e) {
       console.error(e);
       alert("어학 삭제 중 오류가 발생했어요. 잠시 후 다시 시도해 주세요.");
@@ -398,18 +413,29 @@ export default function RegisterTalent() {
   // 8-3. 자격증 삭제
   const handleDeleteCertification = async (index: number) => {
     const id = certificationIds[index];
+    const hasMultiple = cert.certs.length > 1;
 
-    cert.clear(index);
+    if (hasMultiple) {
+      // ✅ 섹션 여러 개면: 해당 행 자체 제거
+      const nextCerts = cert.certs.filter((_, i) => i !== index);
+      const nextErrors = (cert.errors ?? []).filter((_, i) => i !== index);
+      const nextIds = certificationIds.filter((_, i) => i !== index);
 
-    setCertificationIds((prev) => {
-      const next = [...prev];
-      next[index] = undefined as unknown as number;
-      return next;
-    });
+      cert.setCerts(nextCerts);
+      cert.setErrors(nextErrors);
+      setCertificationIds(nextIds);
+    } else {
+      // ✅ 섹션 1개면: 값만 초기화
+      cert.clear(index);
+      cert.setErrors([{}]);
+      setCertificationIds([undefined as unknown as number]);
+    }
 
     try {
       if (id) await deletecertification(id);
-      console.log(`[자격증] 삭제 완료 (index=${index}, id=${id ?? "없음"})`);
+      console.log(
+        `[자격증] 삭제 완료 (index=${index}, id=${id ?? "없음"}, hasMultiple=${hasMultiple})`
+      );
     } catch (e) {
       console.error(e);
       alert("자격증 삭제 중 오류가 발생했어요. 잠시 후 다시 시도해 주세요.");

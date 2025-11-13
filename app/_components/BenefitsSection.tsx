@@ -95,15 +95,6 @@ function BenefitCard({
             transitionDelay: `${300 + index * 100}ms`,
           }}
         />
-        {/* 그라데이션 오버레이 - 점진적 페이드인 */}
-        <div
-          className={`absolute inset-0 bg-linear-to-b from-black/60 via-black/0 to-black/60
-            transition-opacity duration-1000 ease-out
-            ${isVisible ? "opacity-100" : "opacity-0"}`}
-          style={{
-            transitionDelay: `${500 + index * 100}ms`,
-          }}
-        />
       </div>
     </div>
   );
@@ -120,7 +111,7 @@ function BenefitsSection() {
       title: "적합한 인재 탐색",
       description:
         "멋사 대학 누적 수료 학생 수 14,000명 이상, 멋사 부트캠프\n 누적 수강생 15,000명 이상. 개발, 기획, 데이터 분석, 디자인,\n 마케팅 등 다양한 직무의 인재가 매년 수천 명씩 멋쟁이사자처럼을\n 통해 배출되고 있습니다.",
-      imageSrc: "/landing/02.png",
+      imageSrc: "/landing/images/reason01.png",
       imageAlt: "적합한 인재 탐색",
       imagePosition: "left" as const,
     },
@@ -128,7 +119,7 @@ function BenefitsSection() {
       title: "우수한 IT 인재",
       description:
         "지금까지 1,800개 이상의 서비스가 멋쟁이사자처럼에서\n 완성됐으며, 탈잉, 그리팅, 자소설닷컴 등 유망 스타트업들이\n 멋쟁이사자처럼의 인재들로부터 탄생했습니다. 그외에도\n 국내외 주요 기업에서 멋사 출신 인재들이 활약 중입니다.",
-      imageSrc: "/landing/03.png",
+      imageSrc: "/landing/images/reason02.png",
       imageAlt: "우수한 IT 인재",
       imagePosition: "right" as const,
     },

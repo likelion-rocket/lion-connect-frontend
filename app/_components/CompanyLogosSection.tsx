@@ -46,40 +46,43 @@ export default function CompanyLogosSection() {
   });
 
   return (
-    <section className="relative w-full min-w-[1444px] bg-brand-01 px-20 py-[60px] flex flex-col items-center gap-12">
+    <section className="relative w-full min-w-[1444px] px-20 py-[60px] flex flex-col items-center gap-12">
       {/* Section Header - 페이드인 + 슬라이드업 */}
       <div
         ref={headerRef}
-        className="w-full max-w-[1283px] flex flex-col items-center gap-8 text-center"
+        className="w-full max-w-[1283px] flex flex-col items-center gap-[32px] text-center"
       >
-        {/* 상단 레이블 */}
-        <p
-          className={`text-[#5c5c5c] text-xl font-bold leading-[27.5px]
-            transition-all duration-1000 ease-out
-            ${isHeaderVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}
-          style={{ transitionDelay: "100ms" }}
-        >
-          Employed Company
-        </p>
+        {/* 레이블 + 제목 그룹 */}
+        <div className="flex flex-col items-center gap-3 w-full">
+          {/* 상단 레이블 */}
+          <p
+            className={`text-text-secondary text-sm font-normal leading-[21px]
+              transition-all duration-1000 ease-out
+              ${isHeaderVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}
+            style={{ transitionDelay: "100ms" }}
+          >
+            Employed Company
+          </p>
 
-        {/* 메인 제목 */}
-        <h2
-          className={`text-text-accent text-5xl font-bold leading-[60px]
-            transition-all duration-1000 ease-out
-            ${isHeaderVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
-          style={{ transitionDelay: "300ms" }}
-        >
-          멋사 대학 및 부트캠프 출신 재직 기업
-        </h2>
+          {/* 메인 제목 */}
+          <h2
+            className={`text-text-accent text-4xl font-bold leading-[45px]
+              transition-all duration-1000 ease-out
+              ${isHeaderVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
+            style={{ transitionDelay: "300ms" }}
+          >
+            멋사 대학 및 부트캠프 출신 재직 기업
+          </h2>
+        </div>
 
         {/* 부제목 */}
         <p
-          className={`text-text-primary text-lg font-normal leading-7
+          className={`text-text-secondary text-sm font-medium leading-[21px]
             transition-all duration-1000 ease-out
             ${isHeaderVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}
           style={{ transitionDelay: "500ms" }}
         >
-          *실제 멋사 대학 및 멋사 부트캠프 수료생 재직 기업입니다.
+          실제 멋사 대학 및 멋사 부트캠프 수료생 재직 기업입니다
         </p>
       </div>
 

@@ -32,8 +32,13 @@ export default function Home() {
         <BenefitsSection />
         <ProgramStatsSection />
         <UniversityGridSection />
-        <StartupsSection />
-        <CompanyLogosSection />
+
+        {/* StartupsSection + CompanyLogosSection 공통 그라데이션 배경 */}
+        <div className="relative bg-gradient-to-b from-transparent via-brand-01 via-[41.695%] to-[83.386%] to-[rgba(255,249,245,0)]">
+          <StartupsSection />
+          <CompanyLogosSection />
+        </div>
+
         <Banner />
       </article>
 

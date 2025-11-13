@@ -72,7 +72,7 @@ function StartupCard({ startup, index = 0, totalCards = 1 }: StartupCardProps) {
       target="_blank"
       rel="noopener noreferrer"
       style={{ opacity }}
-      className="group flex h-[328px] w-[270px] shrink-0 flex-col gap-[10px] rounded-lg border border-border-quaternary bg-bg-secondary p-5 transition-all duration-200 ease-out hover:border-brand-01 hover:bg-white hover:shadow-lg"
+      className="group flex h-[328px] w-[270px] shrink-0 flex-col gap-[10px] rounded-lg border border-border-quaternary bg-bg-secondary p-5 shadow-lg transition-all duration-200 ease-out hover:border-brand-01 hover:bg-white hover:shadow-lg"
     >
       {/* 상단 영역: 로고 + 화살표 버튼 */}
       <div className="relative flex w-full items-start gap-[69px]">

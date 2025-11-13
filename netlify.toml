@@ -1,0 +1,11 @@
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+# HTTP API를 HTTPS로 프록시 (임시)
+# TODO: 백엔드 HTTPS 적용 후 이 설정 제거
+[[redirects]]
+  from = "/api/*"
+  to = "http://43.203.200.60/:splat"
+  status = 200
+  force = true

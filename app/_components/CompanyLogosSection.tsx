@@ -87,12 +87,12 @@ export default function CompanyLogosSection() {
       </div>
 
       {/* Logos Grid Container */}
-      <div className="w-full max-w-[1560px] flex flex-col gap-8">
+      <div className="relative w-full max-w-[1560px] flex flex-col gap-8 overflow-x-hidden overflow-y-visible">
         {/* 첫 번째 줄 - 왼쪽으로 흐르는 애니메이션 */}
-        <Marquee speed={40} autoFill>
+        <Marquee speed={40} autoFill style={{ overflow: "visible" }}>
           {COMPANY_LOGOS.row1.map((logoUrl, index) => (
-            <div key={`row1-${index}`} className="px-2">
-              <div className="shrink-0 w-[162px] h-[162px] bg-white rounded-lg flex items-center justify-center overflow-hidden">
+            <div key={`row1-${index}`} className="px-2 py-2">
+              <div className="shrink-0 w-[162px] h-[162px] bg-white rounded-lg shadow-lg flex items-center justify-center overflow-hidden">
                 <div className="relative w-full h-full">
                   <Image
                     src={logoUrl}
@@ -111,10 +111,10 @@ export default function CompanyLogosSection() {
         </Marquee>
 
         {/* 두 번째 줄 - 오른쪽으로 흐르는 애니메이션 */}
-        <Marquee speed={40} autoFill direction="right">
+        <Marquee speed={40} autoFill direction="right" style={{ overflow: "visible" }}>
           {COMPANY_LOGOS.row2.map((logoUrl, index) => (
-            <div key={`row2-${index}`} className="px-2">
-              <div className="shrink-0 w-[162px] h-[162px] bg-white rounded-lg flex items-center justify-center overflow-hidden">
+            <div key={`row2-${index}`} className="px-2 py-2">
+              <div className="shrink-0 w-[162px] h-[162px] bg-white rounded-lg shadow-lg flex items-center justify-center overflow-hidden">
                 <div className="relative w-full h-full">
                   <Image
                     src={logoUrl}
@@ -131,13 +131,13 @@ export default function CompanyLogosSection() {
             </div>
           ))}
         </Marquee>
+
+        {/* 좌측 그라데이션 오버레이 */}
+        <div className="absolute top-0 left-0 w-[202px] h-full bg-linear-to-r from-white from-[52.885%] to-transparent pointer-events-none z-10" />
+
+        {/* 우측 그라데이션 오버레이 */}
+        <div className="absolute top-0 right-0 w-[202px] h-full bg-linear-to-l from-white from-[52.885%] to-transparent pointer-events-none z-10" />
       </div>
-
-      {/* 좌측 그라데이션 오버레이 */}
-      <div className="absolute bottom-0 left-0 w-[202px] h-[528px] bg-linear-to-r from-brand-01 from-[52.885%] to-transparent pointer-events-none" />
-
-      {/* 우측 그라데이션 오버레이 */}
-      <div className="absolute bottom-0 right-0 w-[202px] h-[528px] bg-linear-to-l from-brand-01 from-[52.885%] to-transparent pointer-events-none" />
     </section>
   );
 }

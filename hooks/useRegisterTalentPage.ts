@@ -24,9 +24,9 @@ import { createLanguage, updateLanguage, deleteLanguage } from "@/lib/api/langua
 import { useCertificationSection } from "@/hooks/useCertificationSection";
 import { useMyCertifications } from "@/hooks/useMyCertifications";
 import {
-  createcertification,
-  updatecertification,
-  deletecertification,
+  createCertification,
+  updateCertification,
+  deleteCertification,
 } from "@/lib/api/certifications";
 
 import { ApiError } from "@/lib/apiClient";
@@ -254,7 +254,7 @@ export function useRegisterTalentPage() {
         ym = c.issueDate;
       }
 
-      return { name: c.certificationName ?? "", issueDate: ym };
+      return { name: c.name ?? "", issueDate: ym };
     });
 
     cert.setCerts(rows);
@@ -349,7 +349,7 @@ export function useRegisterTalentPage() {
     }
 
     try {
-      if (id) await deletecertification(id);
+      if (id) await deleteCertification(id);
       console.log(
         `[자격증] 삭제 완료 (index=${index}, id=${id ?? "없음"}, hasMultiple=${hasMultiple})`
       );
@@ -544,16 +544,17 @@ export function useRegisterTalentPage() {
             }
 
             const certPayload = {
-              certificationName: row.name.trim(),
+              name: row.name.trim(),
               issueDate: issue,
+              issuer: "미입력", // ✅ 임시 발급기관(백엔드가 NotBlank일 때용)
             } as const;
 
             const id = certificationIds[i];
             if (id) {
-              const res = await updatecertification(id, certPayload);
+              const res = await updateCertification(id, certPayload);
               console.log(`[자격증] 수정 완료 id=${res.id}`);
             } else {
-              const res = await createcertification(certPayload);
+              const res = await createCertification(certPayload);
               console.log(`[자격증] 등록 완료 id=${res.id}`);
             }
           }

@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { fetchMycertifications, type CertificationListItem } from "@/lib/api/certifications";
+import { fetchMyCertifications, type CertificationListItem } from "@/lib/api/certifications";
 import { useAuthStore } from "@/store/authStore";
 
 export function useMyCertifications() {
@@ -11,7 +11,7 @@ export function useMyCertifications() {
 
   return useQuery<CertificationListItem[]>({
     queryKey: ["profile", "certifications", userId],
-    queryFn: fetchMycertifications,
+    queryFn: fetchMyCertifications,
     enabled,
     retry: false,
     refetchOnMount: "always",

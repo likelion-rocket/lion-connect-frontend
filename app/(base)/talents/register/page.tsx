@@ -61,7 +61,7 @@ export default function RegisterTalent() {
   return (
     <div className="w-full text-black mt-8">
       {/* Header */}
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items_center justify-between">
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         <button
           onClick={handleGoBack}
           className="flex items-center gap-1 hover:opacity-80 transition"

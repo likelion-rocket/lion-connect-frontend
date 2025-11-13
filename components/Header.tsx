@@ -58,7 +58,7 @@ export default function Header() {
   const { navRefs, indicatorStyle, handleNavClick, isLinkActive } = useNavigation(visibleLinks);
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 w-full bg-bg-primary/95 backdrop-blur-sm">
+    <header className="fixed top-0 left-0 right-0 z-50 w-full bg-bg-primary ">
       <nav className="max-w-7xl min-w-[1444px] mx-auto px-8 h-20 flex items-center justify-between">
         {/* Logo */}
         <Link href="/" className="shrink-0 flex items-center gap-2">
@@ -87,7 +87,7 @@ export default function Header() {
                 }}
                 onClick={(e) => handleNavClick(e, link.href)}
                 className={`font-medium py-1 transition-colors ${
-                  isActive ? "text-text-accent" : "text-text-secondary hover:text-text-accent"
+                  isActive ? "text-text-accent" : "text-black hover:text-text-accent"
                 }`}
               >
                 {link.label}

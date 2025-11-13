@@ -33,6 +33,16 @@ import type { CompanyForm } from "@/hooks/useCareerSection";
 import { useLanguageSection } from "@/hooks/useLanguageSection";
 import { useMyLanguages } from "@/hooks/useMyLanguages";
 import { createLanguage, updateLanguage, deleteLanguage } from "@/lib/api/languages";
+
+// 상단 import 추가
+import { useCertificationSection } from "@/hooks/useCertificationSection";
+import { useMyCertifications } from "@/hooks/useMyCertifications";
+import {
+  createcertification,
+  updatecertification,
+  deletecertification,
+} from "@/lib/api/certifications";
+
 // 상단 import 목록에 추가
 import { parseYYYYMMRange } from "@/lib/date/ym";
 
@@ -227,6 +237,15 @@ export default function RegisterTalent() {
   // ✅ 프리필한 각 행의 DB id를 인덱스에 맞춰 저장
   const [languageIds, setLanguageIds] = useState<number[]>([]);
 
+  // ✅ 자격증 섹션 훅
+  const cert = useCertificationSection();
+
+  // ✅ 내 자격증 불러오기
+  const { data: myCerts, refetch: refetchCerts } = useMyCertifications();
+
+  // ✅ 프리필한 각 행의 DB id 저장
+  const [certificationIds, setCertificationIds] = useState<number[]>([]);
+
   // YYYY.MM -> "YYYY-MM-01"
   const toYYYYMM01 = (ym: string) => {
     const m = ym.trim().match(/^(\d{4})\.(0[1-9]|1[0-2])$/);
@@ -290,6 +309,59 @@ export default function RegisterTalent() {
     } catch (e) {
       console.error(e);
       alert("어학 삭제 중 오류가 발생했어요. 잠시 후 다시 시도해 주세요.");
+    }
+  };
+
+  // ===== 자격증 프리필 =====
+  const prefilledCertRef = useRef(false);
+  useEffect(() => {
+    if (!myCerts) return;
+    if (prefilledCertRef.current) return;
+
+    if (myCerts.length === 0) {
+      setCertificationIds([]);
+      prefilledCertRef.current = true;
+      return;
+    }
+
+    const rows = myCerts.map((c) => {
+      const ymd = (c.issueDate ?? "").split("T")[0] || c.issueDate || "";
+      let ym = "";
+      if (ymd && /^\d{4}-\d{2}-\d{2}$/.test(ymd)) {
+        const [y, m] = ymd.split("-");
+        ym = `${y}.${m}`;
+      } else if (/^\d{4}\.(0[1-9]|1[0-2])$/.test(c.issueDate)) {
+        ym = c.issueDate;
+      }
+      return { name: c.certificationName ?? "", issueDate: ym };
+    });
+
+    cert.setCerts(rows);
+    cert.setErrors(new Array(rows.length).fill({}));
+    setCertificationIds(myCerts.map((c) => c.id));
+    prefilledCertRef.current = true;
+  }, [myCerts, cert]);
+
+  const handleDeleteCertification = async (index: number) => {
+    const id = certificationIds[index];
+
+    // 1) 화면 먼저 초기화
+    cert.clear(index);
+
+    // 2) 신규로 취급되도록 id 제거
+    setCertificationIds((prev) => {
+      const next = [...prev];
+      next[index] = undefined as unknown as number;
+      return next;
+    });
+
+    // 3) 서버 삭제
+    try {
+      if (id) await deletecertification(id);
+      console.log(`[자격증] 삭제 완료 (index=${index}, id=${id ?? "없음"})`);
+    } catch (e) {
+      console.error(e);
+      alert("자격증 삭제 중 오류가 발생했어요. 잠시 후 다시 시도해 주세요.");
     }
   };
 
@@ -468,6 +540,45 @@ export default function RegisterTalent() {
 
         // 저장 뒤 서버 데이터 재조회 → 폼/ids 재프리필 (한 번만)
         prefilledLangRef.current = false;
+
+        // 4.6) 자격증 유효성 체크
+        const cv = cert.validateAndBuild();
+        if (!cv.ok) {
+          console.log("[자격증] 유효성 오류 → 저장 스킵");
+        } else {
+          for (let i = 0; i < cert.certs.length; i += 1) {
+            const row = cert.certs[i];
+            const hasAny = row.name.trim() || row.issueDate.trim();
+            if (!hasAny) continue;
+
+            const issue = toYYYYMM01(row.issueDate);
+            if (!issue) {
+              console.log(`[자격증] ${i}번 행 취득월 포맷 오류 → 스킵`);
+              continue;
+            }
+
+            const payload = {
+              certificationName: row.name.trim(),
+              issueDate: issue, // 서버는 YYYY-MM-01
+              // issuer는 UI 없음 → 생략(필요시 다른 입력 추가)
+            } as const;
+
+            const id = certificationIds[i];
+            if (id) {
+              const res = await updatecertification(id, payload);
+              console.log(`[자격증] 수정 완료 id=${res.id}`);
+            } else {
+              const res = await createcertification(payload);
+              console.log(`[자격증] 등록 완료 id=${res.id}`);
+            }
+          }
+
+          // 서버 재조회로 폼/ids 동기화
+          prefilledCertRef.current = false;
+
+          await refetchCerts();
+          console.log("[자격증] 서버 데이터 재조회 완료");
+        }
         await refetchLanguages();
         console.log("[어학] 서버 데이터 재조회 완료");
       }
@@ -559,7 +670,7 @@ export default function RegisterTalent() {
         />
         <SkillComponent />
         <QualificationComponent
-          // 어학 섹션 프롭
+          // 어학
           langs={lang.langs}
           langErrors={lang.errors}
           hasAnyValue={lang.hasAnyValue}
@@ -567,6 +678,14 @@ export default function RegisterTalent() {
           onLangAdd={lang.add}
           onLangClear={lang.clear}
           onLangDelete={handleDeleteLanguage}
+          // 자격증
+          certs={cert.certs}
+          certErrors={cert.errors}
+          hasAnyCertValue={cert.hasAnyValue}
+          onCertChange={cert.onChange}
+          onCertAdd={cert.add}
+          onCertClear={cert.clear}
+          onCertDelete={handleDeleteCertification}
         />
         <LinkRegisterComponent />
         <PortfolioComponent fileName={portfolioFile} onFileSelect={setPortfolioFileSafe} />

@@ -26,9 +26,10 @@ export default function ScrollDownButton({
   const scrollToNextSection = () => {
     const targetSection = document.getElementById(targetSectionId);
     if (targetSection) {
-      targetSection.scrollIntoView({
+      const targetPosition = targetSection.getBoundingClientRect().top + window.scrollY - 145;
+      window.scrollTo({
+        top: targetPosition,
         behavior: "smooth",
-        block: "start",
       });
     }
   };

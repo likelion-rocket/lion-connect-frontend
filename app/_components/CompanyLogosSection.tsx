@@ -132,11 +132,11 @@ export default function CompanyLogosSection() {
           ))}
         </Marquee>
 
-        {/* 좌측 그라데이션 오버레이 */}
-        <div className="absolute top-0 left-0 w-[202px] h-full bg-linear-to-r from-white from-[52.885%] to-transparent pointer-events-none z-10" />
+        {/* 좌측 그라데이션 오버레이 - 왼쪽 끝은 완전 흰색 */}
+        <div className="absolute top-0 left-0 w-[202px] h-full bg-linear-to-r from-white to-transparent pointer-events-none z-10" />
 
-        {/* 우측 그라데이션 오버레이 */}
-        <div className="absolute top-0 right-0 w-[202px] h-full bg-linear-to-l from-white from-[52.885%] to-transparent pointer-events-none z-10" />
+        {/* 우측 그라데이션 오버레이 - 오른쪽 끝은 완전 흰색 */}
+        <div className="absolute top-0 right-0 w-[202px] h-full bg-linear-to-l from-white to-transparent pointer-events-none z-10" />
       </div>
     </section>
   );

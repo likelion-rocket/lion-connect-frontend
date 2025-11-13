@@ -29,7 +29,7 @@ function StartupCard({ startup, index = 0, totalCards = 1 }: StartupCardProps) {
 
     const updateOpacity = () => {
       const rect = card.getBoundingClientRect();
-      const container = card.closest(".overflow-hidden");
+      const container = card.closest(".startup-carousel-container");
       if (!container) return;
 
       const containerRect = container.getBoundingClientRect();

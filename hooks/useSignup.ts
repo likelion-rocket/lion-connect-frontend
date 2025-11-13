@@ -5,6 +5,7 @@ import { SignupFormData, SignupResponse } from "@/types/auth";
 import { signupAPI } from "@/lib/api/auth";
 import { ApiError } from "@/lib/apiClient";
 import { useRouter } from "next/navigation";
+import { useSignupCompleteStore } from "@/store/useSignupCompleteStore";
 
 /**
  * 회원가입 Mutation 훅 (TanStack Query 기반)
@@ -15,6 +16,7 @@ import { useRouter } from "next/navigation";
  */
 export function useSignup() {
   const router = useRouter();
+  const setSignupComplete = useSignupCompleteStore((state) => state.setSignupComplete);
 
   const mutation = useMutation({
     mutationFn: async (data: SignupFormData) => {
@@ -43,8 +45,11 @@ export function useSignup() {
       //   localStorage.setItem("authToken", data.token);
       // }
 
-      // 로그인 페이지로 이동
-      router.push("/login");
+      // 회원가입 완료 상태 설정
+      setSignupComplete(true);
+
+      // 회원가입 완료 페이지로 이동
+      router.push("/signup/complete");
     },
     // 조건부 재시도: 네트워크 오류나 타임아웃만 재시도
     retry: (failureCount, error) => {

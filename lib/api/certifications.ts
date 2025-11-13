@@ -3,14 +3,14 @@ import { API_ENDPOINTS } from "@/constants/api";
 
 export type CertificationRequest = {
   certificationName: string;
-  level?: string;
+  issuer?: string;
   issueDate: string;
 };
 
 export type CertificationResponse = {
   id: number;
   certificationName: string;
-  level: string | null;
+  issuer: string | null;
   issueDate: string;
   createdAt: string;
   updatedAt: string;

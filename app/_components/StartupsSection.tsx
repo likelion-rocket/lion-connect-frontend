@@ -53,7 +53,7 @@ export default function StartupsSection() {
 
       {/* 스타트업 카드 무한 슬라이드 */}
       <div
-        className="max-w-7xl overflow-x-hidden overflow-y-visible py-6"
+        className="startup-carousel-container max-w-7xl overflow-x-hidden overflow-y-visible py-6"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >

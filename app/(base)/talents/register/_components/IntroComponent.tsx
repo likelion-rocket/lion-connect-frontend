@@ -4,6 +4,8 @@
 import Image from "next/image";
 import Input from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
+// ✅ authStore에서 user 가져오기 (경로는 프로젝트에 맞게 조정: "@/store/authStore" or "@/store/AuthStore")
+import { useAuthStore } from "@/store/authStore";
 
 const EXPERIENCES = [
   { id: "bootcamp", label: "부트캠프 경험자" },
@@ -17,7 +19,29 @@ type IntroProps = {
   onNameChange?: (value: string) => void;
 };
 
+// 전화번호 포맷터: 01012341234 -> 010 1234 1234
+function formatPhoneNumber(raw: string | null | undefined) {
+  if (!raw) return "";
+  const digits = raw.replace(/\D/g, ""); // 숫자 외 제거
+
+  if (digits.length === 11) {
+    return `${digits.slice(0, 3)} ${digits.slice(3, 7)} ${digits.slice(7)}`;
+  }
+  if (digits.length === 10) {
+    return `${digits.slice(0, 3)} ${digits.slice(3, 6)} ${digits.slice(6)}`;
+  }
+
+  // 그 외 길이는 그냥 원본 리턴
+  return raw;
+}
+
 export default function IntroComponent({ name, onNameChange }: IntroProps) {
+  // ✅ 로그인한 사용자 정보 가져오기
+  const user = useAuthStore((state) => state.user);
+
+  const emailText = user?.email ?? "email@gmail.com";
+  const phoneText = formatPhoneNumber(user?.phoneNumber) || "010 0000 0000"; // 전화번호 없으면 기존 placeholder
+
   return (
     <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="mb-8">
@@ -51,14 +75,16 @@ export default function IntroComponent({ name, onNameChange }: IntroProps) {
               />
             </div>
 
+            {/* 전화번호 - authStore 값 사용 */}
             <div className="flex items-center gap-4">
               <Image src="/icons/outline-phone.svg" alt="phone" width={20} height={20} />
-              <span className="text-[14px] text-[#9CA3AF] font-normal">010 0000 0000</span>
+              <span className="text-[14px] text-[#9CA3AF] font-normal">{phoneText}</span>
             </div>
 
+            {/* 이메일 - authStore 값 사용 */}
             <div className="flex items-center gap-4">
               <Image src="/icons/outline-mail.svg" alt="mail" width={20} height={20} />
-              <span className="text-[14px] text-[#9CA3AF] font-normal">email@gmail.com</span>
+              <span className="text-[14px] text-[#9CA3AF] font-normal">{emailText}</span>
             </div>
           </div>
         </div>

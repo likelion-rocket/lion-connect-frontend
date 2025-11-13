@@ -9,7 +9,7 @@ export default function BusinessConnect() {
   return (
     <section
       id="business-connect"
-      className="w-full min-w-[1444px] bg-bg-tertiary py-20 flex flex-col items-center"
+      className="w-full min-w-[1444px] py-20 flex flex-col items-center"
     >
       {/* Header */}
       <div className="max-w-[1078px] flex flex-col items-center gap-8 mb-[142px]">
@@ -23,7 +23,7 @@ export default function BusinessConnect() {
       </div>
 
       {/* Form Container with Shadow */}
-      <div className="w-[994px] p-8 bg-white shadow-[0px_4px_6px_-2px_rgba(0,0,0,0.05)]">
+      <div className="w-[994px] p-8 bg-white shadow-lg">
         <form onSubmit={handleSubmit} className="w-[910px] flex flex-col gap-6">
           {/* Form Fields Grid */}
           <div className="flex flex-wrap gap-6">

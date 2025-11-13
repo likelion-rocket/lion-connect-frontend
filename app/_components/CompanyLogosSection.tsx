@@ -87,11 +87,11 @@ export default function CompanyLogosSection() {
       </div>
 
       {/* Logos Grid Container */}
-      <div className="relative w-full max-w-[1560px] flex flex-col gap-8 overflow-x-hidden overflow-y-visible">
+      <div className="relative w-full max-w-[1560px] flex flex-col gap-6 overflow-x-hidden overflow-y-visible">
         {/* 첫 번째 줄 - 왼쪽으로 흐르는 애니메이션 */}
         <Marquee speed={40} autoFill style={{ overflow: "visible" }}>
           {COMPANY_LOGOS.row1.map((logoUrl, index) => (
-            <div key={`row1-${index}`} className="px-2 py-2">
+            <div key={`row1-${index}`} className="px-2 pb-3">
               <div className="shrink-0 w-[162px] h-[162px] bg-white rounded-lg shadow-lg flex items-center justify-center overflow-hidden">
                 <div className="relative w-full h-full">
                   <Image
@@ -113,7 +113,7 @@ export default function CompanyLogosSection() {
         {/* 두 번째 줄 - 오른쪽으로 흐르는 애니메이션 */}
         <Marquee speed={40} autoFill direction="right" style={{ overflow: "visible" }}>
           {COMPANY_LOGOS.row2.map((logoUrl, index) => (
-            <div key={`row2-${index}`} className="px-2 py-2">
+            <div key={`row2-${index}`} className="px-2 pb-4">
               <div className="shrink-0 w-[162px] h-[162px] bg-white rounded-lg shadow-lg flex items-center justify-center overflow-hidden">
                 <div className="relative w-full h-full">
                   <Image

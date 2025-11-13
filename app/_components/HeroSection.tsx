@@ -17,7 +17,7 @@ export default function HeroSection({
   backgroundImage = "/images/hero-image.png",
 }: HeroSectionProps) {
   return (
-    <section className="relative w-full min-w-[1444px] h-[790px] flex justify-center items-center overflow-hidden">
+    <section className="relative w-full min-w-[1444px] h-screen flex justify-center items-center overflow-hidden">
       {/* Background Image with Gradient Overlay */}
       <div className="absolute inset-0 z-0">
         <Image

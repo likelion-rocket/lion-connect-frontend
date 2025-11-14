@@ -99,7 +99,11 @@ export default async function TalentsPage({ searchParams }: TalentsPageProps) {
           </div>
         </section>
 
-        <Pager currentPage={currentPage} totalPages={totalPages} className="mt-10" />
+        <Pager
+          currentPage={currentPage}
+          totalPages={totalPages}
+          className="mt-10 mb-20" // ← 여기에 하단 마진 추가
+        />
       </div>
     </main>
   );

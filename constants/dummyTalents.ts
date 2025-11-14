@@ -115,21 +115,58 @@ const SKILLS_BY_GROUP: Record<string, string[]> = {
 
 const SUMMARY_TEMPLATES = [
   "사용자 경험을 최우선으로 생각하며, 작은 디테일까지 챙기는 개발자입니다.\n기획 단계부터 참여하는 것을 좋아하고, 협업을 중요하게 생각합니다.",
-
   "문제를 끝까지 파고드는 스타일입니다.\n새로운 스택에도 도전하며 코드 리뷰 문화를 중요하게 생각합니다.",
-
   "팀과 함께 성장하는 것을 즐깁니다.\n주도적으로 일을 찾고, 지식을 나누는 문화를 선호합니다.",
-
   "데이터 기반으로 의사결정하는 것을 선호합니다.\n실험과 검증을 반복하며 꾸준히 개선하고 싶습니다.",
 ];
 
+/** ✨ 일부 더미만 3줄 이상 되도록 훨씬 긴 텍스트 */
+const LONG_SUMMARY_TEMPLATES = [
+  "실제 서비스 환경에서 성능 최적화와 접근성 개선을 경험했습니다. " +
+    "특히 페이지 로딩 속도 개선과 번들 크기 관리에 관심이 많으며, " +
+    "사용자 피드백을 바탕으로 UI 구성과 인터랙션을 여러 번 리디자인해 본 경험이 있습니다. " +
+    "사내 해커톤과 사이드 프로젝트를 통해 다양한 직군과 협업해 왔고, " +
+    "서비스 초반 지표가 좋지 않았던 경험을 바탕으로 온보딩 플로우를 개선해 전환율을 끌어올린 적도 있습니다.",
+
+  "크로스 기능 협업에 익숙하며, 디자이너·기획자·마케터와 함께 작은 실험을 빠르게 돌리는 문화를 좋아합니다. " +
+    "A/B 테스트와 퍼널 분석을 통해 가설을 검증해 왔고, " +
+    "실제 숫자에 근거해 우선순위를 조정하는 일을 즐깁니다. " +
+    "장기적으로는 제품의 방향성까지 함께 고민하는 프로덕트 마인드셋을 지향하며, " +
+    "팀 내에서 기술적인 논의뿐 아니라 일하는 방식 자체를 개선하는 데도 관심이 많습니다.",
+
+  "새로운 기술을 단순히 도입하는 것보다 팀의 맥락에 맞게 녹여내는 것을 중요하게 생각합니다. " +
+    "레거시 코드를 단계적으로 리팩토링하고, 테스트 코드를 도입해 안정적인 배포 파이프라인을 만든 경험이 있습니다. " +
+    "문서화와 코드 리뷰를 통해 지식을 공유하는 것을 좋아하며, " +
+    "주니어 개발자와 함께 페어 프로그래밍을 하며 성장하는 환경을 선호합니다. " +
+    "결국 유지보수가 쉬운 코드를 통해 팀 전체의 생산성을 높이는 것이 목표입니다.",
+];
+
+/** 뱃지 */
 const BADGE_SETS: { label: string; type: BadgeType }[][] = [
+  // 부트캠프 + 전공자
   [
-    { label: "부트캠프 수료자", type: "bootcamp" as BadgeType },
+    { label: "부트캠프 경험자", type: "bootcamp" as BadgeType },
     { label: "전공자", type: "major" as BadgeType },
   ],
+  // 창업 + 전공자
+  [
+    { label: "창업 경험자", type: "startup" as BadgeType },
+    { label: "전공자", type: "major" as BadgeType },
+  ],
+  // 자격증 + 전공자
+  [
+    { label: "자격증 보유자", type: "certified" as BadgeType },
+    { label: "전공자", type: "major" as BadgeType },
+  ],
+  // 부트캠프 단독
+  [{ label: "부트캠프 경험자", type: "bootcamp" as BadgeType }],
+  // 창업 단독
+  [{ label: "창업 경험자", type: "startup" as BadgeType }],
+  // 자격증 단독
+  [{ label: "자격증 보유자", type: "certified" as BadgeType }],
+  // 전공자 단독
   [{ label: "전공자", type: "major" as BadgeType }],
-  [{ label: "부트캠프 수료자", type: "bootcamp" as BadgeType }],
+  // 아무 배지 없음
   [],
 ];
 
@@ -145,6 +182,15 @@ export function generateDummyTalents(count = 24): DummyTalent[] {
     const jobList = JOB_OPTIONS[jobGroup];
     const job = jobList[idx % jobList.length];
 
+    // ⭐ 기본 요약
+    let summary = SUMMARY_TEMPLATES[idx % SUMMARY_TEMPLATES.length];
+
+    // ⭐ 일부 인덱스만 3줄 이상 되도록 긴 문장 추가 (0, 2, 4, 6, ... 정도)
+    if (idx % 2 === 0) {
+      const longExtra = LONG_SUMMARY_TEMPLATES[idx % LONG_SUMMARY_TEMPLATES.length];
+      summary = `${summary}\n${longExtra}`;
+    }
+
     return {
       id: 1000 + idx,
       slug: String(1000 + idx),
@@ -157,7 +203,7 @@ export function generateDummyTalents(count = 24): DummyTalent[] {
       badges: BADGE_SETS[idx % BADGE_SETS.length],
       tendencies: buildDummyTendencies(idx),
       skills: SKILLS_BY_GROUP[jobGroup] ?? [],
-      summary: SUMMARY_TEMPLATES[idx % SUMMARY_TEMPLATES.length],
+      summary,
     };
   });
 }

@@ -55,7 +55,6 @@ export default async function IntroduceCard(props: IntroduceCardProps) {
   const src = profileImageUrl || "/images/default-profile.png";
   const href = detailHref ?? (slug ? `/talents/${slug}` : undefined);
 
-  // ▶ 카드 내부 UI를 하나의 JSX로 묶음
   const CardBody = (
     <section
       className={`w-[910px] mx-auto mb-6 rounded-2xl shadow-[0px_1px_2px_rgba(0,0,0,0.06),0px_1px_3px_rgba(0,0,0,0.10)] bg-white p-8 ${className}`}
@@ -67,7 +66,6 @@ export default async function IntroduceCard(props: IntroduceCardProps) {
             <Image src={src} alt={`${name} 프로필 이미지`} fill className="object-cover" priority />
           </div>
 
-          {/* ↳ 래퍼가 Link일 땐 중첩 a 방지 위해 span으로 표시 */}
           {href && (
             <span
               className="mt-3 block h-10 w-40 rounded-md bg-[#FF6000] text-white text-center leading-10 font-semibold
@@ -124,45 +122,53 @@ export default async function IntroduceCard(props: IntroduceCardProps) {
             </div>
           )}
 
-          {(university || major || job || jobGroup) && (
-            <div className="mt-6 flex flex-col gap-2 text-[14px]">
-              {(university || major) && (
-                <div className="flex items-center gap-10">
-                  <span className="text-[#888] w-[72px]">학교 · 전공</span>
-                  <span className="text-[#111] font-medium">
-                    {university ?? "-"} {major && ` · ${major}`}
-                  </span>
-                </div>
-              )}
-              {(job || jobGroup) && (
-                <div className="flex items-center gap-10">
-                  <span className="text-[#888] w-[72px]">직무 · 직군</span>
-                  <span className="text-[#111] font-medium">
-                    {jobGroup ?? "-"} {job && ` · ${job}`}
-                  </span>
-                </div>
+          {/* 🔹 학교·전공 / 직무·직군 / 스킬: 하나의 컬럼으로 묶어서 간격 통일 */}
+          <div className="mt-6 flex flex-col gap-3 text-[14px]">
+            {/* 학교 · 전공 */}
+            <div className="flex items-center gap-10">
+              <span className="text-[#888] w-[72px]">학교 · 전공</span>
+              {university || major ? (
+                <span className="text-[#111] font-medium">
+                  {university ?? "-"}
+                  {university && major ? " · " : ""}
+                  {major ?? (university ? "" : "-")}
+                </span>
+              ) : (
+                <span className="text-[#B0B0B0]">등록된 학교·전공 정보가 없습니다.</span>
               )}
             </div>
-          )}
 
-          {skills.length > 0 && (
-            <div className="mt-4 flex items-start gap-10">
-              <span className="text-[#888] w-[72px]">스킬</span>
-              <SkillChips skills={skills} />
+            {/* 직무 · 직군 */}
+            <div className="flex items-center gap-10">
+              <span className="text-[#888] w-[72px]">직무 · 직군</span>
+              {jobGroup || job ? (
+                <span className="text-[#111] font-medium">
+                  {jobGroup ?? "-"}
+                  {jobGroup && job ? " · " : ""}
+                  {job ?? (jobGroup ? "" : "-")}
+                </span>
+              ) : (
+                <span className="text-[#B0B0B0]">등록된 직무·직군 정보가 없습니다.</span>
+              )}
             </div>
-          )}
+
+            {/* 스킬 */}
+            <div className="flex items-start gap-10">
+              <span className="text-[#888] w-[72px]">스킬</span>
+              {skills.length > 0 ? (
+                <SkillChips skills={skills} />
+              ) : (
+                <span className="text-[#B0B0B0] text-[14px]">등록된 스킬이 없습니다.</span>
+              )}
+            </div>
+          </div>
         </div>
       </div>
     </section>
   );
 
-  // ▶ href가 있으면 카드 전체를 Link로 감싼다
   return href ? (
-    <Link
-      href={href}
-      aria-label={`${name} 상세 페이지로 이동`}
-      className="block rounded-2xl" // 🔸 focus:ring 관련 클래스 제거
-    >
+    <Link href={href} aria-label={`${name} 상세 페이지로 이동`} className="block rounded-2xl">
       {CardBody}
     </Link>
   ) : (

@@ -46,31 +46,23 @@ export default function InquiriesPageContent() {
   // const { data, isLoading, error } = useInquiries(queryParams);
 
   return (
-    <div className="w-full min-h-screen bg-bg-primary p-8">
-      <div className="max-w-[1400px] mx-auto">
-        {/* 헤더 */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-text-primary mb-2">기업 문의 관리</h1>
-          <p className="text-sm text-text-secondary">
-            기업에서 문의한 내용을 확인하고 관리할 수 있습니다
-          </p>
-        </div>
-
+    <div className="w-full min-h-screen bg-bg-primary mt-5">
+      <div className="max-w-[1440px] mx-auto px-8">
         {/* 검색 및 필터 영역 */}
-        <div className="flex items-center justify-between gap-4 mb-6 w-[1100px]">
+        <div className="w-[1043px] bg-bg-primary border-b border-border-quaternary py-6 pr-6 flex flex-col gap-4">
           <InquirySearchBar />
           <InquiryFilters />
         </div>
 
         {/* 테이블 영역 */}
-        <div className="bg-bg-primary border border-border-quaternary rounded-lg overflow-hidden w-[1100px] ">
+        <div className="w-[1043px] bg-bg-primary px-6 py-8 rounded-lg shadow-[0px_10px_15px_-3px_rgba(0,0,0,0.1),0px_4px_6px_-2px_rgba(0,0,0,0.05)] flex flex-col gap-3">
           {isLoading ? (
             <div className="flex items-center justify-center h-64">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-text-accent" />
             </div>
           ) : error ? (
-            <div className="flex items-center justify-center h-64">
-              <div className="text-center">
+            <div className="flex items-center justify-center h-64 text-center">
+              <div>
                 <p className="text-text-error mb-2">데이터를 불러오는데 실패했습니다</p>
                 <p className="text-sm text-text-secondary">알 수 없는 오류가 발생했습니다</p>
               </div>
@@ -81,57 +73,45 @@ export default function InquiriesPageContent() {
             </div>
           ) : (
             <>
-              <table className="w-full table-fixed">
-                <colgroup>
-                  <col className="w-[100px]" />
-                  <col className="w-[140px]" />
-                  <col className="w-[120px]" />
-                  <col className="w-[180px]" />
-                  <col className="w-[110px]" />
-                  <col className="w-[350px]" />
-                  <col className="w-[100px]" />
-                </colgroup>
-                <thead className="bg-bg-tertiary border-b border-border-quaternary">
-                  <tr>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-text-secondary uppercase tracking-wider">
-                      담당자명
-                    </th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-text-secondary uppercase tracking-wider">
-                      회사명
-                    </th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-text-secondary uppercase tracking-wider">
-                      전화번호
-                    </th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-text-secondary uppercase tracking-wider">
-                      이메일(ID)
-                    </th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-text-secondary uppercase tracking-wider">
-                      부서 / 직책
-                    </th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-text-secondary uppercase tracking-wider">
-                      문의 내용
-                    </th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-text-secondary uppercase tracking-wider">
-                      문의 상태
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {data.data.map((inquiry) => (
-                    <InquiryListItem key={inquiry.id} inquiry={inquiry} />
-                  ))}
-                </tbody>
-              </table>
+              {/* 헤더 행 */}
+              <div className="w-full border-b-2 border-bg-quaternary px-4 py-2 flex gap-4">
+                <p className="w-20 h-[21px] text-sm font-medium leading-[1.5] text-text-secondary">
+                  담당자명
+                </p>
+                <p className="w-20 h-[21px] text-sm font-medium leading-[1.5] text-text-secondary">
+                  회사명
+                </p>
+                <p className="w-24 h-[21px] text-sm font-medium leading-[1.5] text-text-secondary">
+                  전화번호
+                </p>
+                <p className="w-24 h-[21px] text-sm font-medium leading-[1.5] text-text-secondary">
+                  이메일
+                </p>
+                <p className="w-36 h-[21px] text-sm font-medium leading-[1.5] text-text-secondary">
+                  부서 / 직책
+                </p>
+                <p className="w-[266px] h-[21px] text-sm font-medium leading-[1.5] text-text-secondary">
+                  문의 사항
+                </p>
+                <p className="w-24 h-[21px] text-sm font-medium leading-[1.5] text-center text-text-secondary">
+                  상태
+                </p>
+              </div>
+
+              {/* 데이터 행들 */}
+              {data.data.map((inquiry) => (
+                <InquiryListItem key={inquiry.id} inquiry={inquiry} />
+              ))}
             </>
           )}
         </div>
-        {/* 총 개수 표시 */}
-        {data && (
-          <div className="mt-4 text-sm text-text-secondary">총 {data.meta.total}개의 문의</div>
-        )}
-        {/* 페이지네이션 - 항상 표시 */}
 
-        <InquiryPagination currentPage={data.meta.page} totalPages={data.meta.totalPages} />
+        {/* 페이지네이션 */}
+        {data && (
+          <div className="w-[1043px] mt-8 mb-16">
+            <InquiryPagination currentPage={data.meta.page} totalPages={data.meta.totalPages} />
+          </div>
+        )}
       </div>
     </div>
   );

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, FormEvent } from "react";
-import { Search } from "lucide-react";
+import Image from "next/image";
 import { useQueryParams } from "@/hooks/useQueryParams";
 
 /**
@@ -25,18 +25,27 @@ export default function InquirySearchBar() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="relative w-full max-w-[600px]">
-      <Search
-        className="absolute left-4 top-1/2 -translate-y-1/2 text-icon-tertiary pointer-events-none"
-        size={20}
-      />
-      <input
-        type="text"
-        placeholder="이름, 직급, 스킬을 검색하세요"
-        value={searchValue}
-        onChange={(e) => setSearchValue(e.target.value)}
-        className="w-full h-12 pl-12 pr-4 bg-bg-tertiary border border-border-quaternary rounded-lg text-sm text-text-primary placeholder:text-text-tertiary outline-none focus:border-text-accent transition-colors"
-      />
+    <form
+      onSubmit={handleSubmit}
+      className="w-full px-5 py-2 bg-bg-primary shadow-[0px_1px_3px_0px_rgba(0,0,0,0.1),0px_1px_2px_0px_rgba(0,0,0,0.06)] rounded-lg flex items-center gap-2.5"
+    >
+      <div className="flex-1 flex items-center gap-4">
+        <Image src="/icons/outline-search-gray.svg" alt="검색" width={24} height={24} />
+        <input
+          type="text"
+          placeholder="이름, 직무, 스킬로 검색하세요"
+          value={searchValue}
+          onChange={(e) => setSearchValue(e.target.value)}
+          className="flex-1 text-sm text-text-secondary placeholder:text-text-secondary bg-transparent border-none outline-none"
+        />
+      </div>
+      <button
+        type="submit"
+        className="p-3 bg-bg-accent rounded-lg flex items-center justify-center cursor-pointer hover:opacity-90 transition-opacity"
+        aria-label="검색"
+      >
+        <Image src="/icons/outline-search-white.svg" alt="검색" width={24} height={24} />
+      </button>
     </form>
   );
 }

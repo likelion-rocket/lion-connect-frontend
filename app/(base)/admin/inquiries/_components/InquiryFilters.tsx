@@ -1,14 +1,14 @@
 "use client";
 
 import { useQueryParams } from "@/hooks/useQueryParams";
-import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select";
 import type { InquiryStatus, InquiryPeriod } from "@/types/inquiry";
+import FilterSelect from "../../../../../components/FilterSelect";
 
 /**
  * 상태 필터 옵션
  */
 const STATUS_OPTIONS: { value: InquiryStatus | "all"; label: string }[] = [
-  { value: "all", label: "New/Done" },
+  { value: "all", label: "New / Done" },
   { value: "new", label: "New" },
   { value: "done", label: "Done" },
 ];
@@ -55,52 +55,27 @@ export default function InquiryFilters() {
     });
   };
 
-  // 현재 선택된 값 표시 로직
-  const getStatusDisplay = () => {
-    if (!params.status) return "New / Done";
-    const option = STATUS_OPTIONS.find((opt) => opt.value === params.status);
-    console.log("Status display:", params.status, "->", option?.label);
-    return option?.label || "New / Done";
-  };
-
-  const getPeriodDisplay = () => {
-    if (!params.period) return "기간별 검색";
-    const option = PERIOD_OPTIONS.find((opt) => opt.value === params.period);
-    console.log("Period display:", params.period, "->", option?.label);
-    return option?.label || "기간별 검색";
-  };
-
   console.log("Current params:", params);
 
   return (
     <div className="flex items-center gap-3">
       {/* 상태 필터 */}
-      <Select value={params.status || "all"} onValueChange={handleStatusChange}>
-        <SelectTrigger className="w-[140px] h-10 bg-bg-primary border-border-quaternary text-text-primary">
-          <span className="text-sm">{getStatusDisplay()}</span>
-        </SelectTrigger>
-        <SelectContent>
-          {STATUS_OPTIONS.map((option) => (
-            <SelectItem key={option.value} value={option.value}>
-              {option.label}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+      <FilterSelect
+        value={params.status || "all"}
+        onValueChange={handleStatusChange}
+        options={STATUS_OPTIONS}
+        placeholder="New / Done"
+        width="w-[140px]"
+      />
 
       {/* 기간 필터 */}
-      <Select value={params.period || "all"} onValueChange={handlePeriodChange}>
-        <SelectTrigger className="w-[160px] h-10 bg-bg-primary border-border-quaternary text-text-primary">
-          <span className="text-sm">{getPeriodDisplay()}</span>
-        </SelectTrigger>
-        <SelectContent>
-          {PERIOD_OPTIONS.map((option) => (
-            <SelectItem key={option.value} value={option.value}>
-              {option.label}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+      <FilterSelect
+        value={params.period || "all"}
+        onValueChange={handlePeriodChange}
+        options={PERIOD_OPTIONS}
+        placeholder="기간별 검색"
+        width="w-[160px]"
+      />
     </div>
   );
 }

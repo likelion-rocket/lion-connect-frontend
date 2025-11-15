@@ -12,34 +12,32 @@ interface InquiryListItemProps {
 
 export default function InquiryListItem({ inquiry, onClick }: InquiryListItemProps) {
   return (
-    <tr
-      className="border-b border-border-quaternary hover:bg-bg-tertiary/50 transition-colors cursor-pointer h-[73px]"
+    <div
+      className="h-[79px] px-4 py-2 bg-bg-primary border-b-2 border-bg-quaternary flex items-center gap-4 transition-colors cursor-pointer hover:bg-brand-01 hover:shadow-[0px_4px_6px_-2px_rgba(0,0,0,0.05)]"
       onClick={onClick}
     >
       {/* 담당자명 */}
-      <td className="px-4 text-sm text-text-primary truncate h-[73px]">{inquiry.companyName}</td>
+      <p className="w-20 text-text-primary text-sm leading-5 truncate">{inquiry.companyName}</p>
 
       {/* 회사명 */}
-      <td className="px-4 text-sm text-text-primary truncate h-[73px]">{inquiry.position}</td>
+      <p className="w-20 text-text-primary text-sm leading-5 truncate">{inquiry.position}</p>
 
       {/* 전화번호 */}
-      <td className="px-4 text-sm text-text-secondary truncate h-[73px]">{inquiry.attribute}</td>
+      <p className="w-24 text-text-primary text-sm leading-5 truncate">{inquiry.attribute}</p>
 
       {/* 이메일(ID) */}
-      <td className="px-4 text-sm text-text-secondary truncate h-[73px]">{inquiry.description}</td>
+      <p className="w-24 text-text-primary text-sm leading-5 truncate">{inquiry.description}</p>
 
       {/* 부서 / 직책 */}
-      <td className="px-4 text-sm text-text-secondary truncate h-[73px]">{inquiry.category}</td>
+      <p className="w-36 text-text-primary text-sm leading-5 truncate">{inquiry.category}</p>
 
-      {/* 문의 내용 (말줄임표 처리) */}
-      <td className="px-4 text-sm text-text-secondary h-[73px]">
-        <p className="line-clamp-2">{inquiry.content}</p>
-      </td>
+      {/* 문의 내용 (3줄까지 보이도록 말줄임) */}
+      <p className="flex-1 max-w-80 max-h-16 text-text-primary text-sm leading-5 line-clamp-3">
+        {inquiry.content}
+      </p>
 
       {/* 문의 상태 */}
-      <td className="px-4 h-[73px]">
-        <InquiryStatusBadge status={inquiry.status} />
-      </td>
-    </tr>
+      <InquiryStatusBadge status={inquiry.status} />
+    </div>
   );
 }

@@ -2,6 +2,7 @@
  * 문의 상태 배지 컴포넌트
  */
 
+import { cn } from "@/lib/utils";
 import type { InquiryStatus } from "@/types/inquiry";
 
 interface InquiryStatusBadgeProps {
@@ -9,25 +10,28 @@ interface InquiryStatusBadgeProps {
   className?: string;
 }
 
-const STATUS_CONFIG: Record<InquiryStatus, { label: string; className: string }> = {
-  new: {
-    label: "New",
-    className: "bg-[#FFF3EB] text-text-accent border border-border-accent",
-  },
-  done: {
-    label: "Done",
-    className: "bg-[#E8F5E9] text-[#2E7D32] border border-[#4CAF50]",
-  },
-};
-
-export default function InquiryStatusBadge({ status, className = "" }: InquiryStatusBadgeProps) {
-  const config = STATUS_CONFIG[status];
+export default function InquiryStatusBadge({ status, className }: InquiryStatusBadgeProps) {
+  if (status === "new") {
+    return (
+      <div
+        className={cn(
+          "w-24 h-7 rounded-[50px] flex items-center justify-center bg-orange-600/20 text-orange-600 text-xs font-bold font-['Nunito_Sans']",
+          className
+        )}
+      >
+        New
+      </div>
+    );
+  }
 
   return (
-    <span
-      className={`inline-flex items-center justify-center px-3 py-1 rounded-md text-xs font-medium ${config.className} ${className}`}
+    <div
+      className={cn(
+        "w-24 h-7 rounded-[50px] flex items-center justify-center bg-green-500/20 text-green-500 text-xs font-bold font-['Nunito_Sans']",
+        className
+      )}
     >
-      {config.label}
-    </span>
+      Done
+    </div>
   );
 }

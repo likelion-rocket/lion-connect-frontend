@@ -13,6 +13,9 @@ import { createProfile, updateMyProfile, type ProfileRequest } from "@/lib/api/p
 import { useMyExpTags } from "@/hooks/useMyExpTags";
 import { useUpdateExpTags } from "@/hooks/useUpdateExpTags";
 
+import { useMySkills } from "@/hooks/useMySkills";
+import { useUpdateSkills } from "@/hooks/useUpdateSkills";
+
 import { useUpdateTendencies } from "@/hooks/useUpdateTendencies";
 import { useMyTendencies } from "./useMyTendencies";
 
@@ -70,6 +73,9 @@ export function useRegisterTalentPage() {
   const [intro, setIntro] = useState("");
   const [portfolioFile, setPortfolioFile] = useState("");
   const [likelionCode, setLikelionCode] = useState("");
+  // ✅ 스킬 ids
+  const [skillIds, setSkillIds] = useState<number[]>([]);
+  const [initialSkillIds, setInitialSkillIds] = useState<number[]>([]);
 
   const [jobGroup, setJobGroup] = useState("");
   const [job, setJob] = useState("");
@@ -108,6 +114,8 @@ export function useRegisterTalentPage() {
   const { data: myCerts, refetch: refetchCerts } = useMyCertifications();
   const { data: myTendencies } = useMyTendencies(); // ✅ 추가
   const { data: myExpTags } = useMyExpTags();
+  const { data: mySkills } = useMySkills(); // GET /api/profile/skills
+  const updateSkills = useUpdateSkills(); // PUT 훅
 
   /* -----------------------------
    * 서버 row id 매핑 상태
@@ -127,6 +135,7 @@ export function useRegisterTalentPage() {
   const prefilledCertRef = useRef(false);
   const prefilledTendencyRef = useRef(false); // ✅ 추가
   const prefilledExpTagRef = useRef(false); // ✅ 추가
+  // const prefilledSkillRef = useRef(false);
 
   /* =============================
    * useEffect 영역
@@ -136,6 +145,25 @@ export function useRegisterTalentPage() {
   useEffect(() => {
     setJob("");
   }, [jobGroup]);
+
+  // ✅ 스킬 프리필 (처음에 skillIds가 비어 있을 때만 서버 값으로 채움)
+  useEffect(() => {
+    if (!mySkills) return;
+
+    const serverIds = mySkills.map((s) => s.id);
+
+    setSkillIds((prev) => {
+      // 이미 뭔가 선택돼 있으면(= 유저가 만진 상태면) 덮어쓰지 않기
+      if (prev.length > 0) return prev;
+      console.log("[useRegisterTalentPage] 스킬 프리필 →", serverIds);
+      return serverIds;
+    });
+
+    setInitialSkillIds((prev) => {
+      if (prev.length > 0) return prev;
+      return serverIds;
+    });
+  }, [mySkills]);
 
   // 프로필 프리필
   useEffect(() => {
@@ -511,6 +539,21 @@ export function useRegisterTalentPage() {
         });
       }
 
+      // 3-2. 스킬 태그
+      // ✅ 3-2. 직무 스킬 태그
+      const skillsChanged = !areIdArraysEqual(initialSkillIds, skillIds);
+      if (skillsChanged) {
+        console.log("[작성완료] 3-2. 스킬 태그 변경 있음 → PUT 시작", skillIds);
+        await updateSkills.mutateAsync({ ids: skillIds });
+        console.log("[스킬 태그] 갱신 완료", skillIds);
+        setInitialSkillIds(skillIds);
+      } else {
+        console.log("[작성완료] 3-2. 스킬 태그 변경 없음 → PUT 스킵", {
+          initialSkillIds,
+          skillIds,
+        });
+      }
+
       // 4. 경력
       career.validateAndBuild();
 
@@ -679,6 +722,11 @@ export function useRegisterTalentPage() {
     setJobGroup,
     job,
     setJob,
+
+    // ✅ 스킬 태그
+    skillIds,
+    setSkillIds,
+    initialSkillIds,
 
     // 경험 태그
     expTagIds,

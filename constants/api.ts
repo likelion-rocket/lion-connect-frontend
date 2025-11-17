@@ -61,6 +61,10 @@ export const API_ENDPOINTS = {
     GET: "/profile/exp-tags", // GET
     UPDATE: "/profile/exp-tags", // PUT
   },
+  SKILLS: {
+    GET: "/profile/skills", // GET
+    UPDATE: "/profile/skills", // PUT
+  },
 } as const;
 
 // HTTP 메서드

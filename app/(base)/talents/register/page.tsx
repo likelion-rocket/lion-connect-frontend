@@ -34,6 +34,11 @@ export default function RegisterTalent() {
     likelionCode,
     setLikelionCodeSafe,
 
+    // ✅ 스킬
+    skillIds,
+    setSkillIds,
+    // initialSkillIds,
+
     jobGroup,
     setJobGroup,
     job,
@@ -139,7 +144,7 @@ export default function RegisterTalent() {
           onDelete={handleDeleteExperience}
         />
 
-        <SkillComponent />
+        <SkillComponent selectedSkillIds={skillIds} onChangeSelectedSkillIds={setSkillIds} />
 
         <QualificationComponent
           // 어학

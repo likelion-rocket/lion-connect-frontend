@@ -6,8 +6,8 @@ import Input from "@/components/ui/input";
 import { Plus } from "lucide-react";
 
 export default function SkillComponent() {
-  // 처음에 3개
-  const [skills, setSkills] = useState<string[]>(["", "", ""]);
+  // 🔥 초기값을 1개로 변경
+  const [skills, setSkills] = useState<string[]>([""]);
 
   const handleAddSkill = () => {
     setSkills((prev) => [...prev, ""]);
@@ -36,14 +36,14 @@ export default function SkillComponent() {
         </div>
 
         {/* 오른쪽 설명 */}
-        <div className="flex items-center justify-between h-12 ">
+        <div className="flex items-center justify-between h-12">
           <p className="text-[16px] text-text-secondary">세부적인 직무 스킬이 있다면 적어주세요</p>
         </div>
 
         {/* 들여쓰기용 빈칸 */}
         <div />
 
-        {/* ✅ 인풋 영역: 항상 3칸 그리드 */}
+        {/* 🔥 항상 grid-cols-3 유지하면서 skills 개수만큼 인풋 생성 */}
         <div className="mt-4 w-full grid grid-cols-3 gap-4">
           {skills.map((skill, idx) => (
             <Input

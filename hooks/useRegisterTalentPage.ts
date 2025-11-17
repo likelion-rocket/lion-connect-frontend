@@ -10,6 +10,9 @@ import { enumToKo } from "@/lib/education/statusMap";
 import { useMyProfile } from "@/hooks/useMyProfile";
 import { createProfile, updateMyProfile, type ProfileRequest } from "@/lib/api/profiles";
 
+import { useMyExpTags } from "@/hooks/useMyExpTags";
+import { useUpdateExpTags } from "@/hooks/useUpdateExpTags";
+
 import { useUpdateTendencies } from "@/hooks/useUpdateTendencies";
 import { useMyTendencies } from "./useMyTendencies";
 
@@ -41,6 +44,14 @@ const fmtYM = (d?: string | null) => {
   return `${y}.${m}`;
 };
 
+// YYYY.MM -> YYYY-MM-01 위에 두거나 아래 아무데나(훅 바깥)
+const areIdArraysEqual = (a: number[], b: number[]) => {
+  if (a.length !== b.length) return false;
+  const sortedA = [...a].sort((x, y) => x - y);
+  const sortedB = [...b].sort((x, y) => x - y);
+  return sortedA.every((v, i) => v === sortedB[i]);
+};
+
 // YYYY.MM -> YYYY-MM-01
 const toYYYYMM01 = (ym: string) => {
   const m = ym.trim().match(/^(\d{4})\.(0[1-9]|1[0-2])$/);
@@ -67,6 +78,11 @@ export function useRegisterTalentPage() {
   const [initialTendencyIds, setInitialTendencyIds] = useState<number[]>([]); // ✅ 추가
   const updateTendencies = useUpdateTendencies();
 
+  // ✅ 경험 태그
+  const [expTagIds, setExpTagIds] = useState<number[]>([]);
+  const [initialExpTagIds, setInitialExpTagIds] = useState<number[]>([]);
+  const updateExpTags = useUpdateExpTags();
+
   const setNameSafe = (v: string) => setName((prev) => (prev === v ? prev : v));
   const setIntroSafe = (v: string) => setIntro((prev) => (prev === v ? prev : v));
   const setPortfolioFileSafe = (v: string) => setPortfolioFile((prev) => (prev === v ? prev : v));
@@ -91,6 +107,7 @@ export function useRegisterTalentPage() {
   const { data: myLanguages, refetch: refetchLanguages } = useMyLanguages();
   const { data: myCerts, refetch: refetchCerts } = useMyCertifications();
   const { data: myTendencies } = useMyTendencies(); // ✅ 추가
+  const { data: myExpTags } = useMyExpTags();
 
   /* -----------------------------
    * 서버 row id 매핑 상태
@@ -109,6 +126,7 @@ export function useRegisterTalentPage() {
   const prefilledLangRef = useRef(false);
   const prefilledCertRef = useRef(false);
   const prefilledTendencyRef = useRef(false); // ✅ 추가
+  const prefilledExpTagRef = useRef(false); // ✅ 추가
 
   /* =============================
    * useEffect 영역
@@ -131,6 +149,19 @@ export function useRegisterTalentPage() {
 
     prefilledProfileRef.current = true;
   });
+
+  // ✅ 경험 태그 프리필
+  useEffect(() => {
+    console.log("🔍 myExpTags from server:", myExpTags);
+    if (!myExpTags) return;
+    if (prefilledExpTagRef.current) return;
+
+    const ids = myExpTags.map((t) => t.id);
+
+    setExpTagIds(ids);
+    setInitialExpTagIds(ids);
+    prefilledExpTagRef.current = true;
+  }, [myExpTags]);
 
   // ✅ 성향 프리필
   useEffect(() => {
@@ -393,6 +424,7 @@ export function useRegisterTalentPage() {
 
   const handleSubmitAll = async (): Promise<void> => {
     try {
+      console.log("[작성완료] 클릭됨, 현재 expTagIds =", expTagIds);
       startTransition(() => {});
 
       // 1. 프로필
@@ -455,8 +487,29 @@ export function useRegisterTalentPage() {
       }
 
       // 3. 성향
-      await updateTendencies.mutateAsync({ ids: tendencyIds });
-      console.log("[성향] 갱신 완료", tendencyIds);
+      const tendenciesChanged = !areIdArraysEqual(initialTendencyIds, tendencyIds);
+      if (tendenciesChanged) {
+        await updateTendencies.mutateAsync({ ids: tendencyIds });
+        console.log("[성향] 변경 있음 → 갱신 완료", tendencyIds);
+        // 한 번 저장 후엔 기준값도 현재 값으로 맞춰주면, 같은 세션에서 다시 눌러도 스킵됨
+        setInitialTendencyIds(tendencyIds);
+      } else {
+        console.log("[성향] 변경 없음 → PUT 스킵", { initialTendencyIds, tendencyIds });
+      }
+
+      // 3-1. 관련 경험 태그
+      const expTagsChanged = !areIdArraysEqual(initialExpTagIds, expTagIds);
+      if (expTagsChanged) {
+        console.log("[작성완료] 3-1. 경험 태그 변경 있음 → PUT 시작", expTagIds);
+        await updateExpTags.mutateAsync({ ids: expTagIds });
+        console.log("[관련 경험 태그] 갱신 완료", expTagIds);
+        setInitialExpTagIds(expTagIds);
+      } else {
+        console.log("[작성완료] 3-1. 경험 태그 변경 없음 → PUT 스킵", {
+          initialExpTagIds,
+          expTagIds,
+        });
+      }
 
       // 4. 경력
       career.validateAndBuild();
@@ -584,8 +637,6 @@ export function useRegisterTalentPage() {
         await refetchLanguages();
         console.log("[어학] 서버 데이터 재조회 완료");
       }
-
-      window.location.reload();
     } catch (err) {
       if (err instanceof ApiError) {
         console.log(`${err.message}${err.statusCode ? ` (code ${err.statusCode})` : ""}`);
@@ -628,6 +679,11 @@ export function useRegisterTalentPage() {
     setJobGroup,
     job,
     setJob,
+
+    // 경험 태그
+    expTagIds,
+    setExpTagIds,
+    initialExpTagIds,
 
     // 성향
     tendencyIds,

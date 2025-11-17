@@ -37,6 +37,7 @@ export const API_ENDPOINTS = {
   },
   TENDENCIES: {
     UPDATE: "/profile/tendencies", // PUT
+    GET: " /profile/tendencies", // GET
   },
   EXPERIENCES: {
     CREATE: "/profile/experiences",
@@ -55,6 +56,10 @@ export const API_ENDPOINTS = {
     LIST: "/profile/certifications",
     UPDATE: (id: number) => `/profile/certifications/${id}`,
     DELETE: (id: number) => `/profile/certifications/${id}`,
+  },
+  EXP_TAGS: {
+    GET: "/profile/exp-tags", // GET
+    UPDATE: "/profile/exp-tags", // PUT
   },
 } as const;
 

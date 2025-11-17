@@ -22,7 +22,7 @@ export function fetchMyTendencies() {
 
 // 내 성향 갱신(치환) (PUT /api/profile/tendencies)
 export function updateMyTendencies(body: UpdateTendenciesRequest) {
-  return put<TendencyItem[]>(API_ENDPOINTS.TENDENCIES.UPDATE, body, {
+  return put<TendencyItem[]>(API_ENDPOINTS.TENDENCIES.GET, body, {
     credentials: "include",
   });
 }

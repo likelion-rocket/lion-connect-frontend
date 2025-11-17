@@ -7,12 +7,12 @@ import type { BadgeType } from "@/components/ui/badge";
 import { generateDummyTalents } from "@/constants/dummyTalents";
 
 type TalentsPageProps = {
-  searchParams?: {
+  searchParams?: Promise<{
     page?: string;
     q?: string;
     group?: string;
     job?: string;
-  };
+  }>;
 };
 
 type TalentCardItem = {
@@ -31,26 +31,29 @@ type TalentCardItem = {
 };
 
 export default async function TalentsPage({ searchParams }: TalentsPageProps) {
-  const currentPage = searchParams?.page ? Number(searchParams.page) : 1;
+  const resolved = await searchParams; // ✅ 여기서 한 번 await
+
+  const currentPage = resolved?.page ? Number(resolved.page) : 1;
   const backendPage = currentPage - 1;
 
   // 🔥 API 호출
   const data = await fetchTalents({ page: backendPage, size: 20 });
 
-  // 🔥 서버 데이터 매핑
   const apiTalents: TalentCardItem[] = data.content.map((t) => {
-    const [universityRaw, majorRaw] = (t.education ?? "").split("*").map((s) => s.trim());
+    const universityRaw = t.education?.schoolName ?? null;
+    const majorRaw = t.education?.major ?? null;
 
     return {
       slug: String(t.id),
       id: t.id,
       name: t.name,
-      viewCount: 0,
-      university: universityRaw || null,
-      major: majorRaw || null,
+      viewCount: 0, // 🔥 나중에 조회수 붙으면 여기 교체
+      university: universityRaw,
+      major: majorRaw,
+      // 지금 응답에는 jobGroup/job이 따로 없고 jobRoles만 있으니 일단 첫 번째를 둘 다에 사용
       jobGroup: t.jobRoles?.[0] ?? null,
       job: t.jobRoles?.[0] ?? null,
-      badges: [],
+      badges: [], // 추후 experiences / tendencies 기반으로 배지 만들어도 됨
       tendencies: t.tendencies ?? [],
       skills: t.skills ?? [],
       summary: t.introduction,

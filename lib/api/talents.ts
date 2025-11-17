@@ -2,6 +2,12 @@
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "";
 
+// 🔹 education 객체 타입 분리
+export type TalentEducation = {
+  schoolName: string;
+  major: string;
+};
+
 // ───────────────── DTO 타입들 ─────────────────
 
 export type TalentListItem = {
@@ -10,7 +16,7 @@ export type TalentListItem = {
   introduction: string;
   experiences: string[];
   tendencies: string[];
-  education: string;
+  education: TalentEducation | null; // ← 응답 예시 기준
   jobRoles: string[];
   skills: string[];
   thumbnailUrl: string | null;
@@ -21,7 +27,7 @@ export type TalentListResponse = {
   totalPages: number;
   size: number;
   content: TalentListItem[];
-  number: number; // 현재 페이지 (0-based)
+  number: number;
   sort: {
     empty: boolean;
     sorted: boolean;
@@ -46,10 +52,9 @@ export type TalentListResponse = {
 };
 
 type FetchTalentsParams = {
-  page?: number; // 0-based
-  size?: number; // 페이지 크기
+  page?: number;
+  size?: number;
 };
-
 /**
  * 공개 인재 목록 조회 API
  * GET {BASE_URL}/profiles?page={page}&size={size}
@@ -61,7 +66,6 @@ export async function fetchTalents({
   const url = `${BASE_URL}/profiles?page=${page}&size=${size}`;
 
   const res = await fetch(url, {
-    // 공개 API라 인증 정보 안 붙임
     cache: "no-store",
   });
 

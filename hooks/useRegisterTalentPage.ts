@@ -11,6 +11,7 @@ import { useMyProfile } from "@/hooks/useMyProfile";
 import { createProfile, updateMyProfile, type ProfileRequest } from "@/lib/api/profiles";
 
 import { useUpdateTendencies } from "@/hooks/useUpdateTendencies";
+import { useMyTendencies } from "./useMyTendencies";
 
 import { useCareerSection } from "@/hooks/useCareerSection";
 import type { CompanyForm } from "@/hooks/useCareerSection";
@@ -63,6 +64,7 @@ export function useRegisterTalentPage() {
   const [job, setJob] = useState("");
 
   const [tendencyIds, setTendencyIds] = useState<number[]>([]);
+  const [initialTendencyIds, setInitialTendencyIds] = useState<number[]>([]); // ✅ 추가
   const updateTendencies = useUpdateTendencies();
 
   const setNameSafe = (v: string) => setName((prev) => (prev === v ? prev : v));
@@ -88,6 +90,7 @@ export function useRegisterTalentPage() {
   const { data: myExperiences, refetch: refetchExperiences } = useMyExperiences();
   const { data: myLanguages, refetch: refetchLanguages } = useMyLanguages();
   const { data: myCerts, refetch: refetchCerts } = useMyCertifications();
+  const { data: myTendencies } = useMyTendencies(); // ✅ 추가
 
   /* -----------------------------
    * 서버 row id 매핑 상태
@@ -105,6 +108,7 @@ export function useRegisterTalentPage() {
   const prefilledCareerRef = useRef(false);
   const prefilledLangRef = useRef(false);
   const prefilledCertRef = useRef(false);
+  const prefilledTendencyRef = useRef(false); // ✅ 추가
 
   /* =============================
    * useEffect 영역
@@ -127,6 +131,19 @@ export function useRegisterTalentPage() {
 
     prefilledProfileRef.current = true;
   });
+
+  // ✅ 성향 프리필
+  useEffect(() => {
+    if (!myTendencies) return;
+    if (prefilledTendencyRef.current) return;
+
+    // 백엔드에서 받은 내 성향 id 배열
+    const ids = myTendencies.map((t) => t.id);
+
+    setTendencyIds(ids); // 현재 선택값 (PUT 바디용)
+    setInitialTendencyIds(ids); // 처음 렌더 시 체크박스에 뿌려줄 값
+    prefilledTendencyRef.current = true;
+  }, [myTendencies]);
 
   // 학력 프리필
   useEffect(() => {
@@ -615,6 +632,7 @@ export function useRegisterTalentPage() {
     // 성향
     tendencyIds,
     setTendencyIds,
+    initialTendencyIds, // ✅ 반환 추가
 
     // 학력
     edu,

@@ -6,6 +6,24 @@ import { fetchTalents } from "@/lib/api/talents";
 import type { BadgeType } from "@/components/ui/badge";
 import { generateDummyTalents } from "@/constants/dummyTalents";
 
+const EXPERIENCE_BADGE_BY_NAME: Record<string, { label: string; type: BadgeType }> = {
+  "부트캠프 경험자": { label: "부트캠프 경험자", type: "bootcamp" },
+  "창업 경험자": { label: "창업 경험자", type: "startup" },
+  "자격증 보유자": { label: "자격증 보유자", type: "certified" },
+  전공자: { label: "전공자", type: "major" },
+};
+
+/** API experiences(string[]) -> IntroduceCard용 badges로 변경 */
+export function mapExperiencesToBadges(
+  experiences?: string[]
+): { label: string; type: BadgeType }[] {
+  if (!experiences || experiences.length === 0) return [];
+
+  return experiences
+    .map((name) => EXPERIENCE_BADGE_BY_NAME[name])
+    .filter((b): b is { label: string; type: BadgeType } => !!b);
+}
+
 type TalentsPageProps = {
   searchParams?: Promise<{
     page?: string;
@@ -24,7 +42,7 @@ type TalentCardItem = {
   major?: string | null;
   jobGroup?: string | null;
   job?: string | null;
-  badges: { label: string; type: BadgeType }[];
+  badges?: { label: string; type: BadgeType }[];
   tendencies: string[];
   skills: string[];
   summary: string;
@@ -53,7 +71,7 @@ export default async function TalentsPage({ searchParams }: TalentsPageProps) {
       // 지금 응답에는 jobGroup/job이 따로 없고 jobRoles만 있으니 일단 첫 번째를 둘 다에 사용
       jobGroup: t.jobRoles?.[0] ?? null,
       job: t.jobRoles?.[0] ?? null,
-      badges: [], // 추후 experiences / tendencies 기반으로 배지 만들어도 됨
+      badges: mapExperiencesToBadges(t.experiences) ?? [], // 추후 experiences / tendencies 기반으로 배지 만들어도 됨
       tendencies: t.tendencies ?? [],
       skills: t.skills ?? [],
       summary: t.introduction,

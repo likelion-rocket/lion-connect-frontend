@@ -39,8 +39,8 @@ export default function RegisterTalent() {
     job,
     setJob,
 
-    tendencyIds,
     setTendencyIds,
+    initialTendencyIds,
 
     // 학력
     edu,
@@ -103,7 +103,7 @@ export default function RegisterTalent() {
           onChangeJobGroup={setJobGroup}
           onChangeJob={setJob}
         />
-        <TendencyComponent onChangeSelectedIds={setTendencyIds} />
+        <TendencyComponent initialIds={initialTendencyIds} onChangeSelectedIds={setTendencyIds} />
 
         <EducationComponent
           educationId={currentEduId}

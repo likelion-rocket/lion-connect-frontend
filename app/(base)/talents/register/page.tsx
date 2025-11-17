@@ -42,6 +42,9 @@ export default function RegisterTalent() {
     setTendencyIds,
     initialTendencyIds,
 
+    setExpTagIds,
+    initialExpTagIds,
+
     // 학력
     edu,
     currentEduId,
@@ -92,7 +95,12 @@ export default function RegisterTalent() {
 
       {/* 본문 */}
       <main className="py-8 flex flex-col gap-10 mx-40">
-        <IntroComponent name={name} onNameChange={setNameSafe} />
+        <IntroComponent
+          name={name}
+          onNameChange={setNameSafe}
+          initialExpTagIds={initialExpTagIds}
+          onChangeExpTagIds={setExpTagIds}
+        />
         <PhotoComponent />
         <CodeRegisterComponent code={likelionCode} onCodeChange={setLikelionCodeSafe} />
         <ProfileComponent

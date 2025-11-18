@@ -76,6 +76,12 @@ export const API_ENDPOINTS = {
     GET: "/profile/job-categories", // GET
     UPDATE: "/profile/job-categories", // PUT
   },
+  AWARDS: {
+    CREATE: "/profile/awards",
+    LIST: "/profile/awards",
+    UPDATE: (id: number) => `/profile/awards/${id}`,
+    DELETE: (id: number) => `/profile/awards/${id}`,
+  },
 } as const;
 
 // HTTP 메서드

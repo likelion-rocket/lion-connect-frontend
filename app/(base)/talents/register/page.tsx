@@ -37,7 +37,6 @@ export default function RegisterTalent() {
     // ✅ 스킬
     skillIds,
     setSkillIds,
-    // initialSkillIds,
 
     jobGroup,
     setJobGroup,
@@ -64,6 +63,10 @@ export default function RegisterTalent() {
     handleDeleteLanguage,
     cert,
     handleDeleteCertification,
+
+    // ✅ 수상
+    award,
+    handleDeleteAward,
   } = useRegisterTalentPage();
 
   return (
@@ -147,6 +150,14 @@ export default function RegisterTalent() {
         <SkillComponent selectedSkillIds={skillIds} onChangeSelectedSkillIds={setSkillIds} />
 
         <QualificationComponent
+          // ✅ 수상
+          awards={award.awards}
+          awardErrors={award.errors}
+          hasAnyAwardValue={award.hasAnyValue}
+          onAwardChange={award.onChange}
+          onAwardAdd={award.add}
+          onAwardClear={award.clear}
+          onAwardDelete={handleDeleteAward}
           // 어학
           langs={lang.langs}
           langErrors={lang.errors}

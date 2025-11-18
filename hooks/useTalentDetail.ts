@@ -3,7 +3,7 @@
  */
 
 import { useQuery } from "@tanstack/react-query";
-import { getTalentDetail } from "@/services/talentService";
+import { getTalentDetail } from "@/lib/api/talentDetail";
 import type { TalentDetailResponse } from "@/types/talent";
 
 interface UseTalentDetailOptions {

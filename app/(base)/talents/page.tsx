@@ -4,7 +4,7 @@ import TalentSearchHeader from "./_components/TalentSearchHeader";
 import IntroduceCard from "./[slug]/_components/IntroduceCard";
 import { fetchTalents } from "@/lib/api/talents";
 import type { BadgeType } from "@/components/ui/badge";
-import { generateDummyTalents } from "@/constants/dummyTalents";
+import { generateDummyTalents, type DummyTalent } from "@/constants/dummyTalents";
 import { JOB_ROLE_ID_BY_NAME, findJobGroupByJobName } from "@/constants/jobs";
 
 /* ================================
@@ -50,12 +50,14 @@ type ApiTalent = {
   id: number;
   name: string;
   introduction: string;
-  education?: ApiEducation;
-  // 서버에서 숫자 ID 배열이 올 수도 있고, 문자열이 올 수도 있다고 보고 둘 다 허용
-  jobRoles?: (number | string)[] | null;
   experiences?: string[] | null;
   tendencies?: string[] | null;
+  education?: ApiEducation;
+  /** 숫자 ID 배열이거나 문자열 배열 */
+  jobRoles?: (number | string)[] | null;
   skills?: string[] | null;
+  /** 🔥 백엔드에서 내려주는 썸네일 URL */
+  thumbnailUrl?: string | null;
 };
 
 type FetchTalentsResponse = {
@@ -92,6 +94,8 @@ type TalentCardItem = {
   tendencies: string[];
   skills: string[];
   summary: string;
+  /** 🔥 카드에서도 썸네일 보관 */
+  thumbnailUrl?: string | null;
 };
 
 /* ================================
@@ -104,7 +108,6 @@ export default async function TalentsPage({ searchParams }: TalentsPageProps) {
   const currentPage = resolved?.page ? Number(resolved.page) : 1;
   const backendPage = currentPage - 1;
 
-  // 🔥 API 응답을 명시적인 타입으로 단언
   const data = (await fetchTalents({
     page: backendPage,
     size: 20,
@@ -115,7 +118,7 @@ export default async function TalentsPage({ searchParams }: TalentsPageProps) {
     const majorRaw = t.education?.major ?? null;
 
     // ---------------------------
-    // 🔥 직무/직군 변환 로직
+    // 직무/직군 변환 로직
     // ---------------------------
     const rawJobRoles = t.jobRoles ?? [];
 
@@ -126,10 +129,8 @@ export default async function TalentsPage({ searchParams }: TalentsPageProps) {
       const lastRole = rawJobRoles[rawJobRoles.length - 1];
 
       if (typeof lastRole === "number") {
-        // 숫자 → ID → 직무명
         jobName = JOB_NAME_BY_ID[lastRole] ?? null;
       } else if (typeof lastRole === "string") {
-        // 이미 직무명이면 그대로 사용
         jobName = lastRole;
       }
 
@@ -152,12 +153,14 @@ export default async function TalentsPage({ searchParams }: TalentsPageProps) {
       tendencies: t.tendencies ?? [],
       skills: t.skills ?? [],
       summary: t.introduction,
+      /** 🔥 썸네일 URL 그대로 보관 (없으면 null) */
+      thumbnailUrl: t.thumbnailUrl ?? null,
     };
   });
 
-  const dummyTalents = generateDummyTalents(24);
+  const dummyTalents: DummyTalent[] = generateDummyTalents(24);
 
-  const talents = [...apiTalents, ...dummyTalents];
+  const talents: (TalentCardItem | DummyTalent)[] = [...apiTalents, ...dummyTalents];
   const totalCount = talents.length;
   const totalPages = Math.ceil(totalCount / 20);
 
@@ -178,9 +181,11 @@ export default async function TalentsPage({ searchParams }: TalentsPageProps) {
                 tendencies={t.tendencies}
                 university={t.university ?? undefined}
                 major={t.major ?? undefined}
-                jobGroup={t.jobGroup ?? undefined} // ex) "개발"
-                job={t.job ?? undefined} // ex) "프론트앤드"
+                jobGroup={t.jobGroup ?? undefined}
+                job={t.job ?? undefined}
                 skills={t.skills}
+                /** 🔥 여기서 프로필 이미지로 썸네일 전달 */
+                thumbnailUrl={t.thumbnailUrl ?? "/images/default-profile.png"}
                 showContacts={false}
                 className="
                   w-full

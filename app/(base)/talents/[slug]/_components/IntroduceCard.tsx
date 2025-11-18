@@ -28,6 +28,8 @@ type IntroduceCardProps = {
   ctaLabel?: string;
   summary?: string;
   showSummary?: boolean;
+  /** 🔥 API에서 오는 썸네일 URL */
+  thumbnailUrl?: string | null;
 };
 
 export default function IntroduceCard(props: IntroduceCardProps) {
@@ -50,9 +52,10 @@ export default function IntroduceCard(props: IntroduceCardProps) {
     ctaLabel = "상세 보기",
     summary,
     showSummary = true,
+    thumbnailUrl,
   } = props;
 
-  // 프로필 이미지 URL 처리: 유효한 URL이거나 로컬 경로인 경우 사용, 아니면 기본 이미지
+  // 프로필 이미지 URL 처리: thumbnailUrl 우선, 없으면 profileImageUrl, 둘 다 없으면 기본 이미지
   const getValidImageSrc = (url?: string | null): string => {
     if (!url || !url.trim()) return "/images/default-profile.png";
 
@@ -68,12 +71,11 @@ export default function IntroduceCard(props: IntroduceCardProps) {
       new URL(trimmedUrl);
       return trimmedUrl;
     } catch {
-      // 유효하지 않은 URL이면 기본 이미지 사용
       return "/images/default-profile.png";
     }
   };
 
-  const src = getValidImageSrc(profileImageUrl);
+  const src = getValidImageSrc(thumbnailUrl ?? profileImageUrl);
   const href = detailHref ?? (slug ? `/talents/${slug}` : undefined);
 
   const CardBody = (

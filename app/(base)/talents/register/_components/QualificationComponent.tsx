@@ -1,12 +1,27 @@
+// app/(base)/talents/register/_components/QualificationComponent.tsx
 "use client";
 
 import PremierSection from "./section/PremierSection";
 import LanguageSection from "./section/LanguageSection";
 import CertificateSection from "./section/CertificateSection";
+
 import type { LangForm, LangError } from "@/hooks/useLanguageSection";
 import type { CertForm, CertError } from "@/hooks/useCertificationSection";
+import type { AwardForm, AwardError } from "@/hooks/useAwardSection";
 
 type Props = {
+  // ✅ 수상
+  awards: AwardForm[];
+  awardErrors?: AwardError[];
+  hasAnyAwardValue: (item: AwardForm) => boolean;
+  onAwardChange: (
+    index: number,
+    field: keyof AwardForm
+  ) => (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onAwardAdd: () => void;
+  onAwardClear: (index: number) => void;
+  onAwardDelete: (index: number) => void;
+
   // 언어
   langs: LangForm[];
   langErrors?: LangError[];
@@ -33,6 +48,15 @@ type Props = {
 };
 
 export default function QualificationComponent({
+  // 수상
+  awards,
+  awardErrors = [],
+  hasAnyAwardValue,
+  onAwardChange,
+  onAwardAdd,
+  onAwardClear,
+  onAwardDelete,
+
   // 언어
   langs,
   langErrors = [],
@@ -41,6 +65,7 @@ export default function QualificationComponent({
   onLangAdd,
   onLangClear,
   onLangDelete,
+
   // 자격증
   certs,
   certErrors = [],
@@ -56,7 +81,16 @@ export default function QualificationComponent({
         <span>수상 / 활동 / 기타</span>
       </div>
 
-      <PremierSection />
+      {/* ✅ 수상 섹션 (PremierSection) */}
+      <PremierSection
+        awards={awards}
+        errors={awardErrors}
+        hasAnyValue={hasAnyAwardValue}
+        onChange={onAwardChange}
+        onAdd={onAwardAdd}
+        onClear={onAwardClear}
+        onDelete={onAwardDelete}
+      />
 
       <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-8">
         <LanguageSection

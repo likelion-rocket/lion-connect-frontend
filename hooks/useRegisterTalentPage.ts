@@ -39,6 +39,11 @@ import {
 import { ApiError } from "@/lib/apiClient";
 import { parseYYYYMMRange } from "@/lib/date/ym";
 
+// ✅ 수상 관련
+import { useAwardSection } from "@/hooks/useAwardSection";
+import { useMyAwards } from "@/hooks/useMyAwards";
+import { createAward, updateAward, deleteAward } from "@/lib/api/awards";
+
 // ✅ 직군/직무 관련
 import { useMyJobs } from "@/hooks/useMyJobs";
 import { useUpdateJobs } from "@/hooks/useUpdateJobs";
@@ -52,7 +57,7 @@ const fmtYM = (d?: string | null) => {
   return `${y}.${m}`;
 };
 
-// YYYY.MM -> YYYY-MM-01 위에 두거나 아래 아무데나(훅 바깥)
+// 배열 비교
 const areIdArraysEqual = (a: number[], b: number[]) => {
   if (a.length !== b.length) return false;
   const sortedA = [...a].sort((x, y) => x - y);
@@ -88,7 +93,7 @@ export function useRegisterTalentPage() {
   const [initialJobName, setInitialJobName] = useState<string>("");
 
   const [tendencyIds, setTendencyIds] = useState<number[]>([]);
-  const [initialTendencyIds, setInitialTendencyIds] = useState<number[]>([]); // ✅ 추가
+  const [initialTendencyIds, setInitialTendencyIds] = useState<number[]>([]);
   const updateTendencies = useUpdateTendencies();
 
   // ✅ 경험 태그
@@ -110,6 +115,7 @@ export function useRegisterTalentPage() {
   const career = useCareerSection();
   const lang = useLanguageSection();
   const cert = useCertificationSection();
+  const award = useAwardSection(); // ✅ 수상
 
   /* -----------------------------
    * 서버 데이터 조회
@@ -119,14 +125,15 @@ export function useRegisterTalentPage() {
   const { data: myExperiences, refetch: refetchExperiences } = useMyExperiences();
   const { data: myLanguages, refetch: refetchLanguages } = useMyLanguages();
   const { data: myCerts, refetch: refetchCerts } = useMyCertifications();
-  const { data: myTendencies } = useMyTendencies(); // ✅ 추가
+  const { data: myAwards, refetch: refetchAwards } = useMyAwards(); // ✅ 수상
+
+  const { data: myTendencies } = useMyTendencies();
   const { data: myExpTags } = useMyExpTags();
-  const { data: mySkills } = useMySkills(); // GET /api/profile/skills
-  const updateSkills = useUpdateSkills(); // PUT 훅
+  const { data: mySkills } = useMySkills();
+  const updateSkills = useUpdateSkills();
 
-  // ✅ 내 직무 카테고리 (GET /profile/job-categories)
+  // ✅ 내 직무 카테고리
   const { data: myJobs, refetch: refetchJobs } = useMyJobs();
-
   const updateJobs = useUpdateJobs();
 
   /* -----------------------------
@@ -136,6 +143,7 @@ export function useRegisterTalentPage() {
   const [experienceIds, setExperienceIds] = useState<number[]>([]);
   const [languageIds, setLanguageIds] = useState<number[]>([]);
   const [certificationIds, setCertificationIds] = useState<number[]>([]);
+  const [awardIds, setAwardIds] = useState<number[]>([]); // ✅ 수상
 
   /* -----------------------------
    * 프리필 여부 ref
@@ -145,61 +153,53 @@ export function useRegisterTalentPage() {
   const prefilledCareerRef = useRef(false);
   const prefilledLangRef = useRef(false);
   const prefilledCertRef = useRef(false);
-  const prefilledTendencyRef = useRef(false); // ✅ 추가
-  const prefilledExpTagRef = useRef(false); // ✅ 추가
-  const prefilledJobRef = useRef(false); // ✅ 직무 프리필 여부
+  const prefilledAwardRef = useRef(false); // ✅ 수상
+  const prefilledTendencyRef = useRef(false);
+  const prefilledExpTagRef = useRef(false);
+  const prefilledJobRef = useRef(false);
 
   /* =============================
    * useEffect 영역
    * ============================= */
 
+  // 직무 프리필
   useEffect(() => {
-    if (!myJobs) return; // 아직 로딩 중
-    console.log("[useRegisterTalentPage] myJobs =", myJobs);
-
+    if (!myJobs) return;
     if (prefilledJobRef.current) return;
 
     if (myJobs.length === 0) {
-      console.log("[useRegisterTalentPage] 내 직무 없음 → 프리필 스킵");
       prefilledJobRef.current = true;
       return;
     }
 
-    // ✅ 마지막 직무 기준으로 사용
     const last = myJobs[myJobs.length - 1];
     const nameFromServer = (last.name ?? "").trim();
 
     if (!nameFromServer) {
-      console.log("[useRegisterTalentPage] last.name 비어있음 → 프리필 스킵");
       prefilledJobRef.current = true;
       return;
     }
 
-    // 처음 한 번만 초기값 세팅
     setInitialJobName((prev) => prev || nameFromServer);
-
-    // 이미 사용자가 뭔가 입력했으면 덮어쓰지 않기
     setJob((prev) => (prev.trim() ? prev : nameFromServer));
 
     setJobGroup((prev) => {
       if (prev.trim()) return prev;
       const group = findJobGroupByJobName(nameFromServer);
-      console.log("[useRegisterTalentPage] nameFromServer → group", nameFromServer, group);
       return group || prev;
     });
 
     prefilledJobRef.current = true;
   }, [myJobs]);
-  // ✅ 스킬 프리필 (처음에 skillIds가 비어 있을 때만 서버 값으로 채움)
+
+  // 스킬 프리필
   useEffect(() => {
     if (!mySkills) return;
 
     const serverIds = mySkills.map((s) => s.id);
 
     setSkillIds((prev) => {
-      // 이미 뭔가 선택돼 있으면(= 유저가 만진 상태면) 덮어쓰지 않기
       if (prev.length > 0) return prev;
-      console.log("[useRegisterTalentPage] 스킬 프리필 →", serverIds);
       return serverIds;
     });
 
@@ -222,29 +222,25 @@ export function useRegisterTalentPage() {
     prefilledProfileRef.current = true;
   });
 
-  // ✅ 경험 태그 프리필
+  // 경험 태그 프리필
   useEffect(() => {
-    console.log("🔍 myExpTags from server:", myExpTags);
     if (!myExpTags) return;
     if (prefilledExpTagRef.current) return;
 
     const ids = myExpTags.map((t) => t.id);
-
     setExpTagIds(ids);
     setInitialExpTagIds(ids);
     prefilledExpTagRef.current = true;
   }, [myExpTags]);
 
-  // ✅ 성향 프리필
+  // 성향 프리필
   useEffect(() => {
     if (!myTendencies) return;
     if (prefilledTendencyRef.current) return;
 
-    // 백엔드에서 받은 내 성향 id 배열
     const ids = myTendencies.map((t) => t.id);
-
-    setTendencyIds(ids); // 현재 선택값 (PUT 바디용)
-    setInitialTendencyIds(ids); // 처음 렌더 시 체크박스에 뿌려줄 값
+    setTendencyIds(ids);
+    setInitialTendencyIds(ids);
     prefilledTendencyRef.current = true;
   }, [myTendencies]);
 
@@ -384,6 +380,42 @@ export function useRegisterTalentPage() {
     prefilledCertRef.current = true;
   }, [myCerts, cert]);
 
+  // ✅ 수상 프리필
+  useEffect(() => {
+    if (!myAwards) return;
+    if (prefilledAwardRef.current) return;
+
+    if (myAwards.length === 0) {
+      setAwardIds([]);
+      prefilledAwardRef.current = true;
+      return;
+    }
+
+    const rows = myAwards.map((a) => {
+      const raw = (a.awardDate ?? "").split("T")[0] || a.awardDate || "";
+      let ym = "";
+
+      if (raw && /^\d{4}-\d{2}-\d{2}$/.test(raw)) {
+        const [y, m] = raw.split("-");
+        ym = `${y}.${m}`;
+      } else if (/^\d{4}\.(0[1-9]|1[0-2])$/.test(a.awardDate)) {
+        ym = a.awardDate;
+      }
+
+      return {
+        title: a.title ?? "",
+        period: ym,
+        desc: a.description ?? "",
+      };
+    });
+
+    award.setAwards(rows);
+    award.setErrors(new Array(rows.length).fill({}));
+    setAwardIds(myAwards.map((a) => a.id));
+
+    prefilledAwardRef.current = true;
+  }, [myAwards, award]);
+
   /* =============================
    * 삭제 핸들러들
    * ============================= */
@@ -479,6 +511,36 @@ export function useRegisterTalentPage() {
     }
   };
 
+  // ✅ 수상 삭제
+  const handleDeleteAward = async (index: number) => {
+    const id = awardIds[index];
+    const hasMultiple = award.awards.length > 1;
+
+    if (hasMultiple) {
+      const nextAwards = award.awards.filter((_, i) => i !== index);
+      const nextErrors = (award.errors ?? []).filter((_, i) => i !== index);
+      const nextIds = awardIds.filter((_, i) => i !== index);
+
+      award.setAwards(nextAwards);
+      award.setErrors(nextErrors);
+      setAwardIds(nextIds);
+    } else {
+      award.clear(index);
+      award.setErrors([{}]);
+      setAwardIds([undefined as unknown as number]);
+    }
+
+    try {
+      if (id) await deleteAward(id);
+      console.log(
+        `[수상] 삭제 완료 (index=${index}, id=${id ?? "없음"}, hasMultiple=${hasMultiple})`
+      );
+    } catch (e) {
+      console.error(e);
+      alert("수상 삭제 중 오류가 발생했어요. 잠시 후 다시 시도해 주세요.");
+    }
+  };
+
   /* =============================
    * 파생 값
    * ============================= */
@@ -563,7 +625,6 @@ export function useRegisterTalentPage() {
       if (tendenciesChanged) {
         await updateTendencies.mutateAsync({ ids: tendencyIds });
         console.log("[성향] 변경 있음 → 갱신 완료", tendencyIds);
-        // 한 번 저장 후엔 기준값도 현재 값으로 맞춰주면, 같은 세션에서 다시 눌러도 스킵됨
         setInitialTendencyIds(tendencyIds);
       } else {
         console.log("[성향] 변경 없음 → PUT 스킵", { initialTendencyIds, tendencyIds });
@@ -572,7 +633,6 @@ export function useRegisterTalentPage() {
       // 3-1. 관련 경험 태그
       const expTagsChanged = !areIdArraysEqual(initialExpTagIds, expTagIds);
       if (expTagsChanged) {
-        console.log("[작성완료] 3-1. 경험 태그 변경 있음 → PUT 시작", expTagIds);
         await updateExpTags.mutateAsync({ ids: expTagIds });
         console.log("[관련 경험 태그] 갱신 완료", expTagIds);
         setInitialExpTagIds(expTagIds);
@@ -586,7 +646,6 @@ export function useRegisterTalentPage() {
       // 3-2. 스킬 태그
       const skillsChanged = !areIdArraysEqual(initialSkillIds, skillIds);
       if (skillsChanged) {
-        console.log("[작성완료] 3-2. 스킬 태그 변경 있음 → PUT 시작", skillIds);
         await updateSkills.mutateAsync({ ids: skillIds });
         console.log("[스킬 태그] 갱신 완료", skillIds);
         setInitialSkillIds(skillIds);
@@ -597,7 +656,7 @@ export function useRegisterTalentPage() {
         });
       }
 
-      // ✅ 3-3. 직무 카테고리 (직군/직무)
+      // 3-3. 직무 카테고리
       if (!job.trim()) {
         console.log("[직무] 선택된 직무가 없어 PUT 스킵");
       } else {
@@ -608,16 +667,10 @@ export function useRegisterTalentPage() {
         } else if (initialJobName && initialJobName === job) {
           console.log("[직무] 변경 없음 → PUT 스킵", { initialJobName, job });
         } else {
-          console.log("[작성완료] 3-3. 직무 변경 있음 → PUT 시작", {
-            job,
-            selectedJobId,
-          });
-
           await updateJobs.mutateAsync({ ids: [selectedJobId] });
           console.log("[직무] 갱신 완료", selectedJobId);
           setInitialJobName(job);
 
-          // 🔥 방금 저장한 값 기준으로 myJobs 다시 받아오기
           try {
             await refetchJobs();
             console.log("[직무] refetchJobs 완료");
@@ -732,7 +785,7 @@ export function useRegisterTalentPage() {
             const certPayload = {
               name: row.name.trim(),
               issueDate: issue,
-              issuer: "미입력", // ✅ 임시 발급기관(백엔드가 NotBlank일 때용)
+              issuer: "미입력",
             } as const;
 
             const id = certificationIds[i];
@@ -752,6 +805,44 @@ export function useRegisterTalentPage() {
 
         await refetchLanguages();
         console.log("[어학] 서버 데이터 재조회 완료");
+      }
+
+      // 7. ✅ 수상
+      const av = award.validateAndBuild();
+      if (!av.ok) {
+        console.log("[수상] 유효성 오류 → 저장 스킵");
+      } else {
+        for (let i = 0; i < award.awards.length; i += 1) {
+          const row = award.awards[i];
+          const hasAny = row.title.trim() || row.period.trim() || row.desc.trim();
+          if (!hasAny) continue;
+
+          const issue = toYYYYMM01(row.period);
+          if (!issue) {
+            console.log(`[수상] ${i}번 행 수상일 포맷 오류 → 스킵`);
+            continue;
+          }
+
+          const awardPayload = {
+            title: row.title.trim(),
+            organization: "미입력", // 조직명은 일단 미입력 처리
+            awardDate: issue,
+            description: row.desc.trim() || "",
+          } as const;
+
+          const id = awardIds[i];
+          if (id) {
+            const res = await updateAward(id, awardPayload);
+            console.log(`[수상] 수정 완료 id=${res.id}`);
+          } else {
+            const res = await createAward(awardPayload);
+            console.log(`[수상] 등록 완료 id=${res.id}`);
+          }
+        }
+
+        prefilledAwardRef.current = false;
+        await refetchAwards();
+        console.log("[수상] 서버 데이터 재조회 완료");
       }
     } catch (err) {
       if (err instanceof ApiError) {
@@ -809,7 +900,7 @@ export function useRegisterTalentPage() {
     // 성향
     tendencyIds,
     setTendencyIds,
-    initialTendencyIds, // ✅ 반환 추가
+    initialTendencyIds,
 
     // 학력
     edu,
@@ -827,5 +918,9 @@ export function useRegisterTalentPage() {
     // 자격증
     cert,
     handleDeleteCertification,
+
+    // ✅ 수상
+    award,
+    handleDeleteAward,
   };
 }

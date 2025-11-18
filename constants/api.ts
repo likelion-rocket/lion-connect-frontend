@@ -65,6 +65,13 @@ export const API_ENDPOINTS = {
     GET: "/profile/skills", // GET
     UPDATE: "/profile/skills", // PUT
   },
+  // 관리자 - 기업 문의 관리
+  ADMIN: {
+    INQUIRIES: {
+      LIST: "/admin/inquiries", // GET
+      UPDATE_STATUS: (id: number) => `/admin/inquiries/${id}/status`, // PATCH
+    },
+  },
 } as const;
 
 // HTTP 메서드

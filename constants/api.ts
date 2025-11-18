@@ -82,6 +82,17 @@ export const API_ENDPOINTS = {
     UPDATE: (id: number) => `/profile/awards/${id}`,
     DELETE: (id: number) => `/profile/awards/${id}`,
   },
+  // ✅ 프로필 링크(썸네일 포함)
+  PROFILE_LINKS: {
+    LIST: "/profile/me/links", // GET
+    UPSERT: (type: string) => `/profile/me/links/${type}`, // POST/PUT
+    DELETE: (type: string) => `/profile/me/links/${type}`, // DELETE
+  },
+
+  // ✅ 프로필 썸네일 presign
+  PROFILE_THUMBNAIL: {
+    PRESIGN: "/profile/me/thumbnail/presign", // POST
+  },
 } as const;
 
 // HTTP 메서드

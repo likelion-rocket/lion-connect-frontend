@@ -30,7 +30,7 @@ type IntroduceCardProps = {
   showSummary?: boolean;
 };
 
-export default async function IntroduceCard(props: IntroduceCardProps) {
+export default function IntroduceCard(props: IntroduceCardProps) {
   const {
     name,
     profileImageUrl,
@@ -52,7 +52,28 @@ export default async function IntroduceCard(props: IntroduceCardProps) {
     showSummary = true,
   } = props;
 
-  const src = profileImageUrl || "/images/default-profile.png";
+  // 프로필 이미지 URL 처리: 유효한 URL이거나 로컬 경로인 경우 사용, 아니면 기본 이미지
+  const getValidImageSrc = (url?: string | null): string => {
+    if (!url || !url.trim()) return "/images/default-profile.png";
+
+    const trimmedUrl = url.trim();
+
+    // 로컬 경로인 경우 (/, . 으로 시작)
+    if (trimmedUrl.startsWith("/") || trimmedUrl.startsWith(".")) {
+      return trimmedUrl;
+    }
+
+    // 외부 URL 유효성 검증
+    try {
+      new URL(trimmedUrl);
+      return trimmedUrl;
+    } catch {
+      // 유효하지 않은 URL이면 기본 이미지 사용
+      return "/images/default-profile.png";
+    }
+  };
+
+  const src = getValidImageSrc(profileImageUrl);
   const href = detailHref ?? (slug ? `/talents/${slug}` : undefined);
 
   const CardBody = (

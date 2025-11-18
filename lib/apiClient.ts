@@ -32,6 +32,8 @@ export class ApiError extends Error {
 type RequestOptions = RequestInit & {
   timeout?: number;
   skipAuth?: boolean; // 인증 헤더 스킵 옵션 (로그인/회원가입 등)
+  skipCredentials?: boolean; // credentials 스킵 옵션 (공개 API)
+  _isRetry?: boolean; // 내부 플래그: 이미 재시도한 요청인지 표시 (무한 루프 방지)
 };
 
 // 리프레시 토큰 요청 중 플래그 (중복 방지)
@@ -141,29 +143,75 @@ async function handleResponseError(response: Response): Promise<never> {
 
 /**
  * 토큰 리프레시 함수
+ * - Authorization 헤더 우선, 없으면 응답 body에서 추출
+ * - 앱 초기화(useInitializeAuth)와 401 자동 재시도에서 모두 사용
  */
-async function refreshAccessToken(): Promise<string> {
+export async function refreshAccessToken(): Promise<string> {
+  console.log("🔄 [refreshAccessToken] 토큰 리프레시 시작");
+  console.log(
+    "🔄 [refreshAccessToken] 요청 URL:",
+    `${API_BASE_URL}${API_ENDPOINTS.AUTH.REFRESH_TOKEN}`
+  );
+
+  // 쿠키 확인 (디버깅용)
+  const cookies = document.cookie;
+  const hasRefreshToken = cookies.includes("refreshToken");
+  console.log("🔄 [refreshAccessToken] 쿠키 존재 여부:", hasRefreshToken);
+  if (!hasRefreshToken) {
+    console.warn("⚠️ [refreshAccessToken] refreshToken 쿠키가 없습니다!");
+  }
+
   const response = await fetch(`${API_BASE_URL}${API_ENDPOINTS.AUTH.REFRESH_TOKEN}`, {
     method: "POST",
     credentials: "include", // 리프레시 토큰 쿠키 포함
   });
 
+  console.log("🔄 [refreshAccessToken] 응답 상태:", response.status);
+
   if (!response.ok) {
+    // 에러 메시지 추출
+    const errorData = await response.json().catch(() => ({}));
+    const errorMessage = errorData.message || "세션이 만료되었습니다. 다시 로그인해주세요.";
+
+    console.error("❌ [refreshAccessToken] 리프레시 실패:", {
+      status: response.status,
+      message: errorMessage,
+      errorData,
+    });
+
     // 리프레시 실패 시 로그아웃 처리
     useAuthStore.getState().clearAuth();
-    throw new ApiError("세션이 만료되었습니다. 다시 로그인해주세요.", 401, "REFRESH_FAILED");
+
+    throw new ApiError(errorMessage, response.status, "REFRESH_FAILED");
   }
 
-  // Authorization 헤더에서 새 액세스 토큰 추출
+  // 1순위: Authorization 헤더에서 토큰 추출
   const authHeader = response.headers.get("Authorization");
-  const newAccessToken = authHeader?.replace("Bearer ", "") || "";
+  let newAccessToken = authHeader?.replace("Bearer ", "") || "";
+
+  console.log("🔄 [refreshAccessToken] Authorization 헤더:", authHeader ? "존재" : "없음");
+
+  // 2순위: 응답 body에서 토큰 추출 (헤더에 없는 경우)
+  if (!newAccessToken) {
+    try {
+      const responseData = await response.json();
+      newAccessToken = responseData.accessToken || "";
+      console.log("🔄 [refreshAccessToken] Body에서 토큰 추출:", newAccessToken ? "성공" : "실패");
+      console.log("🔄 [refreshAccessToken] 응답 데이터:", responseData);
+    } catch (error) {
+      console.error("❌ [refreshAccessToken] JSON 파싱 실패:", error);
+    }
+  }
 
   if (!newAccessToken) {
+    console.error("❌ [refreshAccessToken] 토큰을 찾을 수 없음");
     throw new ApiError("토큰 갱신에 실패했습니다.", 401, "NO_ACCESS_TOKEN");
   }
 
   // Zustand에 새 토큰 저장
   useAuthStore.getState().updateAccessToken(newAccessToken);
+
+  console.log("✅ [refreshAccessToken] 토큰 갱신 성공");
 
   return newAccessToken;
 }
@@ -204,18 +252,24 @@ export async function apiRequest<T>(endpoint: string, options: RequestOptions = 
     const response = await fetchWithTimeout(url, {
       ...options,
       headers,
-      credentials: "include", // 리프레시 토큰 쿠키 포함
+      credentials: options.skipCredentials ? "omit" : "include", // 조건부 credentials
     });
 
     // 401 Unauthorized 처리 (토큰 만료)
-    if (response.status === HTTP_STATUS.UNAUTHORIZED && !options.skipAuth) {
+    // _isRetry가 true면 이미 재시도한 요청이므로 무한 루프 방지
+    if (response.status === HTTP_STATUS.UNAUTHORIZED && !options.skipAuth && !options._isRetry) {
       // 이미 리프레시 중이면 대기
       if (isRefreshing) {
         return new Promise((resolve, reject) => {
           addRefreshSubscriber((token: string) => {
             // 새 토큰으로 재시도
             headers["Authorization"] = `Bearer ${token}`;
-            fetchWithTimeout(url, { ...options, headers, credentials: "include" })
+            fetchWithTimeout(url, {
+              ...options,
+              headers,
+              credentials: options.skipCredentials ? "omit" : "include",
+              _isRetry: true, // 재시도 플래그 설정
+            })
               .then((retryResponse) => {
                 if (retryResponse.ok) {
                   return retryResponse.json();
@@ -241,7 +295,8 @@ export async function apiRequest<T>(endpoint: string, options: RequestOptions = 
         const retryResponse = await fetchWithTimeout(url, {
           ...options,
           headers,
-          credentials: "include",
+          credentials: options.skipCredentials ? "omit" : "include",
+          _isRetry: true, // 재시도 플래그 설정
         });
 
         if (!retryResponse.ok) {

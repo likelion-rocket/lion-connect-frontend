@@ -18,7 +18,7 @@ import { useEffect } from "react";
  * 4. 완료 후: isInitialized = true로 설정 (UI가 진짜 상태 확인 가능)
  */
 export function useInitializeAuth() {
-  const { isInitialized, setAuth, setInitialized } = useAuthStore();
+  const { isInitialized, setInitialized } = useAuthStore();
 
   useEffect(() => {
     // 이미 초기화된 경우 스킵
@@ -30,31 +30,40 @@ export function useInitializeAuth() {
     const initializeAuth = async () => {
       try {
         // localStorage에서 user 먼저 확인 (Zustand persist가 이미 복구했을 것임)
-        const { user } = useAuthStore.getState();
+        const { user, accessToken } = useAuthStore.getState();
 
         // user가 없으면 로그인 상태가 아니므로 스킵
         if (!user) {
-          console.log("세션 복구 스킵: localStorage에 user 정보가 없습니다");
+          console.log("✅ 세션 복구 스킵: localStorage에 user 정보가 없습니다");
           return;
         }
 
+        // accessToken이 이미 있으면 스킵 (이미 로그인된 상태)
+        if (accessToken) {
+          console.log("✅ 세션 복구 스킵: 이미 액세스 토큰이 존재합니다");
+          return;
+        }
+
+        console.log("🔄 세션 복구 시도 중...", { email: user.email });
+
         // recoverTokenAPI() 호출: 새 액세스 토큰 발급
-        const accessToken = await recoverTokenAPI();
+        // refreshAccessToken 내부에서 자동으로 updateAccessToken 호출됨
+        const newAccessToken = await recoverTokenAPI();
 
         // 복구 성공: setAuth로 accessToken + user 모두 설정
-        // updateAccessToken 대신 setAuth를 사용하여 isAuthenticated를 확실하게 true로 설정
-        useAuthStore.getState().setAuth(accessToken, user);
+        // (이미 updateAccessToken이 호출되었지만, isAuthenticated를 확실하게 true로 설정)
+        useAuthStore.getState().setAuth(newAccessToken, user);
 
-        console.log("세션 복구 성공:", { email: user.email });
+        console.log("✅ 세션 복구 성공:", { email: user.email });
       } catch (error) {
-        console.error("세션 복구 실패:", error);
+        console.error("❌ 세션 복구 실패:", error);
         // 복구 실패: 기존 상태 유지 (로그아웃 상태)
         // - 리프레시 토큰이 없음
         // - 리프레시 토큰이 만료됨
         // - 네트워크 오류
 
-        // user는 localStorage에 남아있지만 accessToken이 없으므로
-        // clearAuth를 호출하여 localStorage의 user도 삭제
+        // refreshAccessToken 내부에서 이미 clearAuth가 호출되었을 수 있음
+        // 안전하게 한 번 더 호출 (중복 호출해도 문제없음)
         useAuthStore.getState().clearAuth();
       } finally {
         // 초기화 완료 (성공/실패 상관없음)
@@ -63,5 +72,5 @@ export function useInitializeAuth() {
     };
 
     initializeAuth();
-  }, [isInitialized, setAuth, setInitialized]);
+  }, [isInitialized, setInitialized]);
 }

@@ -5,55 +5,84 @@
 /**
  * 문의 상태
  */
-export type InquiryStatus = "new" | "done";
-
-/**
- * 문의 기간 필터
- */
-export type InquiryPeriod =
-  | "12h" // 12시간 이내
-  | "24h" // 24시간 이내
-  | "2d" // 이틀 이내
-  | "3d" // 3일 이내
-  | "1w" // 1주일 이내
-  | "1m" // 한달 이내
-  | "over"; // 한달 이상
+export type InquiryStatus = "NEW" | "IN_PROGRESS" | "DONE";
 
 /**
  * 기업 문의 데이터
  */
 export interface Inquiry {
-  id: string;
-  companyName: string; // 담당자명
-  position: string; // 회사명
-  attribute: string; // 전화번호
-  description: string; // 이메일(ID)
-  category: string; // 부서 / 직책
-  status: InquiryStatus; // 문의 상태
-  content: string; // 문의 내용
-  createdAt: string; // 생성 일시 (ISO 8601)
+  id: number;
+  profileId: number;
+  profileName: string;
+  profileStorageUrl: string;
+  companyName: string;
+  contactPerson: string;
+  department: string;
+  position: string;
+  email: string;
+  phoneNumber: string;
+  content: string;
+  privacyPolicyAgreed: boolean;
+  status: InquiryStatus;
+  createdAt: string; // ISO 8601 format
+  updatedAt: string; // ISO 8601 format
 }
 
 /**
- * 문의 목록 조회 파라미터
+ * 정렬 객체
  */
-export interface InquiryListParams {
-  q?: string; // 검색어
-  status?: InquiryStatus; // 상태 필터
-  period?: InquiryPeriod; // 기간 필터
-  page?: number; // 페이지 번호 (1부터 시작)
-  limit?: number; // 페이지당 항목 수
+export interface Sort {
+  empty: boolean;
+  sorted: boolean;
+  unsorted: boolean;
 }
 
 /**
- * 문의 목록 응답
+ * 페이지 정보
+ */
+export interface Pageable {
+  offset: number;
+  sort: Sort;
+  paged: boolean;
+  pageNumber: number;
+  pageSize: number;
+  unpaged: boolean;
+}
+
+/**
+ * 문의 목록 조회 응답
  */
 export interface InquiryListResponse {
-  data: Inquiry[];
-  meta: {
-    total: number; // 전체 항목 수
-    page: number; // 현재 페이지
-    limit: number; // 페이지당 항목 수
-    totalPages: number; // 전체 페이지 수
-  };
+  totalPages: number;
+  totalElements: number;
+  first: boolean;
+  last: boolean;
+  size: number;
+  content: Inquiry[];
+  number: number;
+  sort: Sort;
+  numberOfElements: number;
+  pageable: Pageable;
+  empty: boolean;
+}
+
+/**
+ * 문의 목록 조회 요청 파라미터
+ */
+export interface InquiryListParams {
+  status?: InquiryStatus;
+  profileId?: number;
+  profileName?: string;
+  receivedFrom?: string; // ISO 8601 date format (YYYY-MM-DD)
+  receivedTo?: string; // ISO 8601 date format (YYYY-MM-DD)
+  page?: number; // 0-based page index
+  size?: number;
+  sort?: string[]; // e.g., ["createdAt,desc", "id,asc"]
+}
+
+/**
+ * 문의 상태 업데이트 요청
+ */
+export interface UpdateInquiryStatusRequest {
+  status: InquiryStatus;
 }

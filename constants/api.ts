@@ -65,6 +65,10 @@ export const API_ENDPOINTS = {
     GET: "/profile/skills", // GET
     UPDATE: "/profile/skills", // PUT
   },
+  // 기업 문의
+  INQUIRIES: {
+    CREATE: "/inquiries", // POST - 기업 문의 제출
+  },
   // 관리자 - 기업 문의 관리
   ADMIN: {
     INQUIRIES: {

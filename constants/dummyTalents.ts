@@ -14,6 +14,8 @@ export type DummyTalent = {
   tendencies: string[];
   skills: string[];
   summary: string;
+  /** 🔥 더미 프로필 이미지는 전부 이 경로 사용 */
+  thumbnailUrl: string;
 };
 
 /** ================= 성향(Tendency) ================= */
@@ -143,30 +145,22 @@ const LONG_SUMMARY_TEMPLATES = [
 
 /** 뱃지 */
 const BADGE_SETS: { label: string; type: BadgeType }[][] = [
-  // 부트캠프 + 전공자
   [
     { label: "부트캠프 경험자", type: "bootcamp" as BadgeType },
     { label: "전공자", type: "major" as BadgeType },
   ],
-  // 창업 + 전공자
   [
     { label: "창업 경험자", type: "startup" as BadgeType },
     { label: "전공자", type: "major" as BadgeType },
   ],
-  // 자격증 + 전공자
   [
     { label: "자격증 보유자", type: "certified" as BadgeType },
     { label: "전공자", type: "major" as BadgeType },
   ],
-  // 부트캠프 단독
   [{ label: "부트캠프 경험자", type: "bootcamp" as BadgeType }],
-  // 창업 단독
   [{ label: "창업 경험자", type: "startup" as BadgeType }],
-  // 자격증 단독
   [{ label: "자격증 보유자", type: "certified" as BadgeType }],
-  // 전공자 단독
   [{ label: "전공자", type: "major" as BadgeType }],
-  // 아무 배지 없음
   [],
 ];
 
@@ -182,10 +176,8 @@ export function generateDummyTalents(count = 24): DummyTalent[] {
     const jobList = JOB_OPTIONS[jobGroup];
     const job = jobList[idx % jobList.length];
 
-    // ⭐ 기본 요약
     let summary = SUMMARY_TEMPLATES[idx % SUMMARY_TEMPLATES.length];
 
-    // ⭐ 일부 인덱스만 3줄 이상 되도록 긴 문장 추가 (0, 2, 4, 6, ... 정도)
     if (idx % 2 === 0) {
       const longExtra = LONG_SUMMARY_TEMPLATES[idx % LONG_SUMMARY_TEMPLATES.length];
       summary = `${summary}\n${longExtra}`;
@@ -204,6 +196,8 @@ export function generateDummyTalents(count = 24): DummyTalent[] {
       tendencies: buildDummyTendencies(idx),
       skills: SKILLS_BY_GROUP[jobGroup] ?? [],
       summary,
+      /** 🔥 더미는 항상 기본 이미지 사용 */
+      thumbnailUrl: "/images/default-profile.png",
     };
   });
 }

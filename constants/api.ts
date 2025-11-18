@@ -71,6 +71,7 @@ export const API_ENDPOINTS = {
       LIST: "/admin/inquiries", // GET
       UPDATE_STATUS: (id: number) => `/admin/inquiries/${id}/status`, // PATCH
     },
+  },
   JOBS: {
     GET: "/profile/job-categories", // GET
     UPDATE: "/profile/job-categories", // PUT

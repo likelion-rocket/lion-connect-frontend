@@ -140,7 +140,7 @@ export default async function IntroduceCard(props: IntroduceCardProps) {
 
             {/* 직무 · 직군 */}
             <div className="flex items-center gap-10">
-              <span className="text-[#888] w-[72px]">직무 · 직군</span>
+              <span className="text-[#888] w-[72px]">직군 · 직무</span>
               {jobGroup || job ? (
                 <span className="text-[#111] font-medium">
                   {jobGroup ?? "-"}

@@ -86,3 +86,17 @@ export interface InquiryListParams {
 export interface UpdateInquiryStatusRequest {
   status: InquiryStatus;
 }
+
+/**
+ * 기업 문의 생성 요청
+ */
+export interface CreateInquiryRequest {
+  companyName: string;
+  contactPerson: string;
+  department: string;
+  position: string;
+  email: string;
+  phoneNumber: string;
+  content: string;
+  agreePrivacy: boolean;
+}

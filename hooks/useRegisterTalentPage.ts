@@ -39,6 +39,11 @@ import {
 import { ApiError } from "@/lib/apiClient";
 import { parseYYYYMMRange } from "@/lib/date/ym";
 
+// ✅ 직군/직무 관련
+import { useMyJobs } from "@/hooks/useMyJobs";
+import { useUpdateJobs } from "@/hooks/useUpdateJobs";
+import { findJobGroupByJobName, JOB_ROLE_ID_BY_NAME } from "@/constants/jobs";
+
 // YYYY-MM-DD -> YYYY.MM
 const fmtYM = (d?: string | null) => {
   if (!d) return "";
@@ -79,6 +84,8 @@ export function useRegisterTalentPage() {
 
   const [jobGroup, setJobGroup] = useState("");
   const [job, setJob] = useState("");
+  // ✅ 직무 초기값(서버 값) – 변경 여부 체크용
+  const [initialJobName, setInitialJobName] = useState<string>("");
 
   const [tendencyIds, setTendencyIds] = useState<number[]>([]);
   const [initialTendencyIds, setInitialTendencyIds] = useState<number[]>([]); // ✅ 추가
@@ -117,6 +124,11 @@ export function useRegisterTalentPage() {
   const { data: mySkills } = useMySkills(); // GET /api/profile/skills
   const updateSkills = useUpdateSkills(); // PUT 훅
 
+  // ✅ 내 직무 카테고리 (GET /profile/job-categories)
+  const { data: myJobs, refetch: refetchJobs } = useMyJobs();
+
+  const updateJobs = useUpdateJobs();
+
   /* -----------------------------
    * 서버 row id 매핑 상태
    * ----------------------------- */
@@ -135,17 +147,49 @@ export function useRegisterTalentPage() {
   const prefilledCertRef = useRef(false);
   const prefilledTendencyRef = useRef(false); // ✅ 추가
   const prefilledExpTagRef = useRef(false); // ✅ 추가
-  // const prefilledSkillRef = useRef(false);
+  const prefilledJobRef = useRef(false); // ✅ 직무 프리필 여부
 
   /* =============================
    * useEffect 영역
    * ============================= */
 
-  // 직군 바뀌면 직무 리셋
   useEffect(() => {
-    setJob("");
-  }, [jobGroup]);
+    if (!myJobs) return; // 아직 로딩 중
+    console.log("[useRegisterTalentPage] myJobs =", myJobs);
 
+    if (prefilledJobRef.current) return;
+
+    if (myJobs.length === 0) {
+      console.log("[useRegisterTalentPage] 내 직무 없음 → 프리필 스킵");
+      prefilledJobRef.current = true;
+      return;
+    }
+
+    // ✅ 마지막 직무 기준으로 사용
+    const last = myJobs[myJobs.length - 1];
+    const nameFromServer = (last.name ?? "").trim();
+
+    if (!nameFromServer) {
+      console.log("[useRegisterTalentPage] last.name 비어있음 → 프리필 스킵");
+      prefilledJobRef.current = true;
+      return;
+    }
+
+    // 처음 한 번만 초기값 세팅
+    setInitialJobName((prev) => prev || nameFromServer);
+
+    // 이미 사용자가 뭔가 입력했으면 덮어쓰지 않기
+    setJob((prev) => (prev.trim() ? prev : nameFromServer));
+
+    setJobGroup((prev) => {
+      if (prev.trim()) return prev;
+      const group = findJobGroupByJobName(nameFromServer);
+      console.log("[useRegisterTalentPage] nameFromServer → group", nameFromServer, group);
+      return group || prev;
+    });
+
+    prefilledJobRef.current = true;
+  }, [myJobs]);
   // ✅ 스킬 프리필 (처음에 skillIds가 비어 있을 때만 서버 값으로 채움)
   useEffect(() => {
     if (!mySkills) return;
@@ -540,7 +584,6 @@ export function useRegisterTalentPage() {
       }
 
       // 3-2. 스킬 태그
-      // ✅ 3-2. 직무 스킬 태그
       const skillsChanged = !areIdArraysEqual(initialSkillIds, skillIds);
       if (skillsChanged) {
         console.log("[작성완료] 3-2. 스킬 태그 변경 있음 → PUT 시작", skillIds);
@@ -552,6 +595,36 @@ export function useRegisterTalentPage() {
           initialSkillIds,
           skillIds,
         });
+      }
+
+      // ✅ 3-3. 직무 카테고리 (직군/직무)
+      if (!job.trim()) {
+        console.log("[직무] 선택된 직무가 없어 PUT 스킵");
+      } else {
+        const selectedJobId = JOB_ROLE_ID_BY_NAME[job];
+
+        if (!selectedJobId) {
+          console.log("[직무] 매핑된 ID가 없어 PUT 스킵", job);
+        } else if (initialJobName && initialJobName === job) {
+          console.log("[직무] 변경 없음 → PUT 스킵", { initialJobName, job });
+        } else {
+          console.log("[작성완료] 3-3. 직무 변경 있음 → PUT 시작", {
+            job,
+            selectedJobId,
+          });
+
+          await updateJobs.mutateAsync({ ids: [selectedJobId] });
+          console.log("[직무] 갱신 완료", selectedJobId);
+          setInitialJobName(job);
+
+          // 🔥 방금 저장한 값 기준으로 myJobs 다시 받아오기
+          try {
+            await refetchJobs();
+            console.log("[직무] refetchJobs 완료");
+          } catch (e) {
+            console.error("[직무] refetchJobs 중 오류", e);
+          }
+        }
       }
 
       // 4. 경력

@@ -4,7 +4,7 @@ import { useBusinessConnect } from "../../hooks/useBusinessConnect";
 import { FormField, FormTextarea } from "./FormField";
 
 export default function BusinessConnect() {
-  const { register, handleSubmit, errors } = useBusinessConnect();
+  const { register, handleSubmit, errors, isLoading } = useBusinessConnect();
 
   return (
     <section id="business-connect" className="w-full min-w-[1444px] flex flex-col items-center">
@@ -153,9 +153,10 @@ export default function BusinessConnect() {
           {/* Submit Button */}
           <button
             type="submit"
-            className="w-full py-6 bg-bg-accent rounded-lg flex justify-center items-center text-text-inverse-primary text-xl font-bold leading-[27.5px] hover:opacity-90 transition-opacity"
+            disabled={isLoading}
+            className="w-full py-6 bg-bg-accent rounded-lg flex justify-center items-center text-text-inverse-primary text-xl font-bold leading-[27.5px] hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            기업 문의하기
+            {isLoading ? "제출 중..." : "기업 문의하기"}
           </button>
         </form>
       </div>

@@ -1,81 +1,132 @@
 "use client";
 
 import { useQueryParams } from "@/hooks/useQueryParams";
-import type { InquiryStatus, InquiryPeriod } from "@/types/inquiry";
+import type { InquiryStatus } from "@/types/inquiry";
 import FilterSelect from "../../../../../components/FilterSelect";
+import { useState } from "react";
 
 /**
  * 상태 필터 옵션
  */
 const STATUS_OPTIONS: { value: InquiryStatus | "all"; label: string }[] = [
-  { value: "all", label: "New / Done" },
-  { value: "new", label: "New" },
-  { value: "done", label: "Done" },
-];
-
-/**
- * 기간 필터 옵션
- */
-const PERIOD_OPTIONS: { value: InquiryPeriod | "all"; label: string }[] = [
-  { value: "all", label: "전체" },
-  { value: "12h", label: "12시간 이내" },
-  { value: "24h", label: "24시간 이내" },
-  { value: "2d", label: "이틀 이내" },
-  { value: "3d", label: "3일 이내" },
-  { value: "1w", label: "1주일 이내" },
-  { value: "1m", label: "한달 이내" },
-  { value: "over", label: "한달 이상" },
+  { value: "all", label: "전체 상태" },
+  { value: "NEW", label: "New" },
+  { value: "IN_PROGRESS", label: "In Progress" },
+  { value: "DONE", label: "Done" },
 ];
 
 /**
  * 기업 문의 필터 컴포넌트
  *
- * - 상태 필터 (New, Done)
- * - 기간 필터 (12시간 이내 ~ 한달 이상)
+ * - 상태 필터 (NEW, IN_PROGRESS, DONE)
+ * - 담당자 이름 검색
+ * - 수신 날짜 범위 (receivedFrom ~ receivedTo)
  * - URL 쿼리 파라미터와 자동 동기화
  */
 export default function InquiryFilters() {
   const { params, setParams } = useQueryParams();
+  const [profileName, setProfileName] = useState(params.profileName || "");
+  const [receivedFrom, setReceivedFrom] = useState(params.receivedFrom || "");
+  const [receivedTo, setReceivedTo] = useState(params.receivedTo || "");
 
   const handleStatusChange = (value: string) => {
-    console.log("Status changed to:", value);
-    // 페이지를 1로 리셋하면서 상태 업데이트 (한 번에 처리)
+    // 페이지를 0으로 리셋하면서 상태 업데이트
     setParams({
       status: value === "all" ? undefined : value,
-      page: "1",
+      page: "0",
     });
   };
 
-  const handlePeriodChange = (value: string) => {
-    console.log("Period changed to:", value);
-    // 페이지를 1로 리셋하면서 기간 업데이트 (한 번에 처리)
+  const handleProfileNameSearch = () => {
     setParams({
-      period: value === "all" ? undefined : value,
-      page: "1",
+      profileName: profileName || undefined,
+      page: "0",
     });
   };
 
-  console.log("Current params:", params);
+  const handleDateRangeApply = () => {
+    setParams({
+      receivedFrom: receivedFrom || undefined,
+      receivedTo: receivedTo || undefined,
+      page: "0",
+    });
+  };
+
+  const handleResetFilters = () => {
+    setProfileName("");
+    setReceivedFrom("");
+    setReceivedTo("");
+    setParams({
+      status: undefined,
+      profileName: undefined,
+      receivedFrom: undefined,
+      receivedTo: undefined,
+      page: "0",
+    });
+  };
 
   return (
-    <div className="flex items-center gap-3">
-      {/* 상태 필터 */}
-      <FilterSelect
-        value={params.status || "all"}
-        onValueChange={handleStatusChange}
-        options={STATUS_OPTIONS}
-        placeholder="New / Done"
-        width="w-[140px]"
-      />
+    <div className="flex flex-col gap-3">
+      <div className="flex items-center gap-3">
+        {/* 상태 필터 */}
+        <FilterSelect
+          value={params.status || "all"}
+          onValueChange={handleStatusChange}
+          options={STATUS_OPTIONS}
+          placeholder="전체 상태"
+          width="w-[160px]"
+        />
 
-      {/* 기간 필터 */}
-      <FilterSelect
-        value={params.period || "all"}
-        onValueChange={handlePeriodChange}
-        options={PERIOD_OPTIONS}
-        placeholder="기간별 검색"
-        width="w-[160px]"
-      />
+        {/* 담당자 이름 검색 */}
+        <div className="flex items-center gap-2">
+          <input
+            type="text"
+            placeholder="담당자 이름 검색"
+            value={profileName}
+            onChange={(e) => setProfileName(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && handleProfileNameSearch()}
+            className="w-[200px] px-3 py-2 text-sm border border-border-tertiary rounded-lg focus:outline-none focus:ring-2 focus:ring-text-accent"
+          />
+          <button
+            onClick={handleProfileNameSearch}
+            className="px-4 py-2 text-sm font-medium text-white bg-text-accent rounded-lg hover:bg-text-accent/90 transition-colors"
+          >
+            검색
+          </button>
+        </div>
+
+        {/* 초기화 버튼 */}
+        <button
+          onClick={handleResetFilters}
+          className="px-4 py-2 text-sm font-medium text-text-secondary border border-border-tertiary rounded-lg hover:bg-bg-secondary transition-colors"
+        >
+          초기화
+        </button>
+      </div>
+
+      {/* 날짜 범위 필터 */}
+      <div className="flex items-center gap-2">
+        <span className="text-sm text-text-secondary">수신 날짜:</span>
+        <input
+          type="date"
+          value={receivedFrom}
+          onChange={(e) => setReceivedFrom(e.target.value)}
+          className="px-3 py-2 text-sm border border-border-tertiary rounded-lg focus:outline-none focus:ring-2 focus:ring-text-accent"
+        />
+        <span className="text-sm text-text-secondary">~</span>
+        <input
+          type="date"
+          value={receivedTo}
+          onChange={(e) => setReceivedTo(e.target.value)}
+          className="px-3 py-2 text-sm border border-border-tertiary rounded-lg focus:outline-none focus:ring-2 focus:ring-text-accent"
+        />
+        <button
+          onClick={handleDateRangeApply}
+          className="px-4 py-2 text-sm font-medium text-white bg-text-accent rounded-lg hover:bg-text-accent/90 transition-colors"
+        >
+          적용
+        </button>
+      </div>
     </div>
   );
 }

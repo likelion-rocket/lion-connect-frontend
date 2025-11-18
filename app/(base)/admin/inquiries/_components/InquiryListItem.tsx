@@ -17,19 +17,21 @@ export default function InquiryListItem({ inquiry, onClick }: InquiryListItemPro
       onClick={onClick}
     >
       {/* 담당자명 */}
-      <p className="w-20 text-text-primary text-sm leading-5 truncate">{inquiry.companyName}</p>
+      <p className="w-20 text-text-primary text-sm leading-5 truncate">{inquiry.contactPerson}</p>
 
       {/* 회사명 */}
-      <p className="w-20 text-text-primary text-sm leading-5 truncate">{inquiry.position}</p>
+      <p className="w-20 text-text-primary text-sm leading-5 truncate">{inquiry.companyName}</p>
 
       {/* 전화번호 */}
-      <p className="w-24 text-text-primary text-sm leading-5 truncate">{inquiry.attribute}</p>
+      <p className="w-24 text-text-primary text-sm leading-5 truncate">{inquiry.phoneNumber}</p>
 
-      {/* 이메일(ID) */}
-      <p className="w-24 text-text-primary text-sm leading-5 truncate">{inquiry.description}</p>
+      {/* 이메일 */}
+      <p className="w-24 text-text-primary text-sm leading-5 truncate">{inquiry.email}</p>
 
       {/* 부서 / 직책 */}
-      <p className="w-36 text-text-primary text-sm leading-5 truncate">{inquiry.category}</p>
+      <p className="w-36 text-text-primary text-sm leading-5 truncate">
+        {inquiry.department} / {inquiry.position}
+      </p>
 
       {/* 문의 내용 (3줄까지 보이도록 말줄임) */}
       <p className="flex-1 max-w-80 max-h-16 text-text-primary text-sm leading-5 line-clamp-3">

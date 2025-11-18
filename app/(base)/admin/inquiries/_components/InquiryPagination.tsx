@@ -39,10 +39,15 @@ export default function InquiryPagination({ currentPage, totalPages }: InquiryPa
   const { setParam } = useQueryParams();
 
   const handlePageChange = (page: number) => {
-    setParam("page", String(page));
+    // Convert to 0-based index for API
+    setParam("page", String(page - 1));
   };
 
   const pageNumbers = generatePageNumbers(currentPage, totalPages);
+
+  if (totalPages <= 1) {
+    return null; // Don't show pagination if there's only one page
+  }
 
   return (
     <Pagination className="mt-8">

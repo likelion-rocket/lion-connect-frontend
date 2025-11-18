@@ -171,9 +171,6 @@ export default function SkillComponent({
                         }}
                       >
                         {opt.name}
-                        <span className="ml-2 text-[11px] text-text-tertiary">
-                          {opt.category === "frontendSkills" ? "Frontend" : "Backend"}
-                        </span>
                       </li>
                     ))}
                   </ul>

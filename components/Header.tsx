@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import AuthButton from "./buttons/AuthButton";
 import Image from "next/image";
@@ -66,7 +67,17 @@ function filterLinksByRole(links: RoleBasedNavLink[], userRoles?: string[]): Rol
  */
 export default function Header() {
   const { user } = useAuthStore();
-  const visibleLinks = filterLinksByRole(navLinks, user?.roles);
+  const [mounted, setMounted] = useState(false);
+
+  // Hydration 불일치 방지: 클라이언트에서만 역할 기반 링크 필터링
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // SSR 시점에는 기본 링크만 표시 (requiredRoles가 없는 링크들)
+  const defaultLinks = navLinks.filter((link) => !link.requiredRoles?.length);
+  const visibleLinks = mounted ? filterLinksByRole(navLinks, user?.roles) : defaultLinks;
+
   const { navRefs, indicatorStyle, handleNavClick, isLinkActive } = useNavigation(visibleLinks);
 
   return (

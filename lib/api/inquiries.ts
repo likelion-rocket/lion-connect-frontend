@@ -1,13 +1,14 @@
 /**
- * 관리자 - 기업 문의 관리 API
+ * 기업 문의 관리 API
  */
 
-import { get, patch } from "@/lib/apiClient";
+import { get, patch, post } from "@/lib/apiClient";
 import { API_ENDPOINTS } from "@/constants/api";
 import type {
   InquiryListParams,
   InquiryListResponse,
   UpdateInquiryStatusRequest,
+  CreateInquiryRequest,
 } from "@/types/inquiry";
 
 /**
@@ -54,6 +55,19 @@ export async function getAdminInquiries(
   const endpoint = `${API_ENDPOINTS.ADMIN.INQUIRIES.LIST}${queryString ? `?${queryString}` : ""}`;
 
   return get<InquiryListResponse>(endpoint);
+}
+
+/**
+ * 기업 문의 제출
+ * POST /api/inquiries
+ *
+ * @param data 문의 데이터
+ */
+export async function createInquiry(data: CreateInquiryRequest): Promise<void> {
+  return post<void>(API_ENDPOINTS.INQUIRIES.CREATE, data, {
+    skipAuth: true, // 인증 불필요 (Authorization 헤더 제외)
+    skipCredentials: true, // 쿠키 포함 안 함
+  });
 }
 
 /**

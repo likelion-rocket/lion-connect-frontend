@@ -33,9 +33,9 @@ export default function InquiriesPageContent() {
     <div className="w-full min-h-screen bg-bg-primary mt-5">
       <div className="max-w-[1440px] mx-auto px-8">
         {/* 필터 영역 */}
-        <div className="w-full max-w-[1043px] bg-bg-primary border-b border-border-quaternary py-6 pr-6">
+        {/* <div className="w-full max-w-[1043px] bg-bg-primary border-b border-border-quaternary py-6 pr-6">
           <InquiryFilters />
-        </div>
+        </div> */}
 
         {/* 테이블 영역 */}
         <div className="w-[1043px] bg-bg-primary px-6 py-8 rounded-lg shadow-[0px_10px_15px_-3px_rgba(0,0,0,0.1),0px_4px_6px_-2px_rgba(0,0,0,0.05)] flex flex-col gap-3">

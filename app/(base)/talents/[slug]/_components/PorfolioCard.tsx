@@ -53,7 +53,11 @@ export default function PorfolioCard({
       <div className="px-6 pb-6">
         {/* PDF 미리보기 */}
         <div className="w-full rounded-xl border border-border-quaternary bg-white overflow-hidden">
-          {fileUrl ? (
+          {fileUrl &&
+          (fileUrl.startsWith("/") ||
+            fileUrl.startsWith("http://") ||
+            fileUrl.startsWith("https://") ||
+            fileUrl.startsWith("blob:")) ? (
             <object
               data={fileUrl}
               type="application/pdf"
@@ -78,7 +82,9 @@ export default function PorfolioCard({
               className="w-full flex items-center justify-center text-sm text-[#999]"
               style={{ height }}
             >
-              포트폴리오 PDF를 선택하면 이곳에 미리보기가 표시됩니다.
+              {fileUrl
+                ? "포트폴리오가 없습니다."
+                : "포트폴리오 PDF를 선택하면 이곳에 미리보기가 표시됩니다."}
             </div>
           )}
         </div>

@@ -1,8 +1,7 @@
-// app/(base)/talents/register/_components/PhotoComponent.tsx
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Image from "next/image";
 import Input from "@/components/ui/input";
 import { Plus } from "lucide-react";
 
@@ -62,16 +61,6 @@ export default function PhotoComponent({
     onChangeFile?.(file);
   };
 
-  const clearExternalState = () => {
-    setFileName("");
-    setPreviewUrl(initialThumbnailUrl ?? null); // 완전 초기화하고 싶으면 null 로 바꿔도 됨
-    setError("");
-    onChangeFile?.(null);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
-  };
-
   // 커스텀 인풋 영역 클릭 시 숨겨진 file input 클릭
   const openFileDialog = () => {
     fileInputRef.current?.click();
@@ -86,11 +75,9 @@ export default function PhotoComponent({
       <div className="flex items-center gap-8">
         {/* 미리보기 */}
         <div className="w-[120px] h-[150px] rounded-xl bg-[#E5E5E5] flex items-center justify-center overflow-hidden">
-          <Image
+          <img
             src={previewUrl || "/images/default-profile.png"}
             alt="profile preview"
-            width={120}
-            height={150}
             className="w-full h-full object-cover"
           />
         </div>
@@ -113,8 +100,6 @@ export default function PhotoComponent({
                 readOnly
                 value={fileName}
                 placeholder="jpg / png 파일을 업로드 해주세요. (업로드 시 파일명이 표시됩니다)"
-                onFileClear={clearExternalState}
-                showClearWhenFilled
                 className={`w-full cursor-pointer ${
                   error ? "border border-[#FF3B30] text-[#FF3B30]" : "text-[#6B7280]"
                 }`}

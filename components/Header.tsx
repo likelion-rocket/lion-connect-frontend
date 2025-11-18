@@ -16,25 +16,35 @@ type RoleBasedNavLink = NavLink & {
 
 /**
  * 네비게이션 링크 정의
- * - requiredRoles가 없으면 모든 사용자에게 표시
- * - requiredRoles가 있으면 해당 역할을 가진 사용자만 표시
+ * 권한별 표시 규칙:
+ * - ADMIN: 모든 링크 표시 (5개)
+ * - JOINEDCOMPANY: 인재탐색, 기업문의, 인재등록, 참여기업 (4개)
+ * - 일반 유저: 인재탐색, 기업문의, 참여기업 (3개)
  */
 const navLinks: RoleBasedNavLink[] = [
   { label: "인재탐색", href: "/talents" },
   { label: "기업문의", href: "/#business-connect" },
-  { label: "인재등록", href: "/talents/register" },
+  {
+    label: "인재등록",
+    href: "/talents/register",
+    requiredRoles: [UserRole.ADMIN, UserRole.JOINEDCOMPANY],
+  },
   { label: "참여기업", href: "/talents/partners" },
-  { label: "어드민", href: "/admin" },
-  // { label: "참여기업", href: "/talents/partners", requiredRoles: [UserRole.JOINEDCOMPANY] },
-  // { label: "어드민", href: "/admin", requiredRoles: [UserRole.ADMIN] },
+  { label: "어드민", href: "/admin", requiredRoles: [UserRole.ADMIN] },
 ];
 
 /**
  * 역할 기반 링크 필터링 함수
+ * - ADMIN: 모든 링크 표시
  * - requiredRoles가 없으면 모두에게 표시
  * - requiredRoles가 있으면 사용자가 해당 역할 중 하나를 가지고 있는지 확인
  */
 function filterLinksByRole(links: RoleBasedNavLink[], userRoles?: string[]): RoleBasedNavLink[] {
+  // ADMIN은 모든 링크를 볼 수 있음
+  if (userRoles?.includes(UserRole.ADMIN)) {
+    return links;
+  }
+
   return links.filter((link) => {
     // 역할 요구사항이 없으면 모두에게 표시
     if (!link.requiredRoles?.length) return true;

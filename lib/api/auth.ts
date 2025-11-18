@@ -5,7 +5,7 @@ import {
   SignupRequestData,
   SignupResponse,
 } from "@/types/auth";
-import { post } from "@/lib/apiClient";
+import { post, refreshAccessToken } from "@/lib/apiClient";
 import { API_ENDPOINTS, API_BASE_URL } from "@/constants/api";
 
 /**
@@ -19,6 +19,8 @@ import { API_ENDPOINTS, API_BASE_URL } from "@/constants/api";
  * - 리프레시 토큰: 백엔드에서 HttpOnly 쿠키로 자동 설정
  */
 export async function loginAPI(data: LoginFormData): Promise<LoginResponse> {
+  console.log("🔐 [loginAPI] 로그인 시작");
+
   // 백엔드 직접 호출 (fetch 사용 - Response 헤더 접근 필요)
   const response = await fetch(`${API_BASE_URL}${API_ENDPOINTS.AUTH.LOGIN}`, {
     method: "POST",
@@ -32,14 +34,22 @@ export async function loginAPI(data: LoginFormData): Promise<LoginResponse> {
     }),
   });
 
+  console.log("🔐 [loginAPI] 응답 상태:", response.status);
+
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
     throw new Error(errorData.message || "로그인에 실패했습니다");
   }
 
+  // Set-Cookie 헤더 확인 (디버깅용 - CORS 제한으로 보이지 않을 수 있음)
+  const setCookieHeader = response.headers.get("Set-Cookie");
+  console.log("🔐 [loginAPI] Set-Cookie 헤더:", setCookieHeader || "없음 (CORS 제한)");
+
   // Authorization 헤더에서 액세스 토큰 추출
   const authHeader = response.headers.get("Authorization");
   const accessToken = authHeader?.replace("Bearer ", "") || "";
+
+  console.log("🔐 [loginAPI] Authorization 헤더:", authHeader ? "존재" : "없음");
 
   if (!accessToken) {
     throw new Error("액세스 토큰을 받지 못했습니다");
@@ -52,6 +62,22 @@ export async function loginAPI(data: LoginFormData): Promise<LoginResponse> {
   if (!responseData.user) {
     throw new Error("사용자 정보를 받지 못했습니다");
   }
+
+  // 로그인 후 쿠키 확인
+  setTimeout(() => {
+    const cookies = document.cookie;
+    const hasRefreshToken = cookies.includes("refreshToken");
+    console.log(
+      "🔐 [loginAPI] 로그인 후 쿠키 확인:",
+      hasRefreshToken ? "✅ refreshToken 존재" : "❌ refreshToken 없음"
+    );
+    if (!hasRefreshToken) {
+      console.warn("⚠️ [loginAPI] 백엔드가 refreshToken 쿠키를 설정하지 않았습니다!");
+      console.log("🔐 [loginAPI] 현재 모든 쿠키:", cookies);
+    }
+  }, 100);
+
+  console.log("✅ [loginAPI] 로그인 성공:", { email: responseData.user.email });
 
   // 액세스 토큰을 포함한 응답 반환
   return {
@@ -107,42 +133,21 @@ export async function signupAPI(data: SignupFormData): Promise<SignupResponse> {
  * 목적: 앱 초기화 시 한 번만 호출 (useInitializeAuth 훅에서)
  * - HttpOnly 쿠키의 리프레시 토큰으로 새 액세스 토큰 발급
  * - 사용자 정보는 localStorage에서 자동 복구됨 (Zustand persist)
- * - 성공 시: 응답 body의 accessToken 반환
+ * - 성공 시: 새 액세스 토큰 반환 및 Zustand에 자동 저장
  * - 실패 시: 에러 발생 (리프레시 토큰 없음 또는 만료)
  *
  * 상태 복구 흐름:
  * 1. localStorage에서 user 자동 복구 (Zustand persist)
  * 2. recoverTokenAPI() 호출 → HttpOnly 쿠키의 리프레시 토큰으로 새 accessToken 발급
- * 3. updateAccessToken(accessToken)으로 상태 업데이트
- *
- * 응답 형식:
- * - 요청: HttpOnly 쿠키의 refreshToken 자동 포함 (백엔드가 읽음)
- * - 응답 body: { accessToken: "..." }
+ * 3. refreshAccessToken 내부에서 자동으로 Zustand 업데이트
  *
  * @returns 액세스 토큰 문자열
- * @throws Error - 리프레시 토큰 없음 또는 만료된 경우
+ * @throws ApiError - 리프레시 토큰 없음 또는 만료된 경우
+ *
+ * 내부 구현:
+ * - apiClient.ts의 refreshAccessToken()을 재사용 (중복 제거)
+ * - 401 자동 재시도와 동일한 로직 사용
  */
 export async function recoverTokenAPI(): Promise<string> {
-  const response = await fetch(`${API_BASE_URL}${API_ENDPOINTS.AUTH.REFRESH_TOKEN}`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    credentials: "include", // HttpOnly 리프레시 토큰 쿠키 포함
-  });
-
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.message || "세션 복구에 실패했습니다");
-  }
-
-  // 응답 body에서 accessToken 추출
-  const responseData = await response.json();
-  const accessToken = responseData.accessToken;
-
-  if (!accessToken) {
-    throw new Error("액세스 토큰을 받지 못했습니다");
-  }
-
-  return accessToken;
+  return refreshAccessToken();
 }

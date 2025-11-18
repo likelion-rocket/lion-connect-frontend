@@ -49,6 +49,14 @@ import { useMyJobs } from "@/hooks/useMyJobs";
 import { useUpdateJobs } from "@/hooks/useUpdateJobs";
 import { findJobGroupByJobName, JOB_ROLE_ID_BY_NAME } from "@/constants/jobs";
 
+// ✅ 썸네일 관련 API
+import {
+  fetchMyProfileLinks,
+  presignThumbnail,
+  upsertMyThumbnailLink,
+  uploadThumbnailToS3, // ✅ 추가
+} from "@/lib/api/profileThumbnail";
+
 // YYYY-MM-DD -> YYYY.MM
 const fmtYM = (d?: string | null) => {
   if (!d) return "";
@@ -107,6 +115,14 @@ export function useRegisterTalentPage() {
   const setLikelionCodeSafe = (v: string) => setLikelionCode((prev) => (prev === v ? prev : v));
 
   /* -----------------------------
+   * ✅ 썸네일 상태
+   * ----------------------------- */
+  const [thumbnailFile, setThumbnailFile] = useState<File | null>(null); // 새로 업로드한 파일
+  const [initialThumbnailUrl, setInitialThumbnailUrl] = useState<string | null>(null); // 서버에 저장된 썸네일 URL
+  const [initialThumbnailFileName, setInitialThumbnailFileName] = useState<string>("");
+  const prefilledThumbnailRef = useRef(false);
+
+  /* -----------------------------
    * 섹션 훅
    * ----------------------------- */
   const edu = useEducationSection();
@@ -161,6 +177,27 @@ export function useRegisterTalentPage() {
   /* =============================
    * useEffect 영역
    * ============================= */
+
+  // ✅ 썸네일 프리필
+  useEffect(() => {
+    if (prefilledThumbnailRef.current) return;
+
+    (async () => {
+      try {
+        const links = await fetchMyProfileLinks();
+        const thumb = links.find((l) => (l.type || "").toUpperCase() === "THUMBNAIL");
+        if (!thumb) {
+          prefilledThumbnailRef.current = true;
+          return;
+        }
+        setInitialThumbnailUrl(thumb.url);
+        setInitialThumbnailFileName(thumb.originalFilename ?? "");
+        prefilledThumbnailRef.current = true;
+      } catch (e) {
+        console.error("[썸네일] 내 프로필 링크 조회 실패", e);
+      }
+    })();
+  }, []);
 
   // 직무 프리필
   useEffect(() => {
@@ -844,6 +881,36 @@ export function useRegisterTalentPage() {
         await refetchAwards();
         console.log("[수상] 서버 데이터 재조회 완료");
       }
+
+      // 8. ✅ 프로필 썸네일 업로드 + 링크 upsert
+      if (thumbnailFile) {
+        try {
+          // 1) presign 요청
+          const presignRes = await presignThumbnail({
+            originalFilename: thumbnailFile.name,
+            contentType: thumbnailFile.type || "image/png",
+          });
+
+          // 2) S3에 실제 파일 업로드 (헬퍼 사용)
+          await uploadThumbnailToS3(presignRes.uploadUrl, thumbnailFile);
+
+          // 3) 썸네일 링크 upsert
+          await upsertMyThumbnailLink({
+            type: "thumbnail",
+            url: presignRes.fileUrl,
+            originalFilename: thumbnailFile.name,
+            contentType: thumbnailFile.type || "image/png",
+            fileSize: thumbnailFile.size,
+          });
+
+          console.log("[썸네일] 업로드 및 링크 upsert 완료");
+        } catch (e) {
+          console.error("[썸네일] 업로드/링크 저장 중 오류", e);
+          alert("프로필 사진 업로드 중 오류가 발생했어요. 잠시 후 다시 시도해 주세요.");
+        }
+      } else {
+        console.log("[썸네일] 새로 업로드할 파일 없음 → 업로드 스킵");
+      }
     } catch (err) {
       if (err instanceof ApiError) {
         console.log(`${err.message}${err.statusCode ? ` (code ${err.statusCode})` : ""}`);
@@ -880,6 +947,11 @@ export function useRegisterTalentPage() {
     setPortfolioFileSafe,
     likelionCode,
     setLikelionCodeSafe,
+
+    // ✅ 썸네일
+    initialThumbnailUrl,
+    initialThumbnailFileName,
+    setThumbnailFile,
 
     // 직군/직무
     jobGroup,

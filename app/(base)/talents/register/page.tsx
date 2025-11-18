@@ -34,6 +34,11 @@ export default function RegisterTalent() {
     likelionCode,
     setLikelionCodeSafe,
 
+    // ✅ 썸네일
+    initialThumbnailUrl,
+    initialThumbnailFileName,
+    setThumbnailFile,
+
     // ✅ 스킬
     skillIds,
     setSkillIds,
@@ -109,8 +114,16 @@ export default function RegisterTalent() {
           initialExpTagIds={initialExpTagIds}
           onChangeExpTagIds={setExpTagIds}
         />
-        <PhotoComponent />
+
+        {/* ✅ 썸네일 업로드/프리필 */}
+        <PhotoComponent
+          initialThumbnailUrl={initialThumbnailUrl}
+          initialFileName={initialThumbnailFileName}
+          onChangeFile={setThumbnailFile}
+        />
+
         <CodeRegisterComponent code={likelionCode} onCodeChange={setLikelionCodeSafe} />
+
         <ProfileComponent
           intro={intro}
           onIntroChange={setIntroSafe}
@@ -119,6 +132,7 @@ export default function RegisterTalent() {
           onChangeJobGroup={setJobGroup}
           onChangeJob={setJob}
         />
+
         <TendencyComponent initialIds={initialTendencyIds} onChangeSelectedIds={setTendencyIds} />
 
         <EducationComponent

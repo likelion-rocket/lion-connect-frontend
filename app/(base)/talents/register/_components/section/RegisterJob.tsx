@@ -10,15 +10,7 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
-
-const JOB_OPTIONS: Record<string, string[]> = {
-  개발: ["프론트 엔드", "백엔드", "IOS", "Android", "Unity", "AI"],
-  디자인: ["UX/UI"],
-  "데이터 분석": ["데이터 분석"],
-  마케팅: ["그로스 마케팅"],
-  기획: ["PM"],
-};
-const JOB_KEYS = Object.keys(JOB_OPTIONS);
+import { JOB_KEYS, JOB_OPTIONS } from "@/constants/jobs";
 
 type Props = {
   jobGroup: string;

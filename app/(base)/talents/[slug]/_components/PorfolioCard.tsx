@@ -10,12 +10,21 @@ export type PorfolioCardProps = {
   defaultOpen?: boolean; // 기본 접힘/펼침
 };
 
+// URL이 PDF인지 확인하는 함수
+function isPdfUrl(url: string): boolean {
+  const lowerUrl = url.toLowerCase();
+  return lowerUrl.endsWith(".pdf") || lowerUrl.includes("application/pdf");
+}
+
 export default function PorfolioCard({
   fileUrl,
   height = 520,
   className = "",
   defaultOpen = false,
 }: PorfolioCardProps) {
+  console.log("[PortfolioCard] fileUrl:", fileUrl);
+  console.log("[PortfolioCard] isPdf:", fileUrl ? isPdfUrl(fileUrl) : "N/A");
+
   return (
     <details
       className={cn(
@@ -51,32 +60,44 @@ export default function PorfolioCard({
 
       {/* 본문 */}
       <div className="px-6 pb-6">
-        {/* PDF 미리보기 */}
+        {/* 포트폴리오 미리보기 */}
         <div className="w-full rounded-xl border border-border-quaternary bg-white overflow-hidden">
           {fileUrl &&
           (fileUrl.startsWith("/") ||
             fileUrl.startsWith("http://") ||
             fileUrl.startsWith("https://") ||
             fileUrl.startsWith("blob:")) ? (
-            <object
-              data={fileUrl}
-              type="application/pdf"
-              className="w-full"
-              style={{ height }}
-              aria-label="포트폴리오 PDF 미리보기"
-            >
-              <div className="p-4 text-sm text-[#666]">
-                브라우저에서 PDF 미리보기를 지원하지 않습니다.{" "}
-                <a
-                  href={fileUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="underline text-[#0b5fff]"
-                >
-                  새 창에서 열기
-                </a>
-              </div>
-            </object>
+            isPdfUrl(fileUrl) ? (
+              // PDF인 경우 object 태그 사용
+              <object
+                data={fileUrl}
+                type="application/pdf"
+                className="w-full"
+                style={{ height }}
+                aria-label="포트폴리오 PDF 미리보기"
+              >
+                <div className="p-4 text-sm text-[#666]">
+                  브라우저에서 PDF 미리보기를 지원하지 않습니다.{" "}
+                  <a
+                    href={fileUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="underline text-[#0b5fff]"
+                  >
+                    새 창에서 열기
+                  </a>
+                </div>
+              </object>
+            ) : (
+              // PDF가 아닌 경우 iframe으로 임베드
+              <iframe
+                src={fileUrl}
+                className="w-full"
+                style={{ height }}
+                title="포트폴리오 미리보기"
+                sandbox="allow-scripts allow-same-origin"
+              />
+            )
           ) : (
             <div
               className="w-full flex items-center justify-center text-sm text-[#999]"
@@ -84,7 +105,7 @@ export default function PorfolioCard({
             >
               {fileUrl
                 ? "포트폴리오가 없습니다."
-                : "포트폴리오 PDF를 선택하면 이곳에 미리보기가 표시됩니다."}
+                : "포트폴리오를 등록하면 이곳에 미리보기가 표시됩니다."}
             </div>
           )}
         </div>

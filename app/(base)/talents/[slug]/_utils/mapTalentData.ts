@@ -4,6 +4,7 @@
 
 import type { TalentDetailResponse } from "@/types/talent";
 import type { BadgeType } from "@/components/ui/badge";
+import { findJobGroupByJobName } from "@/constants/jobs";
 
 type BadgeItem = { label: string; type: BadgeType };
 
@@ -63,7 +64,7 @@ function mapToIntroduceCardProps(data: TalentDetailResponse) {
     email: null, // API에서 제공하지 않음
     university: primaryEducation?.schoolName || null,
     major: primaryEducation?.major || null,
-    jobGroup: null, // API 응답에서 jobRoles만 제공됨
+    jobGroup: data.jobRoles?.[0] ? findJobGroupByJobName(data.jobRoles[0]) || null : null,
     job: data.jobRoles?.[0] || null,
     skills: data.skills,
     summary: data.introduction,
@@ -101,9 +102,9 @@ function mapToResumeCardProps(data: TalentDetailResponse) {
 
   // 수상
   const awards = data.awards.map((award) => ({
-    title: award.name,
-    start: formatDate(award.issueDate),
-    end: formatDate(award.issueDate),
+    title: award.title,
+    start: formatDate(award.awardDate),
+    end: formatDate(award.awardDate),
     desc: award.description,
   }));
 

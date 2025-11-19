@@ -160,18 +160,69 @@ export default async function TalentsPage({ searchParams }: TalentsPageProps) {
 
   const dummyTalents: DummyTalent[] = generateDummyTalents(24);
 
-  const talents: (TalentCardItem | DummyTalent)[] = [...apiTalents, ...dummyTalents];
-  const totalCount = talents.length;
-  const totalPages = Math.ceil(totalCount / 20);
+  /** 🔥 실제로 화면에 쓸 전체 리스트 (API + 더미) */
+  const talents: TalentCardItem[] = [...apiTalents, ...dummyTalents];
+
+  /* ================================
+   * 6. 프론트단 필터링 로직
+   *    - 검색어(q)
+   *    - 직군(group)
+   *    - 직무(job)
+   * ================================ */
+
+  const keyword = resolved?.q?.trim().toLowerCase() ?? "";
+  const groupFilter = resolved?.group?.trim() || "";
+  const jobFilter = resolved?.job?.trim() || "";
+
+  const filteredTalents = talents.filter((t) => {
+    // 1) 직군 필터 (예: group=frontend 같은 값이라고 가정)
+    if (groupFilter && groupFilter !== "all") {
+      if (!t.jobGroup || t.jobGroup !== groupFilter) {
+        return false;
+      }
+    }
+
+    // 2) 직무 필터
+    if (jobFilter && jobFilter !== "all") {
+      if (!t.job || t.job !== jobFilter) {
+        return false;
+      }
+    }
+
+    // 3) 검색어 필터 (없으면 통과)
+    if (!keyword) return true;
+
+    const haystack = [
+      t.name,
+      t.summary,
+      t.university ?? "",
+      t.major ?? "",
+      t.jobGroup ?? "",
+      t.job ?? "",
+      ...t.skills,
+      ...t.tendencies,
+    ]
+      .join(" ")
+      .toLowerCase();
+
+    return haystack.includes(keyword);
+  });
+
+  const totalCount = filteredTalents.length;
+  const totalPages = Math.max(1, Math.ceil(totalCount / 20));
+
+  // 현재 페이지에 보여줄 것만 슬라이스
+  const paginatedTalents = filteredTalents.slice((currentPage - 1) * 20, currentPage * 20);
 
   return (
     <main className="w-full text-black mt-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <section className="mb-8 space-y-4">
+          {/* 🔥 총 개수도 필터링 이후 기준으로 넘김 */}
           <TalentSearchHeader totalCount={totalCount} />
 
           <div className="mt-6 flex flex-col gap-12">
-            {talents.slice((currentPage - 1) * 20, currentPage * 20).map((t) => (
+            {paginatedTalents.map((t) => (
               <IntroduceCard
                 key={t.slug}
                 slug={t.slug}

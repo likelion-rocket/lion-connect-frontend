@@ -14,23 +14,34 @@ type RegisterLinkProps = {
   links: LinkRow[];
   onChangeLink: (index: number, value: string) => void;
   onAddLink: () => void;
-  onDeleteLink: (index: number) => void; // 호출부랑 타입은 그대로 유지
+  onDeleteLink: (index: number) => void;
 };
 
 export default function RegisterLink({
   links,
   onChangeLink,
   onAddLink,
-  onDeleteLink: _onDeleteLink, // eslint 방지용으로 이름만 바꿔서 받음
+  onDeleteLink,
 }: RegisterLinkProps) {
+  // 🔥 휴지통 클릭 로직
+  const handleClickDelete = (index: number) => {
+    if (links.length > 1) {
+      // 인풋 여러 개면 해당 행 삭제
+      onDeleteLink(index);
+    } else {
+      // 인풋이 하나뿐이면 값만 비우기
+      onChangeLink(index, "");
+    }
+  };
+
   return (
     <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       {/* 1. 제목 */}
       <div className="text-[18px] font-bold text-text-primary mb-8">링크</div>
 
-      {/* 2. 아이콘 + 소제목은 한 번만 */}
+      {/* 2. 아이콘 + 소제목 */}
       <div className="grid grid-cols-[48px_auto] gap-x-4">
-        {/* 아이콘 */}
+        {/* 왼쪽 아이콘 */}
         <div className="w-12 h-12 rounded-md bg-[#F5F5F5] border border-border-quaternary flex items-center justify-center">
           <Image src="/icons/outline-paper-clip.svg" alt="link" width={24} height={24} />
         </div>
@@ -46,15 +57,31 @@ export default function RegisterLink({
               key={link.type || `link-${idx}`}
               className={`flex items-center gap-3 ${idx > 0 ? "mt-4" : ""}`}
             >
+              {/* 인풋 */}
               <div className="flex-1">
                 <Input
                   value={link.url}
                   onChange={(e) => onChangeLink(idx, e.target.value)}
                   placeholder="https:// 또는 포트폴리오, 깃허브, 노션 링크를 입력하세요"
                   className="w-full h-12 bg-[#F5F5F5] border-border-quaternary rounded-md text-[14px]"
+                  // ✅ 내부 휴지통/클리어 아이콘은 끔
+                  showClearWhenFilled={false}
                 />
               </div>
-              {/* 🔥 휴지통 버튼 제거 */}
+
+              {/* ✅ Input 안에 있던 그 디자인의 휴지통을 밖으로 뺀 버튼 */}
+              <button
+                type="button"
+                onClick={() => handleClickDelete(idx)}
+                className="inline-flex items-center gap-2 rounded-sm border border-[#FF6000]/20 bg-[#FFF3EB] px-2 py-1 text-[#FF6000] hover:opacity-90"
+              >
+                <Image
+                  src="/icons/outline-trash.svg" // ⬅️ Input 안에서 쓰던 휴지통 아이콘 경로로 맞춰줘
+                  alt="링크 삭제"
+                  width={24}
+                  height={24}
+                />
+              </button>
             </div>
           ))}
         </div>

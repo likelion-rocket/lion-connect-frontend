@@ -5,7 +5,8 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "**", // 모든 HTTPS 도메인 허용 (프로덕션에서는 특정 도메인만 지정 권장)
+        hostname: "lion-connect-files.s3.ap-northeast-2.amazonaws.com",
+        pathname: "/**", // profiles/ 안만 허용하고 싶으면 "/profiles/**"
       },
     ],
   },

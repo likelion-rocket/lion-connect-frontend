@@ -115,7 +115,7 @@ export default function Header() {
           })}
           {/* Animated Indicator */}
           <span
-            className="absolute bottom-0 h-[2px] bg-text-accent transition-all duration-300 ease-in-out"
+            className="absolute bottom-0 h-0.5 bg-text-accent transition-all duration-300 ease-in-out"
             style={{
               left: `${indicatorStyle.left}px`,
               width: `${indicatorStyle.width}px`,

@@ -30,7 +30,7 @@ const navLinks: RoleBasedNavLink[] = [
     href: "/talents/register",
     requiredRoles: [UserRole.ADMIN, UserRole.JOINEDCOMPANY],
   },
-  { label: "참여기업", href: "/talents/partners" },
+  // { label: "참여기업", href: "/talents/partners" },
   { label: "어드민", href: "/admin", requiredRoles: [UserRole.ADMIN] },
 ];
 

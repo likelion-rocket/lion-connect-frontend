@@ -37,7 +37,7 @@ export const API_ENDPOINTS = {
   },
   TENDENCIES: {
     UPDATE: "/profile/tendencies", // PUT
-    GET: " /profile/tendencies", // GET
+    GET: "/profile/tendencies", // GET
   },
   EXPERIENCES: {
     CREATE: "/profile/experiences",

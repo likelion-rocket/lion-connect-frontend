@@ -12,29 +12,29 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 
-// 🔹 직군/직무 목록 (value: 영문, label: 한글)
+/* 🔹 직군/직무 목록 (value도 한글로 맞춤: 카드의 jobGroup / job 과 동일) */
 const JOB_GROUPS = [
-  { value: "dev", label: "개발" },
-  { value: "design", label: "디자인" },
-  { value: "data", label: "데이터 분석" },
-  { value: "marketing", label: "마케팅" },
-  { value: "pm", label: "기획" },
+  { value: "개발", label: "개발" },
+  { value: "디자인", label: "디자인" },
+  { value: "데이터 분석", label: "데이터 분석" },
+  { value: "마케팅", label: "마케팅" },
+  { value: "기획", label: "기획" },
 ];
 
-// 🔹 각 직군별 직무
+// 🔹 각 직군별 직무 (value = 직무명 그대로)
 const JOB_OPTIONS: Record<string, { value: string; label: string }[]> = {
-  dev: [
-    { value: "frontend", label: "프론트 엔드" },
-    { value: "backend", label: "백엔드" },
-    { value: "ios", label: "IOS" },
-    { value: "android", label: "Android" },
-    { value: "unity", label: "Unity" },
-    { value: "ai", label: "AI" },
+  개발: [
+    { value: "프론트앤드", label: "프론트앤드" },
+    { value: "백앤드", label: "백앤드" },
+    { value: "IOS", label: "IOS" },
+    { value: "Android", label: "Android" },
+    { value: "Unity", label: "Unity" },
+    { value: "AI", label: "AI" },
   ],
-  design: [{ value: "uxui", label: "UX/UI" }],
-  data: [{ value: "data", label: "데이터 분석" }],
-  marketing: [{ value: "growth", label: "그로스 마케팅" }],
-  pm: [{ value: "pm", label: "PM" }],
+  디자인: [{ value: "UX/UI", label: "UX/UI" }],
+  "데이터 분석": [{ value: "데이터 분석", label: "데이터 분석" }],
+  마케팅: [{ value: "그로스 마케팅", label: "그로스 마케팅" }],
+  기획: [{ value: "PM", label: "PM" }],
 };
 
 type TalentSearchHeaderProps = {
@@ -54,15 +54,18 @@ export default function TalentSearchHeader({ totalCount }: TalentSearchHeaderPro
   const [selectedJobGroup, setSelectedJobGroup] = React.useState(groupInit);
   const [selectedJob, setSelectedJob] = React.useState(jobInit);
 
+  // 직군 바뀌면 직무 초기화
   React.useEffect(() => setSelectedJob(""), [selectedJobGroup]);
 
   // URL 갱신
   const pushQuery = React.useCallback(
     (next: { q?: string; group?: string; job?: string }) => {
       const params = new URLSearchParams(sp.toString());
+
       if (next.q !== undefined) params.set("q", next.q);
       if (next.group !== undefined) params.set("group", next.group);
       if (next.job !== undefined) params.set("job", next.job);
+
       params.set("page", "1");
       router.push(`${pathname}?${params.toString()}`);
     },
@@ -76,7 +79,7 @@ export default function TalentSearchHeader({ totalCount }: TalentSearchHeaderPro
         <div className="flex-1">
           <SearchBar
             defaultValue={qInit}
-            placeholder="이름, 직무, 스킬로 검색하세요"
+            placeholder="스킬로 검색하세요"
             onChange={setKeyword}
             onSubmit={(kw) => pushQuery({ q: kw })}
           />
@@ -98,6 +101,8 @@ export default function TalentSearchHeader({ totalCount }: TalentSearchHeaderPro
               value={selectedJobGroup}
               onValueChange={(v) => {
                 setSelectedJobGroup(v);
+                // 직군 변경 시 직무 초기화해서 URL도 같이 비워줌
+                setSelectedJob("");
                 pushQuery({ group: v, job: "" });
               }}
             >

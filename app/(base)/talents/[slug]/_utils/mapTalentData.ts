@@ -142,8 +142,8 @@ function mapToResumeCardProps(data: TalentDetailResponse) {
  */
 function mapToPortfolioCardProps(data: TalentDetailResponse) {
   return {
-    fileName: data.portfolioUrl ? data.portfolioUrl.split("/").pop() : undefined,
-    fileUrl: data.portfolioUrl || undefined,
+    fileName: data.storageUrl ? data.storageUrl.split("/").pop() : undefined,
+    fileUrl: data.storageUrl || undefined,
     defaultOpen: false,
   };
 }

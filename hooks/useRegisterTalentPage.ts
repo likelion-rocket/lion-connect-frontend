@@ -57,6 +57,9 @@ import {
   uploadThumbnailToS3, // ✅ 추가
 } from "@/lib/api/profileThumbnail";
 
+// ✅ 이력서(포트폴리오) presign / 업로드
+import { presignResume, uploadResumeToS3 } from "@/lib/api/profileResume";
+
 // YYYY-MM-DD -> YYYY.MM
 const fmtYM = (d?: string | null) => {
   if (!d) return "";
@@ -90,6 +93,7 @@ export function useRegisterTalentPage() {
   const [name, setName] = useState("");
   const [intro, setIntro] = useState("");
   const [portfolioFile, setPortfolioFile] = useState("");
+  const [resumeFile, setResumeFile] = useState<File | null>(null); // ✅ 실제 PDF 파일
   const [likelionCode, setLikelionCode] = useState("");
   // ✅ 스킬 ids
   const [skillIds, setSkillIds] = useState<number[]>([]);
@@ -598,11 +602,44 @@ export function useRegisterTalentPage() {
       console.log("[작성완료] 클릭됨, 현재 expTagIds =", expTagIds);
       startTransition(() => {});
 
+      /* 0. ✅ 포트폴리오(PDF) 업로드 (presign → S3 PUT)
+       * - 새로 선택된 resumeFile 이 있으면 S3에 업로드하고
+       *   presign 응답의 fileUrl 을 storageUrl 로 사용한다.
+       * - 없으면 기존 portfolioFile (이미 저장된 URL 혹은 텍스트)을 그대로 사용.
+       */
+      let storageUrl = portfolioFile.trim();
+
+      if (resumeFile) {
+        try {
+          const presignRes = await presignResume({
+            originalFilename: resumeFile.name,
+            contentType: resumeFile.type || "application/pdf",
+          });
+
+          // S3 PUT
+          await uploadResumeToS3(presignRes.uploadUrl, resumeFile);
+
+          storageUrl = presignRes.fileUrl;
+          // 화면에서도 URL을 갖고 있게 업데이트 (원하면 나중에 파일명만 따로 관리해도 됨)
+          setPortfolioFileSafe(storageUrl);
+
+          console.log("[이력서] 업로드 및 presign 완료", storageUrl);
+        } catch (e) {
+          console.error("[이력서] 업로드/프리사인 중 오류", e);
+          alert("이력서(PDF) 업로드 중 오류가 발생했어요. 잠시 후 다시 시도해 주세요.");
+
+          // 기존에 저장된 URL도 없는 상태라면 그냥 전체 저장을 중단
+          if (!storageUrl) {
+            throw e;
+          }
+        }
+      }
+
       // 1. 프로필
       const profilePayload: ProfileRequest = {
         name: name.trim(),
         introduction: intro.trim(),
-        storageUrl: portfolioFile.trim(),
+        storageUrl,
         ...(likelionCode.trim() ? { likelionCode: likelionCode.trim() } : {}),
       };
 
@@ -947,6 +984,7 @@ export function useRegisterTalentPage() {
     setPortfolioFileSafe,
     likelionCode,
     setLikelionCodeSafe,
+    setResumeFile, // ✅ 추가: 포트폴리오 PDF 파일 설정용
 
     // ✅ 썸네일
     initialThumbnailUrl,

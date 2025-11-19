@@ -18,7 +18,7 @@ const JOB_GROUPS = [
   { value: "design", label: "디자인" },
   { value: "data", label: "데이터 분석" },
   { value: "marketing", label: "마케팅" },
-  { value: "pm", label: "PM" },
+  { value: "pm", label: "기획" },
 ];
 
 // 🔹 각 직군별 직무

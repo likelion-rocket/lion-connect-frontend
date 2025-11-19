@@ -72,6 +72,8 @@ export default function RegisterTalent() {
     // ✅ 수상
     award,
     handleDeleteAward,
+
+    setResumeFile,
   } = useRegisterTalentPage();
 
   return (
@@ -191,7 +193,11 @@ export default function RegisterTalent() {
         />
 
         <LinkRegisterComponent />
-        <PortfolioComponent fileName={portfolioFile} onFileSelect={setPortfolioFileSafe} />
+        <PortfolioComponent
+          fileName={portfolioFile}
+          onFileSelect={setPortfolioFileSafe}
+          onChangeFile={setResumeFile}
+        />
       </main>
     </div>
   );

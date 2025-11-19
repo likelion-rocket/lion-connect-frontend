@@ -110,6 +110,7 @@ export default function ResumeCard({
           <SectionHeader id="resume-summary">간단소개</SectionHeader>
           <p className="whitespace-pre-wrap">{summary || "간단 소개가 없습니다."}</p>
         </section>
+
         {/* 학력 (단일) */}
         <section aria-labelledby="resume-edu">
           <SectionHeader id="resume-edu">학력</SectionHeader>
@@ -145,6 +146,7 @@ export default function ResumeCard({
             />
           )}
         </section>
+
         {/* 경력 */}
         <section aria-labelledby="resume-career">
           <SectionHeader id="resume-career">경력</SectionHeader>
@@ -153,6 +155,7 @@ export default function ResumeCard({
             <IconCard
               icon="/icons/solid-briefcase.svg"
               alt="career"
+              className="border-0" // ✅ 학력과 동일하게 보더 제거
               title="입력받은 회사명이 뜹니다."
             />
           ) : (
@@ -166,7 +169,6 @@ export default function ResumeCard({
                   title={c.company}
                   subtitle={
                     <span>
-                      {/* ✅ 직급(rank) 제거 */}
                       <MetaLine items={[`${c.start} - ${c.end}`, c.deptOrTeam, c.title]} />
                     </span>
                   }
@@ -177,12 +179,18 @@ export default function ResumeCard({
             </div>
           )}
         </section>
+
         {/* 수상 / 활동 / 기타 */}
         <section aria-labelledby="resume-award">
           <SectionHeader id="resume-award">수상 / 활동 / 기타</SectionHeader>
 
           {awards.length === 0 ? (
-            <IconCard icon="/icons/solid-star.svg" alt="award" title="활동명이 뜹니다." />
+            <IconCard
+              icon="/icons/solid-star.svg"
+              alt="award"
+              className="border-0" // ✅ 보더 제거
+              title="활동명이 뜹니다."
+            />
           ) : (
             <div className="space-y-3">
               {awards.map((a, i) => (
@@ -200,12 +208,18 @@ export default function ResumeCard({
             </div>
           )}
         </section>
+
         {/* 언어 */}
         <section aria-labelledby="resume-lang">
           <SectionHeader id="resume-lang">언어</SectionHeader>
 
           {languages.length === 0 ? (
-            <IconCard icon="/icons/solid-globe.svg" alt="language" title="언어명이 뜹니다." />
+            <IconCard
+              icon="/icons/solid-globe.svg"
+              alt="language"
+              className="border-0" // ✅ 보더 제거
+              title="언어명이 뜹니다."
+            />
           ) : (
             <div className="space-y-3">
               {languages.map((l, i) => (
@@ -221,6 +235,7 @@ export default function ResumeCard({
             </div>
           )}
         </section>
+
         {/* 자격증 */}
         <section aria-labelledby="resume-cert">
           <SectionHeader id="resume-cert">자격증</SectionHeader>
@@ -229,6 +244,7 @@ export default function ResumeCard({
             <IconCard
               icon="/icons/outline-star.svg"
               alt="certificate"
+              className="border-0" // ✅ 보더 제거
               title="입력받은 자격증명이 뜹니다."
             />
           ) : (
@@ -246,6 +262,7 @@ export default function ResumeCard({
             </div>
           )}
         </section>
+
         {/* 링크 */}
         <section aria-labelledby="resume-link">
           <SectionHeader id="resume-link">링크</SectionHeader>
@@ -254,6 +271,7 @@ export default function ResumeCard({
             <IconCard
               icon="/icons/outline-paper-clip.svg"
               alt="link"
+              className="border-0" // ✅ 보더 제거
               title="입력받은 링크 주소가 뜹니다."
             />
           ) : (
@@ -264,7 +282,6 @@ export default function ResumeCard({
                   icon="/icons/outline-paper-clip.svg"
                   alt="link"
                   className="border-0"
-                  // 한 줄 카드: 헤더에 바로 링크를 title로
                   title={
                     <a
                       href={l.url}

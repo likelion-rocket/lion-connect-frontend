@@ -97,6 +97,10 @@ export const API_ENDPOINTS = {
   PROFILE_THUMBNAIL: {
     PRESIGN: "/profile/me/thumbnail/presign", // POST
   },
+  //프로필 PDF presign
+  PROFILE_RESUME: {
+    PRESIGN: "/profile/me/resume/presign",
+  },
 } as const;
 
 // HTTP 메서드

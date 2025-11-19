@@ -6,11 +6,16 @@ import Image from "next/image";
 import Input from "@/components/ui/input";
 
 type PortfolioProps = {
-  fileName: string; // ✅ 부모가 내려주는 값
-  onFileSelect?: (value: string) => void;
+  fileName: string; // ✅ 부모가 내려주는 값 (표시용)
+  onFileSelect?: (value: string) => void; // 표시할 이름/텍스트
+  onChangeFile?: (file: File | null) => void; // ✅ 실제 File 객체
 };
 
-export default function PortfolioComponent({ fileName, onFileSelect }: PortfolioProps) {
+export default function PortfolioComponent({
+  fileName,
+  onFileSelect,
+  onChangeFile,
+}: PortfolioProps) {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const handleOpenFileDialog = () => {
@@ -25,6 +30,7 @@ export default function PortfolioComponent({ fileName, onFileSelect }: Portfolio
     if (ext !== "pdf") {
       alert("PDF 형식의 파일만 업로드할 수 있습니다.");
       e.target.value = "";
+      onChangeFile?.(null);
       return;
     }
 
@@ -33,13 +39,18 @@ export default function PortfolioComponent({ fileName, onFileSelect }: Portfolio
       const baseName = name.replace(/\.[^/.]+$/, "");
       name = `${baseName}.pdf`;
     }
+
+    // ✅ 표시용 텍스트
     onFileSelect?.(name);
+    // ✅ 실제 파일 객체
+    onChangeFile?.(file);
   };
 
   // ✅ 휴지통에서 실제 파일 및 부모 상태 동시 초기화
   const handleFileClear = () => {
     if (fileInputRef.current) fileInputRef.current.value = "";
     onFileSelect?.("");
+    onChangeFile?.(null);
   };
 
   return (

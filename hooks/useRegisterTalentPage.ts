@@ -49,12 +49,14 @@ import { useMyJobs } from "@/hooks/useMyJobs";
 import { useUpdateJobs } from "@/hooks/useUpdateJobs";
 import { findJobGroupByJobName, JOB_ROLE_ID_BY_NAME } from "@/constants/jobs";
 
-// ✅ 썸네일 관련 API
+// ✅ 썸네일 & 링크 관련 API
 import {
   fetchMyProfileLinks,
   presignThumbnail,
   upsertMyThumbnailLink,
-  uploadThumbnailToS3, // ✅ 추가
+  uploadThumbnailToS3,
+  upsertMyProfileLink,
+  deleteMyProfileLink,
 } from "@/lib/api/profileThumbnail";
 
 // ✅ 이력서(포트폴리오) presign / 업로드
@@ -81,6 +83,12 @@ const toYYYYMM01 = (ym: string) => {
   const m = ym.trim().match(/^(\d{4})\.(0[1-9]|1[0-2])$/);
   if (!m) return "";
   return `${m[1]}-${m[2]}-01`;
+};
+
+// ✅ 링크 한 줄 폼 타입
+type LinkRow = {
+  type: string;
+  url: string;
 };
 
 export function useRegisterTalentPage() {
@@ -125,6 +133,13 @@ export function useRegisterTalentPage() {
   const [initialThumbnailUrl, setInitialThumbnailUrl] = useState<string | null>(null); // 서버에 저장된 썸네일 URL
   const [initialThumbnailFileName, setInitialThumbnailFileName] = useState<string>("");
   const prefilledThumbnailRef = useRef(false);
+
+  /* -----------------------------
+   * ✅ 외부 링크 상태
+   * ----------------------------- */
+  const [links, setLinks] = useState<LinkRow[]>([{ type: "LINK", url: "" }]);
+  const [initialLinkTypes, setInitialLinkTypes] = useState<string[]>([]);
+  const prefilledLinksRef = useRef(false);
 
   /* -----------------------------
    * 섹션 훅
@@ -182,23 +197,47 @@ export function useRegisterTalentPage() {
    * useEffect 영역
    * ============================= */
 
-  // ✅ 썸네일 프리필
+  // ✅ 썸네일 + 외부 링크 프리필
   useEffect(() => {
-    if (prefilledThumbnailRef.current) return;
+    if (prefilledThumbnailRef.current && prefilledLinksRef.current) return;
 
     (async () => {
       try {
-        const links = await fetchMyProfileLinks();
-        const thumb = links.find((l) => (l.type || "").toUpperCase() === "THUMBNAIL");
-        if (!thumb) {
+        const allLinks = await fetchMyProfileLinks();
+
+        // 썸네일
+        if (!prefilledThumbnailRef.current) {
+          const thumb = allLinks.find((l) => (l.type || "").toUpperCase() === "THUMBNAIL");
+          if (thumb) {
+            setInitialThumbnailUrl(thumb.url);
+            setInitialThumbnailFileName(thumb.originalFilename ?? "");
+          }
           prefilledThumbnailRef.current = true;
-          return;
         }
-        setInitialThumbnailUrl(thumb.url);
-        setInitialThumbnailFileName(thumb.originalFilename ?? "");
-        prefilledThumbnailRef.current = true;
+
+        // 외부 링크 (썸네일 제외)
+        if (!prefilledLinksRef.current) {
+          const external = allLinks.filter((l) => (l.type || "").toUpperCase() !== "THUMBNAIL");
+
+          if (external.length > 0) {
+            setLinks(
+              external.map((l, idx) => ({
+                type: l.type || `LINK_${idx + 1}`,
+                url: l.url,
+              }))
+            );
+            setInitialLinkTypes(external.map((l) => (l.type || "").toUpperCase()));
+          } else {
+            setLinks([{ type: "LINK", url: "" }]);
+            setInitialLinkTypes([]);
+          }
+
+          prefilledLinksRef.current = true;
+        }
       } catch (e) {
-        console.error("[썸네일] 내 프로필 링크 조회 실패", e);
+        console.error("[썸네일/링크] 내 프로필 링크 조회 실패", e);
+        prefilledThumbnailRef.current = true;
+        prefilledLinksRef.current = true;
       }
     })();
   }, []);
@@ -582,6 +621,53 @@ export function useRegisterTalentPage() {
     }
   };
 
+  // ✅ 링크 변경/추가/삭제 핸들러
+  const handleChangeLink = (index: number, value: string) => {
+    setLinks((prev) => prev.map((row, i) => (i === index ? { ...row, url: value } : row)));
+  };
+
+  const handleAddLink = () => {
+    setLinks((prev) => {
+      const existing = prev.map((r) => (r.type || "").toUpperCase());
+      let n = prev.length + 1;
+      let candidate = n === 1 ? "LINK" : `LINK_${n}`;
+      while (existing.includes(candidate.toUpperCase())) {
+        n += 1;
+        candidate = `LINK_${n}`;
+      }
+      return [...prev, { type: candidate, url: "" }];
+    });
+  };
+
+  const handleDeleteLink = async (index: number) => {
+    const hasMultiple = links.length > 1;
+    const row = links[index];
+
+    // UI 먼저 반영
+    if (hasMultiple) {
+      setLinks((prev) => prev.filter((_, i) => i !== index));
+    } else {
+      setLinks((prev) => (prev.length === 0 ? prev : [{ ...prev[0], url: "" }]));
+    }
+
+    const typeUpper = (row.type || "").toUpperCase();
+    const existedOnServer = initialLinkTypes.includes(typeUpper);
+
+    if (!existedOnServer) {
+      // 아직 서버에 없는 새 행이면 삭제 API 안 날림
+      return;
+    }
+
+    try {
+      await deleteMyProfileLink(row.type);
+      console.log(`[링크] 삭제 완료 (type=${row.type}, hasMultiple=${hasMultiple})`);
+      setInitialLinkTypes((prev) => prev.filter((t) => t !== typeUpper));
+    } catch (e) {
+      console.error(e);
+      alert("링크 삭제 중 오류가 발생했어요. 잠시 후 다시 시도해 주세요.");
+    }
+  };
+
   /* =============================
    * 파생 값
    * ============================= */
@@ -602,11 +688,7 @@ export function useRegisterTalentPage() {
       console.log("[작성완료] 클릭됨, 현재 expTagIds =", expTagIds);
       startTransition(() => {});
 
-      /* 0. ✅ 포트폴리오(PDF) 업로드 (presign → S3 PUT)
-       * - 새로 선택된 resumeFile 이 있으면 S3에 업로드하고
-       *   presign 응답의 fileUrl 을 storageUrl 로 사용한다.
-       * - 없으면 기존 portfolioFile (이미 저장된 URL 혹은 텍스트)을 그대로 사용.
-       */
+      /* 0. ✅ 포트폴리오(PDF) 업로드 (presign → S3 PUT) */
       let storageUrl = portfolioFile.trim();
 
       if (resumeFile) {
@@ -616,11 +698,9 @@ export function useRegisterTalentPage() {
             contentType: resumeFile.type || "application/pdf",
           });
 
-          // S3 PUT
           await uploadResumeToS3(presignRes.uploadUrl, resumeFile);
 
           storageUrl = presignRes.fileUrl;
-          // 화면에서도 URL을 갖고 있게 업데이트 (원하면 나중에 파일명만 따로 관리해도 됨)
           setPortfolioFileSafe(storageUrl);
 
           console.log("[이력서] 업로드 및 presign 완료", storageUrl);
@@ -628,7 +708,6 @@ export function useRegisterTalentPage() {
           console.error("[이력서] 업로드/프리사인 중 오류", e);
           alert("이력서(PDF) 업로드 중 오류가 발생했어요. 잠시 후 다시 시도해 주세요.");
 
-          // 기존에 저장된 URL도 없는 상태라면 그냥 전체 저장을 중단
           if (!storageUrl) {
             throw e;
           }
@@ -922,16 +1001,13 @@ export function useRegisterTalentPage() {
       // 8. ✅ 프로필 썸네일 업로드 + 링크 upsert
       if (thumbnailFile) {
         try {
-          // 1) presign 요청
           const presignRes = await presignThumbnail({
             originalFilename: thumbnailFile.name,
             contentType: thumbnailFile.type || "image/png",
           });
 
-          // 2) S3에 실제 파일 업로드 (헬퍼 사용)
           await uploadThumbnailToS3(presignRes.uploadUrl, thumbnailFile);
 
-          // 3) 썸네일 링크 upsert
           await upsertMyThumbnailLink({
             type: "thumbnail",
             url: presignRes.fileUrl,
@@ -947,6 +1023,41 @@ export function useRegisterTalentPage() {
         }
       } else {
         console.log("[썸네일] 새로 업로드할 파일 없음 → 업로드 스킵");
+      }
+
+      // 9. ✅ 외부 링크 텍스트 URL upsert
+      try {
+        for (const row of links) {
+          const url = row.url.trim();
+          if (!url) continue;
+
+          const type = row.type || "LINK";
+
+          await upsertMyProfileLink(type, {
+            type,
+            url,
+            originalFilename: "",
+            contentType: "text/plain",
+            fileSize: 0,
+          });
+
+          console.log("[링크] upsert 완료", type, url);
+        }
+
+        // 이제 저장된 것들은 초기 링크 타입 목록에 포함
+        setInitialLinkTypes((prev) => {
+          const next = [...prev];
+          for (const row of links) {
+            const url = row.url.trim();
+            if (!url) continue;
+            const key = (row.type || "LINK").toUpperCase();
+            if (!next.includes(key)) next.push(key);
+          }
+          return next;
+        });
+      } catch (e) {
+        console.error("[링크] 저장 중 오류", e);
+        alert("외부 링크 저장 중 오류가 발생했어요. 잠시 후 다시 시도해 주세요.");
       }
     } catch (err) {
       if (err instanceof ApiError) {
@@ -1032,5 +1143,11 @@ export function useRegisterTalentPage() {
     // ✅ 수상
     award,
     handleDeleteAward,
+
+    // ✅ 링크
+    links,
+    handleChangeLink,
+    handleAddLink,
+    handleDeleteLink,
   };
 }

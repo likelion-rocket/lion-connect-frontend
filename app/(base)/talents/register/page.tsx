@@ -73,7 +73,14 @@ export default function RegisterTalent() {
     award,
     handleDeleteAward,
 
+    // ✅ 포트폴리오 파일
     setResumeFile,
+
+    // ✅ 링크
+    links,
+    handleChangeLink,
+    handleAddLink,
+    handleDeleteLink,
   } = useRegisterTalentPage();
 
   return (
@@ -192,7 +199,14 @@ export default function RegisterTalent() {
           onCertDelete={handleDeleteCertification}
         />
 
-        <LinkRegisterComponent />
+        {/* ✅ 링크 */}
+        <LinkRegisterComponent
+          links={links}
+          onChangeLink={handleChangeLink}
+          onAddLink={handleAddLink}
+          onDeleteLink={handleDeleteLink}
+        />
+
         <PortfolioComponent
           fileName={portfolioFile}
           onFileSelect={setPortfolioFileSafe}

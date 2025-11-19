@@ -44,31 +44,59 @@ export function fetchMyProfileLinks(): Promise<ProfileLink[]> {
 
 /** 링크 upsert 요청 DTO */
 export type ProfileLinkUpsertRequest = {
-  type: string; // "thumbnail"
+  type: string;
   url: string;
   originalFilename: string;
   contentType: string;
   fileSize: number;
 };
 
+/* =========================================
+ *  ✅ 공용 링크 upsert / delete
+ * ========================================= */
+
+/** 任의 type 에 대한 프로필 링크 upsert (PUT / POST 공용) */
+export function upsertMyProfileLink(
+  type: string,
+  body: ProfileLinkUpsertRequest,
+  method: "PUT" | "POST" = "PUT"
+): Promise<ProfileResponse> {
+  const endpoint = API_ENDPOINTS.PROFILE_LINKS.UPSERT(type);
+
+  const payload: ProfileLinkUpsertRequest = {
+    ...body,
+    type,
+  };
+
+  if (method === "POST") {
+    return post<ProfileResponse>(endpoint, payload, { credentials: "include" });
+  }
+  return put<ProfileResponse>(endpoint, payload, { credentials: "include" });
+}
+
+/** 任의 type 에 대한 프로필 링크 삭제 (DELETE /api/profile/me/links/{type}) */
+export function deleteMyProfileLink(type: string): Promise<void> {
+  const endpoint = API_ENDPOINTS.PROFILE_LINKS.DELETE(type);
+  return del<void>(endpoint, {
+    credentials: "include",
+  });
+}
+
+/* =========================================
+ *  ✅ 썸네일 전용 helper (기존 코드 유지용)
+ * ========================================= */
+
 /** 내 썸네일 링크 upsert (PUT / POST 공용) */
 export function upsertMyThumbnailLink(
   body: ProfileLinkUpsertRequest,
   method: "PUT" | "POST" = "PUT"
 ): Promise<ProfileResponse> {
-  const endpoint = API_ENDPOINTS.PROFILE_LINKS.UPSERT("thumbnail");
-
-  if (method === "POST") {
-    return post<ProfileResponse>(endpoint, body, { credentials: "include" });
-  }
-  return put<ProfileResponse>(endpoint, body, { credentials: "include" });
+  return upsertMyProfileLink("thumbnail", body, method);
 }
 
 /** 썸네일 링크 삭제 (DELETE /api/profile/me/links/thumbnail) */
 export function deleteMyThumbnailLink(): Promise<void> {
-  return del<void>(API_ENDPOINTS.PROFILE_LINKS.DELETE("thumbnail"), {
-    credentials: "include",
-  });
+  return deleteMyProfileLink("thumbnail");
 }
 
 /** ✅ S3 로 실제 파일 업로드 (여기서 절대 apiClient 쓰지 말 것) */

@@ -45,9 +45,9 @@ export interface Certification {
  */
 export interface Award {
   id: number;
-  name: string;
-  issuer: string;
-  issueDate: string; // YYYY-MM-DD
+  title: string;
+  organization: string;
+  awardDate: string; // YYYY-MM-DD
   description?: string;
 }
 
@@ -76,6 +76,7 @@ export interface TalentDetailResponse {
   thumbnailUrl: string | null;
   portfolioUrl: string | null;
   externalLink: string | null;
+  storageUrl: string | null;
   likelionCertified: boolean;
   updatedAt: string; // ISO 8601
   workExperiences: WorkExperience[];

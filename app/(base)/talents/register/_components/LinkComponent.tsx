@@ -1,23 +1,28 @@
+// app/(base)/talents/register/_components/LinkComponent.tsx
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
 import Input from "@/components/ui/input";
 import { Plus } from "lucide-react";
 
-export default function RegisterLink() {
-  const [links, setLinks] = useState<{ id: string; value: string }[]>([
-    { id: "link-1", value: "" },
-  ]);
+type LinkRow = {
+  type: string;
+  url: string;
+};
 
-  const handleChange = (id: string, value: string) => {
-    setLinks((prev) => prev.map((l) => (l.id === id ? { ...l, value } : l)));
-  };
+type RegisterLinkProps = {
+  links: LinkRow[];
+  onChangeLink: (index: number, value: string) => void;
+  onAddLink: () => void;
+  onDeleteLink: (index: number) => void; // 호출부랑 타입은 그대로 유지
+};
 
-  const handleAdd = () => {
-    setLinks((prev) => [...prev, { id: `link-${prev.length + 1}`, value: "" }]);
-  };
-
+export default function RegisterLink({
+  links,
+  onChangeLink,
+  onAddLink,
+  onDeleteLink: _onDeleteLink, // eslint 방지용으로 이름만 바꿔서 받음
+}: RegisterLinkProps) {
   return (
     <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       {/* 1. 제목 */}
@@ -33,17 +38,23 @@ export default function RegisterLink() {
         <div className="flex items-center h-12 text-[16px] font-semibold text-text-primary">
           링크
         </div>
-        {/* 3. 인풋 리스트 → 여기부터는 map */}
+        {/* 3. 인풋 리스트 */}
         <div /> {/* 들여쓰기용 빈칸 */}
         <div className="mt-4 w-full">
           {links.map((link, idx) => (
-            <div key={link.id} className={idx > 0 ? "mt-4" : ""}>
-              <Input
-                value={link.value}
-                onChange={(e) => handleChange(link.id, e.target.value)}
-                placeholder="https:// 또는 포트폴리오, 깃허브, 노션 링크를 입력하세요"
-                className="w-full h-12 bg-[#F5F5F5]  border-border-quaternary rounded-md text-[14px]"
-              />
+            <div
+              key={link.type || `link-${idx}`}
+              className={`flex items-center gap-3 ${idx > 0 ? "mt-4" : ""}`}
+            >
+              <div className="flex-1">
+                <Input
+                  value={link.url}
+                  onChange={(e) => onChangeLink(idx, e.target.value)}
+                  placeholder="https:// 또는 포트폴리오, 깃허브, 노션 링크를 입력하세요"
+                  className="w-full h-12 bg-[#F5F5F5] border-border-quaternary rounded-md text-[14px]"
+                />
+              </div>
+              {/* 🔥 휴지통 버튼 제거 */}
             </div>
           ))}
         </div>
@@ -53,7 +64,7 @@ export default function RegisterLink() {
       <div className="flex justify-end mt-4">
         <button
           type="button"
-          onClick={handleAdd}
+          onClick={onAddLink}
           className="flex items-center gap-2 text-[#FF6000] hover:opacity-80 font-bold text-[16px] leading-none"
         >
           <Plus size={20} className="text-[#FF6000]" />

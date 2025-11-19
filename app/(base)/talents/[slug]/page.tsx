@@ -62,12 +62,16 @@ export default function TalentDetailPage() {
           인재 상세 페이지
         </h1>
       </div>
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
-        <IntroduceCard {...introduceCardProps} />
+        {/* 🔥 여기서만 간단 소개 숨기기 */}
+        <IntroduceCard {...introduceCardProps} showSummary={false} />
       </div>
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
         <ResumeCard {...resumeCardProps} />
       </div>
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
         <PortfolioCard {...portfolioCardProps} />
       </div>

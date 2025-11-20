@@ -2,7 +2,7 @@
  * 문의 상태 배지 컴포넌트
  */
 
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils/utils";
 import type { InquiryStatus } from "@/types/inquiry";
 
 interface InquiryStatusBadgeProps {

@@ -4,7 +4,7 @@
 import Image from "next/image";
 import Input from "@/components/ui/input";
 import { Plus } from "lucide-react";
-import type { AwardForm, AwardError } from "@/hooks/useAwardSection";
+import type { AwardForm, AwardError } from "@/hooks/talent/register/sections/useAwardSection";
 
 type Props = {
   awards: AwardForm[];

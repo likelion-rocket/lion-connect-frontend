@@ -15,7 +15,7 @@ import QualificationComponent from "./_components/QualificationComponent";
 import TendencyComponent from "./_components/TendencyComponent";
 import PhotoComponent from "./_components/PhotoComponent";
 
-import { useRegisterTalentPage } from "@/hooks/useRegisterTalentPage";
+import { useRegisterTalentPage } from "@/hooks/talent/register/useRegisterTalentPage";
 
 export default function RegisterTalent() {
   const {

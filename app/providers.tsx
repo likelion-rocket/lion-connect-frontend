@@ -1,7 +1,7 @@
 "use client";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { useInitializeAuth } from "@/hooks/useInitializeAuth";
+import { useInitializeAuth } from "@/hooks/auth/useInitializeAuth";
 import { ReactNode } from "react";
 
 /**

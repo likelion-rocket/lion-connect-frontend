@@ -1,6 +1,6 @@
 "use client";
 
-import { useScrollToTop } from "@/hooks/useScrollToTop";
+import { useScrollToTop } from "@/hooks/common/useScrollToTop";
 
 /**
  * 맨 위로 스크롤 버튼 컴포넌트

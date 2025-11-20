@@ -9,7 +9,7 @@ import {
   getUniversitiesByRegionGroup,
 } from "@/constants/universities";
 import CTAButton from "@/components/buttons/CTAButton";
-import { useScrollAnimation } from "@/hooks/useScrollAnimation";
+import { useScrollAnimation } from "@/hooks/common/useScrollAnimation";
 import UniversityCard from "./UniversityCard";
 import RegionFilterButton from "./RegionFilterButton";
 

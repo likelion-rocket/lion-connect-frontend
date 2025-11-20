@@ -2,7 +2,7 @@
 
 import { useState, useEffect, FormEvent } from "react";
 import Image from "next/image";
-import { useQueryParams } from "@/hooks/useQueryParams";
+import { useQueryParams } from "@/hooks/common/useQueryParams";
 
 /**
  * 기업 문의 검색바 컴포넌트

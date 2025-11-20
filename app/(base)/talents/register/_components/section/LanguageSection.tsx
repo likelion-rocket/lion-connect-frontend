@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Input from "@/components/ui/input";
-import type { LangForm, LangError } from "@/hooks/useLanguageSection";
+import type { LangForm, LangError } from "@/hooks/talent/register/sections/useLanguageSection";
 
 type Props = {
   langs: LangForm[];

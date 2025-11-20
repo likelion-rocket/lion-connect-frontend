@@ -1,7 +1,7 @@
 "use client";
 
-import { useQueryParams } from "@/hooks/useQueryParams";
-import { useAdminInquiries } from "@/hooks/useInquiries";
+import { useQueryParams } from "@/hooks/common/useQueryParams";
+import { useAdminInquiries } from "@/hooks/inquiry/useInquiries";
 import InquiryFilters from "./InquiryFilters";
 import InquiryListItem from "./InquiryListItem";
 import InquiryPagination from "./InquiryPagination";

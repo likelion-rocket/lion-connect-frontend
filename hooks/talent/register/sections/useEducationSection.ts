@@ -43,8 +43,8 @@ export function useEducationSection() {
     form,
     errors,
     ...handlers,
-    setErrors, // 필요시 수동 설정
-    setForm, // 필요시 일괄 변경
-    validateAndBuild, // 제출 시 사용
+    setErrors,
+    setForm,
+    validateAndBuild,
   };
 }

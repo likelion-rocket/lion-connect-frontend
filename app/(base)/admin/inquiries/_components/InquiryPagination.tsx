@@ -2,7 +2,7 @@
  * 문의 목록 페이지네이션 컴포넌트
  */
 
-import { useQueryParams } from "@/hooks/useQueryParams";
+import { useQueryParams } from "@/hooks/common/useQueryParams";
 import {
   Pagination,
   PaginationContent,

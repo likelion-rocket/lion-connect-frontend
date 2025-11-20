@@ -6,14 +6,12 @@ import AuthButton from "./buttons/AuthButton";
 import Image from "next/image";
 import { useNavigation, NavLink } from "@/hooks/common/useNavigation";
 import { useAuthStore } from "@/store/authStore";
-import { UserRole } from "@/lib/rbac";
+import { UserRole, RoleBasedItem, filterByRole } from "@/utils/rbac";
 
 /**
- * 네비게이션 링크 타입 확장 (역할 기반 접근 제어)
+ * 네비게이션 링크 타입 (역할 기반 접근 제어 적용)
  */
-type RoleBasedNavLink = NavLink & {
-  requiredRoles?: UserRole[]; // 이 링크를 볼 수 있는 역할들 (없으면 모두 볼 수 있음)
-};
+type RoleBasedNavLink = RoleBasedItem<NavLink>;
 
 /**
  * 네비게이션 링크 정의
@@ -29,30 +27,6 @@ const navLinks: RoleBasedNavLink[] = [
   // { label: "참여기업", href: "/talents/partners" },
   { label: "어드민", href: "/admin", requiredRoles: [UserRole.ADMIN] },
 ];
-
-/**
- * 역할 기반 링크 필터링 함수
- * - ADMIN: 모든 링크 표시
- * - requiredRoles가 없으면 모두에게 표시
- * - requiredRoles가 있으면 사용자가 해당 역할 중 하나를 가지고 있는지 확인
- */
-function filterLinksByRole(links: RoleBasedNavLink[], userRoles?: string[]): RoleBasedNavLink[] {
-  // ADMIN은 모든 링크를 볼 수 있음
-  if (userRoles?.includes(UserRole.ADMIN)) {
-    return links;
-  }
-
-  return links.filter((link) => {
-    // 역할 요구사항이 없으면 모두에게 표시
-    if (!link.requiredRoles?.length) return true;
-
-    // 사용자 역할이 없으면 숨김
-    if (!userRoles?.length) return false;
-
-    // 필요한 역할 중 하나라도 있으면 표시
-    return link.requiredRoles.some((role) => userRoles.includes(role));
-  });
-}
 
 /**
  * 헤더 컴포넌트
@@ -72,7 +46,7 @@ export default function Header() {
 
   // SSR 시점에는 기본 링크만 표시 (requiredRoles가 없는 링크들)
   const defaultLinks = navLinks.filter((link) => !link.requiredRoles?.length);
-  const visibleLinks = mounted ? filterLinksByRole(navLinks, user?.roles) : defaultLinks;
+  const visibleLinks = mounted ? filterByRole(navLinks, user?.roles) : defaultLinks;
 
   const { navRefs, indicatorStyle, handleNavClick, isLinkActive } = useNavigation(visibleLinks);
 

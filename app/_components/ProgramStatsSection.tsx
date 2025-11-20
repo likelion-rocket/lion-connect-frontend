@@ -3,8 +3,8 @@
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import CountUp from "react-countup";
-import { extractNumber, extractUnit } from "@/lib/formatNumber";
-import { useScrollAnimation } from "@/hooks/common/useScrollAnimation";
+import { extractNumber, extractUnit } from "@/utils/formatNumber";
+import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 
 /**
  * StatItem Component

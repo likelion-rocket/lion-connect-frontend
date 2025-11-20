@@ -1,5 +1,5 @@
 // components/ui/chip.tsx
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils/utils";
 
 type ChipVariant = "tendency" | "skill";
 

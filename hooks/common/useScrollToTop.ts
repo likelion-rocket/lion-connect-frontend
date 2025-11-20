@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { throttle } from "@/lib/throttle";
+import { throttle } from "@/utils/throttle";
 import {
   SCROLL_TO_TOP_THRESHOLD,
   SCROLL_THROTTLE_DELAY,

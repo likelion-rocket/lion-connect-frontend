@@ -2,7 +2,10 @@
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { businessConnectSchema, BusinessConnectFormData } from "../lib/businessConnectSchema";
+import {
+  businessConnectSchema,
+  BusinessConnectFormData,
+} from "@/schemas/inquiry/businessConnectSchema";
 import { useCreateInquiry } from "./useCreateInquiry";
 import { CreateInquiryRequest } from "@/types/inquiry";
 

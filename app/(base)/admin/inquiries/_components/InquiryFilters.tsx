@@ -1,6 +1,6 @@
 "use client";
 
-import { useQueryParams } from "@/hooks/useQueryParams";
+import { useQueryParams } from "@/hooks/common/useQueryParams";
 import type { InquiryStatus } from "@/types/inquiry";
 import FilterSelect from "../../../../../components/FilterSelect";
 import { useState } from "react";

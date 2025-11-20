@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import AuthButton from "./buttons/AuthButton";
 import Image from "next/image";
-import { useNavigation, NavLink } from "@/hooks/useNavigation";
+import { useNavigation, NavLink } from "@/hooks/common/useNavigation";
 import { useAuthStore } from "@/store/authStore";
 import { UserRole } from "@/lib/rbac";
 

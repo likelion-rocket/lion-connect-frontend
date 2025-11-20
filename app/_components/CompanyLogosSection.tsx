@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Marquee from "react-fast-marquee";
-import { useScrollAnimation } from "@/hooks/useScrollAnimation";
+import { useScrollAnimation } from "@/hooks/common/useScrollAnimation";
 
 /**
  * CompanyLogosSection Component

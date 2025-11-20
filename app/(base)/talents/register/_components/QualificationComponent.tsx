@@ -5,9 +5,9 @@ import PremierSection from "./section/PremierSection";
 import LanguageSection from "./section/LanguageSection";
 import CertificateSection from "./section/CertificateSection";
 
-import type { LangForm, LangError } from "@/hooks/useLanguageSection";
-import type { CertForm, CertError } from "@/hooks/useCertificationSection";
-import type { AwardForm, AwardError } from "@/hooks/useAwardSection";
+import type { LangForm, LangError } from "@/hooks/talent/register/sections/useLanguageSection";
+import type { CertForm, CertError } from "@/hooks/talent/register/sections/useCertificationSection";
+import type { AwardForm, AwardError } from "@/hooks/talent/register/sections/useAwardSection";
 
 type Props = {
   // ✅ 수상

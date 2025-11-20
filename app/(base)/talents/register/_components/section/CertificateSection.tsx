@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Input from "@/components/ui/input";
-import type { CertForm, CertError } from "@/hooks/useCertificationSection";
+import type { CertForm, CertError } from "@/hooks/talent/register/sections/useCertificationSection";
 
 type Props = {
   certs: CertForm[];

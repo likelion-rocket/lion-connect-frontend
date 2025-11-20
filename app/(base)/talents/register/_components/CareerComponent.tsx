@@ -3,7 +3,7 @@
 
 import Image from "next/image";
 import Input from "@/components/ui/input";
-import type { CompanyForm, CompanyErrors } from "@/hooks/useCareerSection";
+import type { CompanyForm, CompanyErrors } from "@/hooks/talent/register/sections/useCareerSection";
 import { Plus } from "lucide-react";
 
 type Props = {

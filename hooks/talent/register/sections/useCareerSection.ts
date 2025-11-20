@@ -3,7 +3,7 @@
 
 import { useCallback, useMemo, useState } from "react";
 import type { ExperienceRequest } from "@/lib/api/experiences";
-import { parseYYYYMMRange } from "@/lib/date/ym"; // ✅ 공용 유틸 사용
+import { parseYYYYMMRange } from "@/lib/date/ym";
 
 export type CompanyForm = {
   company: string;
@@ -52,7 +52,6 @@ export function useCareerSection(initial?: CompanyForm[]) {
     setErrors((prev) => prev.filter((_, i) => i !== index));
   }, []);
 
-  // ✅ 메모이즈 해서 exhaustive-deps 경고 방지
   const onChange = useCallback(
     (index: number, field: keyof CompanyForm) => (e: React.ChangeEvent<HTMLInputElement>) => {
       const value = e.target.value;
@@ -83,22 +82,19 @@ export function useCareerSection(initial?: CompanyForm[]) {
     }
 
     companies.forEach((row, idx) => {
-      if (isRowEmpty(row)) return; // 완전 빈 행은 무시
+      if (isRowEmpty(row)) return;
 
-      // 필수값
       if (!row.company.trim()) newErrors[idx].company = "회사명을 입력하세요.";
       if (!row.role.trim()) newErrors[idx].role = "직급/직책을 입력하세요.";
       if (!row.period.trim()) newErrors[idx].period = "근속 기간을 입력하세요.";
       if (!row.dept.trim()) newErrors[idx].dept = "부서/직무를 입력해주세요";
       if (!row.desc.trim()) newErrors[idx].desc = "담당 업무를 적어주세요.";
 
-      // ✅ 공용 유틸로 기간 파싱
       const parsed = parseYYYYMMRange(row.period);
       if (!parsed) {
         newErrors[idx].period =
-          "기간은 ‘YYYY.MM - YYYY.MM’ 또는 ‘YYYY.MM - 현재’ 형식으로 입력하세요.";
+          "기간은 'YYYY.MM - YYYY.MM' 또는 'YYYY.MM - 현재' 형식으로 입력하세요.";
       } else {
-        // 역전 검증 (endDate가 있으면)
         if (parsed.endDate) {
           const sd = new Date(parsed.startDate).getTime();
           const ed = new Date(parsed.endDate).getTime();
@@ -108,15 +104,14 @@ export function useCareerSection(initial?: CompanyForm[]) {
         }
       }
 
-      // 에러 없으면 payload 변환
       const hasErr = Object.keys(newErrors[idx]).length > 0;
       if (!hasErr && parsed) {
         payloads.push({
           companyName: row.company.trim(),
           department: row.dept.trim() || undefined,
           position: row.role.trim(),
-          startDate: parsed.startDate, // e.g. 2025-03-01
-          endDate: parsed.endDate ?? null, // 현재/재직이면 null
+          startDate: parsed.startDate,
+          endDate: parsed.endDate ?? null,
           isCurrent: parsed.endDate === undefined,
           description: row.desc.trim() || undefined,
         });

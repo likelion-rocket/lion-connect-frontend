@@ -1,6 +1,6 @@
 "use client";
 
-import { useBusinessConnect } from "../../hooks/useBusinessConnect";
+import { useBusinessConnect } from "@/hooks/inquiry/useBusinessConnect";
 import { FormField, FormTextarea } from "./FormField";
 
 export default function BusinessConnect() {

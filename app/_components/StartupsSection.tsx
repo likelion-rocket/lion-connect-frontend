@@ -4,7 +4,7 @@ import { useState } from "react";
 import Marquee from "react-fast-marquee";
 import { STARTUPS } from "@/constants/startups";
 import StartupCard from "@/components/cards/StartupCard";
-import { useScrollAnimation } from "@/hooks/useScrollAnimation";
+import { useScrollAnimation } from "@/hooks/common/useScrollAnimation";
 
 /**
  * 멋쟁이사자처럼에서 탄생한 스타트업들을 소개하는 섹션

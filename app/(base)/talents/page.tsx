@@ -222,9 +222,9 @@ export default async function TalentsPage({ searchParams }: TalentsPageProps) {
           <TalentSearchHeader totalCount={totalCount} />
 
           <div className="mt-6 flex flex-col gap-12">
-            {paginatedTalents.map((t) => (
+            {paginatedTalents.map((t, index) => (
               <IntroduceCard
-                key={t.talentId}
+                key={`${t.talentId}-${index}`}
                 talentId={t.talentId}
                 name={t.name}
                 viewCount={t.viewCount}

@@ -1,217 +1,147 @@
-// app/(base)/talents/register/page.tsx
 "use client";
 
-import Image from "next/image";
+/**
+ * 인재 등록 폼 페이지
+ * React Hook Form (FormProvider) 연동을 고려한 마크업 구조
+ *
+ * 나중에 useForm, FormProvider, useFormContext로 연결하기 쉽게 설계됨
+ * - 모든 input에 name, id 속성 포함
+ * - 에러 메시지 placeholder 포함
+ * - 반응형 레이아웃 (모바일 1열, PC 2열)
+ *
+ * 향후 구조:
+ * 1. UI 컴포넌트와 API 구조 분리 (FormProvider 안에서 자유롭게 분리)
+ * 2. onSubmit에서 formData를 API 규격에 맞게 재조립(Mapping)
+ * 3. mutateAsync로 순차 저장: [프로필 생성(await) -> ID 획득 -> 나머지 병렬 저장(Promise.all)]
+ * 4. formState.dirtyFields로 dirty checking하여 필요한 API만 호출
+ */
 
-import IntroComponent from "./_components/IntroComponent";
-import CodeRegisterComponent from "./_components/CodeRegisterComponent";
-import ProfileComponent from "./_components/ProfileComponent";
-import PortfolioComponent from "./_components/PortfolioComponent";
-import LinkRegisterComponent from "./_components/LinkComponent";
-import EducationComponent from "./_components/EducationComponent";
-import CareerComponent from "./_components/CareerComponent";
-import SkillComponent from "./_components/SkillComponent";
-import QualificationComponent from "./_components/QualificationComponent";
-import TendencyComponent from "./_components/TendencyComponent";
-import PhotoComponent from "./_components/PhotoComponent";
+import {
+  ProfileImageSection,
+  PersonalInfoSection,
+  IntroductionSection,
+  JobSection,
+  JobExperienceSection,
+  EducationSection,
+  CareerSection,
+  SkillsSection,
+  ActivitiesSection,
+  LanguagesSection,
+  CertificatesSection,
+  LinksSection,
+  PortfolioSection,
+  LikelionCodeSection,
+} from "./_components/sections";
 
-import { useRegisterTalentPage } from "@/hooks/talent/register/useRegisterTalentPage";
-
-export default function RegisterTalent() {
-  const {
-    pending,
-    isComplete,
-    handleSubmitAll,
-    handleGoBack,
-
-    // 상단
-    name,
-    setNameSafe,
-    intro,
-    setIntroSafe,
-    portfolioFile,
-    setPortfolioFileSafe,
-    likelionCode,
-    setLikelionCodeSafe,
-
-    // ✅ 썸네일
-    initialThumbnailUrl,
-    initialThumbnailFileName,
-    setThumbnailFile,
-
-    // ✅ 스킬
-    skillIds,
-    setSkillIds,
-
-    jobGroup,
-    setJobGroup,
-    job,
-    setJob,
-
-    setTendencyIds,
-    initialTendencyIds,
-
-    setExpTagIds,
-    initialExpTagIds,
-
-    // 학력
-    edu,
-    currentEduId,
-    handleEducationDeleted,
-
-    // 경력
-    career,
-    handleDeleteExperience,
-
-    // 어학/자격증
-    lang,
-    handleDeleteLanguage,
-    cert,
-    handleDeleteCertification,
-
-    // ✅ 수상
-    award,
-    handleDeleteAward,
-
-    // ✅ 포트폴리오 파일
-    setResumeFile,
-
-    // ✅ 링크
-    links,
-    handleChangeLink,
-    handleAddLink,
-    handleDeleteLink,
-  } = useRegisterTalentPage();
+export default function TalentRegisterPage() {
+  const handleGoBack = () => {
+    window.history.back();
+  };
 
   return (
-    <div className="w-full text-black mt-8">
-      {/* Header */}
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+    <div className="min-h-screen bg-bg-page">
+      {/* Navigation Bar */}
+      <nav className="max-w-[1440px] mx-auto px-4 md:px-8 h-14 flex items-center justify-between mt-8">
         <button
+          type="button"
           onClick={handleGoBack}
-          className="flex items-center gap-1 hover:opacity-80 transition"
+          className="flex items-center gap-2 md:gap-4 hover:opacity-80 transition-opacity"
         >
-          <Image src="/icons/outline-cheveron-left.svg" alt="back" width={24} height={24} />
-          <span className="text-lg font-bold text-black">이전 페이지</span>
+          <span className="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <path
+                d="M14 7L9 12L14 17"
+                stroke="currentColor"
+                className="text-icon-secondary"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </span>
+          <span className="text-base md:text-lg font-bold text-text-primary">이전 페이지</span>
         </button>
 
-        <h1 className="absolute left-1/2 -translate-x-1/2 text-lg font-bold text-black">
-          인재 등록 페이지
-        </h1>
+        <button
+          type="submit"
+          form="talent-register-form"
+          className="bg-bg-accent text-text-inverse-primary px-4 py-2.5 md:py-3 rounded-lg text-base md:text-lg font-bold hover:bg-brand-06 transition-colors"
+        >
+          작성 완료
+        </button>
+      </nav>
 
-        <div className="flex items-center gap-3">
-          <button
-            disabled={!isComplete || pending}
-            onClick={handleSubmitAll}
-            className={`px-4 py-2 rounded-md text-sm font-semibold border border-border-quaternary transition
-              ${
-                isComplete && !pending
-                  ? "bg-[#FF6000] text-white hover:opacity-90"
-                  : "bg-[#E5E7EB] text-[#9CA3AF] cursor-not-allowed"
-              }`}
-          >
-            {pending ? "작성 중..." : "작성 완료"}
-          </button>
-        </div>
-      </div>
+      {/* Main Form */}
+      <main className="max-w-[1440px] mx-auto px-4 md:px-8 py-8 md:py-16">
+        <form
+          id="talent-register-form"
+          className="talent-register-form max-w-[1142px] mx-auto flex flex-col gap-16 md:gap-[100px]"
+        >
+          {/* Page Header */}
+          <header className="page-header flex flex-col gap-2">
+            <h1 className="text-2xl md:text-3xl font-bold text-text-primary">인재 등록</h1>
+            <p className="text-base text-text-secondary">기본 정보와 이력, 스킬을 입력해 주세요.</p>
+          </header>
 
-      {/* 본문 */}
-      <main className="py-8 flex flex-col gap-10 mx-40">
-        <IntroComponent
-          name={name}
-          onNameChange={setNameSafe}
-          initialExpTagIds={initialExpTagIds}
-          onChangeExpTagIds={setExpTagIds}
-        />
+          {/* 프로필 사진 섹션 */}
+          <ProfileImageSection />
 
-        {/* ✅ 썸네일 업로드/프리필 */}
-        <PhotoComponent
-          initialThumbnailUrl={initialThumbnailUrl}
-          initialFileName={initialThumbnailFileName}
-          onChangeFile={setThumbnailFile}
-        />
+          {/* 인적사항 섹션 */}
+          <PersonalInfoSection />
 
-        <CodeRegisterComponent code={likelionCode} onCodeChange={setLikelionCodeSafe} />
+          {/* 간단 소개 섹션 */}
+          <IntroductionSection />
 
-        <ProfileComponent
-          intro={intro}
-          onIntroChange={setIntroSafe}
-          jobGroup={jobGroup}
-          job={job}
-          onChangeJobGroup={setJobGroup}
-          onChangeJob={setJob}
-        />
+          {/* 직군 및 직무 선택 섹션 */}
+          <JobSection />
 
-        <TendencyComponent initialIds={initialTendencyIds} onChangeSelectedIds={setTendencyIds} />
+          {/* 직무 관련 경험 섹션 */}
+          <JobExperienceSection />
 
-        <EducationComponent
-          educationId={currentEduId}
-          schoolName={edu.form.schoolName}
-          onChangeSchoolName={edu.onChangeSchoolName}
-          periodText={edu.form.periodText}
-          onChangePeriodText={edu.onChangePeriodText}
-          status={edu.form.status}
-          onChangeStatus={edu.onChangeStatus}
-          major={edu.form.major}
-          onChangeMajor={edu.onChangeMajor}
-          description={edu.form.description}
-          onChangeDescription={edu.onChangeDescription}
-          errors={edu.errors}
-          onDeleted={handleEducationDeleted}
-        />
+          {/* 학력 섹션 */}
+          <EducationSection />
 
-        <CareerComponent
-          companies={career.companies}
-          errors={career.errors}
-          hasAnyValue={career.hasAnyValue}
-          onChange={career.onChange}
-          onAdd={career.addCompany}
-          onClear={career.clearCompany}
-          onDelete={handleDeleteExperience}
-        />
+          {/* 경력 섹션 */}
+          <CareerSection />
 
-        <SkillComponent selectedSkillIds={skillIds} onChangeSelectedSkillIds={setSkillIds} />
+          {/* 직무 스킬 섹션 */}
+          <SkillsSection />
 
-        <QualificationComponent
-          // ✅ 수상
-          awards={award.awards}
-          awardErrors={award.errors}
-          hasAnyAwardValue={award.hasAnyValue}
-          onAwardChange={award.onChange}
-          onAwardAdd={award.add}
-          onAwardClear={award.clear}
-          onAwardDelete={handleDeleteAward}
-          // 어학
-          langs={lang.langs}
-          langErrors={lang.errors}
-          hasAnyValue={lang.hasAnyValue}
-          onLangChange={lang.onChange}
-          onLangAdd={lang.add}
-          onLangClear={lang.clear}
-          onLangDelete={handleDeleteLanguage}
-          // 자격증
-          certs={cert.certs}
-          certErrors={cert.errors}
-          hasAnyCertValue={cert.hasAnyValue}
-          onCertChange={cert.onChange}
-          onCertAdd={cert.add}
-          onCertClear={cert.clear}
-          onCertDelete={handleDeleteCertification}
-        />
+          {/* 수상/활동/기타 섹션 */}
+          <ActivitiesSection />
 
-        {/* ✅ 링크 */}
-        <LinkRegisterComponent
-          links={links}
-          onChangeLink={handleChangeLink}
-          onAddLink={handleAddLink}
-          onDeleteLink={handleDeleteLink}
-        />
+          {/* 언어 & 자격증 섹션 (2열 레이아웃) */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16">
+            <LanguagesSection />
+            <CertificatesSection />
+          </div>
 
-        <PortfolioComponent
-          fileName={portfolioFile}
-          onFileSelect={setPortfolioFileSafe}
-          onChangeFile={setResumeFile}
-        />
+          {/* 링크 섹션 */}
+          <LinksSection />
+
+          {/* 포트폴리오 섹션 */}
+          <PortfolioSection />
+
+          {/* 멋사 수료생 코드 섹션 */}
+          <LikelionCodeSection />
+
+          {/* Page Footer */}
+          <footer className="page-footer flex flex-col md:flex-row items-center justify-end gap-4 pt-8 border-t border-border-quaternary">
+            <button
+              type="button"
+              onClick={handleGoBack}
+              className="w-full md:w-auto px-8 py-3 border border-border-quaternary rounded-lg text-base font-medium text-text-secondary hover:bg-bg-tertiary transition-colors"
+            >
+              취소
+            </button>
+            <button
+              type="submit"
+              className="w-full md:w-auto px-8 py-3 bg-bg-accent text-text-inverse-primary rounded-lg text-base font-bold hover:bg-brand-06 transition-colors"
+            >
+              전체 저장
+            </button>
+          </footer>
+        </form>
       </main>
     </div>
   );

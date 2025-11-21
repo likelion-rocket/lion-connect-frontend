@@ -1,7 +1,7 @@
 // app/(base)/talents/page.tsx
 import Pager from "@/components/Pager";
 import TalentSearchHeader from "./_components/TalentSearchHeader";
-import IntroduceCard from "./[slug]/_components/IntroduceCard";
+import IntroduceCard from "./[talentId]/_components/IntroduceCard";
 import { fetchTalents } from "@/lib/api/talents";
 import type { BadgeType } from "@/components/ui/badge";
 import { generateDummyTalents, type DummyTalent } from "@/constants/dummyTalents";
@@ -82,7 +82,7 @@ type TalentsPageProps = {
 };
 
 type TalentCardItem = {
-  slug: string;
+  talentId: string;
   id: number;
   name: string;
   viewCount: number;
@@ -141,7 +141,7 @@ export default async function TalentsPage({ searchParams }: TalentsPageProps) {
     }
 
     return {
-      slug: String(t.id),
+      talentId: String(t.id),
       id: t.id,
       name: t.name,
       viewCount: 0, // TODO: 조회수 붙이면 교체
@@ -224,8 +224,8 @@ export default async function TalentsPage({ searchParams }: TalentsPageProps) {
           <div className="mt-6 flex flex-col gap-12">
             {paginatedTalents.map((t) => (
               <IntroduceCard
-                key={t.slug}
-                slug={t.slug}
+                key={t.talentId}
+                talentId={t.talentId}
                 name={t.name}
                 viewCount={t.viewCount}
                 badges={t.badges}

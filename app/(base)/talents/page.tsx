@@ -4,7 +4,6 @@ import TalentSearchHeader from "./_components/TalentSearchHeader";
 import IntroduceCard from "./[talentId]/_components/IntroduceCard";
 import { fetchTalents } from "@/lib/api/talents";
 import type { BadgeType } from "@/components/ui/badge";
-import { generateDummyTalents, type DummyTalent } from "@/constants/dummyTalents";
 import { JOB_ROLE_ID_BY_NAME, findJobGroupByJobName } from "@/constants/jobs";
 
 /* ================================
@@ -158,10 +157,7 @@ export default async function TalentsPage({ searchParams }: TalentsPageProps) {
     };
   });
 
-  const dummyTalents: DummyTalent[] = generateDummyTalents(24);
-
-  /** 🔥 실제로 화면에 쓸 전체 리스트 (API + 더미) */
-  const talents: TalentCardItem[] = [...apiTalents, ...dummyTalents];
+  const talents: TalentCardItem[] = apiTalents;
 
   /* ================================
    * 6. 프론트단 필터링 로직

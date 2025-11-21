@@ -4,6 +4,8 @@
  * 배열 구조로 여러 개 활동 추가 가능
  */
 
+import AddButton from "../AddButton";
+
 export default function ActivitiesSection() {
   return (
     <section className="section section-activities flex flex-col gap-6">
@@ -101,21 +103,7 @@ export default function ActivitiesSection() {
       </div>
 
       {/* 활동 추가 버튼 */}
-      <button
-        type="button"
-        className="self-end flex items-center gap-2 md:gap-4 hover:opacity-80 transition-opacity"
-      >
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-          <path
-            d="M12 6V18M6 12H18"
-            stroke="currentColor"
-            className="text-icon-accent"
-            strokeWidth="2"
-            strokeLinecap="round"
-          />
-        </svg>
-        <span className="text-base md:text-lg font-bold text-text-accent">활동 추가</span>
-      </button>
+      <AddButton label="활동 추가" className="self-end" />
     </section>
   );
 }

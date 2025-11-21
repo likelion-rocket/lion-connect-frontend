@@ -3,6 +3,8 @@
  * 필드: profile.avatar (파일 업로드)
  */
 
+import AddButton from "../AddButton";
+
 export default function ProfileImageSection() {
   return (
     <section className="section section-profile-image flex flex-col gap-6 md:gap-8">
@@ -48,23 +50,7 @@ export default function ProfileImageSection() {
                   jpg 나 png 사진을 첨부해주세요.
                 </p>
               </div>
-              <button
-                type="button"
-                className="flex items-center gap-2 md:gap-4 px-3 py-3 hover:opacity-80 transition-opacity"
-              >
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                  <path
-                    d="M12 6V18M6 12H18"
-                    stroke="currentColor"
-                    className="text-icon-accent"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                  />
-                </svg>
-                <span className="text-base md:text-lg font-bold text-text-accent whitespace-nowrap">
-                  사진 업로드
-                </span>
-              </button>
+              <AddButton label="사진 업로드" />
             </div>
             <p className="field-error text-sm text-text-error mt-1"></p>
           </div>

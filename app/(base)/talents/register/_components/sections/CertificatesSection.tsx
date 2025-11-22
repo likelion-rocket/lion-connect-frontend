@@ -1,12 +1,21 @@
 /**
  * 자격증 섹션 컴포넌트
- * 필드: certificates[0].name, certificates[0].acquiredAt
+ * 필드: certificates[0].name, certificates[0].issuer, certificates[0].issueDate
  * 배열 구조로 여러 개 자격증 추가 가능
  */
 
+"use client";
+
+import { useFormContext } from "react-hook-form";
+import type { TalentRegisterFormValues } from "@/schemas/talent/talentRegisterSchema";
+import { FormInput } from "@/components/form/FormInput";
 import AddButton from "../AddButton";
 
 export default function CertificatesSection() {
+  const {
+    register,
+    formState: { errors },
+  } = useFormContext<TalentRegisterFormValues>();
   return (
     <section className="section section-certificates flex flex-col gap-6">
       <h2 className="text-lg md:text-xl font-bold text-text-primary">자격증</h2>
@@ -42,31 +51,42 @@ export default function CertificatesSection() {
               >
                 자격증명
               </label>
-              <input
+              <FormInput
                 id="certificates-0-name"
-                name="certificates[0].name"
                 type="text"
                 placeholder="자격증을 입력해주세요"
-                className="lc-input w-full h-14 px-4 py-3 bg-bg-primary rounded-lg border border-border-quaternary text-base text-text-primary placeholder:text-text-tertiary focus:outline-none focus:border-border-accent transition-colors"
+                {...register("certificates.0.name")}
               />
-              <p className="field-error text-sm text-text-error mt-1"></p>
             </div>
 
             <div className="field">
               <label
-                htmlFor="certificates-0-acquired-at"
+                htmlFor="certificates-0-issuer"
+                className="block text-sm font-medium text-text-secondary mb-2"
+              >
+                발급 기관
+              </label>
+              <FormInput
+                id="certificates-0-issuer"
+                type="text"
+                placeholder="발급 기관을 입력해주세요"
+                {...register("certificates.0.issuer")}
+              />
+            </div>
+
+            <div className="field">
+              <label
+                htmlFor="certificates-0-issue-date"
                 className="block text-sm font-medium text-text-secondary mb-2"
               >
                 취득일자
               </label>
-              <input
-                id="certificates-0-acquired-at"
-                name="certificates[0].acquiredAt"
+              <FormInput
+                id="certificates-0-issue-date"
                 type="text"
                 placeholder="YYYY.MM"
-                className="lc-input w-full h-14 px-4 py-3 bg-bg-primary rounded-lg border border-border-quaternary text-base text-text-primary placeholder:text-text-tertiary focus:outline-none focus:border-border-accent transition-colors"
+                {...register("certificates.0.issueDate")}
               />
-              <p className="field-error text-sm text-text-error mt-1"></p>
             </div>
           </div>
         </div>

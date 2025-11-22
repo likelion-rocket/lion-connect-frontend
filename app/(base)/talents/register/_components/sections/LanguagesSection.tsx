@@ -1,12 +1,21 @@
 /**
  * 언어 섹션 컴포넌트
- * 필드: languages[0].name, languages[0].acquiredAt
+ * 필드: languages[0].languageName, languages[0].level, languages[0].issueDate
  * 배열 구조로 여러 개 언어 추가 가능
  */
 
+"use client";
+
+import { useFormContext } from "react-hook-form";
+import type { TalentRegisterFormValues } from "@/schemas/talent/talentRegisterSchema";
+import { FormInput } from "@/components/form/FormInput";
 import AddButton from "../AddButton";
 
 export default function LanguagesSection() {
+  const {
+    register,
+    formState: { errors },
+  } = useFormContext<TalentRegisterFormValues>();
   return (
     <section className="section section-languages flex flex-col gap-6">
       <h2 className="text-lg md:text-xl font-bold text-text-primary">언어</h2>
@@ -40,31 +49,42 @@ export default function LanguagesSection() {
               >
                 언어명
               </label>
-              <input
+              <FormInput
                 id="languages-0-name"
-                name="languages[0].name"
                 type="text"
                 placeholder="언어를 입력해주세요"
-                className="lc-input w-full h-14 px-4 py-3 bg-bg-primary rounded-lg border border-border-quaternary text-base text-text-primary placeholder:text-text-tertiary focus:outline-none focus:border-border-accent transition-colors"
+                {...register("languages.0.languageName")}
               />
-              <p className="field-error text-sm text-text-error mt-1"></p>
             </div>
 
             <div className="field">
               <label
-                htmlFor="languages-0-acquired-at"
+                htmlFor="languages-0-level"
+                className="block text-sm font-medium text-text-secondary mb-2"
+              >
+                수준
+              </label>
+              <FormInput
+                id="languages-0-level"
+                type="text"
+                placeholder="수준을 입력해주세요 (예: 상, 중, 하)"
+                {...register("languages.0.level")}
+              />
+            </div>
+
+            <div className="field">
+              <label
+                htmlFor="languages-0-issue-date"
                 className="block text-sm font-medium text-text-secondary mb-2"
               >
                 취득/검정 일자
               </label>
-              <input
-                id="languages-0-acquired-at"
-                name="languages[0].acquiredAt"
+              <FormInput
+                id="languages-0-issue-date"
                 type="text"
                 placeholder="YYYY.MM"
-                className="lc-input w-full h-14 px-4 py-3 bg-bg-primary rounded-lg border border-border-quaternary text-base text-text-primary placeholder:text-text-tertiary focus:outline-none focus:border-border-accent transition-colors"
+                {...register("languages.0.issueDate")}
               />
-              <p className="field-error text-sm text-text-error mt-1"></p>
             </div>
           </div>
         </div>

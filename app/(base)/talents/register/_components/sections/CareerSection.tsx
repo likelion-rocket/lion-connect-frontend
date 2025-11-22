@@ -1,11 +1,21 @@
 /**
  * 경력 섹션 컴포넌트
- * 필드: career.company, career.startDate, career.endDate, career.description
+ * 필드: career.companyName, career.department, career.position, career.startDate, career.endDate, career.isCurrent, career.description
  */
 
+"use client";
+
+import { useFormContext } from "react-hook-form";
+import type { TalentRegisterFormValues } from "@/schemas/talent/talentRegisterSchema";
+import { FormInput } from "@/components/form/FormInput";
+import { FormTextarea } from "@/components/form/FormTextarea";
 import AddButton from "../AddButton";
 
 export default function CareerSection() {
+  const {
+    register,
+    formState: { errors },
+  } = useFormContext<TalentRegisterFormValues>();
   return (
     <section className="section section-career flex flex-col gap-6 md:gap-8">
       <h2 className="text-lg md:text-xl font-bold text-text-primary">경력</h2>
@@ -39,14 +49,44 @@ export default function CareerSection() {
               >
                 회사명
               </label>
-              <input
+              <FormInput
                 id="career-company"
-                name="career.company"
                 type="text"
                 placeholder="회사명을 입력해주세요"
-                className="lc-input w-full h-14 px-4 py-3 bg-bg-primary rounded-lg border border-border-quaternary text-base text-text-primary placeholder:text-text-tertiary focus:outline-none focus:border-border-accent transition-colors"
+                {...register("career.companyName")}
               />
-              <p className="field-error text-sm text-text-error mt-1"></p>
+            </div>
+
+            {/* 부서 */}
+            <div className="field">
+              <label
+                htmlFor="career-department"
+                className="block text-sm font-medium text-text-secondary mb-2"
+              >
+                부서
+              </label>
+              <FormInput
+                id="career-department"
+                type="text"
+                placeholder="부서를 입력해주세요"
+                {...register("career.department")}
+              />
+            </div>
+
+            {/* 직책 */}
+            <div className="field">
+              <label
+                htmlFor="career-position"
+                className="block text-sm font-medium text-text-secondary mb-2"
+              >
+                직책
+              </label>
+              <FormInput
+                id="career-position"
+                type="text"
+                placeholder="직책을 입력해주세요"
+                {...register("career.position")}
+              />
             </div>
 
             {/* 근무 기간 */}
@@ -58,14 +98,12 @@ export default function CareerSection() {
                 >
                   근무 시작일
                 </label>
-                <input
+                <FormInput
                   id="career-start-date"
-                  name="career.startDate"
                   type="text"
                   placeholder="YYYY.MM"
-                  className="lc-input w-full h-14 px-4 py-3 bg-bg-primary rounded-lg border border-border-quaternary text-base text-text-primary placeholder:text-text-tertiary focus:outline-none focus:border-border-accent transition-colors"
+                  {...register("career.startDate")}
                 />
-                <p className="field-error text-sm text-text-error mt-1"></p>
               </div>
 
               <div className="field">
@@ -75,15 +113,25 @@ export default function CareerSection() {
                 >
                   근무 종료일
                 </label>
-                <input
+                <FormInput
                   id="career-end-date"
-                  name="career.endDate"
                   type="text"
                   placeholder="YYYY.MM"
-                  className="lc-input w-full h-14 px-4 py-3 bg-bg-primary rounded-lg border border-border-quaternary text-base text-text-primary placeholder:text-text-tertiary focus:outline-none focus:border-border-accent transition-colors"
+                  {...register("career.endDate")}
                 />
-                <p className="field-error text-sm text-text-error mt-1"></p>
               </div>
+            </div>
+
+            {/* 재직 중 */}
+            <div className="field">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  className="w-5 h-5 rounded border-border-quaternary text-bg-accent focus:ring-bg-accent"
+                  {...register("career.isCurrent")}
+                />
+                <span className="text-sm font-medium text-text-secondary">재직 중</span>
+              </label>
             </div>
 
             {/* 담당 업무 */}
@@ -94,14 +142,12 @@ export default function CareerSection() {
               >
                 담당 업무/설명
               </label>
-              <textarea
+              <FormTextarea
                 id="career-description"
-                name="career.description"
                 placeholder="담당 업무를 입력해주세요"
                 rows={3}
-                className="lc-input w-full px-4 py-3 bg-bg-primary rounded-lg border border-border-quaternary text-base text-text-primary placeholder:text-text-tertiary focus:outline-none focus:border-border-accent transition-colors resize-none"
+                {...register("career.description")}
               />
-              <p className="field-error text-sm text-text-error mt-1"></p>
             </div>
           </div>
         </div>

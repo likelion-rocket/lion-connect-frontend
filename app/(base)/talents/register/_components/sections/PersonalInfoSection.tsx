@@ -3,7 +3,17 @@
  * 필드: profile.name, profile.phone, profile.email
  */
 
+"use client";
+
+import { useFormContext } from "react-hook-form";
+import type { TalentRegisterFormValues } from "@/schemas/talent/talentRegisterSchema";
+import { FormInput } from "@/components/form/FormInput";
+
 export default function PersonalInfoSection() {
+  const {
+    register,
+    formState: { errors },
+  } = useFormContext<TalentRegisterFormValues>();
   return (
     <section className="section section-personal-info flex flex-col gap-6 md:gap-8">
       <h2 className="text-lg md:text-xl font-bold text-text-primary">
@@ -39,14 +49,18 @@ export default function PersonalInfoSection() {
             >
               이름<span className="required text-text-error">*</span>
             </label>
-            <input
+            <FormInput
               id="profile-name"
-              name="profile.name"
               type="text"
               placeholder="이름을 입력해주세요"
-              className="lc-input w-full h-14 md:h-16 px-4 py-3 bg-bg-primary rounded-lg border border-border-quaternary text-base text-text-primary placeholder:text-text-tertiary focus:outline-none focus:border-border-accent transition-colors"
+              error={!!errors.profile?.name}
+              {...register("profile.name")}
             />
-            <p className="field-error text-sm text-text-error mt-1"></p>
+            {errors.profile?.name && (
+              <p className="field-error text-sm text-text-error mt-1">
+                {errors.profile.name.message}
+              </p>
+            )}
           </div>
 
           {/* 전화번호 */}
@@ -57,14 +71,18 @@ export default function PersonalInfoSection() {
             >
               전화번호<span className="required text-text-error">*</span>
             </label>
-            <input
+            <FormInput
               id="profile-phone"
-              name="profile.phone"
               type="tel"
               placeholder="010-0000-0000"
-              className="lc-input w-full h-14 md:h-16 px-4 py-3 bg-bg-primary rounded-lg border border-border-quaternary text-base text-text-primary placeholder:text-text-tertiary focus:outline-none focus:border-border-accent transition-colors"
+              error={!!errors.profile?.phone}
+              {...register("profile.phone")}
             />
-            <p className="field-error text-sm text-text-error mt-1"></p>
+            {errors.profile?.phone && (
+              <p className="field-error text-sm text-text-error mt-1">
+                {errors.profile.phone.message}
+              </p>
+            )}
           </div>
 
           {/* 이메일 */}
@@ -75,14 +93,18 @@ export default function PersonalInfoSection() {
             >
               이메일<span className="required text-text-error">*</span>
             </label>
-            <input
+            <FormInput
               id="profile-email"
-              name="profile.email"
               type="email"
               placeholder="email@example.com"
-              className="lc-input w-full h-14 md:h-16 px-4 py-3 bg-bg-primary rounded-lg border border-border-quaternary text-base text-text-primary placeholder:text-text-tertiary focus:outline-none focus:border-border-accent transition-colors"
+              error={!!errors.profile?.email}
+              {...register("profile.email")}
             />
-            <p className="field-error text-sm text-text-error mt-1"></p>
+            {errors.profile?.email && (
+              <p className="field-error text-sm text-text-error mt-1">
+                {errors.profile.email.message}
+              </p>
+            )}
           </div>
         </div>
       </div>

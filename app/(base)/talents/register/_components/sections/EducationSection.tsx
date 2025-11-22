@@ -1,11 +1,22 @@
 /**
  * 학력 섹션 컴포넌트
- * 필드: education.school, education.startDate, education.endDate
+ * 필드: education.schoolName, education.major, education.status, education.degree, education.startDate, education.endDate, education.description
  */
 
+"use client";
+
+import { useFormContext } from "react-hook-form";
+import type { TalentRegisterFormValues } from "@/schemas/talent/talentRegisterSchema";
+import { FormInput } from "@/components/form/FormInput";
+import { FormTextarea } from "@/components/form/FormTextarea";
+import { FormSelect } from "@/components/form/FormSelect";
 import AddButton from "../AddButton";
 
 export default function EducationSection() {
+  const {
+    register,
+    formState: { errors },
+  } = useFormContext<TalentRegisterFormValues>();
   return (
     <section className="section section-education flex flex-col gap-6 md:gap-8">
       <h2 className="text-lg md:text-xl font-bold text-text-primary">
@@ -41,14 +52,66 @@ export default function EducationSection() {
               >
                 학교명<span className="required text-text-error">*</span>
               </label>
-              <input
+              <FormInput
                 id="education-school"
-                name="education.school"
                 type="text"
                 placeholder="학교명을 입력해주세요"
-                className="lc-input w-full h-14 px-4 py-3 bg-bg-primary rounded-lg border border-border-quaternary text-base text-text-primary placeholder:text-text-tertiary focus:outline-none focus:border-border-accent transition-colors"
+                error={!!errors.education?.schoolName}
+                {...register("education.schoolName")}
               />
-              <p className="field-error text-sm text-text-error mt-1"></p>
+              {errors.education?.schoolName && (
+                <p className="field-error text-sm text-text-error mt-1">
+                  {errors.education.schoolName.message}
+                </p>
+              )}
+            </div>
+
+            {/* 전공 */}
+            <div className="field">
+              <label
+                htmlFor="education-major"
+                className="block text-sm font-medium text-text-secondary mb-2"
+              >
+                전공
+              </label>
+              <FormInput
+                id="education-major"
+                type="text"
+                placeholder="전공을 입력해주세요"
+                {...register("education.major")}
+              />
+            </div>
+
+            {/* 학위 */}
+            <div className="field">
+              <label
+                htmlFor="education-degree"
+                className="block text-sm font-medium text-text-secondary mb-2"
+              >
+                학위
+              </label>
+              <FormInput
+                id="education-degree"
+                type="text"
+                placeholder="학위를 입력해주세요 (예: 학사, 석사)"
+                {...register("education.degree")}
+              />
+            </div>
+
+            {/* 재학 상태 */}
+            <div className="field">
+              <label
+                htmlFor="education-status"
+                className="block text-sm font-medium text-text-secondary mb-2"
+              >
+                재학 상태
+              </label>
+              <FormSelect id="education-status" {...register("education.status")}>
+                <option value="">선택해주세요</option>
+                <option value="ENROLLED">재학</option>
+                <option value="GRADUATED">졸업</option>
+                <option value="LEAVE">휴학</option>
+              </FormSelect>
             </div>
 
             {/* 재학 기간 */}
@@ -60,14 +123,12 @@ export default function EducationSection() {
                 >
                   재학 시작일
                 </label>
-                <input
+                <FormInput
                   id="education-start-date"
-                  name="education.startDate"
                   type="text"
                   placeholder="YYYY.MM"
-                  className="lc-input w-full h-14 px-4 py-3 bg-bg-primary rounded-lg border border-border-quaternary text-base text-text-primary placeholder:text-text-tertiary focus:outline-none focus:border-border-accent transition-colors"
+                  {...register("education.startDate")}
                 />
-                <p className="field-error text-sm text-text-error mt-1"></p>
               </div>
 
               <div className="field">
@@ -77,15 +138,29 @@ export default function EducationSection() {
                 >
                   재학 종료일
                 </label>
-                <input
+                <FormInput
                   id="education-end-date"
-                  name="education.endDate"
                   type="text"
                   placeholder="YYYY.MM"
-                  className="lc-input w-full h-14 px-4 py-3 bg-bg-primary rounded-lg border border-border-quaternary text-base text-text-primary placeholder:text-text-tertiary focus:outline-none focus:border-border-accent transition-colors"
+                  {...register("education.endDate")}
                 />
-                <p className="field-error text-sm text-text-error mt-1"></p>
               </div>
+            </div>
+
+            {/* 설명 */}
+            <div className="field">
+              <label
+                htmlFor="education-description"
+                className="block text-sm font-medium text-text-secondary mb-2"
+              >
+                설명
+              </label>
+              <FormTextarea
+                id="education-description"
+                placeholder="학력에 대한 추가 설명을 입력해주세요"
+                rows={3}
+                {...register("education.description")}
+              />
             </div>
           </div>
         </div>

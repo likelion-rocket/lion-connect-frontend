@@ -19,14 +19,21 @@ export const talentRegisterSchema = z.object({
     experiences: z.array(z.string()).optional(),
   }),
   education: z.object({
-    school: z.string().optional(),
+    schoolName: z.string().optional(),
+    major: z.string().optional(),
+    status: z.enum(["ENROLLED", "GRADUATED", "LEAVE"]).optional(),
     startDate: z.string().optional(),
     endDate: z.string().optional(),
+    description: z.string().optional(),
+    degree: z.string().optional(),
   }),
   career: z.object({
-    company: z.string().optional(),
+    companyName: z.string().optional(),
+    department: z.string().optional(),
+    position: z.string().optional(),
     startDate: z.string().optional(),
     endDate: z.string().optional(),
+    isCurrent: z.boolean().optional(),
     description: z.string().optional(),
   }),
   skills: z.object({
@@ -36,8 +43,8 @@ export const talentRegisterSchema = z.object({
     .array(
       z.object({
         title: z.string().optional(),
-        startDate: z.string().optional(),
-        endDate: z.string().optional(),
+        organization: z.string().optional(),
+        awardDate: z.string().optional(),
         description: z.string().optional(),
       })
     )
@@ -45,8 +52,9 @@ export const talentRegisterSchema = z.object({
   languages: z
     .array(
       z.object({
-        name: z.string().optional(),
-        acquiredAt: z.string().optional(),
+        languageName: z.string().optional(),
+        level: z.string().optional(),
+        issueDate: z.string().optional(),
       })
     )
     .optional(),
@@ -54,7 +62,8 @@ export const talentRegisterSchema = z.object({
     .array(
       z.object({
         name: z.string().optional(),
-        acquiredAt: z.string().optional(),
+        issuer: z.string().optional(),
+        issueDate: z.string().optional(),
       })
     )
     .optional(),
@@ -84,22 +93,29 @@ export const defaultTalentRegisterValues: TalentRegisterFormValues = {
     experiences: [],
   },
   education: {
-    school: "",
+    schoolName: "",
+    major: "",
+    status: undefined,
     startDate: "",
     endDate: "",
+    description: "",
+    degree: "",
   },
   career: {
-    company: "",
+    companyName: "",
+    department: "",
+    position: "",
     startDate: "",
     endDate: "",
+    isCurrent: false,
     description: "",
   },
   skills: {
     main: [],
   },
-  activities: [{ title: "", startDate: "", endDate: "", description: "" }],
-  languages: [{ name: "", acquiredAt: "" }],
-  certificates: [{ name: "", acquiredAt: "" }],
+  activities: [{ title: "", organization: "", awardDate: "", description: "" }],
+  languages: [{ languageName: "", level: "", issueDate: "" }],
+  certificates: [{ name: "", issuer: "", issueDate: "" }],
   links: {
     general: "",
     portfolio: "",

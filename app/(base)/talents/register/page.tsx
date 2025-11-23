@@ -29,6 +29,9 @@ import { createAward } from "@/lib/api/awards";
 import { updateMyExpTags } from "@/lib/api/expTags";
 import { updateJobs } from "@/lib/api/jobs";
 
+// 컴포넌트
+import TalentRegisterNav from "./_components/TalentRegisterNav";
+
 // 섹션 컴포넌트
 import ProfileImageSection from "./_components/sections/ProfileImageSection";
 import PersonalInfoSection from "./_components/sections/PersonalInfoSection";
@@ -56,6 +59,11 @@ export default function TalentRegisterPage() {
 
   const handleGoBack = () => {
     window.history.back();
+  };
+
+  const handleTempSave = async () => {
+    // TODO: 임시 저장 로직 구현
+    console.log("임시 저장");
   };
 
   /**
@@ -148,35 +156,11 @@ export default function TalentRegisterPage() {
     <FormProvider {...methods}>
       <div className="min-h-screen bg-bg-page">
         {/* Navigation Bar */}
-        <nav className="max-w-[1440px] mx-auto px-4 md:px-8 h-14 flex items-center justify-between mt-8">
-          <button
-            type="button"
-            onClick={handleGoBack}
-            className="flex items-center gap-2 md:gap-4 hover:opacity-80 transition-opacity"
-          >
-            <span className="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                <path
-                  d="M14 7L9 12L14 17"
-                  stroke="currentColor"
-                  className="text-icon-secondary"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </span>
-            <span className="text-base md:text-lg font-bold text-text-primary">이전 페이지</span>
-          </button>
-
-          <button
-            type="submit"
-            form="talent-register-form"
-            className="bg-bg-accent text-text-inverse-primary px-4 py-2.5 md:py-3 rounded-lg text-base md:text-lg font-bold hover:bg-brand-06 transition-colors"
-          >
-            작성 완료
-          </button>
-        </nav>
+        <TalentRegisterNav
+          onBack={handleGoBack}
+          onTempSave={handleTempSave}
+          formId="talent-register-form"
+        />
 
         {/* Main Form */}
         <main className="max-w-[1440px] mx-auto px-4 md:px-8 py-8 md:py-16">

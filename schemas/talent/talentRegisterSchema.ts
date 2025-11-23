@@ -74,6 +74,7 @@ export const talentRegisterSchema = z.object({
   likelion: z.object({
     code: z.string().optional(),
   }),
+  workDrivenTest: z.record(z.string(), z.number().min(1).max(5)).optional(),
 });
 
 export type TalentRegisterFormValues = z.infer<typeof talentRegisterSchema>;
@@ -123,4 +124,5 @@ export const defaultTalentRegisterValues: TalentRegisterFormValues = {
   likelion: {
     code: "",
   },
+  workDrivenTest: {},
 };

@@ -30,26 +30,27 @@ import { updateMyExpTags } from "@/lib/api/expTags";
 import { updateJobs } from "@/lib/api/jobs";
 
 // 섹션 컴포넌트
-import {
-  ProfileImageSection,
-  PersonalInfoSection,
-  IntroductionSection,
-  JobSection,
-  JobExperienceSection,
-  EducationSection,
-  CareerSection,
-  SkillsSection,
-  ActivitiesSection,
-  LanguagesSection,
-  CertificatesSection,
-  LinksSection,
-  PortfolioSection,
-  LikelionCodeSection,
-} from "./_components/sections";
+import ProfileImageSection from "./_components/sections/ProfileImageSection";
+import PersonalInfoSection from "./_components/sections/PersonalInfoSection";
+import IntroductionSection from "./_components/sections/IntroductionSection";
+import JobSection from "./_components/sections/JobSection";
+import JobExperienceSection from "./_components/sections/JobExperienceSection";
+import EducationSection from "./_components/sections/EducationSection";
+import CareerSection from "./_components/sections/CareerSection";
+import SkillsSection from "./_components/sections/SkillsSection";
+import ActivitiesSection from "./_components/sections/ActivitiesSection";
+import LanguagesSection from "./_components/sections/LanguagesSection";
+import CertificatesSection from "./_components/sections/CertificatesSection";
+import LinksSection from "./_components/sections/LinksSection";
+import PortfolioSection from "./_components/sections/PortfolioSection";
+import LikelionCodeSection from "./_components/sections/LikelionCodeSection";
+
+// resolver를 컴포넌트 외부로 이동 (재생성 방지)
+const formResolver = zodResolver(talentRegisterSchema);
 
 export default function TalentRegisterPage() {
   const methods = useForm<TalentRegisterFormValues>({
-    resolver: zodResolver(talentRegisterSchema),
+    resolver: formResolver,
     defaultValues: defaultTalentRegisterValues,
   });
 

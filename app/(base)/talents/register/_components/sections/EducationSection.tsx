@@ -5,18 +5,37 @@
 
 "use client";
 
-import { useFormContext } from "react-hook-form";
+import { memo } from "react";
+import { useFormContext, useWatch } from "react-hook-form";
 import type { TalentRegisterFormValues } from "@/schemas/talent/talentRegisterSchema";
 import { FormInput } from "@/components/form/FormInput";
 import { FormTextarea } from "@/components/form/FormTextarea";
 import { FormSelect } from "@/components/form/FormSelect";
+import { FormContainer } from "@/components/form/FormContainer";
 import AddButton from "../AddButton";
 
 export default function EducationSection() {
   const {
     register,
     formState: { errors },
+    control,
   } = useFormContext<TalentRegisterFormValues>();
+
+  // useWatch를 사용하여 필요한 필드만 구독 (렌더링 최적화)
+  const educationFields = useWatch({
+    control,
+    name: "education",
+  });
+
+  const hasEducationValue =
+    educationFields?.schoolName ||
+    educationFields?.major ||
+    educationFields?.degree ||
+    educationFields?.status ||
+    educationFields?.startDate ||
+    educationFields?.endDate ||
+    educationFields?.description;
+
   return (
     <section className="section section-education flex flex-col gap-6 md:gap-8">
       <h2 className="text-lg md:text-xl font-bold text-text-primary">
@@ -43,7 +62,10 @@ export default function EducationSection() {
             </svg>
           </div>
 
-          <div className="flex-1 bg-bg-primary rounded-xl shadow-md p-4 md:p-6 flex flex-col gap-4">
+          <FormContainer
+            hasValue={!!hasEducationValue}
+            className="flex-1 rounded-xl p-4 md:p-6 flex flex-col gap-4"
+          >
             {/* 학교명 */}
             <div className="field">
               <label
@@ -162,7 +184,7 @@ export default function EducationSection() {
                 {...register("education.description")}
               />
             </div>
-          </div>
+          </FormContainer>
         </div>
       </div>
 

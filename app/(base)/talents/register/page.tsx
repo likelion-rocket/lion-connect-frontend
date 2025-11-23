@@ -4,6 +4,12 @@
  * 인재 등록 폼 페이지
  * React Hook Form (FormProvider) + API 연동
  *
+ * 데이터 흐름:
+ * 1. useTalentRegisterData 훅으로 페이지 진입 시 모든 데이터 조회
+ * 2. 조회한 데이터는 useTalentRegisterStore에 자동 저장
+ * 3. 각 섹션은 store에서 필요한 데이터만 선택적으로 구독
+ * 4. authStore에서 user 정보(전화번호, 이메일) 가져옴
+ *
  * API 호출 순서:
  * 1. POST api/profile/me → 프로필 생성 (await, ID 획득)
  * 2. 나머지 병렬 저장 (Promise.all)
@@ -29,6 +35,10 @@ import { createAward } from "@/lib/api/awards";
 import { updateMyExpTags } from "@/lib/api/expTags";
 import { updateJobs } from "@/lib/api/jobs";
 
+// 훅
+import { useTalentRegisterData } from "@/hooks/talent/queries/useTalentRegisterData";
+import { useEffect } from "react";
+
 // 컴포넌트
 import TalentRegisterNav from "./_components/TalentRegisterNav";
 
@@ -52,19 +62,48 @@ import LikelionCodeSection from "./_components/sections/LikelionCodeSection";
 const formResolver = zodResolver(talentRegisterSchema);
 
 export default function TalentRegisterPage() {
+  // 1. 페이지 진입 시 모든 데이터 조회 (자동으로 store에 저장됨)
+  const { isLoading, error, user } = useTalentRegisterData();
+
   const methods = useForm<TalentRegisterFormValues>({
     resolver: formResolver,
     defaultValues: defaultTalentRegisterValues,
   });
 
+  // 2. 조회한 데이터를 React Hook Form에 반영
+  // TODO: useTalentRegisterStore에서 데이터를 가져와 reset() 호출
+
   const handleGoBack = () => {
-    window.history.back();
+    // window.history.back();
   };
 
   const handleTempSave = async () => {
     // TODO: 임시 저장 로직 구현
     console.log("임시 저장");
   };
+
+  // 로딩 상태 처리
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-bg-page flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-lg text-text-secondary">데이터를 불러오는 중...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // 에러 상태 처리
+  if (error) {
+    return (
+      <div className="min-h-screen bg-bg-page flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-lg text-text-error">데이터를 불러오는데 실패했습니다.</p>
+          <p className="text-sm text-text-secondary mt-2">{error.message}</p>
+        </div>
+      </div>
+    );
+  }
 
   /**
    * 폼 제출 핸들러

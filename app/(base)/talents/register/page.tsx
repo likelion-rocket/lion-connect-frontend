@@ -57,6 +57,7 @@ import CertificatesSection from "./_components/sections/CertificatesSection";
 import LinksSection from "./_components/sections/LinksSection";
 import PortfolioSection from "./_components/sections/PortfolioSection";
 import LikelionCodeSection from "./_components/sections/LikelionCodeSection";
+import WorkDrivenTestSection from "./_components/sections/WorkDrivenTestSection";
 
 // resolver를 컴포넌트 외부로 이동 (재생성 방지)
 const formResolver = zodResolver(talentRegisterSchema);
@@ -257,6 +258,9 @@ export default function TalentRegisterPage() {
 
             {/* 멋사 수료생 코드 섹션 */}
             <LikelionCodeSection />
+
+            {/* Work Driven 테스트 섹션 */}
+            <WorkDrivenTestSection />
 
             {/* Page Footer */}
             <footer className="page-footer flex flex-col md:flex-row items-center justify-end gap-4 pt-8 border-t border-border-quaternary">

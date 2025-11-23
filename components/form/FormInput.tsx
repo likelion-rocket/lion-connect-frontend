@@ -28,13 +28,13 @@ export function FormInput({ error, className, ref, ...props }: FormInputProps) {
         // 기본 레이아웃 (전체 너비, 높이, 패딩)
         "w-full h-14 md:h-16 px-4 py-3",
         // 배경 및 보더
-        "bg-bg-primary rounded-lg border border-border-quaternary",
+        "bg-bg-primary rounded-lg",
         // 텍스트 스타일
         "text-base text-text-primary placeholder:text-text-tertiary",
         // Pretendard 폰트 적용
         "font-['Pretendard']",
         // 포커스 상태
-        "focus:outline-none focus:border-border-accent",
+        "focus:outline-none ",
         // 트랜지션
         "transition-colors",
         // lc-input 헬퍼 클래스 (입력 시 border 변경)

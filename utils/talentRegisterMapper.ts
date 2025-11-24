@@ -42,8 +42,13 @@ export function mapApiDataToFormValues(
   // 프로필 썸네일 찾기
   const thumbnail = data.profileLinks.find((link) => link.type === "THUMBNAIL");
 
-  // 일반 링크 찾기
-  const generalLink = data.profileLinks.find((link) => link.type === "LINK");
+  // 일반 링크들 (LINK 타입만) 추출
+  const generalLinks = data.profileLinks
+    .filter((link) => link.type === "LINK")
+    .map((link) => ({
+      id: link.id,
+      url: link.url,
+    }));
 
   return {
     // 인적사항 (authStore + ProfileResponse)
@@ -126,11 +131,11 @@ export function mapApiDataToFormValues(
           }))
         : [{ name: "", issuer: "", issueDate: "" }],
 
-    // 링크
-    links: {
-      general: generalLink?.url || "",
-      portfolio: data.profile?.storageUrl || "",
-    },
+    // 링크 (LINK 타입 배열)
+    links: generalLinks.length > 0 ? generalLinks : [{ url: "" }],
+
+    // 포트폴리오 URL (profile.storageUrl)
+    portfolio: data.profile?.storageUrl || "",
 
     // 멋사 코드
     likelion: {

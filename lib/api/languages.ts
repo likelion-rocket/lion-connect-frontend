@@ -1,21 +1,9 @@
 import { post, get, del, put } from "@/lib/apiClient";
 import { API_ENDPOINTS } from "@/constants/api";
+import type { LanguageRequest, LanguageResponse } from "@/types/talent";
 
-export type LanguageRequest = {
-  languageName: string;
-  issuer?: string;
-  issueDate: string;
-};
-
-export type LanguageResponse = {
-  id: number;
-  languageName: string;
-  issuer: string | null;
-  issueDate: string;
-  createdAt: string;
-  updatedAt: string;
-};
-
+// Re-export types for backwards compatibility
+export type { LanguageRequest, LanguageResponse };
 export type LanguageListItem = LanguageResponse;
 
 /** 어학 생성 (POST /api/profile/Languages) */
@@ -26,8 +14,8 @@ export function createLanguage(body: LanguageRequest): Promise<LanguageResponse>
 }
 
 /** 내 어학 목록 조회 (GET /api/profile/Languages) */
-export function fetchMyLanguages(): Promise<LanguageListItem[]> {
-  return get<LanguageListItem[]>(API_ENDPOINTS.LANGUAGES.LIST, {
+export function fetchMyLanguages(): Promise<LanguageResponse[]> {
+  return get<LanguageResponse[]>(API_ENDPOINTS.LANGUAGES.LIST, {
     credentials: "include",
   });
 }

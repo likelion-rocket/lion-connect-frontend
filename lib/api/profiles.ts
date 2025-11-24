@@ -3,6 +3,9 @@ import { post, get, put } from "@/lib/apiClient";
 import { API_ENDPOINTS } from "@/constants/api";
 import type { ProfileRequest, ProfileResponse } from "@/types/talent";
 
+// Re-export ProfileResponse for other modules
+export type { ProfileResponse };
+
 /**
  * ✅ 프로필 생성 API (POST /api/profile/me)
  * - 처음 프로필을 생성할 때 사용

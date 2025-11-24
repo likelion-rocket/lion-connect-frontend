@@ -1,33 +1,10 @@
 // lib/api/experiences.ts
 import { post, get, put, del } from "@/lib/apiClient";
 import { API_ENDPOINTS } from "@/constants/api";
+import type { ExperienceRequest, ExperienceResponse } from "@/types/talent";
 
-/** ---------- Types ---------- */
-export type ExperienceRequest = {
-  companyName: string;
-  department?: string;
-  position?: string;
-  startDate: string; // "YYYY-MM-DD"
-  endDate?: string | null; // "YYYY-MM-DD" | 재직중이면 null/생략
-  isCurrent: boolean;
-  description?: string;
-};
-
-/** 스웨거 응답 스키마 기준 */
-export type ExperienceResponse = {
-  id: number;
-  companyName: string;
-  department: string | null;
-  position: string | null;
-  startDate: string;
-  endDate: string | null;
-  isCurrent: boolean;
-  description: string | null;
-  createdAt: string;
-  updatedAt: string;
-};
-
-/** 필요 시 응답 확장 타입(옵셔널 필드 등) */
+// Re-export types for backwards compatibility
+export type { ExperienceRequest, ExperienceResponse };
 export type ExperienceListItem = ExperienceResponse;
 
 /** ---------- APIs (호출부 없음) ---------- */
@@ -40,8 +17,8 @@ export function createExperience(body: ExperienceRequest): Promise<ExperienceRes
 }
 
 /** 내 경력 목록 조회 (GET /api/profile/experiences) */
-export function fetchMyExperiences(): Promise<ExperienceListItem[]> {
-  return get<ExperienceListItem[]>(API_ENDPOINTS.EXPERIENCES.LIST, {
+export function fetchMyExperiences(): Promise<ExperienceResponse[]> {
+  return get<ExperienceResponse[]>(API_ENDPOINTS.EXPERIENCES.LIST, {
     credentials: "include",
   });
 }

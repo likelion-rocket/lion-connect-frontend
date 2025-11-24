@@ -26,7 +26,7 @@ import {
 } from "@/schemas/talent/talentRegisterSchema";
 
 // API 함수들 (lib/api/) - api-integration SKILL 패턴 준수
-import { createProfile } from "@/lib/api/profiles";
+import { createProfile, updateMyProfile } from "@/lib/api/profiles";
 import { createEducation } from "@/lib/api/educations";
 import { createExperience } from "@/lib/api/experiences";
 import { createLanguage } from "@/lib/api/languages";
@@ -38,6 +38,9 @@ import { updateJobs } from "@/lib/api/jobs";
 // 훅
 import { useTalentRegisterData } from "@/hooks/talent/queries/useTalentRegisterData";
 import { useInitializeTalentForm } from "@/hooks/talent/queries/useInitializeTalentForm";
+
+// Store
+import { useTalentRegisterStore } from "@/store/talentRegisterStore";
 
 // 컴포넌트
 import TalentRegisterNav from "./_components/TalentRegisterNav";
@@ -67,9 +70,14 @@ export default function TalentRegisterPage() {
   // 각 섹션 컴포넌트에서 useTalentRegisterStore로 직접 사용
   const { isLoading, error } = useTalentRegisterData();
 
+  // 프로필 존재 여부 확인 (POST vs PUT 분기용)
+  const existingProfile = useTalentRegisterStore((state) => state.profile);
+
   const methods = useForm<TalentRegisterFormValues>({
     resolver: formResolver,
     defaultValues: defaultTalentRegisterValues,
+    mode: "onChange", // 실시간 validation (버튼 활성화 위해)
+    shouldFocusError: true, // 에러 발생 시 첫 번째 필드로 자동 포커스
   });
 
   // 데이터가 로드되면 자동으로 React Hook Form을 초기화
@@ -79,9 +87,14 @@ export default function TalentRegisterPage() {
     // window.history.back();
   };
 
+  /**
+   * 임시 저장 핸들러
+   * - validation 체크 없이 현재 입력된 값으로 submit
+   * - handleSubmit을 사용하지 않고 직접 onSubmit 호출
+   */
   const handleTempSave = async () => {
-    // TODO: 임시 저장 로직 구현
-    console.log("임시 저장");
+    const currentValues = methods.getValues();
+    await onSubmit(currentValues);
   };
 
   // 로딩 상태 처리
@@ -102,18 +115,26 @@ export default function TalentRegisterPage() {
     const { dirtyFields } = methods.formState;
 
     try {
-      // 1. 프로필 생성 (최우선 호출)
-      // TODO: API Request 타입에 맞게 매핑 필요
+      // 1. 프로필 생성 또는 수정 (최우선 호출)
       const profilePayload = {
         name: values.profile.name,
         introduction: values.profile.introduction || "",
-        storageUrl: "", // 포트폴리오 파일명
+        storageUrl: values.links.portfolio || "", // 포트폴리오 URL
         likelionCode: values.likelion.code,
         visibility: "PUBLIC" as const,
       };
 
-      const profileResponse = await createProfile(profilePayload);
-      console.log("프로필 생성 완료:", profileResponse.id);
+      let profileResponse;
+
+      if (existingProfile?.id) {
+        // ✅ 프로필이 이미 존재 → PUT 요청
+        profileResponse = await updateMyProfile(profilePayload);
+        console.log("프로필 수정 완료:", profileResponse.id);
+      } else {
+        // ✅ 프로필이 없음 → POST 요청
+        profileResponse = await createProfile(profilePayload);
+        console.log("프로필 생성 완료:", profileResponse.id);
+      }
 
       // 2. 나머지 병렬 저장
       const parallelPromises: Promise<unknown>[] = [];
@@ -178,6 +199,9 @@ export default function TalentRegisterPage() {
     }
   };
 
+  // 필수 필드 체크: formState.isValid 활용
+  const isSubmitDisabled = !methods.formState.isValid;
+
   return (
     <FormProvider {...methods}>
       <div className="min-h-screen bg-bg-page">
@@ -186,6 +210,7 @@ export default function TalentRegisterPage() {
           onBack={handleGoBack}
           onTempSave={handleTempSave}
           formId="talent-register-form"
+          isSubmitDisabled={isSubmitDisabled}
         />
 
         {/* Main Form */}

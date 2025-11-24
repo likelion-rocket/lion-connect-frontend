@@ -21,7 +21,7 @@ export const talentRegisterSchema = z.object({
   education: z.object({
     schoolName: z.string().optional(),
     major: z.string().optional(),
-    status: z.enum(["ENROLLED", "GRADUATED", "LEAVE"]).optional(),
+    status: z.enum(["ENROLLED", "GRADUATED", "WITHDRAWN", "LEAVE_OF_ABSENCE"]).optional(),
     startDate: z.string().optional(),
     endDate: z.string().optional(),
     description: z.string().optional(),

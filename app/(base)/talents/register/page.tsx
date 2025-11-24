@@ -37,7 +37,7 @@ import { updateJobs } from "@/lib/api/jobs";
 
 // 훅
 import { useTalentRegisterData } from "@/hooks/talent/queries/useTalentRegisterData";
-import { useEffect } from "react";
+import { useInitializeTalentForm } from "@/hooks/talent/queries/useInitializeTalentForm";
 
 // 컴포넌트
 import TalentRegisterNav from "./_components/TalentRegisterNav";
@@ -63,16 +63,17 @@ import WorkDrivenTestSection from "./_components/sections/WorkDrivenTestSection"
 const formResolver = zodResolver(talentRegisterSchema);
 
 export default function TalentRegisterPage() {
-  // 1. 페이지 진입 시 모든 데이터 조회 (자동으로 store에 저장됨)
-  const { isLoading, error, user } = useTalentRegisterData();
+  // 페이지 진입 시 모든 데이터 조회 (자동으로 store에 저장됨)
+  // 각 섹션 컴포넌트에서 useTalentRegisterStore로 직접 사용
+  const { isLoading, error } = useTalentRegisterData();
 
   const methods = useForm<TalentRegisterFormValues>({
     resolver: formResolver,
     defaultValues: defaultTalentRegisterValues,
   });
 
-  // 2. 조회한 데이터를 React Hook Form에 반영
-  // TODO: useTalentRegisterStore에서 데이터를 가져와 reset() 호출
+  // 데이터가 로드되면 자동으로 React Hook Form을 초기화
+  useInitializeTalentForm(methods, isLoading);
 
   const handleGoBack = () => {
     // window.history.back();

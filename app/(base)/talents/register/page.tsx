@@ -86,25 +86,10 @@ export default function TalentRegisterPage() {
 
   // 로딩 상태 처리
   if (isLoading) {
-    return (
-      <div className="min-h-screen bg-bg-page flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-lg text-text-secondary">데이터를 불러오는 중...</p>
-        </div>
-      </div>
-    );
   }
 
   // 에러 상태 처리
   if (error) {
-    return (
-      <div className="min-h-screen bg-bg-page flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-lg text-text-error">데이터를 불러오는데 실패했습니다.</p>
-          <p className="text-sm text-text-secondary mt-2">{error.message}</p>
-        </div>
-      </div>
-    );
   }
 
   /**

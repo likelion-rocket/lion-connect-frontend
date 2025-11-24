@@ -28,12 +28,12 @@ export interface ProfileResponse {
 export interface EducationResponse {
   id: number;
   schoolName: string;
-  major: string;
-  status: "GRADUATED" | "ENROLLED" | "WITHDRAWN" | "LEAVE_OF_ABSENCE";
+  major: string | null;
+  status: string | null;
   startDate: string; // YYYY-MM-DD
-  endDate: string; // YYYY-MM-DD
+  endDate: string | null; // YYYY-MM-DD
   degree: string | null;
-  description: string;
+  description: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -44,12 +44,12 @@ export interface EducationResponse {
 export interface ExperienceResponse {
   id: number;
   companyName: string;
-  department: string;
-  position: string;
+  department: string | null;
+  position: string | null;
   startDate: string; // YYYY-MM-DD
-  endDate: string; // YYYY-MM-DD
+  endDate: string | null; // YYYY-MM-DD
   isCurrent: boolean;
-  description: string;
+  description: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -72,7 +72,7 @@ export interface LanguageResponse {
 export interface CertificationResponse {
   id: number;
   name: string;
-  issuer: string;
+  issuer: string | null;
   issueDate: string; // YYYY-MM-DD
   createdAt: string;
   updatedAt: string;
@@ -112,11 +112,13 @@ export interface JobCategoryResponse {
  */
 export interface ProfileLinkResponse {
   id: number;
-  type: "LINK" | "THUMBNAIL";
+  type: string;
   url: string;
-  originalFilename: string;
-  contentType: string;
-  fileSize: number;
+  originalFilename: string | null;
+  contentType: string | null;
+  fileSize: number | null;
+  createdAt: string;
+  updatedAt: string;
 }
 
 // ========================
@@ -139,11 +141,11 @@ export interface ProfileRequest {
  */
 export interface EducationRequest {
   schoolName: string;
-  major: string;
-  status: "GRADUATED" | "ENROLLED" | "WITHDRAWN" | "LEAVE_OF_ABSENCE";
-  startDate: string; // YYYY-MM-DD
-  endDate: string; // YYYY-MM-DD
-  description: string;
+  major?: string;
+  status?: string;
+  startDate?: string; // YYYY-MM-DD
+  endDate?: string; // YYYY-MM-DD
+  description?: string;
   degree?: string;
 }
 
@@ -152,12 +154,12 @@ export interface EducationRequest {
  */
 export interface ExperienceRequest {
   companyName: string;
-  department: string;
-  position: string;
+  department?: string;
+  position?: string;
   startDate: string; // YYYY-MM-DD
-  endDate: string; // YYYY-MM-DD
+  endDate?: string | null; // YYYY-MM-DD
   isCurrent: boolean;
-  description: string;
+  description?: string;
 }
 
 /**
@@ -166,6 +168,7 @@ export interface ExperienceRequest {
 export interface LanguageRequest {
   languageName: string;
   level: string;
+  issuer?: string;
   issueDate: string; // YYYY-MM-DD
 }
 
@@ -192,7 +195,48 @@ export interface AwardRequest {
  * 프로필 링크 생성/수정 요청 타입
  */
 export interface ProfileLinkRequest {
-  type: "LINK" | "THUMBNAIL";
+  type: string;
+  url: string;
+  originalFilename: string;
+  contentType: string;
+  fileSize: number;
+}
+
+/**
+ * 썸네일 presign 요청 타입
+ */
+export interface ThumbnailPresignRequest {
+  originalFilename: string;
+  contentType: string;
+}
+
+/**
+ * 썸네일 presign 응답 타입
+ */
+export interface ThumbnailPresignResponse {
+  uploadUrl: string;
+  fileUrl: string;
+}
+
+/**
+ * 프로필 링크 타입 (profileThumbnail.ts용)
+ */
+export interface ProfileLink {
+  id: number;
+  type: string;
+  url: string;
+  originalFilename: string | null;
+  contentType: string | null;
+  fileSize: number | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+/**
+ * 프로필 링크 Upsert 요청 타입
+ */
+export interface ProfileLinkUpsertRequest {
+  type: string;
   url: string;
   originalFilename: string;
   contentType: string;

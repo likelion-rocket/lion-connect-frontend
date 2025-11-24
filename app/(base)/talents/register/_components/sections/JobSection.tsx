@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import FilterSelect from "@/components/form/FilterSelect";
 
 /**
  * 직군 및 직무 선택 섹션 컴포넌트
@@ -59,15 +60,19 @@ export default function JobSection() {
   const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [selectedRole, setSelectedRole] = useState<string>("");
 
-  const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const newCategory = e.target.value;
-    setSelectedCategory(newCategory);
+  const handleCategoryChange = (value: string) => {
+    setSelectedCategory(value);
     setSelectedRole("");
   };
 
-  const handleRoleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedRole(e.target.value);
+  const handleRoleChange = (value: string) => {
+    setSelectedRole(value);
   };
+
+  const categoryOptions = JOB_CATEGORIES.map((cat) => ({
+    value: cat.value,
+    label: cat.label,
+  }));
 
   const availableRoles = JOB_CATEGORIES.find((cat) => cat.value === selectedCategory)?.roles || [];
 
@@ -109,22 +114,13 @@ export default function JobSection() {
             >
               직군<span className="required text-text-error">*</span>
             </label>
-            <select
-              id="job-category"
-              name="job.category"
+            <FilterSelect
               value={selectedCategory}
-              onChange={handleCategoryChange}
-              className="w-full h-14 px-4 bg-bg-tertiary rounded-lg border border-transparent text-base text-text-primary focus:outline-none focus:border-border-accent transition-colors"
-            >
-              <option value="" disabled hidden>
-                직군 선택
-              </option>
-              {JOB_CATEGORIES.map((category) => (
-                <option key={category.value} value={category.value}>
-                  {category.label}
-                </option>
-              ))}
-            </select>
+              onValueChange={handleCategoryChange}
+              options={categoryOptions}
+              placeholder="직군 선택"
+              width="w-full"
+            />
             <p className="field-error text-sm text-text-error mt-1"></p>
           </div>
 
@@ -136,23 +132,13 @@ export default function JobSection() {
             >
               직무<span className="required text-text-error">*</span>
             </label>
-            <select
-              id="job-role"
-              name="job.role"
+            <FilterSelect
               value={selectedRole}
-              onChange={handleRoleChange}
-              disabled={!selectedCategory}
-              className="w-full h-14 px-4 bg-bg-tertiary rounded-lg border border-transparent text-base text-text-primary focus:outline-none focus:border-border-accent transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <option value="" disabled hidden>
-                {selectedCategory ? "직무 선택" : "먼저 직군을 선택하세요"}
-              </option>
-              {availableRoles.map((role) => (
-                <option key={role.value} value={role.value}>
-                  {role.label}
-                </option>
-              ))}
-            </select>
+              onValueChange={handleRoleChange}
+              options={availableRoles}
+              placeholder={selectedCategory ? "직무 선택" : "먼저 직군을 선택하세요"}
+              width="w-full"
+            />
             <p className="field-error text-sm text-text-error mt-1"></p>
           </div>
         </div>

@@ -116,7 +116,9 @@ export default function JobSection() {
               onChange={handleCategoryChange}
               className="w-full h-14 px-4 bg-bg-tertiary rounded-lg border border-transparent text-base text-text-primary focus:outline-none focus:border-border-accent transition-colors"
             >
-              <option value="">직군 선택</option>
+              <option value="" disabled hidden>
+                직군 선택
+              </option>
               {JOB_CATEGORIES.map((category) => (
                 <option key={category.value} value={category.value}>
                   {category.label}
@@ -142,7 +144,9 @@ export default function JobSection() {
               disabled={!selectedCategory}
               className="w-full h-14 px-4 bg-bg-tertiary rounded-lg border border-transparent text-base text-text-primary focus:outline-none focus:border-border-accent transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <option value="">{selectedCategory ? "직무 선택" : "먼저 직군을 선택하세요"}</option>
+              <option value="" disabled hidden>
+                {selectedCategory ? "직무 선택" : "먼저 직군을 선택하세요"}
+              </option>
               {availableRoles.map((role) => (
                 <option key={role.value} value={role.value}>
                   {role.label}

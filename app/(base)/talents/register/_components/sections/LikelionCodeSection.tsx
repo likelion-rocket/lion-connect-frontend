@@ -3,7 +3,17 @@
  * 필드: likelion.code
  */
 
+"use client";
+
+import { useFormContext } from "react-hook-form";
+import type { TalentRegisterFormValues } from "@/schemas/talent/talentRegisterSchema";
+
 export default function LikelionCodeSection() {
+  const {
+    register,
+    formState: { errors },
+  } = useFormContext<TalentRegisterFormValues>();
+
   return (
     <section className="section section-likelion-code flex flex-col gap-6 md:gap-8">
       <h2 className="text-lg font-bold text-text-primary">멋사 수료생 코드 입력</h2>
@@ -60,12 +70,16 @@ export default function LikelionCodeSection() {
           </label>
           <input
             id="likelion-code"
-            name="likelion.code"
             type="text"
             placeholder="인재코드를 입력해주세요"
             className="lc-input w-full h-14 md:h-16 px-4 py-3 bg-bg-primary rounded-lg border border-border-quaternary text-base text-text-primary placeholder:text-text-tertiary focus:outline-none focus:border-border-accent transition-colors"
+            {...register("likelion.code")}
           />
-          <p className="field-error text-sm text-text-error mt-1"></p>
+          {errors.likelion?.code && (
+            <p className="field-error text-sm text-text-error mt-1">
+              {errors.likelion.code.message}
+            </p>
+          )}
         </div>
       </div>
     </section>

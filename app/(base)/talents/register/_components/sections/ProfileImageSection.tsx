@@ -5,7 +5,7 @@
 
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { useFormContext } from "react-hook-form";
 import Image from "next/image";
 import type { TalentRegisterFormValues } from "@/schemas/talent/talentRegisterSchema";
@@ -22,6 +22,13 @@ export default function ProfileImageSection() {
 
   const avatarValue = watch("profile.avatar");
   const fileName = fileInputRef.current?.files?.[0]?.name || "";
+
+  // API에서 받아온 URL을 초기 미리보기로 설정
+  useEffect(() => {
+    if (typeof avatarValue === "string" && avatarValue && !previewUrl) {
+      setPreviewUrl(avatarValue);
+    }
+  }, [avatarValue, previewUrl]);
 
   // 이미지 URL 결정: 로컬 미리보기 > API 값 > 기본 이미지
   const displayImageUrl =

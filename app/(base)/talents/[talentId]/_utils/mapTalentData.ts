@@ -29,7 +29,7 @@ function mapExperiencesToBadges(experiences: string[]): BadgeItem[] {
 /**
  * 날짜 형식 변환 (YYYY-MM-DD -> YYYY.MM)
  */
-function formatDate(dateString: string): string {
+function formatDate(dateString: string | null): string {
   if (!dateString) return "";
   const [year, month] = dateString.split("-");
   return `${year}.${month}`;
@@ -38,7 +38,8 @@ function formatDate(dateString: string): string {
 /**
  * 학력 상태 한글 변환
  */
-function mapEducationStatus(status: string): string {
+function mapEducationStatus(status: string | null): string {
+  if (!status) return "";
   const statusMap: Record<string, string> = {
     GRADUATED: "졸업",
     ENROLLED: "재학",

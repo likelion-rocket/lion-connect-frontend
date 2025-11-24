@@ -49,7 +49,7 @@ export async function submitTalentRegister({
     const profilePayload = {
       name: values.profile.name,
       introduction: values.profile.introduction || "",
-      storageUrl: values.links.portfolio || "", // 포트폴리오 URL
+      storageUrl: values.portfolio || "", // 포트폴리오 URL
       likelionCode: values.likelion.code,
       visibility: "PUBLIC" as const,
     };

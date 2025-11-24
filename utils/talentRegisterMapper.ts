@@ -74,7 +74,13 @@ export function mapApiDataToFormValues(
       ? {
           schoolName: data.educations[0].schoolName,
           major: data.educations[0].major || "",
-          status: data.educations[0].status,
+          status:
+            data.educations[0].status === "GRADUATED" ||
+            data.educations[0].status === "ENROLLED" ||
+            data.educations[0].status === "WITHDRAWN" ||
+            data.educations[0].status === "LEAVE_OF_ABSENCE"
+              ? data.educations[0].status
+              : undefined,
           startDate: data.educations[0].startDate,
           endDate: data.educations[0].endDate || "",
           description: data.educations[0].description || "",

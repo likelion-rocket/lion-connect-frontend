@@ -8,18 +8,18 @@ export type Education = {
   school: string;
   start: string;
   end: string;
-  major?: string;
+  major?: string | null;
   graduate?: string;
-  note?: string;
+  note?: string | null;
 };
 
 export type Career = {
   company: string;
   start: string;
   end: string;
-  deptOrTeam?: string;
-  title?: string;
-  desc?: string;
+  deptOrTeam?: string | null;
+  title?: string | null;
+  desc?: string | null;
   rank?: string;
 };
 

@@ -1,20 +1,9 @@
 import { post, get, del, put } from "@/lib/apiClient";
 import { API_ENDPOINTS } from "@/constants/api";
+import type { CertificationRequest, CertificationResponse } from "@/types/talent";
 
-export type CertificationRequest = {
-  name: string;
-  issuer?: string;
-  issueDate: string;
-};
-
-export type CertificationResponse = {
-  id: number;
-  name: string;
-  issuer: string | null;
-  issueDate: string;
-  createdAt: string;
-  updatedAt: string;
-};
+// Re-export types for backwards compatibility
+export type { CertificationRequest, CertificationResponse };
 export type CertificationListItem = CertificationResponse;
 
 /** 경력 생성 (POST /api/profile/certifications) */
@@ -25,8 +14,8 @@ export function createCertification(body: CertificationRequest): Promise<Certifi
 }
 
 /** 내 경력 목록 조회 (GET /api/profile/certifications) */
-export function fetchMyCertifications(): Promise<CertificationListItem[]> {
-  return get<CertificationListItem[]>(API_ENDPOINTS.CERTIFICATIONS.LIST, {
+export function fetchMyCertifications(): Promise<CertificationResponse[]> {
+  return get<CertificationResponse[]>(API_ENDPOINTS.CERTIFICATIONS.LIST, {
     credentials: "include",
   });
 }

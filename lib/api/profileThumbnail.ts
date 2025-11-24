@@ -1,19 +1,13 @@
 // lib/api/profileThumbnail.ts
 import { get, post, put, del } from "@/lib/apiClient";
 import { API_ENDPOINTS } from "@/constants/api";
-import type { ProfileResponse } from "./profiles";
-
-/** presign 요청 바디 */
-export type ThumbnailPresignRequest = {
-  originalFilename: string;
-  contentType: string;
-};
-
-/** presign 응답 */
-export type ThumbnailPresignResponse = {
-  uploadUrl: string;
-  fileUrl: string;
-};
+import type {
+  ProfileResponse,
+  ThumbnailPresignRequest,
+  ThumbnailPresignResponse,
+  ProfileLink,
+  ProfileLinkUpsertRequest,
+} from "@/types/talent";
 
 /** 썸네일 업로드용 presign URL 발급 (POST /api/profile/me/thumbnail/presign) */
 export function presignThumbnail(body: ThumbnailPresignRequest): Promise<ThumbnailPresignResponse> {
@@ -23,33 +17,12 @@ export function presignThumbnail(body: ThumbnailPresignRequest): Promise<Thumbna
   });
 }
 
-/** 프로필 링크 한 건 타입 */
-export type ProfileLink = {
-  id: number;
-  type: string;
-  url: string;
-  originalFilename: string | null;
-  contentType: string | null;
-  fileSize: number | null;
-  createdAt: string;
-  updatedAt: string;
-};
-
 /** 내 프로필 링크 목록 조회 (GET /api/profile/me/links) */
 export function fetchMyProfileLinks(): Promise<ProfileLink[]> {
   return get<ProfileLink[]>(API_ENDPOINTS.PROFILE_LINKS.LIST, {
     credentials: "include",
   });
 }
-
-/** 링크 upsert 요청 DTO */
-export type ProfileLinkUpsertRequest = {
-  type: string;
-  url: string;
-  originalFilename: string;
-  contentType: string;
-  fileSize: number;
-};
 
 /* =========================================
  *  ✅ 공용 링크 upsert / delete

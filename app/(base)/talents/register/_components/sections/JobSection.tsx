@@ -1,9 +1,76 @@
+"use client";
+
+import { useState } from "react";
+
 /**
  * 직군 및 직무 선택 섹션 컴포넌트
  * 필드: job.category, job.role
  */
 
+type JobCategory = "develop" | "design" | "data" | "marketing" | "pm";
+
+interface JobRole {
+  value: string;
+  label: string;
+}
+
+interface JobCategoryConfig {
+  value: JobCategory;
+  label: string;
+  roles: JobRole[];
+}
+
+const JOB_CATEGORIES: JobCategoryConfig[] = [
+  {
+    value: "develop",
+    label: "개발",
+    roles: [
+      { value: "frontend", label: "프론트엔드" },
+      { value: "backend", label: "백엔드" },
+      { value: "ios", label: "iOS" },
+      { value: "android", label: "Android" },
+      { value: "unity", label: "Unity" },
+      { value: "ai", label: "AI" },
+    ],
+  },
+  {
+    value: "design",
+    label: "디자인",
+    roles: [{ value: "ui-ux", label: "UI/UX" }],
+  },
+  {
+    value: "data",
+    label: "데이터 분석",
+    roles: [{ value: "data-analysis", label: "데이터 분석" }],
+  },
+  {
+    value: "marketing",
+    label: "마케팅",
+    roles: [{ value: "growth-marketing", label: "그로스 마케팅" }],
+  },
+  {
+    value: "pm",
+    label: "기획",
+    roles: [{ value: "pm", label: "PM" }],
+  },
+];
+
 export default function JobSection() {
+  const [selectedCategory, setSelectedCategory] = useState<string>("");
+  const [selectedRole, setSelectedRole] = useState<string>("");
+
+  const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newCategory = e.target.value;
+    setSelectedCategory(newCategory);
+    setSelectedRole("");
+  };
+
+  const handleRoleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedRole(e.target.value);
+  };
+
+  const availableRoles = JOB_CATEGORIES.find((cat) => cat.value === selectedCategory)?.roles || [];
+
   return (
     <section className="section section-job flex flex-col gap-6 md:gap-8">
       <h2 className="text-lg md:text-xl font-bold text-text-primary">
@@ -45,14 +112,16 @@ export default function JobSection() {
             <select
               id="job-category"
               name="job.category"
+              value={selectedCategory}
+              onChange={handleCategoryChange}
               className="w-full h-14 px-4 bg-bg-tertiary rounded-lg border border-transparent text-base text-text-primary focus:outline-none focus:border-border-accent transition-colors"
             >
               <option value="">직군 선택</option>
-              <option value="develop">개발</option>
-              <option value="design">디자인</option>
-              <option value="data">데이터 분석</option>
-              <option value="marketing">마케팅</option>
-              <option value="pm">PM</option>
+              {JOB_CATEGORIES.map((category) => (
+                <option key={category.value} value={category.value}>
+                  {category.label}
+                </option>
+              ))}
             </select>
             <p className="field-error text-sm text-text-error mt-1"></p>
           </div>
@@ -68,15 +137,17 @@ export default function JobSection() {
             <select
               id="job-role"
               name="job.role"
-              className="w-full h-14 px-4 bg-bg-tertiary rounded-lg border border-transparent text-base text-text-tertiary focus:outline-none focus:border-border-accent transition-colors"
+              value={selectedRole}
+              onChange={handleRoleChange}
+              disabled={!selectedCategory}
+              className="w-full h-14 px-4 bg-bg-tertiary rounded-lg border border-transparent text-base text-text-primary focus:outline-none focus:border-border-accent transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <option value="">직무 선택</option>
-              <option value="frontend">프론트엔드</option>
-              <option value="backend">백엔드</option>
-              <option value="ios">iOS</option>
-              <option value="android">Android</option>
-              <option value="unity">Unity</option>
-              <option value="ai">AI</option>
+              <option value="">{selectedCategory ? "직무 선택" : "먼저 직군을 선택하세요"}</option>
+              {availableRoles.map((role) => (
+                <option key={role.value} value={role.value}>
+                  {role.label}
+                </option>
+              ))}
             </select>
             <p className="field-error text-sm text-text-error mt-1"></p>
           </div>

@@ -132,7 +132,8 @@ export default function EducationSection() {
                 <option value="">선택해주세요</option>
                 <option value="ENROLLED">재학</option>
                 <option value="GRADUATED">졸업</option>
-                <option value="LEAVE">휴학</option>
+                <option value="WITHDRAWN">자퇴</option>
+                <option value="LEAVE_OF_ABSENCE">휴학</option>
               </FormSelect>
             </div>
 

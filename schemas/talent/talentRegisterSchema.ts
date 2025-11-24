@@ -67,10 +67,15 @@ export const talentRegisterSchema = z.object({
       })
     )
     .optional(),
-  links: z.object({
-    general: z.string().url().optional().or(z.literal("")),
-    portfolio: z.string().url().optional().or(z.literal("")),
-  }),
+  links: z
+    .array(
+      z.object({
+        id: z.number().optional(), // 기존 링크인 경우 id 존재 (삭제 시 필요)
+        url: z.string().url().optional().or(z.literal("")),
+      })
+    )
+    .optional(),
+  portfolio: z.string().url().optional().or(z.literal("")),
   likelion: z.object({
     code: z.string().optional(),
   }),
@@ -117,10 +122,8 @@ export const defaultTalentRegisterValues: TalentRegisterFormValues = {
   activities: [{ title: "", organization: "", awardDate: "", description: "" }],
   languages: [{ languageName: "", level: "", issueDate: "" }],
   certificates: [{ name: "", issuer: "", issueDate: "" }],
-  links: {
-    general: "",
-    portfolio: "",
-  },
+  links: [{ url: "" }],
+  portfolio: "",
   likelion: {
     code: "",
   },

@@ -8,6 +8,7 @@ interface TalentRegisterNavProps extends React.HTMLAttributes<HTMLElement> {
   onTempSave?: () => void;
   onSubmit?: () => void;
   formId?: string;
+  isSubmitDisabled?: boolean;
 }
 
 export default function TalentRegisterNav({
@@ -16,6 +17,7 @@ export default function TalentRegisterNav({
   onTempSave,
   onSubmit,
   formId,
+  isSubmitDisabled = false,
   className,
   ...props
 }: TalentRegisterNavProps) {
@@ -67,7 +69,7 @@ export default function TalentRegisterNav({
           <button
             type="button"
             onClick={onTempSave}
-            className="px-4 py-2.5 md:py-3 border border-border-secondary bg-bg-primary rounded-lg text-base md:text-lg font-bold text-text-primary hover:bg-bg-secondary transition-colors"
+            className="px-4 py-2.5 md:py-3 border border-border-secondary bg-bg-primary rounded-lg text-base md:text-lg font-bold text-text-primary hover:bg-bg-secondary transition-colors hover:cursor-pointer"
           >
             임시 저장
           </button>
@@ -76,7 +78,13 @@ export default function TalentRegisterNav({
           type={formId ? "submit" : "button"}
           form={formId}
           onClick={!formId ? onSubmit : undefined}
-          className="px-4 py-2.5 md:py-3 bg-bg-accent text-text-inverse-primary rounded-lg text-base md:text-lg font-bold hover:bg-brand-06 transition-colors"
+          disabled={isSubmitDisabled}
+          className={cn(
+            "px-6 py-2.5 md:py-3 rounded-lg text-base md:text-lg font-medium transition-colors border",
+            isSubmitDisabled
+              ? "bg-bg-secondary border-border-tertiary text-text-disabled cursor-not-allowed"
+              : "bg-bg-accent text-text-inverse-primary border-bg-accent hover:bg-brand-06 hover:border-brand-06"
+          )}
         >
           작성 완료
         </button>

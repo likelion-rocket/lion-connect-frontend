@@ -1,8 +1,11 @@
-// app/(base)/talents/page.tsx
+"use client";
+
+import * as React from "react";
+import { useSearchParams } from "next/navigation";
 import Pager from "@/components/Pager";
 import TalentSearchHeader from "./_components/TalentSearchHeader";
 import IntroduceCard from "./[talentId]/_components/IntroduceCard";
-import { fetchTalents } from "@/lib/api/talents";
+import { useTalents } from "@/hooks/company/useTalents";
 import type { BadgeType } from "@/components/ui/badge";
 import { JOB_ROLE_ID_BY_NAME, findJobGroupByJobName } from "@/constants/jobs";
 
@@ -37,48 +40,8 @@ const JOB_NAME_BY_ID: Record<number, string> = Object.fromEntries(
 ) as Record<number, string>;
 
 /* ================================
- * 3. API 응답 타입 (이 파일 안에서만 사용)
+ * 3. 카드용 타입
  * ================================ */
-
-type ApiEducation = {
-  schoolName?: string | null;
-  major?: string | null;
-} | null;
-
-type ApiTalent = {
-  id: number;
-  name: string;
-  introduction: string;
-  experiences?: string[] | null;
-  tendencies?: string[] | null;
-  education?: ApiEducation;
-  /** 숫자 ID 배열이거나 문자열 배열 */
-  jobRoles?: (number | string)[] | null;
-  skills?: string[] | null;
-  /** 🔥 백엔드에서 내려주는 썸네일 URL */
-  thumbnailUrl?: string | null;
-};
-
-type FetchTalentsResponse = {
-  content: ApiTalent[];
-  totalElements?: number;
-  totalPages?: number;
-  size?: number;
-  number?: number;
-};
-
-/* ================================
- * 4. 카드용 타입
- * ================================ */
-
-type TalentsPageProps = {
-  searchParams?: Promise<{
-    page?: string;
-    q?: string;
-    group?: string;
-    job?: string;
-  }>;
-};
 
 type TalentCardItem = {
   talentId: string;
@@ -98,19 +61,63 @@ type TalentCardItem = {
 };
 
 /* ================================
- * 5. 페이지 컴포넌트
+ * 4. 페이지 컴포넌트
  * ================================ */
 
-export default async function TalentsPage({ searchParams }: TalentsPageProps) {
-  const resolved = await searchParams;
+export default function TalentsPage() {
+  const searchParams = useSearchParams();
 
-  const currentPage = resolved?.page ? Number(resolved.page) : 1;
+  const currentPage = searchParams.get("page") ? Number(searchParams.get("page")) : 1;
   const backendPage = currentPage - 1;
 
-  const data = (await fetchTalents({
+  // URL에서 필터 파라미터 가져오기
+  const jobGroupId = searchParams.get("jobGroupId")
+    ? Number(searchParams.get("jobGroupId"))
+    : undefined;
+  const jobRoleId = searchParams.get("jobRoleId")
+    ? Number(searchParams.get("jobRoleId"))
+    : undefined;
+  const keyword = searchParams.get("q")?.trim() || undefined;
+
+  // React Query로 데이터 가져오기
+  const { data, isLoading, error } = useTalents({
     page: backendPage,
     size: 20,
-  })) as FetchTalentsResponse;
+    jobGroupId,
+    jobRoleId,
+    q: keyword,
+  });
+
+  // 로딩 상태 처리
+  if (isLoading) {
+    return (
+      <main className="w-full text-black mt-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-center items-center min-h-[400px]">
+            <div className="text-lg text-gray-500">로딩 중...</div>
+          </div>
+        </div>
+      </main>
+    );
+  }
+
+  // 에러 상태 처리
+  if (error) {
+    return (
+      <main className="w-full text-black mt-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-center items-center min-h-[400px]">
+            <div className="text-lg text-red-500">인재 목록을 불러오는 데 실패했습니다.</div>
+          </div>
+        </div>
+      </main>
+    );
+  }
+
+  // 데이터 없음 처리
+  if (!data) {
+    return null;
+  }
 
   const apiTalents: TalentCardItem[] = data.content.map((t) => {
     const universityRaw = t.education?.schoolName ?? null;
@@ -157,68 +164,19 @@ export default async function TalentsPage({ searchParams }: TalentsPageProps) {
     };
   });
 
-  const talents: TalentCardItem[] = apiTalents;
-
-  /* ================================
-   * 6. 프론트단 필터링 로직
-   *    - 검색어(q)
-   *    - 직군(group)
-   *    - 직무(job)
-   * ================================ */
-
-  const keyword = resolved?.q?.trim().toLowerCase() ?? "";
-  const groupFilter = resolved?.group?.trim() || "";
-  const jobFilter = resolved?.job?.trim() || "";
-
-  const filteredTalents = talents.filter((t) => {
-    // 1) 직군 필터 (예: group=frontend 같은 값이라고 가정)
-    if (groupFilter && groupFilter !== "all") {
-      if (!t.jobGroup || t.jobGroup !== groupFilter) {
-        return false;
-      }
-    }
-
-    // 2) 직무 필터
-    if (jobFilter && jobFilter !== "all") {
-      if (!t.job || t.job !== jobFilter) {
-        return false;
-      }
-    }
-
-    // 3) 검색어 필터 (없으면 통과)
-    if (!keyword) return true;
-
-    const haystack = [
-      t.name,
-      t.summary,
-      t.university ?? "",
-      t.major ?? "",
-      t.jobGroup ?? "",
-      t.job ?? "",
-      ...t.skills,
-      ...t.tendencies,
-    ]
-      .join(" ")
-      .toLowerCase();
-
-    return haystack.includes(keyword);
-  });
-
-  const totalCount = filteredTalents.length;
-  const totalPages = Math.max(1, Math.ceil(totalCount / 20));
-
-  // 현재 페이지에 보여줄 것만 슬라이스
-  const paginatedTalents = filteredTalents.slice((currentPage - 1) * 20, currentPage * 20);
+  // 서버에서 필터링된 데이터 사용
+  const totalCount = data.totalElements ?? 0;
+  const totalPages = data.totalPages ?? 1;
 
   return (
     <main className="w-full text-black mt-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <section className="mb-8 space-y-4">
-          {/* 🔥 총 개수도 필터링 이후 기준으로 넘김 */}
+          {/* 서버에서 필터링된 총 개수 */}
           <TalentSearchHeader totalCount={totalCount} />
 
           <div className="mt-6 flex flex-col gap-12">
-            {paginatedTalents.map((t, index) => (
+            {apiTalents.map((t, index) => (
               <IntroduceCard
                 key={`${t.talentId}-${index}`}
                 talentId={t.talentId}

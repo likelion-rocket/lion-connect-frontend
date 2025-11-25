@@ -33,6 +33,7 @@ export function useTalentRegisterData() {
     setExpTags,
     setJobCategories,
     setProfileLinks,
+    setSkills,
     setLoading,
     setError,
   } = useTalentRegisterStore();
@@ -61,6 +62,7 @@ export function useTalentRegisterData() {
       setExpTags(query.data.expTags);
       setJobCategories(query.data.jobCategories);
       setProfileLinks(query.data.profileLinks);
+      setSkills(query.data.skills);
     }
   }, [
     query.data,
@@ -73,6 +75,7 @@ export function useTalentRegisterData() {
     setExpTags,
     setJobCategories,
     setProfileLinks,
+    setSkills,
   ]);
 
   // 로딩/에러 상태 동기화

@@ -121,6 +121,15 @@ export interface ProfileLinkResponse {
   updatedAt: string;
 }
 
+/**
+ * 스킬 응답 타입
+ */
+export interface SkillResponse {
+  id: number;
+  name: string;
+  category: string;
+}
+
 // ========================
 // Request 타입 (POST/PUT 요청)
 // ========================

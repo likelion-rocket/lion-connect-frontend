@@ -22,11 +22,11 @@ export default function TalentSearchHeader({ totalCount }: TalentSearchHeaderPro
   const pathname = usePathname();
   const sp = useSearchParams();
 
-  const qInit = sp.get("q") ?? "";
+  const keywordInit = sp.get("keyword") ?? "";
   const groupIdInit = sp.get("jobGroupId") ?? "";
   const roleIdInit = sp.get("jobRoleId") ?? "";
 
-  const [keyword, setKeyword] = React.useState(qInit);
+  const [keyword, setKeyword] = React.useState(keywordInit);
   const [selectedJobGroupId, setSelectedJobGroupId] = React.useState(groupIdInit);
   const [selectedJobRoleId, setSelectedJobRoleId] = React.useState(roleIdInit);
 
@@ -39,14 +39,14 @@ export default function TalentSearchHeader({ totalCount }: TalentSearchHeaderPro
 
   // URL 갱신
   const pushQuery = React.useCallback(
-    (next: { q?: string; jobGroupId?: string; jobRoleId?: string }) => {
+    (next: { keyword?: string; jobGroupId?: string; jobRoleId?: string }) => {
       const params = new URLSearchParams(sp.toString());
 
-      if (next.q !== undefined) {
-        if (next.q) {
-          params.set("q", next.q);
+      if (next.keyword !== undefined) {
+        if (next.keyword) {
+          params.set("keyword", next.keyword);
         } else {
-          params.delete("q");
+          params.delete("keyword");
         }
       }
       if (next.jobGroupId !== undefined) {
@@ -76,14 +76,14 @@ export default function TalentSearchHeader({ totalCount }: TalentSearchHeaderPro
       <div className="flex w-full h-14">
         <div className="flex-1">
           <SearchBar
-            defaultValue={qInit}
+            defaultValue={keywordInit}
             placeholder="스킬로 검색하세요"
             onChange={setKeyword}
-            onSubmit={(kw) => pushQuery({ q: kw })}
+            onSubmit={(kw) => pushQuery({ keyword: kw })}
           />
         </div>
         <button
-          onClick={() => pushQuery({ q: keyword })}
+          onClick={() => pushQuery({ keyword })}
           className="ml-3 px-6 rounded-xl bg-[#FF6000] text-white font-semibold hover:opacity-90 transition"
         >
           <Image src="/icons/outline-search-white.svg" alt="search" width={20} height={20} />
@@ -98,9 +98,10 @@ export default function TalentSearchHeader({ totalCount }: TalentSearchHeaderPro
             <Select
               value={selectedJobGroupId}
               onValueChange={(v) => {
-                setSelectedJobGroupId(v);
+                const newGroupId = v === "all" ? "" : v;
+                setSelectedJobGroupId(newGroupId);
                 setSelectedJobRoleId("");
-                pushQuery({ jobGroupId: v, jobRoleId: "" });
+                pushQuery({ jobGroupId: newGroupId, jobRoleId: "" });
               }}
             >
               <SelectTrigger className="w-full h-11 rounded-md bg-[#F5F5F5] border border-border-quaternary justify-between">
@@ -116,6 +117,7 @@ export default function TalentSearchHeader({ totalCount }: TalentSearchHeaderPro
                 </div>
               </SelectTrigger>
               <SelectContent className="bg-white rounded-md border border-border-quaternary">
+                <SelectItem value="all">전체</SelectItem>
                 {JOB_GROUPS.map((group) => (
                   <SelectItem key={group.id} value={String(group.id)}>
                     {group.name}
@@ -130,8 +132,9 @@ export default function TalentSearchHeader({ totalCount }: TalentSearchHeaderPro
             <Select
               value={selectedJobRoleId}
               onValueChange={(v) => {
-                setSelectedJobRoleId(v);
-                pushQuery({ jobRoleId: v });
+                const newRoleId = v === "all" ? "" : v;
+                setSelectedJobRoleId(newRoleId);
+                pushQuery({ jobRoleId: newRoleId });
               }}
               disabled={!selectedJobGroupId}
             >
@@ -148,6 +151,7 @@ export default function TalentSearchHeader({ totalCount }: TalentSearchHeaderPro
                 </div>
               </SelectTrigger>
               <SelectContent className="bg-white rounded-md border border-border-quaternary">
+                <SelectItem value="all">전체</SelectItem>
                 {availableRoles.map((role) => (
                   <SelectItem key={role.id} value={String(role.id)}>
                     {role.name}

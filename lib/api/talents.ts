@@ -60,19 +60,19 @@ export type FetchTalentsParams = {
   size?: number;
   jobGroupId?: number;
   jobRoleId?: number;
-  q?: string; // 검색 키워드
+  keyword?: string; // 검색 키워드
 };
 
 /**
  * 인재 검색 API
- * GET /profiles/search?jobGroupId={jobGroupId}&jobRoleId={jobRoleId}&q={q}&page={page}&size={size}
+ * GET /profiles/search?jobGroupId={jobGroupId}&jobRoleId={jobRoleId}&keyword={keyword}&page={page}&size={size}
  */
 export async function fetchTalents({
   page = 0,
   size = 20,
   jobGroupId,
   jobRoleId,
-  q,
+  keyword,
 }: FetchTalentsParams = {}): Promise<TalentListResponse> {
   const params = new URLSearchParams();
 
@@ -85,8 +85,8 @@ export async function fetchTalents({
   if (jobRoleId !== undefined) {
     params.set("jobRoleId", String(jobRoleId));
   }
-  if (q && q.trim()) {
-    params.set("q", q.trim());
+  if (keyword && keyword.trim()) {
+    params.set("keyword", keyword.trim());
   }
 
   const url = `${API_ENDPOINTS.TALENTS.SEARCH}?${params.toString()}`;

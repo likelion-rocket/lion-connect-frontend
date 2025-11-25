@@ -29,9 +29,7 @@ export default function InquiryListItem({ inquiry, onClick }: InquiryListItemPro
       <p className="w-24 text-text-primary text-sm leading-5 truncate">{inquiry.email}</p>
 
       {/* 부서 / 직책 */}
-      <p className="w-36 text-text-primary text-sm leading-5 truncate">
-        {inquiry.department} / {inquiry.position}
-      </p>
+      <p className="w-36 text-text-primary text-sm leading-5 truncate">{inquiry.department}</p>
 
       {/* 문의 내용 (3줄까지 보이도록 말줄임) */}
       <p className="flex-1 max-w-80 max-h-16 text-text-primary text-sm leading-5 line-clamp-3">

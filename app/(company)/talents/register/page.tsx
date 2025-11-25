@@ -136,7 +136,7 @@ export default function TalentRegisterPage() {
           <form
             id="talent-register-form"
             onSubmit={methods.handleSubmit(onSubmit)}
-            className="talent-register-form max-w-[1142px] mx-auto flex flex-col gap-16 md:gap-[100px]"
+            className="talent-register-form max-w-[1142px] mx-auto flex flex-col gap-60"
           >
             {/* Page Header */}
             <header className="page-header flex flex-col gap-2">

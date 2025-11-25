@@ -1,9 +1,49 @@
+"use client";
+
+import { useFormContext, useFieldArray } from "react-hook-form";
+import type { TalentRegisterFormValues } from "@/schemas/talent/talentRegisterSchema";
+import AddButton from "../AddButton";
+import SkillInput from "../SkillInput";
+import { useEffect } from "react";
+
 /**
  * 직무 스킬 섹션 컴포넌트
  * 필드: skills.main (입력 가능한 드롭다운, 태그 형식 다중 선택)
+ *
+ * React Hook Form의 useFieldArray를 사용하여 동적 배열 관리
+ * API에서 받은 데이터는 자동으로 초기화됨 (reset 시)
  */
 
 export default function SkillsSection() {
+  const { control, setValue, watch } = useFormContext<TalentRegisterFormValues>();
+
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "skills.main",
+  });
+
+  // 최소 1개 필드 유지 - 초기 로드 시 필드가 없으면 빈 필드 추가
+  useEffect(() => {
+    if (fields.length === 0) {
+      append("");
+    }
+  }, [fields.length, append]);
+
+  const addSkill = () => {
+    append("");
+  };
+
+  const removeSkill = (index: number) => {
+    // 최소 1개 필드 유지
+    if (fields.length > 1) {
+      remove(index);
+    }
+  };
+
+  const updateSkill = (index: number, value: string) => {
+    setValue(`skills.main.${index}`, value, { shouldValidate: true, shouldDirty: true });
+  };
+
   return (
     <section className="section section-skills flex flex-col gap-6">
       <h2 className="text-lg md:text-xl font-bold text-text-primary">직무 스킬</h2>
@@ -22,59 +62,22 @@ export default function SkillsSection() {
           </svg>
         </div>
 
-        <div className="flex-1 flex flex-col gap-4">
-          {/* 스킬 검색/입력 드롭다운 구조 */}
-          <div className="field relative">
-            <label
-              htmlFor="skills-main"
-              className="block text-sm font-medium text-text-secondary mb-2"
-            >
-              주요 스킬 (다중 선택)
-            </label>
-            <div className="relative">
-              <input
-                id="skills-main"
-                name="skills.main"
-                type="text"
-                placeholder="스킬을 검색하거나 입력해주세요"
-                className="lc-input w-full h-14 px-4 py-3 bg-bg-primary rounded-lg border border-border-quaternary text-base text-text-primary placeholder:text-text-tertiary focus:outline-none focus:border-border-accent transition-colors"
-                autoComplete="off"
+        <div className="flex-1 flex flex-col gap-14">
+          {/* 직무 스킬 입력 필드 그리드 (최대 3개씩 가로 배치) */}
+          <div className="inline-flex justify-start items-start gap-14 flex-wrap content-start">
+            {fields.map((field, index) => (
+              <SkillInput
+                key={field.id}
+                value={watch(`skills.main.${index}`) || ""}
+                onChange={(value) => updateSkill(index, value)}
+                onDelete={fields.length > 1 ? () => removeSkill(index) : undefined}
               />
-              {/* 드롭다운 옵션 리스트 (구조만) */}
-              <div className="skill-dropdown hidden absolute top-full left-0 right-0 mt-1 bg-bg-primary border border-border-quaternary rounded-lg shadow-lg z-10 max-h-48 overflow-y-auto">
-                <div className="skill-option px-4 py-3 hover:bg-bg-tertiary cursor-pointer text-base text-text-primary">
-                  JavaScript
-                </div>
-                <div className="skill-option px-4 py-3 hover:bg-bg-tertiary cursor-pointer text-base text-text-primary">
-                  TypeScript
-                </div>
-                <div className="skill-option px-4 py-3 hover:bg-bg-tertiary cursor-pointer text-base text-text-primary">
-                  React
-                </div>
-                <div className="skill-option px-4 py-3 hover:bg-bg-tertiary cursor-pointer text-base text-text-primary">
-                  Next.js
-                </div>
-              </div>
-            </div>
-            <p className="field-error text-sm text-text-error mt-1"></p>
+            ))}
+          </div>
 
-            {/* 선택된 스킬 태그 목록 (구조만) */}
-            <div className="skill-tags flex flex-wrap gap-2 mt-3">
-              {/* 예시 태그 */}
-              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-brand-01 text-text-accent rounded-full text-sm font-medium">
-                React
-                <button type="button" className="hover:opacity-70">
-                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                    <path
-                      d="M4 4L10 10M10 4L4 10"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                    />
-                  </svg>
-                </button>
-              </span>
-            </div>
+          {/* 직무 스킬 추가 버튼 */}
+          <div className="flex justify-end">
+            <AddButton label="직무 스킬 추가" onClick={addSkill} />
           </div>
         </div>
       </div>

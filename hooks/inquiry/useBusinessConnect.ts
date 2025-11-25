@@ -32,14 +32,11 @@ export function useBusinessConnect() {
 
   const onSubmit = (data: BusinessConnectFormData) => {
     // 폼 데이터를 API 요청 형식으로 변환
-    // department 필드는 "부서/직책" 형태로 입력되므로 분리
-    const [department, position] = data.department.split("/").map((s) => s.trim());
-
     const requestData: CreateInquiryRequest = {
       companyName: data.companyName,
       contactPerson: data.managerName,
-      department: department || data.department, // 분리 실패 시 원본 사용
-      position: position || "", // 분리 실패 시 빈 문자열
+      department: data.department,
+      position: "",
       email: data.email,
       phoneNumber: data.contact,
       content: data.message,

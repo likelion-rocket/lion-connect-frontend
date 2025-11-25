@@ -101,6 +101,10 @@ export const API_ENDPOINTS = {
   PROFILE_RESUME: {
     PRESIGN: "/profile/me/resume/presign",
   },
+  // 공개 인재 검색
+  TALENTS: {
+    SEARCH: "/profiles/search", // GET - 인재 검색 (jobGroupId, jobRoleId, q, page, size)
+  },
 } as const;
 
 // HTTP 메서드

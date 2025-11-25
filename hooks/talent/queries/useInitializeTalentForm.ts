@@ -28,6 +28,7 @@ export function useInitializeTalentForm(
   const expTags = useTalentRegisterStore((state) => state.expTags);
   const jobCategories = useTalentRegisterStore((state) => state.jobCategories);
   const profileLinks = useTalentRegisterStore((state) => state.profileLinks);
+  const skills = useTalentRegisterStore((state) => state.skills);
   const user = useAuthStore((state) => state.user);
 
   useEffect(() => {
@@ -44,6 +45,7 @@ export function useInitializeTalentForm(
       expTags,
       jobCategories,
       profileLinks,
+      skills,
     };
 
     // API 데이터를 폼 형식으로 변환
@@ -62,6 +64,7 @@ export function useInitializeTalentForm(
     expTags,
     jobCategories,
     profileLinks,
+    skills,
     user,
     methods,
   ]);

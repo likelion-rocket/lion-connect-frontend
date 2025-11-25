@@ -12,7 +12,7 @@ export default function BusinessConnect() {
       <div className="max-w-[1078px] flex flex-col items-center gap-8 mb-[142px]">
         <h2 className="text-center text-4xl font-bold leading-[45px]">
           <span className="text-text-accent">멋쟁이사자처럼</span>
-          <span className="text-text-primary">과 함께 어떤 혁신을 이뤄보고 싶으신가요?</span>
+          <span className="text-text-primary">의 인재와 함께 혁신을 이뤄보세요.</span>
         </h2>
         <p className="text-center text-text-secondary text-sm font-medium leading-[21px]">
           맞춤형 솔루션을 제공하기 위해 영업일 기준 2일 내에 전담 매니저가 연락 드리겠습니다.
@@ -77,7 +77,7 @@ export default function BusinessConnect() {
           <FormTextarea
             label="문의 내용"
             name="message"
-            placeholder="문의내용을 입력해주세요."
+            placeholder="문의내용을 입력해주세요.(1000자 이내)"
             error={errors.message}
             required
             rows={15}

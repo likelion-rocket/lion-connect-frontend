@@ -1,6 +1,7 @@
 // lib/api/talents.ts
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "";
+import { get } from "@/lib/apiClient";
+import { API_ENDPOINTS } from "@/constants/api";
 
 // 🔹 education 객체 타입 분리
 export type TalentEducation = {
@@ -51,29 +52,46 @@ export type TalentListResponse = {
   empty: boolean;
 };
 
-type FetchTalentsParams = {
+/**
+ * 인재 검색 파라미터
+ */
+export type FetchTalentsParams = {
   page?: number;
   size?: number;
+  jobGroupId?: number;
+  jobRoleId?: number;
+  q?: string; // 검색 키워드
 };
+
 /**
- * 공개 인재 목록 조회 API
- * GET {BASE_URL}/profiles?page={page}&size={size}
+ * 인재 검색 API
+ * GET /profiles/search?jobGroupId={jobGroupId}&jobRoleId={jobRoleId}&q={q}&page={page}&size={size}
  */
 export async function fetchTalents({
   page = 0,
   size = 20,
+  jobGroupId,
+  jobRoleId,
+  q,
 }: FetchTalentsParams = {}): Promise<TalentListResponse> {
-  const url = `${BASE_URL}/profiles?page=${page}&size=${size}`;
+  const params = new URLSearchParams();
 
-  const res = await fetch(url, {
-    cache: "no-store",
-  });
+  params.set("page", String(page));
+  params.set("size", String(size));
 
-  if (!res.ok) {
-    const text = await res.text().catch(() => "");
-    console.error("🔥 [fetchTalents] 호출 실패", res.status, text);
-    throw new Error("인재 목록을 불러오는 데 실패했습니다.");
+  if (jobGroupId !== undefined) {
+    params.set("jobGroupId", String(jobGroupId));
+  }
+  if (jobRoleId !== undefined) {
+    params.set("jobRoleId", String(jobRoleId));
+  }
+  if (q && q.trim()) {
+    params.set("q", q.trim());
   }
 
-  return (await res.json()) as TalentListResponse;
+  const url = `${API_ENDPOINTS.TALENTS.SEARCH}?${params.toString()}`;
+
+  return get<TalentListResponse>(url, {
+    credentials: "include", // 쿠키 포함
+  });
 }

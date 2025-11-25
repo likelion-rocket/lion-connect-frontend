@@ -15,6 +15,7 @@ import type {
   ExpTagResponse,
   JobCategoryResponse,
   ProfileLinkResponse,
+  SkillResponse,
 } from "@/types/talent";
 import type { User } from "@/store/authStore";
 
@@ -36,6 +37,7 @@ export function mapApiDataToFormValues(
     expTags: ExpTagResponse[];
     jobCategories: JobCategoryResponse[];
     profileLinks: ProfileLinkResponse[];
+    skills: SkillResponse[];
   },
   user: User | null
 ): Partial<TalentRegisterFormValues> {
@@ -101,9 +103,9 @@ export function mapApiDataToFormValues(
         }
       : undefined,
 
-    // 스킬 (TODO: 별도 API 필요)
+    // 스킬 (SkillResponse[] → string[])
     skills: {
-      main: [],
+      main: data.skills.map((skill) => skill.name),
     },
 
     // 수상/활동 (awards → activities 매핑)

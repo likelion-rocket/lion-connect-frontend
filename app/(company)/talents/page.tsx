@@ -4,6 +4,7 @@ import * as React from "react";
 import { useSearchParams } from "next/navigation";
 import Pager from "@/components/Pager";
 import TalentSearchHeader from "./_components/TalentSearchHeader";
+import EmptyTalentState from "./_components/EmptyTalentState";
 import IntroduceCard from "./[talentId]/_components/IntroduceCard";
 import { useTalents } from "@/hooks/company/useTalents";
 import type { BadgeType } from "@/components/ui/badge";
@@ -77,7 +78,7 @@ export default function TalentsPage() {
   const jobRoleId = searchParams.get("jobRoleId")
     ? Number(searchParams.get("jobRoleId"))
     : undefined;
-  const keyword = searchParams.get("q")?.trim() || undefined;
+  const keyword = searchParams.get("keyword")?.trim() || undefined;
 
   // React Query로 데이터 가져오기
   const { data, isLoading, error } = useTalents({
@@ -85,7 +86,7 @@ export default function TalentsPage() {
     size: 20,
     jobGroupId,
     jobRoleId,
-    q: keyword,
+    keyword,
   });
 
   // 로딩 상태 처리
@@ -168,6 +169,9 @@ export default function TalentsPage() {
   const totalCount = data.totalElements ?? 0;
   const totalPages = data.totalPages ?? 1;
 
+  // 필터 적용 여부 확인
+  const hasFilters = !!(jobGroupId || jobRoleId || keyword);
+
   return (
     <main className="w-full text-black mt-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -175,36 +179,42 @@ export default function TalentsPage() {
           {/* 서버에서 필터링된 총 개수 */}
           <TalentSearchHeader totalCount={totalCount} />
 
-          <div className="mt-6 flex flex-col gap-12">
-            {apiTalents.map((t, index) => (
-              <IntroduceCard
-                key={`${t.talentId}-${index}`}
-                talentId={t.talentId}
-                name={t.name}
-                viewCount={t.viewCount}
-                badges={t.badges}
-                tendencies={t.tendencies}
-                university={t.university ?? undefined}
-                major={t.major ?? undefined}
-                jobGroup={t.jobGroup ?? undefined}
-                job={t.job ?? undefined}
-                skills={t.skills}
-                /** 🔥 여기서 프로필 이미지로 썸네일 전달 */
-                thumbnailUrl={t.thumbnailUrl ?? "/images/default-profile.png"}
-                showContacts={false}
-                className="
-                  w-full
-                  transition-shadow
-                  hover:shadow-[0_4px_6px_-2px_rgba(0,0,0,0.05),0_10px_15px_-3px_rgba(0,0,0,0.10)]
-                  hover:border-border-secondary
-                "
-                summary={t.summary}
-              />
-            ))}
-          </div>
+          {apiTalents.length === 0 ? (
+            <EmptyTalentState hasFilters={hasFilters} />
+          ) : (
+            <div className="mt-6 flex flex-col gap-12">
+              {apiTalents.map((t, index) => (
+                <IntroduceCard
+                  key={`${t.talentId}-${index}`}
+                  talentId={t.talentId}
+                  name={t.name}
+                  viewCount={t.viewCount}
+                  badges={t.badges}
+                  tendencies={t.tendencies}
+                  university={t.university ?? undefined}
+                  major={t.major ?? undefined}
+                  jobGroup={t.jobGroup ?? undefined}
+                  job={t.job ?? undefined}
+                  skills={t.skills}
+                  /** 🔥 여기서 프로필 이미지로 썸네일 전달 */
+                  thumbnailUrl={t.thumbnailUrl ?? "/images/default-profile.png"}
+                  showContacts={false}
+                  className="
+                    w-full
+                    transition-shadow
+                    hover:shadow-[0_4px_6px_-2px_rgba(0,0,0,0.05),0_10px_15px_-3px_rgba(0,0,0,0.10)]
+                    hover:border-border-secondary
+                  "
+                  summary={t.summary}
+                />
+              ))}
+            </div>
+          )}
         </section>
 
-        <Pager currentPage={currentPage} totalPages={totalPages} className="mt-10 mb-20" />
+        {apiTalents.length > 0 && (
+          <Pager currentPage={currentPage} totalPages={totalPages} className="mt-10 mb-20" />
+        )}
       </div>
     </main>
   );

@@ -78,6 +78,17 @@ export default function IntroduceCard(props: IntroduceCardProps) {
   const src = getValidImageSrc(thumbnailUrl ?? profileImageUrl);
   const href = detailHref ?? (talentId ? `/talents/${talentId}` : undefined);
 
+  // Badge 타입별 우선순위 (밝은색부터 어두운색 순)
+  const badgeOrder: Record<BadgeType, number> = {
+    bootcamp: 1,
+    startup: 2,
+    certified: 3,
+    major: 4,
+  };
+
+  // Badges를 색상 순서로 정렬
+  const sortedBadges = [...badges].sort((a, b) => badgeOrder[a.type] - badgeOrder[b.type]);
+
   const CardBody = (
     <section
       className={`w-[910px] mx-auto mb-6 rounded-2xl shadow-[0px_1px_2px_rgba(0,0,0,0.06),0px_1px_3px_rgba(0,0,0,0.10)] bg-white p-8 ${className}`}
@@ -103,9 +114,9 @@ export default function IntroduceCard(props: IntroduceCardProps) {
         <div className="flex-1 min-w-0 mb-4">
           <div className="flex items-center gap-3 flex-wrap">
             <h2 className="text-[18px] sm:text-[20px] font-bold text-black">{name}</h2>
-            {badges.length > 0 && (
+            {sortedBadges.length > 0 && (
               <div className="flex flex-wrap gap-3">
-                {badges.map((b) => (
+                {sortedBadges.map((b) => (
                   <Badge key={`${b.type}-${b.label}`} label={b.label} type={b.type} />
                 ))}
               </div>
@@ -148,42 +159,36 @@ export default function IntroduceCard(props: IntroduceCardProps) {
           {/* 🔹 학교·전공 / 직무·직군 / 스킬: 하나의 컬럼으로 묶어서 간격 통일 */}
           <div className="mt-6 flex flex-col gap-3 text-[14px]">
             {/* 학교 · 전공 */}
-            <div className="flex items-center gap-10">
-              <span className="text-[#888] w-[72px]">학교 · 전공</span>
-              {university || major ? (
+            {(university || major) && (
+              <div className="flex items-center gap-10">
+                <span className="text-[#888] w-[72px]">학교 · 전공</span>
                 <span className="text-[#111] font-medium">
                   {university ?? "-"}
                   {university && major ? " · " : ""}
                   {major ?? (university ? "" : "-")}
                 </span>
-              ) : (
-                <span className="text-[#B0B0B0]">등록된 학교·전공 정보가 없습니다.</span>
-              )}
-            </div>
+              </div>
+            )}
 
             {/* 직무 · 직군 */}
-            <div className="flex items-center gap-10">
-              <span className="text-[#888] w-[72px]">직군 · 직무</span>
-              {jobGroup || job ? (
+            {(jobGroup || job) && (
+              <div className="flex items-center gap-10">
+                <span className="text-[#888] w-[72px]">직군 · 직무</span>
                 <span className="text-[#111] font-medium">
                   {jobGroup ?? "-"}
                   {jobGroup && job ? " · " : ""}
                   {job ?? (jobGroup ? "" : "-")}
                 </span>
-              ) : (
-                <span className="text-[#B0B0B0]">등록된 직무·직군 정보가 없습니다.</span>
-              )}
-            </div>
+              </div>
+            )}
 
             {/* 스킬 */}
-            <div className="flex items-start gap-10">
-              <span className="text-[#888] w-[72px]">스킬</span>
-              {skills.length > 0 ? (
+            {skills.length > 0 && (
+              <div className="flex items-start gap-10">
+                <span className="text-[#888] w-[72px]">스킬</span>
                 <SkillChips skills={skills} />
-              ) : (
-                <span className="text-[#B0B0B0] text-[14px]">등록된 스킬이 없습니다.</span>
-              )}
-            </div>
+              </div>
+            )}
           </div>
         </div>
       </div>

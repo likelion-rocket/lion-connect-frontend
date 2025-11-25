@@ -14,6 +14,7 @@ import { fetchMyCertifications } from "./certifications";
 import { fetchMyAwards } from "./awards";
 import { fetchMyExpTags } from "./expTags";
 import { fetchMyJobs } from "./jobs";
+import { fetchMySkills } from "./skills";
 import type {
   ProfileResponse,
   EducationResponse,
@@ -24,6 +25,7 @@ import type {
   ExpTagResponse,
   JobCategoryResponse,
   ProfileLinkResponse,
+  SkillResponse,
 } from "@/types/talent";
 
 /**
@@ -48,6 +50,7 @@ export type TalentRegisterData = {
   expTags: ExpTagResponse[];
   jobCategories: JobCategoryResponse[];
   profileLinks: ProfileLinkResponse[];
+  skills: SkillResponse[];
 };
 
 /**
@@ -69,6 +72,7 @@ export async function fetchTalentRegisterData(): Promise<TalentRegisterData> {
       expTags,
       jobCategories,
       profileLinks,
+      skills,
     ] = await Promise.allSettled([
       fetchMyProfile(),
       fetchMyEducations(),
@@ -79,6 +83,7 @@ export async function fetchTalentRegisterData(): Promise<TalentRegisterData> {
       fetchMyExpTags(),
       fetchMyJobs(),
       fetchMyProfileLinks(),
+      fetchMySkills(),
     ]);
 
     return {
@@ -94,6 +99,7 @@ export async function fetchTalentRegisterData(): Promise<TalentRegisterData> {
       expTags: expTags.status === "fulfilled" ? expTags.value : [],
       jobCategories: jobCategories.status === "fulfilled" ? jobCategories.value : [],
       profileLinks: profileLinks.status === "fulfilled" ? profileLinks.value : [],
+      skills: skills.status === "fulfilled" ? skills.value : [],
     };
   } catch (error) {
     console.error("Failed to fetch talent register data:", error);

@@ -9,6 +9,7 @@ import type {
   ExpTagResponse,
   JobCategoryResponse,
   ProfileLinkResponse,
+  SkillResponse,
 } from "@/types/talent";
 
 /**
@@ -25,6 +26,7 @@ type TalentRegisterState = {
   expTags: ExpTagResponse[];
   jobCategories: JobCategoryResponse[];
   profileLinks: ProfileLinkResponse[];
+  skills: SkillResponse[];
 
   // 로딩/에러 상태
   isLoading: boolean;
@@ -77,6 +79,9 @@ type TalentRegisterActions = {
   // 프로필 링크
   setProfileLinks: (data: ProfileLinkResponse[]) => void;
 
+  // 스킬
+  setSkills: (data: SkillResponse[]) => void;
+
   // 로딩/에러 상태
   setLoading: (loading: boolean) => void;
   setError: (error: string | null) => void;
@@ -95,6 +100,7 @@ const initialState: TalentRegisterState = {
   expTags: [],
   jobCategories: [],
   profileLinks: [],
+  skills: [],
   isLoading: false,
   error: null,
 };
@@ -199,6 +205,9 @@ export const useTalentRegisterStore = create<TalentRegisterState & TalentRegiste
 
     // 프로필 링크
     setProfileLinks: (data) => set({ profileLinks: data }),
+
+    // 스킬
+    setSkills: (data) => set({ skills: data }),
 
     // 로딩/에러 상태
     setLoading: (loading) => set({ isLoading: loading }),

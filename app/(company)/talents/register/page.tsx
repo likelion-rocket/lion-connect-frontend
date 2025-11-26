@@ -17,6 +17,8 @@
  * formState.dirtyFields로 dirty checking하여 필요한 API만 호출
  */
 
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -34,6 +36,7 @@ import { useInitializeTalentForm } from "@/hooks/talent/queries/useInitializeTal
 
 // Store
 import { useTalentRegisterStore } from "@/store/talentRegisterStore";
+import { useAuthStore } from "@/store/authStore";
 
 // 컴포넌트
 import TalentRegisterNav from "./_components/TalentRegisterNav";
@@ -59,6 +62,17 @@ import WorkDrivenTestSection from "./_components/sections/WorkDrivenTestSection"
 const formResolver = zodResolver(talentRegisterSchema);
 
 export default function TalentRegisterPage() {
+  const router = useRouter();
+  const user = useAuthStore((state) => state.user);
+
+  // 로그인하지 않은 사용자는 로그인 페이지로 리다이렉트
+  useEffect(() => {
+    if (!user) {
+      console.warn("⚠️ 로그인이 필요합니다. 로그인 페이지로 이동합니다.");
+      router.push("/login");
+    }
+  }, [user, router]);
+
   // 페이지 진입 시 모든 데이터 조회 (자동으로 store에 저장됨)
   // 각 섹션 컴포넌트에서 useTalentRegisterStore로 직접 사용
   const { isLoading, error } = useTalentRegisterData();
@@ -71,6 +85,7 @@ export default function TalentRegisterPage() {
     defaultValues: defaultTalentRegisterValues,
     mode: "onChange", // 실시간 validation (버튼 활성화 위해)
     shouldFocusError: true, // 에러 발생 시 첫 번째 필드로 자동 포커스
+    shouldUnregister: true, // 컴포넌트 언마운트 시 필드 등록 해제 및 값 삭제
   });
 
   // 데이터가 로드되면 자동으로 React Hook Form을 초기화

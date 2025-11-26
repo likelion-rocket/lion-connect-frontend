@@ -47,7 +47,7 @@ export function useTalentRegisterData() {
     retry: false, // apiClient가 401 자동 처리
     refetchOnMount: "always", // 최신 데이터 보장
     staleTime: 0, // 즉시 stale 처리
-    gcTime: 5 * 60 * 1000, // 5분간 캐시 유지
+    gcTime: 0, // 캐시 사용 안 함 (항상 최신 데이터)
   });
 
   // React Query 데이터를 Zustand store에 자동 동기화

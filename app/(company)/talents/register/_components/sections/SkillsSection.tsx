@@ -1,6 +1,6 @@
 "use client";
 
-import { useFormContext, useFieldArray } from "react-hook-form";
+import { useFormContext, useFieldArray, useWatch } from "react-hook-form";
 import type { TalentRegisterFormValues } from "@/schemas/talent/talentRegisterSchema";
 import AddButton from "../AddButton";
 import SkillInput from "../SkillInput";
@@ -15,28 +15,35 @@ import { useEffect } from "react";
  */
 
 export default function SkillsSection() {
-  const { control, setValue, watch } = useFormContext<TalentRegisterFormValues>();
+  const { control, setValue } = useFormContext<TalentRegisterFormValues>();
 
   const { fields, append, remove } = useFieldArray({
     control,
-    name: "skills.main",
+    name: "skills.main" as any,
   });
+
+  // useWatch로 필드 값 감지 (성능 최적화)
+  const skillsValues = useWatch({
+    control,
+    name: "skills.main",
+  }) as string[] | undefined;
 
   // 최소 1개 필드 유지 - 초기 로드 시 필드가 없으면 빈 필드 추가
   useEffect(() => {
     if (fields.length === 0) {
-      append("");
+      append("" as any);
     }
   }, [fields.length, append]);
 
   const addSkill = () => {
-    append("");
+    append("" as any);
   };
 
   const removeSkill = (index: number) => {
     // 최소 1개 필드 유지
     if (fields.length > 1) {
       remove(index);
+      // remove는 자동으로 shouldDirty를 true로 설정함
     }
   };
 
@@ -68,7 +75,7 @@ export default function SkillsSection() {
             {fields.map((field, index) => (
               <SkillInput
                 key={field.id}
-                value={watch(`skills.main.${index}`) || ""}
+                value={(skillsValues?.[index] as string) || ""}
                 onChange={(value) => updateSkill(index, value)}
                 onDelete={fields.length > 1 ? () => removeSkill(index) : undefined}
               />

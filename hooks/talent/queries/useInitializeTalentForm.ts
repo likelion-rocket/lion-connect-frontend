@@ -51,8 +51,39 @@ export function useInitializeTalentForm(
     // API 데이터를 폼 형식으로 변환
     const formValues = mapApiDataToFormValues(storeData, user);
 
+    console.log("mapper 결과 formValues:", formValues);
+    if (formValues.educations) {
+      console.log("educations 배열:", formValues.educations);
+      formValues.educations.forEach((edu, idx) => {
+        console.log(`educations[${idx}]:`, { id: (edu as any).id, schoolName: edu.schoolName });
+      });
+    }
+
     // React Hook Form 초기화
     methods.reset(formValues);
+
+    // reset 후 id 값이 제거되었으므로 명시적으로 복구
+    if (formValues.educations && formValues.educations.length > 0) {
+      formValues.educations.forEach((edu, idx) => {
+        if ((edu as any).id !== undefined) {
+          methods.setValue(`educations.${idx}.id`, (edu as any).id);
+        }
+      });
+    }
+
+    // reset 직후 폼 값 확인
+    setTimeout(() => {
+      const resetValues = methods.getValues("educations");
+      console.log("reset 후 educations:", resetValues);
+      if (resetValues && resetValues.length > 0) {
+        resetValues.forEach((edu, idx) => {
+          console.log(`reset 후 educations[${idx}]:`, {
+            id: (edu as any).id,
+            schoolName: edu.schoolName,
+          });
+        });
+      }
+    }, 0);
   }, [
     isLoading,
     profile,

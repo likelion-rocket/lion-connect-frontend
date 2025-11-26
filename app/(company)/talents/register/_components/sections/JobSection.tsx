@@ -61,8 +61,8 @@ const JOB_CATEGORIES: JobCategoryConfig[] = [
 export default function JobSection() {
   const { control, setValue } = useFormContext<TalentRegisterFormValues>();
 
-  const selectedCategory = useWatch({ control, name: "job.category" });
-  const selectedRole = useWatch({ control, name: "job.role" });
+  const selectedCategory = useWatch({ control, name: "job.category" }) || "";
+  const selectedRole = useWatch({ control, name: "job.role" }) || "";
 
   const handleCategoryChange = (value: string) => {
     setValue("job.category", value, { shouldValidate: true, shouldDirty: true });
@@ -107,6 +107,7 @@ export default function JobSection() {
               직군<span className="required text-text-error">*</span>
             </label>
             <FilterSelect
+              key={`category-${selectedCategory}`}
               value={selectedCategory}
               onValueChange={handleCategoryChange}
               options={categoryOptions}
@@ -125,6 +126,7 @@ export default function JobSection() {
               직무<span className="required text-text-error">*</span>
             </label>
             <FilterSelect
+              key={`role-${selectedRole}`}
               value={selectedRole}
               onValueChange={handleRoleChange}
               options={availableRoles}

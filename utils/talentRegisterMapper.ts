@@ -18,6 +18,8 @@ import type {
   SkillResponse,
 } from "@/types/talent";
 import type { User } from "@/store/authStore";
+import { findJobGroupById, findJobRoleById } from "@/constants/jobMapping";
+import { EXP_TAG_ID_MAP } from "@/lib/expTags/map";
 
 /**
  * API 응답 데이터를 폼 값으로 변환
@@ -64,11 +66,18 @@ export function mapApiDataToFormValues(
 
     // 직무 카테고리 & 경험 태그
     job: {
-      // jobCategories는 배열인데, 폼에서는 단일 값 (첫번째 값 사용)
-      category: data.jobCategories[0]?.name || "",
-      role: "", // TODO: role은 별도 API가 필요할 수 있음
-      // expTags의 name을 문자열 배열로 변환
-      experiences: data.expTags.map((tag) => tag.name),
+      // jobCategories[0]은 직군, jobCategories[1]은 직무
+      // ID로 code 찾기
+      category: data.jobCategories[0] ? findJobGroupById(data.jobCategories[0].id)?.code || "" : "",
+      role: data.jobCategories[1] ? findJobRoleById(data.jobCategories[1].id)?.role.code || "" : "",
+      // expTags의 id를 EXP_TAG_ID_MAP의 key(문자열)로 역변환
+      experiences: data.expTags
+        .map((tag) => {
+          // id로 key 찾기 (예: 1 → "bootcamp")
+          const entry = Object.entries(EXP_TAG_ID_MAP).find(([, value]) => value === tag.id);
+          return entry ? entry[0] : null;
+        })
+        .filter((key): key is string => key !== null),
     },
 
     // 학력 (첫번째 항목만 사용, 배열은 나중에 지원)

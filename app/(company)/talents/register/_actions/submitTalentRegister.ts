@@ -12,6 +12,7 @@
 
 import type { UseFormReturn } from "react-hook-form";
 import type { TalentRegisterFormValues } from "@/schemas/talent/talentRegisterSchema";
+import type { QueryClient } from "@tanstack/react-query";
 
 // API 함수들
 import { createProfile, updateMyProfile } from "@/lib/api/profiles";
@@ -24,6 +25,7 @@ import { updateMyExpTags } from "@/lib/api/expTags";
 import { updateJobs } from "@/lib/api/jobs";
 import { updateMySkills } from "@/lib/api/skills";
 import { SKILL_OPTIONS } from "@/constants/skills";
+import { EXP_TAG_ID_MAP, type ExpTagKey } from "@/lib/expTags/map";
 import {
   presignThumbnail,
   uploadThumbnailToS3,
@@ -109,9 +111,19 @@ export async function submitTalentRegister({
     }
 
     // 경험 태그 (PUT)
-    if (dirtyFields.job?.experiences) {
-      // TODO: job.experiences를 exp-tags API 형식으로 매핑
-      // parallelPromises.push(updateMyExpTags([...]));
+    if (
+      dirtyFields.job?.experiences &&
+      values.job.experiences &&
+      values.job.experiences.length > 0
+    ) {
+      // 문자열 키를 숫자 ID로 변환
+      const expTagIds = values.job.experiences
+        .map((key) => EXP_TAG_ID_MAP[key as ExpTagKey])
+        .filter((id) => id !== undefined);
+
+      if (expTagIds.length > 0) {
+        parallelPromises.push(updateMyExpTags({ ids: expTagIds }));
+      }
     }
 
     // 스킬 (PUT) - 배열

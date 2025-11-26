@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useFormContext, useWatch } from "react-hook-form";
 import Image from "next/image";
 import FilterSelect from "@/components/form/FilterSelect";
+import type { TalentRegisterFormValues } from "@/schemas/talent/talentRegisterSchema";
 
 /**
  * 직군 및 직무 선택 섹션 컴포넌트
@@ -58,16 +59,18 @@ const JOB_CATEGORIES: JobCategoryConfig[] = [
 ];
 
 export default function JobSection() {
-  const [selectedCategory, setSelectedCategory] = useState<string>("");
-  const [selectedRole, setSelectedRole] = useState<string>("");
+  const { control, setValue } = useFormContext<TalentRegisterFormValues>();
+
+  const selectedCategory = useWatch({ control, name: "job.category" });
+  const selectedRole = useWatch({ control, name: "job.role" });
 
   const handleCategoryChange = (value: string) => {
-    setSelectedCategory(value);
-    setSelectedRole("");
+    setValue("job.category", value, { shouldValidate: true, shouldDirty: true });
+    setValue("job.role", "", { shouldValidate: true, shouldDirty: true });
   };
 
   const handleRoleChange = (value: string) => {
-    setSelectedRole(value);
+    setValue("job.role", value, { shouldValidate: true, shouldDirty: true });
   };
 
   const categoryOptions = JOB_CATEGORIES.map((cat) => ({

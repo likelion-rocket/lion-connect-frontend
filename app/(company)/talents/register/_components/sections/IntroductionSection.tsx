@@ -3,7 +3,17 @@
  * 필드: profile.introduction
  */
 
+"use client";
+
+import { useFormContext } from "react-hook-form";
+import type { TalentRegisterFormValues } from "@/schemas/talent/talentRegisterSchema";
+
 export default function IntroductionSection() {
+  const {
+    register,
+    formState: { errors },
+  } = useFormContext<TalentRegisterFormValues>();
+
   return (
     <section className="section section-introduction flex flex-col gap-4 md:gap-6">
       <h2 className="text-lg md:text-xl font-bold text-text-primary">
@@ -16,12 +26,17 @@ export default function IntroductionSection() {
         </label>
         <textarea
           id="profile-introduction"
-          name="profile.introduction"
           placeholder="자기소개를 입력해주세요 (최대 500자)"
           rows={4}
+          maxLength={500}
           className="lc-input w-full px-4 py-3 bg-bg-primary rounded-lg border border-border-quaternary text-base text-text-primary placeholder:text-text-tertiary focus:outline-none focus:border-border-accent transition-colors resize-none"
+          {...register("profile.introduction")}
         />
-        <p className="field-error text-sm text-text-error mt-1"></p>
+        {errors.profile?.introduction && (
+          <p className="field-error text-sm text-text-error mt-1">
+            {errors.profile.introduction.message}
+          </p>
+        )}
       </div>
     </section>
   );

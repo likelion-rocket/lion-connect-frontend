@@ -10,7 +10,7 @@ import type { TalentRegisterFormValues } from "@/schemas/talent/talentRegisterSc
  * 필드: job.category, job.role
  */
 
-type JobCategory = "develop" | "design" | "data" | "marketing" | "pm";
+type JobCategory = "development" | "design" | "data" | "marketing" | "project";
 
 interface JobRole {
   value: string;
@@ -25,7 +25,7 @@ interface JobCategoryConfig {
 
 const JOB_CATEGORIES: JobCategoryConfig[] = [
   {
-    value: "develop",
+    value: "development",
     label: "개발",
     roles: [
       { value: "frontend", label: "프론트엔드" },
@@ -39,20 +39,20 @@ const JOB_CATEGORIES: JobCategoryConfig[] = [
   {
     value: "design",
     label: "디자인",
-    roles: [{ value: "ui-ux", label: "UI/UX" }],
+    roles: [{ value: "ux/ui", label: "UI/UX" }],
   },
   {
     value: "data",
     label: "데이터 분석",
-    roles: [{ value: "data-analysis", label: "데이터 분석" }],
+    roles: [{ value: "data", label: "데이터 분석" }],
   },
   {
     value: "marketing",
     label: "마케팅",
-    roles: [{ value: "growth-marketing", label: "그로스 마케팅" }],
+    roles: [{ value: "growth marketing", label: "그로스 마케팅" }],
   },
   {
-    value: "pm",
+    value: "project",
     label: "기획",
     roles: [{ value: "pm", label: "PM" }],
   },

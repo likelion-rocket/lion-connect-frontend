@@ -59,12 +59,28 @@ export function deleteMyProfileLink(type: string): Promise<void> {
  *  ✅ 썸네일 전용 helper (기존 코드 유지용)
  * ========================================= */
 
-/** 내 썸네일 링크 upsert (PUT / POST 공용) */
-export function upsertMyThumbnailLink(
-  body: ProfileLinkUpsertRequest,
-  method: "PUT" | "POST" = "PUT"
-): Promise<ProfileResponse> {
-  return upsertMyProfileLink("thumbnail", body, method);
+/** 내 썸네일 링크 upsert (PUT 전용 - 배열 형식) */
+export function upsertMyThumbnailLink(body: {
+  type: string;
+  url: string;
+  originalFilename: string;
+  contentType: string;
+  fileSize: number;
+}): Promise<ProfileResponse> {
+  const endpoint = API_ENDPOINTS.PROFILE_LINKS.UPSERT("thumbnail");
+
+  // API spec: 배열 형식으로 전송
+  const payload = [
+    {
+      type: body.type,
+      url: body.url,
+      originalFilename: body.originalFilename,
+      contentType: body.contentType,
+      fileSize: body.fileSize,
+    },
+  ];
+
+  return put<ProfileResponse>(endpoint, payload, { credentials: "include" });
 }
 
 /** 썸네일 링크 삭제 (DELETE /api/profile/me/links/thumbnail) */

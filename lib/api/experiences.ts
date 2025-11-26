@@ -9,9 +9,16 @@ export type ExperienceListItem = ExperienceResponse;
 
 /** ---------- APIs (호출부 없음) ---------- */
 
-/** 경력 생성 (POST /api/profile/experiences) */
+/** 경력 생성 (POST /api/profile/experiences) - 단일 생성 (deprecated) */
 export function createExperience(body: ExperienceRequest): Promise<ExperienceResponse> {
   return post<ExperienceResponse>(API_ENDPOINTS.EXPERIENCES.CREATE, body, {
+    credentials: "include",
+  });
+}
+
+/** 경력 배치 생성 (POST /api/profile/experiences) - 배열 전송 */
+export function createExperiences(body: ExperienceRequest[]): Promise<ExperienceResponse[]> {
+  return post<ExperienceResponse[]>(API_ENDPOINTS.EXPERIENCES.CREATE, body, {
     credentials: "include",
   });
 }

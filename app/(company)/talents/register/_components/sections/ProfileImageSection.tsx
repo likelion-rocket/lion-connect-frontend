@@ -1,6 +1,11 @@
 /**
  * 프로필 사진 섹션 컴포넌트
  * 필드: profile.avatar (파일 업로드)
+ *
+ * 데이터 흐름:
+ * 1. 기존 썸네일은 profileLinks에서 가져와서 표시 (url, originalFilename)
+ * 2. 새 파일 선택 시 로컬 미리보기 표시 및 File 객체 저장
+ * 3. 제출 시 submitTalentRegister에서 S3 업로드 처리
  */
 
 "use client";
@@ -10,6 +15,7 @@ import { useFormContext } from "react-hook-form";
 import Image from "next/image";
 import type { TalentRegisterFormValues } from "@/schemas/talent/talentRegisterSchema";
 import AddButton from "../AddButton";
+import { useTalentRegisterStore } from "@/store/talentRegisterStore";
 
 export default function ProfileImageSection() {
   const {
@@ -19,9 +25,13 @@ export default function ProfileImageSection() {
   } = useFormContext<TalentRegisterFormValues>();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [selectedFileName, setSelectedFileName] = useState<string>("");
+
+  // Store에서 기존 썸네일 정보 가져오기
+  const profileLinks = useTalentRegisterStore((state) => state.profileLinks);
+  const existingThumbnail = profileLinks.find((link) => link.type === "THUMBNAIL");
 
   const avatarValue = watch("profile.avatar");
-  const fileName = fileInputRef.current?.files?.[0]?.name || "";
 
   // API에서 받아온 URL을 초기 미리보기로 설정
   useEffect(() => {
@@ -30,9 +40,14 @@ export default function ProfileImageSection() {
     }
   }, [avatarValue, previewUrl]);
 
-  // 이미지 URL 결정: 로컬 미리보기 > API 값 > 기본 이미지
+  // 파일명 결정: 새로 선택한 파일명 > 기존 originalFilename > 안내 문구
+  const displayFileName =
+    selectedFileName || existingThumbnail?.originalFilename || "jpg 나 png 사진을 첨부해주세요.";
+
+  // 이미지 URL 결정: 로컬 미리보기 > API URL > 기본 이미지
   const displayImageUrl =
     previewUrl ||
+    existingThumbnail?.url ||
     (typeof avatarValue === "string" ? avatarValue : null) ||
     "/images/default-profile.png";
 
@@ -41,11 +56,15 @@ export default function ProfileImageSection() {
     if (file) {
       // 파일 타입 검증
       if (!file.type.match(/^image\/(jpeg|png)$/)) {
+        alert("jpg 또는 png 파일만 업로드 가능합니다.");
         return;
       }
 
       // 파일을 폼에 저장
-      setValue("profile.avatar", file, { shouldValidate: true });
+      setValue("profile.avatar", file, { shouldValidate: true, shouldDirty: true });
+
+      // 선택한 파일명 저장
+      setSelectedFileName(file.name);
 
       // 미리보기 URL 생성
       const reader = new FileReader();
@@ -93,7 +112,7 @@ export default function ProfileImageSection() {
             <div className="flex items-center gap-4">
               <div className="flex-1 h-14 md:h-16 px-4 py-3 bg-bg-primary border border-border-quaternary rounded-lg flex items-center">
                 <p className="text-sm md:text-base text-text-tertiary truncate">
-                  {fileName || "jpg 나 png 사진을 첨부해주세요."}
+                  {displayFileName}
                 </p>
               </div>
               <AddButton label="사진 파일 업로드" onClick={handleButtonClick} />

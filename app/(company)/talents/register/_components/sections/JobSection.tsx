@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import FilterSelect from "@/components/form/FilterSelect";
 
 /**
@@ -84,25 +85,13 @@ export default function JobSection() {
 
       <div className="flex items-start gap-4">
         <div className="w-10 h-10 md:w-12 md:h-12 bg-bg-tertiary rounded-lg flex items-center justify-center shrink-0">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-            <rect
-              x="5"
-              y="4"
-              width="14"
-              height="16"
-              rx="2"
-              stroke="currentColor"
-              className="text-icon-secondary"
-              strokeWidth="2"
-            />
-            <path
-              d="M9 2V6M15 2V6M5 9H19"
-              stroke="currentColor"
-              className="text-icon-secondary"
-              strokeWidth="2"
-              strokeLinecap="round"
-            />
-          </svg>
+          <Image
+            src="/icons/outline-clipboard.svg"
+            alt="직군 및 직무"
+            width={24}
+            height={24}
+            className="text-icon-secondary"
+          />
         </div>
 
         <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4">

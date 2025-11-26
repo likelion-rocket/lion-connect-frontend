@@ -138,14 +138,6 @@ export default function TalentRegisterPage() {
             onSubmit={methods.handleSubmit(onSubmit)}
             className="talent-register-form max-w-[1142px] mx-auto flex flex-col gap-60"
           >
-            {/* Page Header */}
-            <header className="page-header flex flex-col gap-2">
-              <h1 className="text-2xl md:text-3xl font-bold text-text-primary">인재 등록</h1>
-              <p className="text-base text-text-secondary">
-                기본 정보와 이력, 스킬을 입력해 주세요.
-              </p>
-            </header>
-
             {/* 프로필 사진 섹션 */}
             <ProfileImageSection />
 

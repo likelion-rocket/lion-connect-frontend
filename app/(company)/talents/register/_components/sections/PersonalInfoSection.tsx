@@ -8,12 +8,30 @@
 import { useFormContext } from "react-hook-form";
 import type { TalentRegisterFormValues } from "@/schemas/talent/talentRegisterSchema";
 import { FormInput } from "@/components/form/FormInput";
+import Image from "next/image";
+import { useAuthStore } from "@/store/authStore";
+import { useEffect } from "react";
 
 export default function PersonalInfoSection() {
   const {
     register,
     formState: { errors },
+    setValue,
   } = useFormContext<TalentRegisterFormValues>();
+
+  const user = useAuthStore((state) => state.user);
+
+  // user 정보가 있으면 전화번호와 이메일을 자동으로 채움
+  useEffect(() => {
+    if (user) {
+      if (user.phoneNumber) {
+        setValue("profile.phone", user.phoneNumber);
+      }
+      if (user.email) {
+        setValue("profile.email", user.email);
+      }
+    }
+  }, [user, setValue]);
   return (
     <section className="section section-personal-info flex flex-col gap-6 md:gap-8">
       <h2 className="text-lg md:text-xl font-bold text-text-primary">
@@ -22,22 +40,13 @@ export default function PersonalInfoSection() {
 
       <div className="flex items-start gap-4">
         <div className="w-10 h-10 md:w-12 md:h-12 bg-bg-tertiary rounded-lg flex items-center justify-center shrink-0">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-            <circle
-              cx="12"
-              cy="8"
-              r="4"
-              stroke="currentColor"
-              className="text-icon-secondary"
-              strokeWidth="2"
-            />
-            <path
-              d="M4 20C4 16.134 7.134 13 11 13H13C16.866 13 20 16.134 20 20"
-              stroke="currentColor"
-              className="text-icon-secondary"
-              strokeWidth="2"
-            />
-          </svg>
+          <Image
+            src="/icons/outline-user-circle.svg"
+            alt="User"
+            width={24}
+            height={24}
+            className="text-icon-secondary"
+          />
         </div>
 
         <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
@@ -74,7 +83,7 @@ export default function PersonalInfoSection() {
             <FormInput
               id="profile-phone"
               type="tel"
-              placeholder="010-0000-0000"
+              placeholder="010 0000 0000"
               error={!!errors.profile?.phone}
               {...register("profile.phone")}
             />

@@ -5,13 +5,16 @@
 
 "use client";
 
+import { useState } from "react";
 import { useFormContext } from "react-hook-form";
 import type { TalentRegisterFormValues } from "@/schemas/talent/talentRegisterSchema";
 import { FormInput } from "@/components/form/FormInput";
 import { FormTextarea } from "@/components/form/FormTextarea";
+import { FormContainer } from "@/components/form/FormContainer";
 import AddButton from "../AddButton";
 
 export default function CareerSection() {
+  const [isFocused, setIsFocused] = useState(false);
   const {
     register,
     formState: { errors },
@@ -40,7 +43,12 @@ export default function CareerSection() {
             </svg>
           </div>
 
-          <div className="flex-1 bg-bg-primary rounded-xl shadow-md p-4 md:p-6 flex flex-col gap-4">
+          <FormContainer
+            isPressed={isFocused}
+            onFocus={() => setIsFocused(true)}
+            onBlur={() => setIsFocused(false)}
+            className="flex-1 rounded-xl p-4 md:p-6 flex flex-col gap-4"
+          >
             {/* 회사명 */}
             <div className="field">
               <label
@@ -149,7 +157,7 @@ export default function CareerSection() {
                 {...register("career.description")}
               />
             </div>
-          </div>
+          </FormContainer>
         </div>
       </div>
 

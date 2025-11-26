@@ -88,8 +88,7 @@ export function mapApiDataToFormValues(
           status:
             data.educations[0].status === "GRADUATED" ||
             data.educations[0].status === "ENROLLED" ||
-            data.educations[0].status === "WITHDRAWN" ||
-            data.educations[0].status === "LEAVE_OF_ABSENCE"
+            data.educations[0].status === "COMPLETED"
               ? data.educations[0].status
               : undefined,
           startDate: data.educations[0].startDate,

@@ -108,18 +108,30 @@ export function mapApiDataToFormValues(
             },
           ],
 
-    // 경력 (첫번째 항목만 사용)
-    career: data.experiences[0]
-      ? {
-          companyName: data.experiences[0].companyName,
-          department: data.experiences[0].department || "",
-          position: data.experiences[0].position || "",
-          startDate: data.experiences[0].startDate,
-          endDate: data.experiences[0].endDate || "",
-          isCurrent: data.experiences[0].isCurrent,
-          description: data.experiences[0].description || "",
-        }
-      : undefined,
+    // 경력 (배열 전체 지원)
+    careers:
+      data.experiences.length > 0
+        ? data.experiences.map((exp) => ({
+            id: exp.id,
+            companyName: exp.companyName,
+            department: exp.department || "",
+            position: exp.position || "",
+            startDate: exp.startDate,
+            endDate: exp.endDate || "",
+            isCurrent: exp.isCurrent,
+            description: exp.description || "",
+          }))
+        : [
+            {
+              companyName: "",
+              department: "",
+              position: "",
+              startDate: "",
+              endDate: "",
+              isCurrent: false,
+              description: "",
+            },
+          ],
 
     // 스킬 (SkillResponse[] → string[])
     skills: {
@@ -130,6 +142,7 @@ export function mapApiDataToFormValues(
     activities:
       data.awards.length > 0
         ? data.awards.map((award) => ({
+            id: award.id,
             title: award.title,
             organization: award.organization,
             awardDate: award.awardDate,
@@ -141,6 +154,7 @@ export function mapApiDataToFormValues(
     languages:
       data.languages.length > 0
         ? data.languages.map((lang) => ({
+            id: lang.id,
             languageName: lang.languageName,
             level: lang.level,
             issueDate: lang.issueDate,
@@ -151,6 +165,7 @@ export function mapApiDataToFormValues(
     certificates:
       data.certifications.length > 0
         ? data.certifications.map((cert) => ({
+            id: cert.id,
             name: cert.name,
             issuer: cert.issuer || "",
             issueDate: cert.issueDate,

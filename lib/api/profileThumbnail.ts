@@ -88,6 +88,13 @@ export function deleteMyThumbnailLink(): Promise<void> {
   return deleteMyProfileLink("thumbnail");
 }
 
+/** 프로필 링크 삭제 by id (DELETE /api/profile/me/links/{id}) */
+export function deleteProfileLink(id: number): Promise<void> {
+  return del<void>(`/profile/me/links/${id}`, {
+    credentials: "include",
+  });
+}
+
 /** ✅ S3 로 실제 파일 업로드 (여기서 절대 apiClient 쓰지 말 것) */
 export async function uploadThumbnailToS3(uploadUrl: string, file: File): Promise<void> {
   const res = await fetch(uploadUrl, {

@@ -6,11 +6,13 @@
 
 "use client";
 
+import { useState } from "react";
 import { useFormContext, useFieldArray } from "react-hook-form";
 import type { TalentRegisterFormValues } from "@/schemas/talent/talentRegisterSchema";
 import AddButton from "../AddButton";
 
 export default function LinksSection() {
+  const [isFocused, setIsFocused] = useState(false);
   const {
     control,
     register,
@@ -55,7 +57,11 @@ export default function LinksSection() {
               </svg>
             </div>
 
-            <div className="flex-1 bg-bg-primary border border-border-quaternary rounded-lg p-4 flex items-center gap-4">
+            <div
+              className="flex-1 bg-bg-primary border border-border-quaternary rounded-lg p-4 flex items-center gap-4"
+              onFocus={() => setIsFocused(true)}
+              onBlur={() => setIsFocused(false)}
+            >
               <div className="field flex-1">
                 <label htmlFor={`links-${index}-url`} className="sr-only">
                   링크 {index + 1}

@@ -6,12 +6,15 @@
 
 "use client";
 
+import { useState } from "react";
 import { useFormContext } from "react-hook-form";
 import type { TalentRegisterFormValues } from "@/schemas/talent/talentRegisterSchema";
 import { FormInput } from "@/components/form/FormInput";
+import { FormContainer } from "@/components/form/FormContainer";
 import AddButton from "../AddButton";
 
 export default function CertificatesSection() {
+  const [isFocused, setIsFocused] = useState(false);
   const {
     register,
     formState: { errors },
@@ -43,7 +46,12 @@ export default function CertificatesSection() {
             </svg>
           </div>
 
-          <div className="flex-1 bg-bg-primary rounded-xl p-4 flex flex-col gap-4">
+          <FormContainer
+            isPressed={isFocused}
+            onFocus={() => setIsFocused(true)}
+            onBlur={() => setIsFocused(false)}
+            className="flex-1 rounded-xl p-4 flex flex-col gap-4"
+          >
             <div className="field">
               <label
                 htmlFor="certificates-0-name"
@@ -88,7 +96,7 @@ export default function CertificatesSection() {
                 {...register("certificates.0.issueDate")}
               />
             </div>
-          </div>
+          </FormContainer>
         </div>
       </div>
 

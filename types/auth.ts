@@ -10,7 +10,7 @@ export type SignupFormData = {
   email: string;
   password: string;
   confirmPassword: string;
-  phone: string;
+  phoneNumber: string;
   agreeTerms: boolean;
 };
 
@@ -18,7 +18,7 @@ export type SignupFormData = {
 export type SignupRequestData = {
   email: string;
   password: string;
-  phone: string;
+  phoneNumber: string;
 };
 
 // API 응답 타입
@@ -43,7 +43,7 @@ export type SignupResponse = {
   user?: {
     id: string;
     email: string;
-    phone: string;
+    phoneNumber: string;
   };
 };
 

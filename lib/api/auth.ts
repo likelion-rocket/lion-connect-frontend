@@ -121,7 +121,7 @@ export async function signupAPI(data: SignupFormData): Promise<SignupResponse> {
   const requestData: SignupRequestData = {
     email: data.email,
     password: data.password,
-    phone: data.phone,
+    phoneNumber: data.phoneNumber,
   };
 
   return post<SignupResponse>(API_ENDPOINTS.AUTH.SIGNUP, requestData, { skipAuth: true });

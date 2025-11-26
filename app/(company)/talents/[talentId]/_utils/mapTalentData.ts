@@ -43,8 +43,7 @@ function mapEducationStatus(status: string | null): string {
   const statusMap: Record<string, string> = {
     GRADUATED: "졸업",
     ENROLLED: "재학",
-    WITHDRAWN: "중퇴",
-    LEAVE_OF_ABSENCE: "휴학",
+    COMPLETED: "수료",
   };
   return statusMap[status] || status;
 }

@@ -142,6 +142,14 @@ export default function TalentRegisterPage() {
    * submitTalentRegister 액션을 호출하여 처리
    */
   const onSubmit = async (values: TalentRegisterFormValues) => {
+    console.log("onSubmit 폼 values:", values);
+    console.log("educations 배열:", values.educations);
+    if (values.educations && values.educations.length > 0) {
+      values.educations.forEach((edu, idx) => {
+        console.log(`educations[${idx}]:`, { id: edu.id, schoolName: edu.schoolName });
+      });
+    }
+
     const result = await submitTalentRegister({
       values,
       methods,

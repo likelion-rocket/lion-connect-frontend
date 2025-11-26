@@ -56,7 +56,28 @@ export async function submitTalentRegister({
   const { dirtyFields } = methods.formState;
 
   try {
-    // 0. 프로필 사진 업로드 (프로필 생성보다 먼저 처리)
+    // 1. 프로필 생성 또는 수정 (최우선 호출 - 프로필이 생성되어야 다른 데이터를 저장할 수 있음)
+    const profilePayload = {
+      name: values.profile.name,
+      introduction: values.profile.introduction || "",
+      storageUrl: values.portfolio || "", // 포트폴리오 URL
+      likelionCode: values.likelion.code,
+      visibility: "PUBLIC" as const,
+    };
+
+    let profileResponse;
+
+    if (existingProfileId) {
+      // ✅ 프로필이 이미 존재 → PUT 요청
+      profileResponse = await updateMyProfile(profilePayload);
+      console.log("프로필 수정 완료:", profileResponse.id);
+    } else {
+      // ✅ 프로필이 없음 → POST 요청
+      profileResponse = await createProfile(profilePayload);
+      console.log("프로필 생성 완료:", profileResponse.id);
+    }
+
+    // 2. 프로필 사진 업로드 (프로필 생성 후 처리)
     if (dirtyFields.profile?.avatar && values.profile.avatar instanceof File) {
       const file = values.profile.avatar;
 
@@ -81,28 +102,7 @@ export async function submitTalentRegister({
       console.log("프로필 사진 업로드 완료:", presignResponse.fileUrl);
     }
 
-    // 1. 프로필 생성 또는 수정 (최우선 호출)
-    const profilePayload = {
-      name: values.profile.name,
-      introduction: values.profile.introduction || "",
-      storageUrl: values.portfolio || "", // 포트폴리오 URL
-      likelionCode: values.likelion.code,
-      visibility: "PUBLIC" as const,
-    };
-
-    let profileResponse;
-
-    if (existingProfileId) {
-      // ✅ 프로필이 이미 존재 → PUT 요청
-      profileResponse = await updateMyProfile(profilePayload);
-      console.log("프로필 수정 완료:", profileResponse.id);
-    } else {
-      // ✅ 프로필이 없음 → POST 요청
-      profileResponse = await createProfile(profilePayload);
-      console.log("프로필 생성 완료:", profileResponse.id);
-    }
-
-    // 2. 나머지 병렬 저장
+    // 3. 나머지 병렬 저장
     const parallelPromises: Promise<unknown>[] = [];
 
     // 직무 카테고리 (PUT)

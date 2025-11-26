@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useEffect, useState } from "react";
 import { useFormContext } from "react-hook-form";
 import Image from "next/image";
 import type { TalentRegisterFormValues } from "@/schemas/talent/talentRegisterSchema";
@@ -15,44 +15,73 @@ export default function ProfileImageSection() {
   } = useFormContext<TalentRegisterFormValues>();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Store에서 기존 썸네일 정보 가져오기
+  // Store에서 기존 썸네일 가져오기
   const profileLinks = useTalentRegisterStore((state) => state.profileLinks);
   const existingThumbnail = profileLinks.find((link) => link.type === "THUMBNAIL");
 
-  const avatarValue = watch("profile.avatar");
+  // 새로 선택한 파일
+  const selectedFile = watch("profile.avatar");
 
-  // 파일명: 새 파일명 > 기존 파일명 > 안내 문구
+  // 미리보기 URL
+  const [previewUrl, setPreviewUrl] = useState<string>("/images/default-profile.png");
+
+  /**
+   * 초기 로드: Store의 기존 썸네일 표시
+   */
+  useEffect(() => {
+    if (existingThumbnail?.url) {
+      setPreviewUrl(existingThumbnail.url);
+    } else {
+      setPreviewUrl("/images/default-profile.png");
+    }
+  }, [existingThumbnail?.url]);
+
+  /**
+   * 새 파일 선택 시: Object URL로 즉시 미리보기
+   */
+  useEffect(() => {
+    if (selectedFile instanceof File) {
+      const objectUrl = URL.createObjectURL(selectedFile);
+      setPreviewUrl(objectUrl);
+
+      return () => {
+        URL.revokeObjectURL(objectUrl);
+      };
+    }
+  }, [selectedFile]);
+
+  /**
+   * 파일명 표시
+   */
   const displayFileName =
-    (avatarValue instanceof File ? avatarValue.name : null) ||
-    existingThumbnail?.originalFilename ||
-    "jpg 나 png 사진을 첨부해주세요.";
+    selectedFile instanceof File
+      ? selectedFile.name
+      : existingThumbnail?.originalFilename || "jpg 나 png 사진을 첨부해주세요.";
 
-  // 이미지 URL: 새 파일 > 서버 URL > 기본 이미지
-  const displayImageUrl = (() => {
-    if (avatarValue instanceof File) {
-      return URL.createObjectURL(avatarValue);
-    }
-    if (typeof avatarValue === "string" && avatarValue) {
-      return avatarValue;
-    }
-    return existingThumbnail?.url || "/images/default-profile.png";
-  })();
-
+  /**
+   * 파일 선택 핸들러
+   */
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      // 파일 타입 검증
-      if (!file.type.match(/^image\/(jpeg|png)$/)) {
-        alert("jpg 또는 png 파일만 업로드 가능합니다.");
-        return;
-      }
+    if (!file) return;
 
-      // 파일을 폼에 저장 (useEffect에서 미리보기 자동 처리)
-      setValue("profile.avatar", file, { shouldValidate: true, shouldDirty: true });
+    // 파일 타입 검증
+    if (!file.type.match(/^image\/(jpeg|png)$/)) {
+      alert("jpg 또는 png 파일만 업로드 가능합니다.");
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+      return;
     }
+
+    // React Hook Form에 저장
+    setValue("profile.avatar", file, { shouldValidate: true, shouldDirty: true });
   };
 
-  const handleButtonClick = () => {
+  /**
+   * 파일 선택 창 열기
+   */
+  const handleOpenFilePicker = () => {
     fileInputRef.current?.click();
   };
 
@@ -62,15 +91,19 @@ export default function ProfileImageSection() {
 
       <div className="flex flex-col md:flex-row items-start gap-6 md:gap-8">
         {/* 프로필 이미지 미리보기 */}
-        <div className="w-32 h-40 md:w-40 md:h-[199px] bg-bg-tertiary rounded-lg overflow-hidden flex items-center justify-center shrink-0 relative">
+        <button
+          type="button"
+          onClick={handleOpenFilePicker}
+          className="w-32 h-40 md:w-40 md:h-[199px] bg-bg-tertiary rounded-lg overflow-hidden flex items-center justify-center shrink-0 relative cursor-pointer hover:opacity-90 transition-opacity"
+        >
           <Image
-            src={displayImageUrl}
+            src={previewUrl}
             alt="프로필 사진"
             fill
             className="object-cover"
             sizes="(max-width: 768px) 128px, 160px"
           />
-        </div>
+        </button>
 
         {/* 파일 업로드 필드 */}
         <div className="flex-1 flex flex-col gap-4">
@@ -87,12 +120,17 @@ export default function ProfileImageSection() {
               onChange={handleFileChange}
             />
             <div className="flex items-center gap-4">
-              <div className="flex-1 h-14 md:h-16 px-4 py-3 bg-bg-primary border border-border-quaternary rounded-lg flex items-center">
-                <p className="text-sm md:text-base text-text-tertiary truncate">
+              {/* 파일명 표시 */}
+              <button
+                type="button"
+                onClick={handleOpenFilePicker}
+                className="flex-1 h-14 md:h-16 px-4 py-3 bg-bg-primary border border-border-quaternary rounded-lg flex items-center hover:bg-bg-tertiary transition-colors cursor-pointer"
+              >
+                <p className="text-sm md:text-base text-text-tertiary truncate text-left">
                   {displayFileName}
                 </p>
-              </div>
-              <AddButton label="사진 파일 업로드" onClick={handleButtonClick} />
+              </button>
+              <AddButton label="사진 파일 업로드" onClick={handleOpenFilePicker} />
             </div>
             {errors.profile?.avatar && (
               <p className="field-error text-sm text-text-error mt-1">

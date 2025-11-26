@@ -5,6 +5,7 @@
  * - 기본 상태: border 없음, shadow 없음
  * - hover 상태: 주황색(accent) border 표시
  * - active 상태(내용 입력됨): shadow 표시
+ * - pressed 상태: 강화된 shadow로 눌린 효과 표시
  */
 
 "use client";
@@ -14,10 +15,13 @@ import { cn } from "@/utils/utils";
 interface FormContainerProps extends React.HTMLAttributes<HTMLDivElement> {
   /** 컨테이너 내부에 값이 입력되었는지 여부 (active 상태) */
   hasValue?: boolean;
+  /** 컨테이너가 눌린 상태 여부 (pressed 상태) */
+  isPressed?: boolean;
 }
 
 export function FormContainer({
   hasValue = false,
+  isPressed = false,
   className,
   children,
   ref,
@@ -31,6 +35,8 @@ export function FormContainer({
         "border border-transparent",
         "hover:border-border-accent",
         hasValue && "shadow-[0px_10px_15px_-3px_rgba(0,0,0,0.1),0px_4px_6px_-2px_rgba(0,0,0,0.05)]",
+        isPressed &&
+          "shadow-[0px_20px_25px_-5px_rgba(0,0,0,0.15),0px_10px_10px_-5px_rgba(0,0,0,0.08)]",
         className
       )}
       {...props}

@@ -14,7 +14,7 @@ export const signupSchema = z
       .regex(/[0-9]/, { message: "비밀번호에 숫자를 포함해주세요" })
       .regex(/[!@#$%^&*]/, { message: "비밀번호에 특수문자(!@#$%^&*)를 포함해주세요" }),
     confirmPassword: z.string().min(1, { message: "비밀번호 확인을 입력해주세요" }),
-    phone: z
+    phoneNumber: z
       .string()
       .min(1, { message: "전화번호를 입력해주세요" })
       .regex(/^01[0-9]-?\d{3,4}-?\d{4}$/, { message: "유효한 전화번호를 입력해주세요" }),

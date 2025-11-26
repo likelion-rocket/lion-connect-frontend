@@ -26,7 +26,7 @@ export default function SignupForm() {
       email: "",
       password: "",
       confirmPassword: "",
-      phone: "",
+      phoneNumber: "",
       agreeTerms: false,
     },
   });
@@ -77,18 +77,20 @@ export default function SignupForm() {
 
       {/* 전화번호 입력 */}
       <div className="space-y-2">
-        <label htmlFor="phone" className="block text-xs font-medium text-text-primary">
+        <label htmlFor="phoneNumber" className="block text-xs font-medium text-text-primary">
           전화번호
         </label>
         <Input
-          id="phone"
+          id="phoneNumber"
           type="tel"
           placeholder="01012345678"
-          error={!!errors.phone}
-          {...register("phone")}
+          error={!!errors.phoneNumber}
+          {...register("phoneNumber")}
         />
-        {errors.phone && <p className="text-sm text-text-error">{errors.phone.message}</p>}
-        {!errors.phone && (
+        {errors.phoneNumber && (
+          <p className="text-sm text-text-error">{errors.phoneNumber.message}</p>
+        )}
+        {!errors.phoneNumber && (
           <p className="text-sm text-brand-05">*기업에게 스카우트 받을 전화번호를 입력하세요</p>
         )}
       </div>

@@ -15,10 +15,13 @@ import { FormContainer } from "@/components/form/FormContainer";
 
 interface EducationItemProps {
   index: number;
+  educationId?: number; // 서버에서 받은 id (기존 데이터인 경우)
+  onDelete?: (index: number, educationId?: number) => void | Promise<void>; // DELETE 핸들러
 }
 
-export default function EducationItem({ index }: EducationItemProps) {
+export default function EducationItem({ index, educationId, onDelete }: EducationItemProps) {
   const [isFocused, setIsFocused] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const {
     register,
     formState: { errors },
@@ -39,6 +42,26 @@ export default function EducationItem({ index }: EducationItemProps) {
     educationFields?.startDate ||
     educationFields?.endDate ||
     educationFields?.description;
+
+  // DELETE 핸들러
+  const handleDelete = async () => {
+    console.log("DELETE 버튼 클릭됨:", { index, educationId });
+    if (!onDelete) {
+      console.warn("onDelete 핸들러가 없습니다");
+      return;
+    }
+
+    try {
+      setIsDeleting(true);
+      console.log("삭제 시작...");
+      await onDelete(index, educationId);
+      console.log("삭제 완료");
+    } catch (error) {
+      console.error("학력 삭제 중 오류:", error);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   return (
     <div className="education-item flex items-start gap-4">
@@ -64,6 +87,8 @@ export default function EducationItem({ index }: EducationItemProps) {
         isPressed={isFocused}
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
+        onDelete={handleDelete}
+        disabled={isDeleting}
         className="flex-1 rounded-xl p-4 md:p-6 flex flex-col gap-4"
       >
         {/* 학교명 */}

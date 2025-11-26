@@ -16,7 +16,7 @@ import type { QueryClient } from "@tanstack/react-query";
 
 // API 함수들
 import { createProfile, updateMyProfile } from "@/lib/api/profiles";
-import { createEducations } from "@/lib/api/educations";
+import { createEducations, updateEducation } from "@/lib/api/educations";
 import { createExperiences } from "@/lib/api/experiences";
 import { createLanguages } from "@/lib/api/languages";
 import { createCertifications } from "@/lib/api/certifications";
@@ -161,20 +161,52 @@ export async function submitTalentRegister({
       }
     }
 
-    // 학력 (POST) - 배열
-    if (dirtyFields.education && values.education.schoolName) {
-      const educations = [
-        {
-          schoolName: values.education.schoolName,
-          major: values.education.major,
-          status: values.education.status,
-          startDate: values.education.startDate,
-          endDate: values.education.endDate,
-          description: values.education.description,
-          degree: values.education.degree,
-        },
-      ];
-      parallelPromises.push(createEducations(educations));
+    // 학력 (POST/PUT) - 배열
+    // id가 있으면 PUT으로 개별 수정, 없으면 POST로 일괄 생성
+    if (dirtyFields.educations && values.educations && values.educations.length > 0) {
+      const validEducations = values.educations.filter(
+        (edu) => edu.schoolName || edu.major || edu.degree
+      );
+
+      if (validEducations.length > 0) {
+        // 기존 학력 (id가 있는 것)과 신규 학력 (id가 없는 것) 분리
+        const existingEducations = validEducations.filter((edu) => edu.id);
+        const newEducations = validEducations.filter((edu) => !edu.id);
+
+        // 기존 학력: 각각 PUT 요청
+        existingEducations.forEach((edu) => {
+          if (edu.id) {
+            parallelPromises.push(
+              updateEducation(edu.id, {
+                schoolName: edu.schoolName || "",
+                major: edu.major,
+                status: edu.status,
+                startDate: edu.startDate,
+                endDate: edu.endDate,
+                description: edu.description,
+                degree: edu.degree,
+              })
+            );
+          }
+        });
+
+        // 신규 학력: POST 배열 요청
+        if (newEducations.length > 0) {
+          parallelPromises.push(
+            createEducations(
+              newEducations.map((edu) => ({
+                schoolName: edu.schoolName || "",
+                major: edu.major,
+                status: edu.status,
+                startDate: edu.startDate,
+                endDate: edu.endDate,
+                description: edu.description,
+                degree: edu.degree,
+              }))
+            )
+          );
+        }
+      }
     }
 
     // 경력 (POST) - 배열

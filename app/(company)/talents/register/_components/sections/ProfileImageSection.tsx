@@ -1,16 +1,6 @@
-/**
- * 프로필 사진 섹션 컴포넌트
- * 필드: profile.avatar (파일 업로드)
- *
- * 데이터 흐름:
- * 1. 기존 썸네일은 profileLinks에서 가져와서 표시 (url, originalFilename)
- * 2. 새 파일 선택 시 로컬 미리보기 표시 및 File 객체 저장
- * 3. 제출 시 submitTalentRegister에서 S3 업로드 처리
- */
-
 "use client";
 
-import { useRef, useState, useEffect } from "react";
+import { useRef } from "react";
 import { useFormContext } from "react-hook-form";
 import Image from "next/image";
 import type { TalentRegisterFormValues } from "@/schemas/talent/talentRegisterSchema";
@@ -19,13 +9,11 @@ import { useTalentRegisterStore } from "@/store/talentRegisterStore";
 
 export default function ProfileImageSection() {
   const {
-    watch,
     setValue,
+    watch,
     formState: { errors },
   } = useFormContext<TalentRegisterFormValues>();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const [selectedFileName, setSelectedFileName] = useState<string>("");
 
   // Store에서 기존 썸네일 정보 가져오기
   const profileLinks = useTalentRegisterStore((state) => state.profileLinks);
@@ -33,23 +21,22 @@ export default function ProfileImageSection() {
 
   const avatarValue = watch("profile.avatar");
 
-  // API에서 받아온 URL을 초기 미리보기로 설정
-  useEffect(() => {
-    if (typeof avatarValue === "string" && avatarValue && !previewUrl) {
-      setPreviewUrl(avatarValue);
-    }
-  }, [avatarValue, previewUrl]);
-
-  // 파일명 결정: 새로 선택한 파일명 > 기존 originalFilename > 안내 문구
+  // 파일명: 새 파일명 > 기존 파일명 > 안내 문구
   const displayFileName =
-    selectedFileName || existingThumbnail?.originalFilename || "jpg 나 png 사진을 첨부해주세요.";
+    (avatarValue instanceof File ? avatarValue.name : null) ||
+    existingThumbnail?.originalFilename ||
+    "jpg 나 png 사진을 첨부해주세요.";
 
-  // 이미지 URL 결정: 로컬 미리보기 > API URL > 기본 이미지
-  const displayImageUrl =
-    previewUrl ||
-    existingThumbnail?.url ||
-    (typeof avatarValue === "string" ? avatarValue : null) ||
-    "/images/default-profile.png";
+  // 이미지 URL: 새 파일 > 서버 URL > 기본 이미지
+  const displayImageUrl = (() => {
+    if (avatarValue instanceof File) {
+      return URL.createObjectURL(avatarValue);
+    }
+    if (typeof avatarValue === "string" && avatarValue) {
+      return avatarValue;
+    }
+    return existingThumbnail?.url || "/images/default-profile.png";
+  })();
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -60,18 +47,8 @@ export default function ProfileImageSection() {
         return;
       }
 
-      // 파일을 폼에 저장
+      // 파일을 폼에 저장 (useEffect에서 미리보기 자동 처리)
       setValue("profile.avatar", file, { shouldValidate: true, shouldDirty: true });
-
-      // 선택한 파일명 저장
-      setSelectedFileName(file.name);
-
-      // 미리보기 URL 생성
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setPreviewUrl(reader.result as string);
-      };
-      reader.readAsDataURL(file);
     }
   };
 

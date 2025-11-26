@@ -75,3 +75,23 @@ export function findJobRoleById(id: number): { group: JobGroup; role: JobRole } 
   }
   return undefined;
 }
+
+/**
+ * 직군 code로 직군 찾기
+ */
+export function findJobGroupByCode(code: string): JobGroup | undefined {
+  return JOB_GROUPS.find((group) => group.code === code);
+}
+
+/**
+ * 직무 code로 직무 찾기 (모든 직군에서 검색)
+ */
+export function findJobRoleByCode(code: string): { group: JobGroup; role: JobRole } | undefined {
+  for (const group of JOB_GROUPS) {
+    const role = group.roles.find((r) => r.code === code);
+    if (role) {
+      return { group, role };
+    }
+  }
+  return undefined;
+}

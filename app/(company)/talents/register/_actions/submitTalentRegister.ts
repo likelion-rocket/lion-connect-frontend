@@ -15,13 +15,21 @@ import type { TalentRegisterFormValues } from "@/schemas/talent/talentRegisterSc
 
 // API 함수들
 import { createProfile, updateMyProfile } from "@/lib/api/profiles";
-import { createEducation } from "@/lib/api/educations";
-import { createExperience } from "@/lib/api/experiences";
-import { createLanguage } from "@/lib/api/languages";
-import { createCertification } from "@/lib/api/certifications";
-import { createAward } from "@/lib/api/awards";
+import { createEducations } from "@/lib/api/educations";
+import { createExperiences } from "@/lib/api/experiences";
+import { createLanguages } from "@/lib/api/languages";
+import { createCertifications } from "@/lib/api/certifications";
+import { createAwards } from "@/lib/api/awards";
 import { updateMyExpTags } from "@/lib/api/expTags";
 import { updateJobs } from "@/lib/api/jobs";
+import { updateMySkills } from "@/lib/api/skills";
+import { SKILL_OPTIONS } from "@/constants/skills";
+import {
+  presignThumbnail,
+  uploadThumbnailToS3,
+  upsertMyThumbnailLink,
+  upsertMyProfileLink,
+} from "@/lib/api/profileThumbnail";
 
 interface SubmitTalentRegisterParams {
   values: TalentRegisterFormValues;
@@ -45,6 +53,31 @@ export async function submitTalentRegister({
   const { dirtyFields } = methods.formState;
 
   try {
+    // 0. 프로필 사진 업로드 (프로필 생성보다 먼저 처리)
+    if (dirtyFields.profile?.avatar && values.profile.avatar instanceof File) {
+      const file = values.profile.avatar;
+
+      // Presign URL 발급
+      const presignResponse = await presignThumbnail({
+        originalFilename: file.name,
+        contentType: file.type,
+      });
+
+      // S3에 업로드
+      await uploadThumbnailToS3(presignResponse.uploadUrl, file);
+
+      // 프로필 링크 저장 (API spec: 배열 형식)
+      await upsertMyThumbnailLink({
+        type: "THUMBNAIL",
+        url: presignResponse.fileUrl,
+        originalFilename: file.name,
+        contentType: file.type,
+        fileSize: file.size,
+      });
+
+      console.log("프로필 사진 업로드 완료:", presignResponse.fileUrl);
+    }
+
     // 1. 프로필 생성 또는 수정 (최우선 호출)
     const profilePayload = {
       name: values.profile.name,
@@ -72,7 +105,7 @@ export async function submitTalentRegister({
     // 직무 카테고리 (PUT)
     if (dirtyFields.job?.category || dirtyFields.job?.role) {
       // TODO: job.category, job.role을 job-categories API 형식으로 매핑
-      // parallelPromises.push(updateMyJobs([{ id: 0, name: values.job.category }]));
+      // parallelPromises.push(updateJobs([{ id: 0, name: values.job.category }]));
     }
 
     // 경험 태그 (PUT)
@@ -81,39 +114,121 @@ export async function submitTalentRegister({
       // parallelPromises.push(updateMyExpTags([...]));
     }
 
-    // 학력 (POST)
-    if (dirtyFields.education) {
-      // TODO: education 필드를 educations API 형식으로 매핑
-      // parallelPromises.push(createEducation({...}));
+    // 스킬 (PUT) - 배열
+    if (dirtyFields.skills?.main && values.skills.main && values.skills.main.length > 0) {
+      // skill name을 skill id로 변환
+      const skillIds = values.skills.main
+        .map((skillName) => {
+          const skill = SKILL_OPTIONS.find((s) => s.name === skillName);
+          return skill?.id;
+        })
+        .filter((id): id is number => id !== undefined);
+
+      if (skillIds.length > 0) {
+        parallelPromises.push(updateMySkills({ ids: skillIds }));
+      }
     }
 
-    // 경력 (POST)
-    if (dirtyFields.career) {
-      // TODO: career 필드를 experiences API 형식으로 매핑
-      // parallelPromises.push(createExperience({...}));
+    // 학력 (POST) - 배열
+    if (dirtyFields.education && values.education.schoolName) {
+      const educations = [
+        {
+          schoolName: values.education.schoolName,
+          major: values.education.major,
+          status: values.education.status,
+          startDate: values.education.startDate,
+          endDate: values.education.endDate,
+          description: values.education.description,
+          degree: values.education.degree,
+        },
+      ];
+      parallelPromises.push(createEducations(educations));
     }
 
-    // 수상/활동 (POST)
-    if (dirtyFields.activities) {
-      // TODO: activities 배열을 awards API 형식으로 매핑
-      // values.activities?.forEach(activity => {...});
+    // 경력 (POST) - 배열
+    if (dirtyFields.career && values.career.companyName) {
+      const experiences = [
+        {
+          companyName: values.career.companyName,
+          department: values.career.department,
+          position: values.career.position,
+          startDate: values.career.startDate || "",
+          endDate: values.career.endDate,
+          isCurrent: values.career.isCurrent || false,
+          description: values.career.description,
+        },
+      ];
+      parallelPromises.push(createExperiences(experiences));
     }
 
-    // 언어 (POST)
-    if (dirtyFields.languages) {
-      // TODO: languages 배열을 languages API 형식으로 매핑
-      // values.languages?.forEach(lang => {...});
+    // 수상/활동 (POST) - 배열
+    if (dirtyFields.activities && values.activities && values.activities.length > 0) {
+      const awards = values.activities
+        .filter((activity) => activity.title || activity.organization)
+        .map((activity) => ({
+          title: activity.title || "",
+          organization: activity.organization || "",
+          awardDate: activity.awardDate || "",
+          description: activity.description || "",
+        }));
+
+      if (awards.length > 0) {
+        parallelPromises.push(createAwards(awards));
+      }
     }
 
-    // 자격증 (POST)
-    if (dirtyFields.certificates) {
-      // TODO: certificates 배열을 certifications API 형식으로 매핑
-      // values.certificates?.forEach(cert => {...});
+    // 언어 (POST) - 배열
+    if (dirtyFields.languages && values.languages && values.languages.length > 0) {
+      const languages = values.languages
+        .filter((lang) => lang.languageName || lang.level)
+        .map((lang) => ({
+          languageName: lang.languageName || "",
+          level: lang.level || "",
+          issueDate: lang.issueDate || "",
+        }));
+
+      if (languages.length > 0) {
+        parallelPromises.push(createLanguages(languages));
+      }
+    }
+
+    // 자격증 (POST) - 배열
+    if (dirtyFields.certificates && values.certificates && values.certificates.length > 0) {
+      const certifications = values.certificates
+        .filter((cert) => cert.name || cert.issuer)
+        .map((cert) => ({
+          name: cert.name || "",
+          issuer: cert.issuer || "",
+          issueDate: cert.issueDate || "",
+        }));
+
+      if (certifications.length > 0) {
+        parallelPromises.push(createCertifications(certifications));
+      }
     }
 
     // 링크 (POST /profile/me/links/{type})
-    if (dirtyFields.links) {
-      // TODO: links를 profile-links API 형식으로 매핑
+    if (dirtyFields.links && values.links && values.links.length > 0) {
+      const validLinks = values.links.filter((link) => link.url && link.url.trim() !== "");
+
+      // 각 링크를 개별적으로 저장 (타입: LINK)
+      for (const link of validLinks) {
+        if (!link.url) continue; // TypeScript 타입 가드
+
+        parallelPromises.push(
+          upsertMyProfileLink(
+            "LINK",
+            {
+              type: "LINK",
+              url: link.url,
+              originalFilename: "", // URL 링크는 파일명 없음
+              contentType: "text/uri-list", // URI 목록 MIME 타입
+              fileSize: 0,
+            },
+            link.id ? "PUT" : "POST" // ID가 있으면 수정, 없으면 생성
+          )
+        );
+      }
     }
 
     // 병렬 호출 실행

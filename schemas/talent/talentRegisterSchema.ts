@@ -18,15 +18,20 @@ export const talentRegisterSchema = z.object({
     role: z.string().min(1, "직군을 선택해 주세요."),
     experiences: z.array(z.string()).optional(),
   }),
-  education: z.object({
-    schoolName: z.string().optional(),
-    major: z.string().optional(),
-    status: z.enum(["ENROLLED", "GRADUATED", "WITHDRAWN", "LEAVE_OF_ABSENCE"]).optional(),
-    startDate: z.string().optional(),
-    endDate: z.string().optional(),
-    description: z.string().optional(),
-    degree: z.string().optional(),
-  }),
+  educations: z
+    .array(
+      z.object({
+        id: z.number().optional(), // 기존 학력인 경우 id 존재 (수정 시 필요)
+        schoolName: z.string().optional(),
+        major: z.string().optional(),
+        status: z.enum(["ENROLLED", "GRADUATED", "COMPLETED"]).optional(),
+        startDate: z.string().optional(),
+        endDate: z.string().optional(),
+        description: z.string().optional(),
+        degree: z.string().optional(),
+      })
+    )
+    .optional(),
   career: z.object({
     companyName: z.string().optional(),
     department: z.string().optional(),
@@ -98,15 +103,17 @@ export const defaultTalentRegisterValues: TalentRegisterFormValues = {
     role: "",
     experiences: [],
   },
-  education: {
-    schoolName: "",
-    major: "",
-    status: undefined,
-    startDate: "",
-    endDate: "",
-    description: "",
-    degree: "",
-  },
+  educations: [
+    {
+      schoolName: "",
+      major: "",
+      status: undefined,
+      startDate: "",
+      endDate: "",
+      description: "",
+      degree: "",
+    },
+  ],
   career: {
     companyName: "",
     department: "",

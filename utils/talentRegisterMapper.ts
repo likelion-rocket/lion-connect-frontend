@@ -80,23 +80,33 @@ export function mapApiDataToFormValues(
         .filter((key): key is string => key !== null),
     },
 
-    // 학력 (첫번째 항목만 사용, 배열은 나중에 지원)
-    education: data.educations[0]
-      ? {
-          schoolName: data.educations[0].schoolName,
-          major: data.educations[0].major || "",
-          status:
-            data.educations[0].status === "GRADUATED" ||
-            data.educations[0].status === "ENROLLED" ||
-            data.educations[0].status === "COMPLETED"
-              ? data.educations[0].status
-              : undefined,
-          startDate: data.educations[0].startDate,
-          endDate: data.educations[0].endDate || "",
-          description: data.educations[0].description || "",
-          degree: data.educations[0].degree || "",
-        }
-      : undefined,
+    // 학력 (배열 전체 지원)
+    educations:
+      data.educations.length > 0
+        ? data.educations.map((edu) => ({
+            id: edu.id,
+            schoolName: edu.schoolName,
+            major: edu.major || "",
+            status:
+              edu.status === "GRADUATED" || edu.status === "ENROLLED" || edu.status === "COMPLETED"
+                ? edu.status
+                : undefined,
+            startDate: edu.startDate,
+            endDate: edu.endDate || "",
+            description: edu.description || "",
+            degree: edu.degree || "",
+          }))
+        : [
+            {
+              schoolName: "",
+              major: "",
+              status: undefined,
+              startDate: "",
+              endDate: "",
+              description: "",
+              degree: "",
+            },
+          ],
 
     // 경력 (첫번째 항목만 사용)
     career: data.experiences[0]

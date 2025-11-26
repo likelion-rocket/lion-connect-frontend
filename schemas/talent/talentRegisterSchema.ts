@@ -32,21 +32,27 @@ export const talentRegisterSchema = z.object({
       })
     )
     .optional(),
-  career: z.object({
-    companyName: z.string().optional(),
-    department: z.string().optional(),
-    position: z.string().optional(),
-    startDate: z.string().optional(),
-    endDate: z.string().optional(),
-    isCurrent: z.boolean().optional(),
-    description: z.string().optional(),
-  }),
+  careers: z
+    .array(
+      z.object({
+        id: z.number().optional(), // 기존 경력인 경우 id 존재 (삭제 시 필요)
+        companyName: z.string().optional(),
+        department: z.string().optional(),
+        position: z.string().optional(),
+        startDate: z.string().optional(),
+        endDate: z.string().optional(),
+        isCurrent: z.boolean().optional(),
+        description: z.string().optional(),
+      })
+    )
+    .optional(),
   skills: z.object({
     main: z.array(z.string()).optional(),
   }),
   activities: z
     .array(
       z.object({
+        id: z.number().optional(), // 기존 수상/활동인 경우 id 존재 (삭제 시 필요)
         title: z.string().optional(),
         organization: z.string().optional(),
         awardDate: z.string().optional(),
@@ -57,6 +63,7 @@ export const talentRegisterSchema = z.object({
   languages: z
     .array(
       z.object({
+        id: z.number().optional(), // 기존 언어인 경우 id 존재 (삭제 시 필요)
         languageName: z.string().optional(),
         level: z.string().optional(),
         issueDate: z.string().optional(),
@@ -66,6 +73,7 @@ export const talentRegisterSchema = z.object({
   certificates: z
     .array(
       z.object({
+        id: z.number().optional(), // 기존 자격증인 경우 id 존재 (삭제 시 필요)
         name: z.string().optional(),
         issuer: z.string().optional(),
         issueDate: z.string().optional(),
@@ -114,15 +122,17 @@ export const defaultTalentRegisterValues: TalentRegisterFormValues = {
       degree: "",
     },
   ],
-  career: {
-    companyName: "",
-    department: "",
-    position: "",
-    startDate: "",
-    endDate: "",
-    isCurrent: false,
-    description: "",
-  },
+  careers: [
+    {
+      companyName: "",
+      department: "",
+      position: "",
+      startDate: "",
+      endDate: "",
+      isCurrent: false,
+      description: "",
+    },
+  ],
   skills: {
     main: [],
   },

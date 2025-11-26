@@ -63,10 +63,58 @@ export function useInitializeTalentForm(
     methods.reset(formValues);
 
     // reset 후 id 값이 제거되었으므로 명시적으로 복구
+    // 모든 배열 필드에 대해 동일하게 처리
+
+    // 경력 (배열 필드)
+    if (formValues.careers && formValues.careers.length > 0) {
+      formValues.careers.forEach((career, idx) => {
+        if ((career as any).id !== undefined) {
+          methods.setValue(`careers.${idx}.id`, (career as any).id);
+        }
+      });
+    }
+
+    // 학력
     if (formValues.educations && formValues.educations.length > 0) {
       formValues.educations.forEach((edu, idx) => {
         if ((edu as any).id !== undefined) {
           methods.setValue(`educations.${idx}.id`, (edu as any).id);
+        }
+      });
+    }
+
+    // 어학
+    if (formValues.languages && formValues.languages.length > 0) {
+      formValues.languages.forEach((lang, idx) => {
+        if ((lang as any).id !== undefined) {
+          methods.setValue(`languages.${idx}.id`, (lang as any).id);
+        }
+      });
+    }
+
+    // 자격증
+    if (formValues.certificates && formValues.certificates.length > 0) {
+      formValues.certificates.forEach((cert, idx) => {
+        if ((cert as any).id !== undefined) {
+          methods.setValue(`certificates.${idx}.id`, (cert as any).id);
+        }
+      });
+    }
+
+    // 수상/활동
+    if (formValues.activities && formValues.activities.length > 0) {
+      formValues.activities.forEach((activity, idx) => {
+        if ((activity as any).id !== undefined) {
+          methods.setValue(`activities.${idx}.id`, (activity as any).id);
+        }
+      });
+    }
+
+    // 링크
+    if (formValues.links && formValues.links.length > 0) {
+      formValues.links.forEach((link, idx) => {
+        if ((link as any).id !== undefined) {
+          methods.setValue(`links.${idx}.id`, (link as any).id);
         }
       });
     }

@@ -6,9 +6,16 @@ import type { LanguageRequest, LanguageResponse } from "@/types/talent";
 export type { LanguageRequest, LanguageResponse };
 export type LanguageListItem = LanguageResponse;
 
-/** 어학 생성 (POST /api/profile/Languages) */
+/** 어학 생성 (POST /api/profile/Languages) - 단일 생성 (deprecated) */
 export function createLanguage(body: LanguageRequest): Promise<LanguageResponse> {
   return post<LanguageResponse>(API_ENDPOINTS.LANGUAGES.CREATE, body, {
+    credentials: "include",
+  });
+}
+
+/** 어학 배치 생성 (POST /api/profile/Languages) - 배열 전송 */
+export function createLanguages(body: LanguageRequest[]): Promise<LanguageResponse[]> {
+  return post<LanguageResponse[]>(API_ENDPOINTS.LANGUAGES.CREATE, body, {
     credentials: "include",
   });
 }

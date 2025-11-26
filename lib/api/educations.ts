@@ -7,9 +7,16 @@ import type { EducationRequest, EducationResponse } from "@/types/talent";
 export type { EducationRequest, EducationResponse };
 export type EducationListItem = EducationResponse;
 
+/** 학력 생성 (POST /api/profile/educations) - 단일 생성 (deprecated) */
 export function createEducation(body: EducationRequest): Promise<EducationResponse> {
   return post<EducationResponse>(API_ENDPOINTS.EDUCATIONS.CREATE, body, {
-    // 세션/쿠키 쓰면 포함, 아니면 제거 가능
+    credentials: "include",
+  });
+}
+
+/** 학력 배치 생성 (POST /api/profile/educations) - 배열 전송 */
+export function createEducations(body: EducationRequest[]): Promise<EducationResponse[]> {
+  return post<EducationResponse[]>(API_ENDPOINTS.EDUCATIONS.CREATE, body, {
     credentials: "include",
   });
 }

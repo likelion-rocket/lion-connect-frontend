@@ -6,9 +6,18 @@ import type { CertificationRequest, CertificationResponse } from "@/types/talent
 export type { CertificationRequest, CertificationResponse };
 export type CertificationListItem = CertificationResponse;
 
-/** 경력 생성 (POST /api/profile/certifications) */
+/** 자격증 생성 (POST /api/profile/certifications) - 단일 생성 (deprecated) */
 export function createCertification(body: CertificationRequest): Promise<CertificationResponse> {
   return post<CertificationResponse>(API_ENDPOINTS.CERTIFICATIONS.CREATE, body, {
+    credentials: "include",
+  });
+}
+
+/** 자격증 배치 생성 (POST /api/profile/certifications) - 배열 전송 */
+export function createCertifications(
+  body: CertificationRequest[]
+): Promise<CertificationResponse[]> {
+  return post<CertificationResponse[]>(API_ENDPOINTS.CERTIFICATIONS.CREATE, body, {
     credentials: "include",
   });
 }

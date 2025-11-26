@@ -1,28 +1,21 @@
 import { post, get, del, put } from "@/lib/apiClient";
 import { API_ENDPOINTS } from "@/constants/api";
+import type { AwardRequest, AwardResponse } from "@/types/talent";
 
-export type AwardRequest = {
-  title: string;
-  organization: string; // 기존 dept → 백엔드의 description/organization 중 선택
-  awardDate: string; // YYYY-MM-DD
-  description: string; // 상세 내용 (없으면 "")
-};
-
-export type AwardResponse = {
-  id: number;
-  title: string;
-  organization: string;
-  awardDate: string;
-  description: string;
-  createdAt: string;
-  updatedAt: string;
-};
-
+// Re-export types for backwards compatibility
+export type { AwardRequest, AwardResponse };
 export type AwardListItem = AwardResponse;
 
-// CREATE
+/** 수상 생성 (POST /api/profile/awards) - 단일 생성 (deprecated) */
 export function createAward(body: AwardRequest): Promise<AwardResponse> {
   return post<AwardResponse>(API_ENDPOINTS.AWARDS.CREATE, body, {
+    credentials: "include",
+  });
+}
+
+/** 수상 배치 생성 (POST /api/profile/awards) - 배열 전송 */
+export function createAwards(body: AwardRequest[]): Promise<AwardResponse[]> {
+  return post<AwardResponse[]>(API_ENDPOINTS.AWARDS.CREATE, body, {
     credentials: "include",
   });
 }

@@ -17,7 +17,7 @@
  * formState.dirtyFields로 dirty checking하여 필요한 API만 호출
  */
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -64,14 +64,25 @@ const formResolver = zodResolver(talentRegisterSchema);
 export default function TalentRegisterPage() {
   const router = useRouter();
   const user = useAuthStore((state) => state.user);
+  const isInitialized = useAuthStore((state) => state.isInitialized);
+  const [isUserVerified, setIsUserVerified] = useState(false);
 
-  // 로그인하지 않은 사용자는 로그인 페이지로 리다이렉트
+  // 인증 상태 초기화 완료 후 사용자 확인
   useEffect(() => {
-    if (!user) {
+    // 아직 초기화 중이면 대기
+    if (!isInitialized) {
+      return;
+    }
+
+    // 초기화 완료 후 사용자 확인
+    if (user) {
+      setIsUserVerified(true);
+    } else {
+      // user가 없으면 로그인 페이지로 리다이렉트
       console.warn("⚠️ 로그인이 필요합니다. 로그인 페이지로 이동합니다.");
       router.push("/login");
     }
-  }, [user, router]);
+  }, [isInitialized, user, router]);
 
   // 페이지 진입 시 모든 데이터 조회 (자동으로 store에 저장됨)
   // 각 섹션 컴포넌트에서 useTalentRegisterStore로 직접 사용
@@ -105,6 +116,18 @@ export default function TalentRegisterPage() {
     console.log("임시 저장 내용", currentValues);
     await onSubmit(currentValues);
   };
+
+  // 사용자 인증 확인 중 로딩 상태 처리
+  if (!isUserVerified) {
+    return (
+      <div className="min-h-screen bg-bg-page flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-12 h-12 border-4 border-border-tertiary border-t-bg-accent rounded-full animate-spin" />
+          <p className="text-text-secondary">인증을 확인하는 중입니다...</p>
+        </div>
+      </div>
+    );
+  }
 
   // 로딩 상태 처리
   if (isLoading) {

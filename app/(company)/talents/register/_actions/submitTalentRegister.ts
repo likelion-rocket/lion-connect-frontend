@@ -180,7 +180,9 @@ export async function submitTalentRegister({
 
     // 학력 (POST/PUT) - 배열
     // id가 있으면 PUT으로 개별 수정, 없으면 POST로 일괄 생성
-    if (dirtyFields.educations && values.educations && values.educations.length > 0) {
+    // 주의: dirtyFields.educations는 배열 길이 변화(삭제)를 감지하지 못함
+    // → values.educations이 존재하면 항상 체크 (삭제 감지 위해)
+    if (values.educations && values.educations.length > 0) {
       const validEducations = values.educations.filter(
         (edu) => edu.schoolName || edu.major || edu.degree
       );
@@ -190,7 +192,7 @@ export async function submitTalentRegister({
         const existingEducations = validEducations.filter((edu) => edu.id);
         const newEducations = validEducations.filter((edu) => !edu.id);
 
-        // 기존 학력: 각각 PUT 요청
+        // 기존 학력: 각각 PUT 요청 (id 값이 동일하거나 변경된 경우)
         existingEducations.forEach((edu) => {
           if (edu.id) {
             parallelPromises.push(
@@ -227,7 +229,10 @@ export async function submitTalentRegister({
     }
 
     // 경력 (POST/PUT) - 배열
-    if (dirtyFields.careers && values.careers && values.careers.length > 0) {
+    // id가 있으면 PUT으로 개별 수정, 없으면 POST로 일괄 생성
+    // 주의: dirtyFields.careers는 배열 길이 변화(삭제)를 감지하지 못함
+    // → values.careers이 존재하면 항상 체크 (삭제 감지 위해)
+    if (values.careers && values.careers.length > 0) {
       const validCareers = values.careers.filter((career) => career.companyName || career.position);
 
       if (validCareers.length > 0) {
@@ -235,7 +240,7 @@ export async function submitTalentRegister({
         const existingCareers = validCareers.filter((career) => career.id);
         const newCareers = validCareers.filter((career) => !career.id);
 
-        // 기존 경력: 각각 PUT 요청
+        // 기존 경력: 각각 PUT 요청 (id 값이 동일하거나 변경된 경우)
         existingCareers.forEach((career) => {
           if (career.id) {
             parallelPromises.push(
@@ -272,7 +277,10 @@ export async function submitTalentRegister({
     }
 
     // 수상/활동 (POST/PUT) - 배열
-    if (dirtyFields.activities && values.activities && values.activities.length > 0) {
+    // id가 있으면 PUT으로 개별 수정, 없으면 POST로 일괄 생성
+    // 주의: dirtyFields.activities는 배열 길이 변화(삭제)를 감지하지 못함
+    // → values.activities이 존재하면 항상 체크 (삭제 감지 위해)
+    if (values.activities && values.activities.length > 0) {
       const validActivities = values.activities.filter(
         (activity) => activity.title || activity.organization
       );
@@ -282,7 +290,7 @@ export async function submitTalentRegister({
         const existingActivities = validActivities.filter((activity) => activity.id);
         const newActivities = validActivities.filter((activity) => !activity.id);
 
-        // 기존 활동: 각각 PUT 요청
+        // 기존 활동: 각각 PUT 요청 (id 값이 동일하거나 변경된 경우)
         existingActivities.forEach((activity) => {
           if (activity.id) {
             parallelPromises.push(
@@ -313,7 +321,10 @@ export async function submitTalentRegister({
     }
 
     // 언어 (POST/PUT) - 배열
-    if (dirtyFields.languages && values.languages && values.languages.length > 0) {
+    // id가 있으면 PUT으로 개별 수정, 없으면 POST로 일괄 생성
+    // 주의: dirtyFields.languages는 배열 길이 변화(삭제)를 감지하지 못함
+    // → values.languages이 존재하면 항상 체크 (삭제 감지 위해)
+    if (values.languages && values.languages.length > 0) {
       const validLanguages = values.languages.filter((lang) => lang.languageName || lang.level);
 
       if (validLanguages.length > 0) {
@@ -321,7 +332,7 @@ export async function submitTalentRegister({
         const existingLanguages = validLanguages.filter((lang) => lang.id);
         const newLanguages = validLanguages.filter((lang) => !lang.id);
 
-        // 기존 언어: 각각 PUT 요청
+        // 기존 언어: 각각 PUT 요청 (id 값이 동일하거나 변경된 경우)
         existingLanguages.forEach((lang) => {
           if (lang.id) {
             parallelPromises.push(
@@ -350,7 +361,10 @@ export async function submitTalentRegister({
     }
 
     // 자격증 (POST/PUT) - 배열
-    if (dirtyFields.certificates && values.certificates && values.certificates.length > 0) {
+    // id가 있으면 PUT으로 개별 수정, 없으면 POST로 일괄 생성
+    // 주의: dirtyFields.certificates는 배열 길이 변화(삭제)를 감지하지 못함
+    // → values.certificates이 존재하면 항상 체크 (삭제 감지 위해)
+    if (values.certificates && values.certificates.length > 0) {
       const validCertificates = values.certificates.filter((cert) => cert.name || cert.issuer);
 
       if (validCertificates.length > 0) {
@@ -358,7 +372,7 @@ export async function submitTalentRegister({
         const existingCertificates = validCertificates.filter((cert) => cert.id);
         const newCertificates = validCertificates.filter((cert) => !cert.id);
 
-        // 기존 자격증: 각각 PUT 요청
+        // 기존 자격증: 각각 PUT 요청 (id 값이 동일하거나 변경된 경우)
         existingCertificates.forEach((cert) => {
           if (cert.id) {
             parallelPromises.push(
@@ -387,7 +401,10 @@ export async function submitTalentRegister({
     }
 
     // 링크 (POST/PUT) - 배열
-    if (dirtyFields.links && values.links && values.links.length > 0) {
+    // id가 있으면 PUT으로 개별 수정, 없으면 POST로 일괄 생성
+    // 주의: dirtyFields.links는 배열 길이 변화(삭제)를 감지하지 못함
+    // → values.links이 존재하면 항상 체크 (삭제 감지 위해)
+    if (values.links && values.links.length > 0) {
       const validLinks = values.links.filter((link) => link.url && link.url.trim() !== "");
 
       if (validLinks.length > 0) {
@@ -395,7 +412,7 @@ export async function submitTalentRegister({
         const existingLinks = validLinks.filter((link) => link.id);
         const newLinks = validLinks.filter((link) => !link.id);
 
-        // 기존 링크: 각각 PUT 요청
+        // 기존 링크: 각각 PUT 요청 (id 값이 동일하거나 변경된 경우)
         existingLinks.forEach((link) => {
           if (link.id) {
             parallelPromises.push(

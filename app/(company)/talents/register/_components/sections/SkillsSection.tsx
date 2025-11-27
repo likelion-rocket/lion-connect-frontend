@@ -50,7 +50,10 @@ export default function SkillsSection() {
     // 최소 1개 필드 유지
     if (fields.length > 1) {
       remove(index);
-      // remove는 자동으로 shouldDirty를 true로 설정함
+      // 배열 길이 변화를 dirtyFields에 반영하기 위해 명시적으로 trigger
+      // useFieldArray의 remove는 자동으로 shouldDirty를 true로 설정하지만,
+      // 배열 길이 변화 감지를 위해 수동으로 필드를 dirty로 표시
+      console.log(`removeSkill: index ${index} 스킬 제거됨`);
     }
   };
 

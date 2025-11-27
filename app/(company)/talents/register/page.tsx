@@ -143,7 +143,11 @@ export default function TalentRegisterPage() {
    */
   const onSubmit = async (values: TalentRegisterFormValues) => {
     console.log("onSubmit 폼 values:", values);
+    console.log("onSubmit formState.dirtyFields:", methods.formState.dirtyFields);
+    console.log("onSubmit dirtyFields.skills:", methods.formState.dirtyFields.skills);
+
     console.log("skills.main 배열:", values.skills?.main);
+    console.log("skills.main 배열 길이:", values.skills?.main?.length);
     if (values.skills?.main && values.skills.main.length > 0) {
       values.skills.main.forEach((skill, idx) => {
         console.log(`skills.main[${idx}]:`, { id: (skill as any).id, name: (skill as any).name });

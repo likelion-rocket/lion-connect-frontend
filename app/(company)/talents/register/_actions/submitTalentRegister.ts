@@ -150,16 +150,27 @@ export async function submitTalentRegister({
     // 스킬 (PUT) - 배열
     // 주의: Skills는 {ids: [id1, id2, ...]} 형식으로 전송하며, DELETE 요청이 없음
     // 모든 스킬을 한번에 보내서 덮어씀
-    if (dirtyFields.skills?.main && values.skills.main && values.skills.main.length > 0) {
+    //
+    // 중요: dirtyFields.skills?.main만으로는 배열 길이 변화(삭제)를 감지하지 못함
+    // → values.skills.main이 존재하면 항상 API 호출 (삭제 감지 위해)
+    const skillsChanged =
+      dirtyFields.skills?.main || (values.skills?.main && values.skills.main.length > 0);
+
+    if (skillsChanged) {
+      console.log("submitTalentRegister - skills 변경 감지:", {
+        dirtyFields: dirtyFields.skills?.main,
+        valuesLength: values.skills?.main?.length,
+      });
+
       // 기존 스킬 (id가 있는 것) + 신규 스킬 (name으로 조회한 id) 통합
       const skillIds: number[] = [];
 
-      values.skills.main.forEach((skill) => {
+      values.skills?.main?.forEach((skill) => {
         const skillItem = skill as { id?: number; name: string };
         // 기존 스킬: id가 있으면 그대로 사용
         if (skillItem.id !== undefined) {
           skillIds.push(skillItem.id);
-        } else if (skillItem.name) {
+        } else if (skillItem.name && skillItem.name.trim() !== "") {
           // 신규 스킬: name을 SKILL_OPTIONS에서 조회하여 id로 변환
           const foundSkill = SKILL_OPTIONS.find((s) => s.name === skillItem.name);
           if (foundSkill?.id) {
@@ -170,6 +181,8 @@ export async function submitTalentRegister({
 
       // 빈 문자열 필드는 제외
       const validSkillIds = skillIds.filter((id) => id !== undefined);
+
+      console.log("submitTalentRegister - 최종 skillIds:", validSkillIds);
 
       if (validSkillIds.length > 0) {
         parallelPromises.push(updateMySkills({ ids: validSkillIds }));

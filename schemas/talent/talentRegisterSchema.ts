@@ -11,27 +11,27 @@ export const talentRegisterSchema = z.object({
     name: z.string().min(1, "이름은 필수입니다."),
     phone: z.string().min(1, "전화번호는 필수입니다."),
     email: z.string().email("이메일 형식이 올바르지 않습니다."),
-    introduction: z.string().optional(),
+    introduction: z.string().min(1, "간단 소개는 필수입니다."),
   }),
   job: z.object({
-    category: z.string().min(1, "직무를 선택해 주세요."),
-    role: z.string().min(1, "직군을 선택해 주세요."),
+    category: z.string().min(1, "직군을 선택해 주세요."),
+    role: z.string().min(1, "직무를 선택해 주세요."),
     experiences: z.array(z.string()).optional(),
   }),
   educations: z
     .array(
       z.object({
         id: z.number().optional(), // 기존 학력인 경우 id 존재 (수정 시 필요)
-        schoolName: z.string().optional(),
-        major: z.string().optional(),
-        status: z.enum(["ENROLLED", "GRADUATED", "COMPLETED"]).optional(),
-        startDate: z.string().optional(),
-        endDate: z.string().optional(),
-        description: z.string().optional(),
-        degree: z.string().optional(),
+        schoolName: z.string().min(1, "학교명은 필수입니다."),
+        major: z.string().min(1, "전공은 필수입니다."),
+        status: z.enum(["ENROLLED", "GRADUATED", "COMPLETED"]),
+        startDate: z.string().min(1, "시작일은 필수입니다."),
+        endDate: z.string().min(1, "종료일은 필수입니다."),
+        description: z.string().min(1, "설명은 필수입니다."),
+        degree: z.string().min(1, "학위는 필수입니다."),
       })
     )
-    .optional(),
+    .min(1, "최소 1개의 학력을 입력해주세요."),
   careers: z
     .array(
       z.object({
@@ -51,7 +51,7 @@ export const talentRegisterSchema = z.object({
       .array(
         z.object({
           id: z.number().optional(), // 기존 스킬인 경우 id 존재 (수정/삭제 시 필요)
-          name: z.string().min(1, "스킬명은 필수입니다."),
+          name: z.string().optional(),
         })
       )
       .optional(),
@@ -98,7 +98,10 @@ export const talentRegisterSchema = z.object({
       })
     )
     .optional(),
-  portfolio: z.string().url().optional().or(z.literal("")),
+  portfolio: z
+    .string()
+    .url("올바른 URL 형식을 입력해주세요.")
+    .min(1, "포트폴리오 링크는 필수입니다."),
   likelion: z.object({
     code: z.string().optional(),
   }),
@@ -125,31 +128,21 @@ export const defaultTalentRegisterValues: TalentRegisterFormValues = {
     {
       schoolName: "",
       major: "",
-      status: undefined,
+      status: "ENROLLED" as "ENROLLED" | "GRADUATED" | "COMPLETED",
       startDate: "",
       endDate: "",
       description: "",
       degree: "",
     },
   ],
-  careers: [
-    {
-      companyName: "",
-      department: "",
-      position: "",
-      startDate: "",
-      endDate: "",
-      isCurrent: false,
-      description: "",
-    },
-  ],
+  careers: [],
   skills: {
-    main: [{ name: "" }],
+    main: [],
   },
-  activities: [{ title: "", organization: "", awardDate: "", description: "" }],
-  languages: [{ languageName: "", level: "", issueDate: "" }],
-  certificates: [{ name: "", issuer: "", issueDate: "" }],
-  links: [{ type: "LINK", url: "" }],
+  activities: [],
+  languages: [],
+  certificates: [],
+  links: [],
   portfolio: "",
   likelion: {
     code: "",

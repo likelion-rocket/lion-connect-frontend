@@ -78,8 +78,12 @@ export default function TalentRegisterNav({
           type={formId ? "submit" : "button"}
           form={formId}
           onClick={!formId ? onSubmit : undefined}
+          disabled={isSubmitDisabled}
           className={cn(
-            "px-6 py-2.5 md:py-3 cursor-pointer rounded-lg text-base md:text-lg font-medium transition-colors border"
+            "px-4 py-2.5 md:py-3 rounded-lg text-base md:text-lg font-bold transition-colors",
+            isSubmitDisabled
+              ? "bg-bg-tertiary text-text-quaternary outline-1 outline-border-quaternary -outline-offset-1 cursor-not-allowed"
+              : "bg-bg-accent text-text-inverse-primary hover:bg-brand-06 cursor-pointer"
           )}
         >
           작성 완료

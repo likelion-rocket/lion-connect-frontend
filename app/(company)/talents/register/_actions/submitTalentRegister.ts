@@ -418,6 +418,9 @@ export async function submitTalentRegister({
             parallelPromises.push(
               updateProfileLink(link.id, {
                 url: link.url || "",
+                originalFilename: link.originalFilename || "text/uri",
+                contentType: link.contentType || "text/uri-list",
+                fileSize: link.fileSize || 0,
               })
             );
           }

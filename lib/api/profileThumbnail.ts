@@ -89,7 +89,15 @@ export function deleteMyThumbnailLink(): Promise<void> {
 }
 
 /** 프로필 링크 수정 (PUT /api/profile/me/links/{id}) */
-export function updateProfileLink(id: number, body: { url: string }): Promise<ProfileLink> {
+export function updateProfileLink(
+  id: number,
+  body: {
+    url: string;
+    originalFilename?: string;
+    contentType?: string;
+    fileSize?: number;
+  }
+): Promise<ProfileLink> {
   return put<ProfileLink>(`/profile/me/links/${id}`, body, {
     credentials: "include",
   });

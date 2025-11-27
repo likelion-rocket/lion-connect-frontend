@@ -92,6 +92,9 @@ export const talentRegisterSchema = z.object({
       z.object({
         id: z.number().optional(), // 기존 링크인 경우 id 존재 (삭제 시 필요)
         url: z.string().url().optional().or(z.literal("")),
+        originalFilename: z.string().optional(), // 파일명 (PUT 요청 시 필요)
+        contentType: z.string().optional(), // MIME 타입 (PUT 요청 시 필요)
+        fileSize: z.number().optional(), // 파일 크기 (PUT 요청 시 필요)
       })
     )
     .optional(),

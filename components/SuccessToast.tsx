@@ -1,29 +1,13 @@
 "use client";
 
 import { useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { useToastStore } from "@/store/toastStore";
 
 const TOAST_DURATION = 3000; // 3초
 
 export default function SuccessToast() {
-  const searchParams = useSearchParams();
-  const router = useRouter();
-  const { isVisible, message, showToast, hideToast } = useToastStore();
-
-  // URL 파라미터로부터 토스트 표시
-  useEffect(() => {
-    const success = searchParams.get("success");
-
-    if (success === "profile_registered") {
-      showToast("인재 프로필이 성공적으로 등록되었습니다! ");
-
-      // URL에서 success 파라미터 제거
-      const newUrl = window.location.pathname;
-      router.replace(newUrl, { scroll: false });
-    }
-  }, [searchParams, router, showToast]);
+  const { isVisible, message, hideToast } = useToastStore();
 
   // isVisible이 true가 되면 타이머 시작
   useEffect(() => {

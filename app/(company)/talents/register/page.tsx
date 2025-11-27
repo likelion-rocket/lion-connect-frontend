@@ -37,6 +37,7 @@ import { useInitializeTalentForm } from "@/hooks/talent/queries/useInitializeTal
 // Store
 import { useTalentRegisterStore } from "@/store/talentRegisterStore";
 import { useAuthStore } from "@/store/authStore";
+import { useToastStore } from "@/store/toastStore";
 
 // 컴포넌트
 import TalentRegisterNav from "./_components/TalentRegisterNav";
@@ -66,6 +67,7 @@ export default function TalentRegisterPage() {
   const user = useAuthStore((state) => state.user);
   const isInitialized = useAuthStore((state) => state.isInitialized);
   const [isUserVerified, setIsUserVerified] = useState(false);
+  const showToast = useToastStore((state) => state.showToast);
 
   // 인증 상태 초기화 완료 후 사용자 확인
   useEffect(() => {
@@ -118,10 +120,11 @@ export default function TalentRegisterPage() {
       existingProfileId: existingProfile?.id,
     });
 
-    if (!result.success) {
+    if (result.success) {
+      showToast("임시 저장되었습니다!");
+    } else {
       // TODO: 에러 처리
     }
-    // 임시 저장 시에는 페이지 이동 없음 (토스트만 표시)
   };
 
   // 사용자 인증 확인 중 로딩 상태 처리
@@ -156,8 +159,9 @@ export default function TalentRegisterPage() {
     });
 
     if (result.success) {
-      // 성공 시 랜딩페이지로 이동하면서 성공 메시지 표시
-      router.push("/?success=profile_registered");
+      // 성공 시 토스트 표시 후 랜딩페이지로 이동
+      showToast("인재 프로필이 성공적으로 등록되었습니다!");
+      router.push("/");
     } else {
       // TODO: 에러 처리
     }

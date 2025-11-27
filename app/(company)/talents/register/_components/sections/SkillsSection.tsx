@@ -26,17 +26,24 @@ export default function SkillsSection() {
   const skillsValues = useWatch({
     control,
     name: "skills.main",
-  }) as string[] | undefined;
+  }) as { id?: number; name: string }[] | undefined;
+
+  // 디버깅 로그
+  useEffect(() => {
+    console.log("SkillsSection - fields:", fields);
+    console.log("SkillsSection - skillsValues:", skillsValues);
+  }, [fields, skillsValues]);
 
   // 최소 1개 필드 유지 - 초기 로드 시 필드가 없으면 빈 필드 추가
   useEffect(() => {
     if (fields.length === 0) {
-      append("" as any);
+      console.log("SkillsSection - fields가 비어있어서 기본 필드 추가");
+      append({ name: "" } as any);
     }
   }, [fields.length, append]);
 
   const addSkill = () => {
-    append("" as any);
+    append({ name: "" } as any);
   };
 
   const removeSkill = (index: number) => {
@@ -48,7 +55,7 @@ export default function SkillsSection() {
   };
 
   const updateSkill = (index: number, value: string) => {
-    setValue(`skills.main.${index}`, value, { shouldValidate: true, shouldDirty: true });
+    setValue(`skills.main.${index}.name`, value, { shouldValidate: true, shouldDirty: true });
   };
 
   return (
@@ -75,7 +82,7 @@ export default function SkillsSection() {
             {fields.map((field, index) => (
               <SkillInput
                 key={field.id}
-                value={(skillsValues?.[index] as string) || ""}
+                value={(skillsValues?.[index]?.name as string) || ""}
                 onChange={(value) => updateSkill(index, value)}
                 onDelete={fields.length > 1 ? () => removeSkill(index) : undefined}
               />

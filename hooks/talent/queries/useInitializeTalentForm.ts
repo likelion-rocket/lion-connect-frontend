@@ -118,12 +118,12 @@ export function useInitializeTalentForm(
       });
     }
 
-    // 링크 (id, url 명시적 복구)
+    // 링크 (type, url 명시적 복구)
     if (formValues.links && formValues.links.length > 0) {
       formValues.links.forEach((link, idx) => {
-        const linkItem = link as { id?: number; url?: string };
-        if (linkItem.id !== undefined) {
-          methods.setValue(`links.${idx}.id`, linkItem.id);
+        const linkItem = link as { type?: string; url?: string };
+        if (linkItem.type !== undefined) {
+          methods.setValue(`links.${idx}.type`, linkItem.type);
         }
         if (linkItem.url !== undefined) {
           methods.setValue(`links.${idx}.url`, linkItem.url);

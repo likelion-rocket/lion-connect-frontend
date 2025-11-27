@@ -21,7 +21,7 @@ type RoleBasedNavLink = RoleBasedItem<NavLink>;
  * - 일반 유저: 인재탐색, 기업문의, 참여기업 (3개)
  */
 const navLinks: RoleBasedNavLink[] = [
-  { label: "인재탐색", href: "/talents" },
+  // { label: "인재탐색", href: "/talents" },
   { label: "기업문의", href: "/#business-connect" },
   { label: "인재등록", href: "/talents/register" },
   // { label: "참여기업", href: "/talents/partners" },

@@ -24,8 +24,6 @@ export function useLogout() {
       // Zustand 상태 초기화 (액세스 토큰, 사용자 정보 삭제)
       clearAuth();
 
-      console.log("Logout success");
-
       // 로그인 페이지로 리다이렉트
       router.push("/login");
     },

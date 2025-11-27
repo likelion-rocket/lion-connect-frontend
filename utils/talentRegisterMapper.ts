@@ -43,29 +43,6 @@ export function mapApiDataToFormValues(
   },
   user: User | null
 ): Partial<TalentRegisterFormValues> {
-  // 디버깅: jobCategories 데이터 확인
-  console.log("mapApiDataToFormValues - jobCategories:", data.jobCategories);
-  if (data.jobCategories.length > 0) {
-    console.log(
-      "jobCategories[0] (직군):",
-      data.jobCategories[0],
-      "→ findJobGroupById 결과:",
-      findJobGroupById(data.jobCategories[0].id)
-    );
-  }
-  if (data.jobCategories.length > 1) {
-    console.log(
-      "jobCategories[1] (직무):",
-      data.jobCategories[1],
-      "→ findJobRoleById 결과:",
-      findJobRoleById(data.jobCategories[1].id)
-    );
-  }
-
-  // 디버깅: skills 데이터 확인
-  console.log("mapApiDataToFormValues - skills 원본:", data.skills);
-  console.log("mapApiDataToFormValues - skills 개수:", data.skills.length);
-
   // 프로필 썸네일 찾기
   const thumbnail = data.profileLinks.find((link) => link.type === "THUMBNAIL");
 
@@ -157,19 +134,15 @@ export function mapApiDataToFormValues(
           ],
 
     // 스킬 (SkillResponse[] → {id, name}[] 구조로 변경하여 명시적 id 관리)
-    skills: (() => {
-      const result = {
-        main:
-          data.skills.length > 0
-            ? data.skills.map((skill) => ({
-                id: skill.id,
-                name: skill.name,
-              }))
-            : [{ name: "" }],
-      };
-      console.log("mapApiDataToFormValues - skills 매핑 결과:", result);
-      return result;
-    })(),
+    skills: {
+      main:
+        data.skills.length > 0
+          ? data.skills.map((skill) => ({
+              id: skill.id,
+              name: skill.name,
+            }))
+          : [{ name: "" }],
+    },
 
     // 수상/활동 (awards → activities 매핑)
     activities:

@@ -22,9 +22,6 @@ export default function PorfolioCard({
   className = "",
   defaultOpen = false,
 }: PorfolioCardProps) {
-  console.log("[PortfolioCard] fileUrl:", fileUrl);
-  console.log("[PortfolioCard] isPdf:", fileUrl ? isPdfUrl(fileUrl) : "N/A");
-
   return (
     <details
       className={cn(

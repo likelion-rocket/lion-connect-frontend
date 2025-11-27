@@ -39,8 +39,6 @@ export function useLogin() {
     },
     onSuccess: (data: LoginResponse) => {
       // 로그인 성공 시 Zustand에 토큰과 사용자 정보 저장
-      console.log("Login success:", data.message);
-
       // Zustand store에 액세스 토큰과 사용자 정보 저장
       setAuth(data.accessToken, data.user);
     },

@@ -35,9 +35,6 @@ export function useSignup() {
       }
     },
     onSuccess: (_data: SignupResponse) => {
-      // 회원가입 성공 로깅
-      console.log("Signup successful");
-
       // TODO: 성공 메시지 표시 (Toast 등)
 
       // 토큰이 있으면 저장 (선택적)

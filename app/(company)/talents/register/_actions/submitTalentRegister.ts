@@ -71,11 +71,9 @@ export async function submitTalentRegister({
     if (existingProfileId) {
       // ✅ 프로필이 이미 존재 → PUT 요청
       profileResponse = await updateMyProfile(profilePayload);
-      console.log("프로필 수정 완료:", profileResponse.id);
     } else {
       // ✅ 프로필이 없음 → POST 요청
       profileResponse = await createProfile(profilePayload);
-      console.log("프로필 생성 완료:", profileResponse.id);
     }
 
     // 2. 프로필 사진 업로드 (프로필 생성 후 처리)
@@ -99,8 +97,6 @@ export async function submitTalentRegister({
         contentType: file.type,
         fileSize: file.size,
       });
-
-      console.log("프로필 사진 업로드 완료:", presignResponse.fileUrl);
     }
 
     // 3. 나머지 병렬 저장
@@ -157,11 +153,6 @@ export async function submitTalentRegister({
       dirtyFields.skills?.main || (values.skills?.main && values.skills.main.length > 0);
 
     if (skillsChanged) {
-      console.log("submitTalentRegister - skills 변경 감지:", {
-        dirtyFields: dirtyFields.skills?.main,
-        valuesLength: values.skills?.main?.length,
-      });
-
       // 기존 스킬 (id가 있는 것) + 신규 스킬 (name으로 조회한 id) 통합
       const skillIds: number[] = [];
 
@@ -181,8 +172,6 @@ export async function submitTalentRegister({
 
       // 빈 문자열 필드는 제외
       const validSkillIds = skillIds.filter((id) => id !== undefined);
-
-      console.log("submitTalentRegister - 최종 skillIds:", validSkillIds);
 
       if (validSkillIds.length > 0) {
         parallelPromises.push(updateMySkills({ ids: validSkillIds }));
@@ -443,11 +432,9 @@ export async function submitTalentRegister({
       await Promise.all(parallelPromises);
     }
 
-    console.log("인재 등록 완료!");
     // TODO: 성공 시 리다이렉트 또는 토스트 메시지
     return { success: true };
   } catch (error) {
-    console.error("인재 등록 실패:", error);
     // TODO: 에러 처리 (ApiError 타입 체크)
     return { success: false, error };
   }

@@ -45,19 +45,15 @@ export default function EducationItem({ index, educationId, onDelete }: Educatio
 
   // DELETE 핸들러
   const handleDelete = async () => {
-    console.log("DELETE 버튼 클릭됨:", { index, educationId });
     if (!onDelete) {
-      console.warn("onDelete 핸들러가 없습니다");
       return;
     }
 
     try {
       setIsDeleting(true);
-      console.log("삭제 시작...");
       await onDelete(index, educationId);
-      console.log("삭제 완료");
     } catch (error) {
-      console.error("학력 삭제 중 오류:", error);
+      // Error handling
     } finally {
       setIsDeleting(false);
     }

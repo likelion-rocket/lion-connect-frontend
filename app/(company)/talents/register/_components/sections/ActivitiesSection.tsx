@@ -38,7 +38,6 @@ export default function ActivitiesSection() {
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "활동 삭제에 실패했습니다";
       setDeleteError(errorMessage);
-      console.error("활동 삭제 중 오류:", error);
     }
   };
 
@@ -121,19 +120,15 @@ function ActivityItem({
 
   // DELETE 핸들러
   const handleDelete = async () => {
-    console.log("DELETE 버튼 클릭됨:", { index, activityId });
     if (!onDelete) {
-      console.warn("onDelete 핸들러가 없습니다");
       return;
     }
 
     try {
       setIsDeleting(true);
-      console.log("삭제 시작...");
       await onDelete(index, activityId);
-      console.log("삭제 완료");
     } catch (error) {
-      console.error("활동 삭제 중 오류:", error);
+      // Error handling
     } finally {
       setIsDeleting(false);
     }

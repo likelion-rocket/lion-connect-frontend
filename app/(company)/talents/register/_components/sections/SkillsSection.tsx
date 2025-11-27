@@ -28,16 +28,9 @@ export default function SkillsSection() {
     name: "skills.main",
   }) as { id?: number; name: string }[] | undefined;
 
-  // 디버깅 로그
-  useEffect(() => {
-    console.log("SkillsSection - fields:", fields);
-    console.log("SkillsSection - skillsValues:", skillsValues);
-  }, [fields, skillsValues]);
-
   // 최소 1개 필드 유지 - 초기 로드 시 필드가 없으면 빈 필드 추가
   useEffect(() => {
     if (fields.length === 0) {
-      console.log("SkillsSection - fields가 비어있어서 기본 필드 추가");
       append({ name: "" } as any);
     }
   }, [fields.length, append]);
@@ -53,7 +46,6 @@ export default function SkillsSection() {
       // 배열 길이 변화를 dirtyFields에 반영하기 위해 명시적으로 trigger
       // useFieldArray의 remove는 자동으로 shouldDirty를 true로 설정하지만,
       // 배열 길이 변화 감지를 위해 수동으로 필드를 dirty로 표시
-      console.log(`removeSkill: index ${index} 스킬 제거됨`);
     }
   };
 

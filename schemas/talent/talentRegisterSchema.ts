@@ -47,7 +47,14 @@ export const talentRegisterSchema = z.object({
     )
     .optional(),
   skills: z.object({
-    main: z.array(z.string()).optional(),
+    main: z
+      .array(
+        z.object({
+          id: z.number().optional(), // 기존 스킬인 경우 id 존재 (수정/삭제 시 필요)
+          name: z.string().min(1, "스킬명은 필수입니다."),
+        })
+      )
+      .optional(),
   }),
   activities: z
     .array(
@@ -134,7 +141,7 @@ export const defaultTalentRegisterValues: TalentRegisterFormValues = {
     },
   ],
   skills: {
-    main: [],
+    main: [{ name: "" }],
   },
   activities: [{ title: "", organization: "", awardDate: "", description: "" }],
   languages: [{ languageName: "", level: "", issueDate: "" }],

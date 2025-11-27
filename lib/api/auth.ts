@@ -19,8 +19,6 @@ import { API_ENDPOINTS, API_BASE_URL } from "@/constants/api";
  * - 리프레시 토큰: 백엔드에서 HttpOnly 쿠키로 자동 설정
  */
 export async function loginAPI(data: LoginFormData): Promise<LoginResponse> {
-  console.log("🔐 [loginAPI] 로그인 시작");
-
   // 백엔드 직접 호출 (fetch 사용 - Response 헤더 접근 필요)
   const response = await fetch(`${API_BASE_URL}${API_ENDPOINTS.AUTH.LOGIN}`, {
     method: "POST",
@@ -34,22 +32,14 @@ export async function loginAPI(data: LoginFormData): Promise<LoginResponse> {
     }),
   });
 
-  console.log("🔐 [loginAPI] 응답 상태:", response.status);
-
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
     throw new Error(errorData.message || "로그인에 실패했습니다");
   }
 
-  // Set-Cookie 헤더 확인 (디버깅용 - CORS 제한으로 보이지 않을 수 있음)
-  const setCookieHeader = response.headers.get("Set-Cookie");
-  console.log("🔐 [loginAPI] Set-Cookie 헤더:", setCookieHeader || "없음 (CORS 제한)");
-
   // Authorization 헤더에서 액세스 토큰 추출
   const authHeader = response.headers.get("Authorization");
   const accessToken = authHeader?.replace("Bearer ", "") || "";
-
-  console.log("🔐 [loginAPI] Authorization 헤더:", authHeader ? "존재" : "없음");
 
   if (!accessToken) {
     throw new Error("액세스 토큰을 받지 못했습니다");
@@ -62,22 +52,6 @@ export async function loginAPI(data: LoginFormData): Promise<LoginResponse> {
   if (!responseData.user) {
     throw new Error("사용자 정보를 받지 못했습니다");
   }
-
-  // 로그인 후 쿠키 확인
-  setTimeout(() => {
-    const cookies = document.cookie;
-    const hasRefreshToken = cookies.includes("refreshToken");
-    console.log(
-      "🔐 [loginAPI] 로그인 후 쿠키 확인:",
-      hasRefreshToken ? "✅ refreshToken 존재" : "❌ refreshToken 없음"
-    );
-    if (!hasRefreshToken) {
-      console.warn("⚠️ [loginAPI] 백엔드가 refreshToken 쿠키를 설정하지 않았습니다!");
-      console.log("🔐 [loginAPI] 현재 모든 쿠키:", cookies);
-    }
-  }, 100);
-
-  console.log("✅ [loginAPI] 로그인 성공:", { email: responseData.user.email });
 
   // 액세스 토큰을 포함한 응답 반환
   return {

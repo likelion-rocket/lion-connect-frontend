@@ -79,7 +79,6 @@ export default function TalentRegisterPage() {
       setIsUserVerified(true);
     } else {
       // user가 없으면 로그인 페이지로 리다이렉트
-      console.warn("⚠️ 로그인이 필요합니다. 로그인 페이지로 이동합니다.");
       router.push("/login");
     }
   }, [isInitialized, user, router]);
@@ -113,7 +112,6 @@ export default function TalentRegisterPage() {
    */
   const handleTempSave = async () => {
     const currentValues = methods.getValues();
-    console.log("임시 저장 내용", currentValues);
     await onSubmit(currentValues);
   };
 
@@ -142,25 +140,6 @@ export default function TalentRegisterPage() {
    * submitTalentRegister 액션을 호출하여 처리
    */
   const onSubmit = async (values: TalentRegisterFormValues) => {
-    console.log("onSubmit 폼 values:", values);
-    console.log("onSubmit formState.dirtyFields:", methods.formState.dirtyFields);
-    console.log("onSubmit dirtyFields.skills:", methods.formState.dirtyFields.skills);
-
-    console.log("skills.main 배열:", values.skills?.main);
-    console.log("skills.main 배열 길이:", values.skills?.main?.length);
-    if (values.skills?.main && values.skills.main.length > 0) {
-      values.skills.main.forEach((skill, idx) => {
-        console.log(`skills.main[${idx}]:`, { id: (skill as any).id, name: (skill as any).name });
-      });
-    }
-
-    console.log("educations 배열:", values.educations);
-    if (values.educations && values.educations.length > 0) {
-      values.educations.forEach((edu, idx) => {
-        console.log(`educations[${idx}]:`, { id: edu.id, schoolName: edu.schoolName });
-      });
-    }
-
     const result = await submitTalentRegister({
       values,
       methods,

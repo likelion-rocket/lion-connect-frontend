@@ -27,7 +27,7 @@ export function useCreateInquiry() {
       }
     },
     onSuccess: () => {
-      console.log("Inquiry submitted successfully");
+      // Success handling
     },
     // 조건부 재시도: 네트워크 오류나 타임아웃만 재시도
     retry: (failureCount, error) => {

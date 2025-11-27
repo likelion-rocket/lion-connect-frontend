@@ -51,16 +51,6 @@ export function useInitializeTalentForm(
     // API 데이터를 폼 형식으로 변환
     const formValues = mapApiDataToFormValues(storeData, user);
 
-    console.log("mapper 결과 formValues:", formValues);
-    console.log("mapper 결과 formValues.skills:", formValues.skills);
-
-    if (formValues.educations) {
-      console.log("educations 배열:", formValues.educations);
-      formValues.educations.forEach((edu, idx) => {
-        console.log(`educations[${idx}]:`, { id: (edu as any).id, schoolName: edu.schoolName });
-      });
-    }
-
     // React Hook Form 초기화
     methods.reset(formValues);
 
@@ -70,10 +60,6 @@ export function useInitializeTalentForm(
     // 직무 카테고리 (job.category, job.role)
     // jobCategories[0]은 직군, jobCategories[1]은 직무
     if (formValues.job) {
-      console.log("job 필드 복구:", {
-        category: formValues.job.category,
-        role: formValues.job.role,
-      });
       if (formValues.job.category) {
         methods.setValue("job.category", formValues.job.category);
       }
@@ -157,35 +143,6 @@ export function useInitializeTalentForm(
         }
       });
     }
-
-    // reset 직후 폼 값 확인
-    setTimeout(() => {
-      const jobCategory = methods.getValues("job.category");
-      const jobRole = methods.getValues("job.role");
-      console.log("reset 후 job 필드:", { category: jobCategory, role: jobRole });
-
-      const skillsValues = methods.getValues("skills.main");
-      console.log("reset 후 skills.main:", skillsValues);
-      if (skillsValues && skillsValues.length > 0) {
-        skillsValues.forEach((skill, idx) => {
-          console.log(`reset 후 skills.main[${idx}]:`, {
-            id: (skill as any).id,
-            name: (skill as any).name,
-          });
-        });
-      }
-
-      const resetValues = methods.getValues("educations");
-      console.log("reset 후 educations:", resetValues);
-      if (resetValues && resetValues.length > 0) {
-        resetValues.forEach((edu, idx) => {
-          console.log(`reset 후 educations[${idx}]:`, {
-            id: (edu as any).id,
-            schoolName: edu.schoolName,
-          });
-        });
-      }
-    }, 0);
   }, [
     isLoading,
     profile,

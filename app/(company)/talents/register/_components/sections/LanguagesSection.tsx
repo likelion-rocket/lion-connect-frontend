@@ -37,7 +37,6 @@ export default function LanguagesSection() {
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "언어 삭제에 실패했습니다";
       setDeleteError(errorMessage);
-      console.error("언어 삭제 중 오류:", error);
     }
   };
 
@@ -115,19 +114,15 @@ function LanguageItem({
 
   // DELETE 핸들러
   const handleDelete = async () => {
-    console.log("DELETE 버튼 클릭됨:", { index, languageId });
     if (!onDelete) {
-      console.warn("onDelete 핸들러가 없습니다");
       return;
     }
 
     try {
       setIsDeleting(true);
-      console.log("삭제 시작...");
       await onDelete(index, languageId);
-      console.log("삭제 완료");
     } catch (error) {
-      console.error("언어 삭제 중 오류:", error);
+      // Error handling
     } finally {
       setIsDeleting(false);
     }

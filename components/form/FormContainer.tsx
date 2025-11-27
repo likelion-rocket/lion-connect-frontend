@@ -54,7 +54,6 @@ export function FormContainer({
       {hasValue && (
         <button
           onClick={() => {
-            console.log("FormContainer 삭제 버튼 클릭");
             onDelete?.();
           }}
           disabled={disabled}

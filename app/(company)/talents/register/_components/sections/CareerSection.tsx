@@ -39,31 +39,19 @@ export default function CareerSection() {
 
   // 경력 삭제 핸들러
   const handleDeleteCareer = async (index: number, careerId?: number) => {
-    console.log("CareerSection.handleDeleteCareer 호출됨:", {
-      index,
-      careerId,
-    });
-
     try {
       setDeleteError(null);
 
       // 서버에서 데이터가 있는 경우 (id 존재) - DELETE API 호출
       if (careerId) {
-        console.log(`API 호출: DELETE /api/profile/experiences/${careerId}`);
         await deleteExperience(careerId);
-        console.log(`경력 #${careerId} 삭제 완료`);
-      } else {
-        console.log("신규 데이터이므로 서버 DELETE API 호출 스킵");
       }
 
       // 폼에서 필드 제거
-      console.log(`폼 필드 제거: index=${index}`);
       remove(index);
-      console.log("삭제 완료");
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "경력 삭제에 실패했습니다.";
       setDeleteError(errorMessage);
-      console.error("경력 삭제 실패:", error);
       // 에러 발생 시 폼 필드는 제거하지 않음
     }
   };
@@ -85,10 +73,6 @@ export default function CareerSection() {
           // getValues()로 현재 폼 값을 가져와서 실제 id 값을 추출
           const allCareers = getValues("careers");
           const careerId = allCareers?.[index]?.id as number | undefined;
-          console.log(`CareerItem 렌더링: index=${index}, careerId=${careerId}`, {
-            field,
-            careerData: allCareers?.[index],
-          });
           return (
             <CareerItem
               key={field.id}

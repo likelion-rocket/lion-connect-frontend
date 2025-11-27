@@ -147,26 +147,10 @@ async function handleResponseError(response: Response): Promise<never> {
  * - 앱 초기화(useInitializeAuth)와 401 자동 재시도에서 모두 사용
  */
 export async function refreshAccessToken(): Promise<string> {
-  console.log("🔄 [refreshAccessToken] 토큰 리프레시 시작");
-  console.log(
-    "🔄 [refreshAccessToken] 요청 URL:",
-    `${API_BASE_URL}${API_ENDPOINTS.AUTH.REFRESH_TOKEN}`
-  );
-
-  // 쿠키 확인 (디버깅용)
-  const cookies = document.cookie;
-  const hasRefreshToken = cookies.includes("refreshToken");
-  console.log("🔄 [refreshAccessToken] 쿠키 존재 여부:", hasRefreshToken);
-  if (!hasRefreshToken) {
-    console.warn("⚠️ [refreshAccessToken] refreshToken 쿠키가 없습니다!");
-  }
-
   const response = await fetch(`${API_BASE_URL}${API_ENDPOINTS.AUTH.REFRESH_TOKEN}`, {
     method: "POST",
     credentials: "include", // 리프레시 토큰 쿠키 포함
   });
-
-  console.log("🔄 [refreshAccessToken] 응답 상태:", response.status);
 
   if (!response.ok) {
     // 에러 메시지 추출
@@ -189,15 +173,11 @@ export async function refreshAccessToken(): Promise<string> {
   const authHeader = response.headers.get("Authorization");
   let newAccessToken = authHeader?.replace("Bearer ", "") || "";
 
-  console.log("🔄 [refreshAccessToken] Authorization 헤더:", authHeader ? "존재" : "없음");
-
   // 2순위: 응답 body에서 토큰 추출 (헤더에 없는 경우)
   if (!newAccessToken) {
     try {
       const responseData = await response.json();
       newAccessToken = responseData.accessToken || "";
-      console.log("🔄 [refreshAccessToken] Body에서 토큰 추출:", newAccessToken ? "성공" : "실패");
-      console.log("🔄 [refreshAccessToken] 응답 데이터:", responseData);
     } catch (error) {
       console.error("❌ [refreshAccessToken] JSON 파싱 실패:", error);
     }
@@ -210,8 +190,6 @@ export async function refreshAccessToken(): Promise<string> {
 
   // Zustand에 새 토큰 저장
   useAuthStore.getState().updateAccessToken(newAccessToken);
-
-  console.log("✅ [refreshAccessToken] 토큰 갱신 성공");
 
   return newAccessToken;
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { cn } from "@/utils/utils";
+import { useToastStore } from "@/store/toastStore";
 
 interface TalentRegisterNavProps extends React.HTMLAttributes<HTMLElement> {
   title?: string;
@@ -21,11 +22,20 @@ export default function TalentRegisterNav({
   className,
   ...props
 }: TalentRegisterNavProps) {
+  const { showToast } = useToastStore();
+
   const handleGoBack = () => {
     if (onBack) {
       onBack();
     } else {
       window.history.back();
+    }
+  };
+
+  const handleTempSave = async () => {
+    if (onTempSave) {
+      await onTempSave();
+      showToast("임시 저장되었습니다!");
     }
   };
 
@@ -68,7 +78,7 @@ export default function TalentRegisterNav({
         {onTempSave && (
           <button
             type="button"
-            onClick={onTempSave}
+            onClick={handleTempSave}
             className="px-4 py-2.5 md:py-3 border border-border-secondary bg-bg-primary rounded-lg text-base md:text-lg font-bold text-text-primary hover:bg-bg-secondary transition-colors hover:cursor-pointer"
           >
             임시 저장

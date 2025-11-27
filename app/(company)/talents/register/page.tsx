@@ -108,11 +108,20 @@ export default function TalentRegisterPage() {
   /**
    * 임시 저장 핸들러
    * - validation 체크 없이 현재 입력된 값으로 submit
-   * - handleSubmit을 사용하지 않고 직접 onSubmit 호출
+   * - 현재 페이지에 머무르면서 데이터만 저장
    */
   const handleTempSave = async () => {
     const currentValues = methods.getValues();
-    await onSubmit(currentValues);
+    const result = await submitTalentRegister({
+      values: currentValues,
+      methods,
+      existingProfileId: existingProfile?.id,
+    });
+
+    if (!result.success) {
+      // TODO: 에러 처리
+    }
+    // 임시 저장 시에는 페이지 이동 없음 (토스트만 표시)
   };
 
   // 사용자 인증 확인 중 로딩 상태 처리
@@ -147,7 +156,8 @@ export default function TalentRegisterPage() {
     });
 
     if (result.success) {
-      // TODO: 성공 시 처리 (리다이렉트, 토스트 등)
+      // 성공 시 랜딩페이지로 이동하면서 성공 메시지 표시
+      router.push("/?success=profile_registered");
     } else {
       // TODO: 에러 처리
     }

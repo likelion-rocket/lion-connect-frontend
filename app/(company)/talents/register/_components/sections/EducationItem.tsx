@@ -168,7 +168,7 @@ export default function EducationItem({ index, educationId, onDelete }: Educatio
             </label>
             <FormInput
               id={`educations-${index}-start-date`}
-              type="text"
+              type="month"
               placeholder="YYYY.MM"
               {...register(`educations.${index}.startDate`)}
             />
@@ -183,7 +183,7 @@ export default function EducationItem({ index, educationId, onDelete }: Educatio
             </label>
             <FormInput
               id={`educations-${index}-end-date`}
-              type="text"
+              type="month"
               placeholder="YYYY.MM"
               {...register(`educations.${index}.endDate`)}
             />

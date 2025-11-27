@@ -42,6 +42,23 @@ interface SubmitTalentRegisterParams {
 }
 
 /**
+ * yyyy-mm 형식을 yyyy-mm-dd 형식으로 변환
+ * @param dateString - yyyy-mm 형식의 날짜 문자열
+ * @returns yyyy-mm-dd 형식의 날짜 문자열 (빈 값이면 undefined)
+ */
+function convertMonthToFullDate(dateString?: string): string | undefined {
+  if (!dateString || dateString.trim() === "") {
+    return undefined;
+  }
+  // yyyy-mm 형식이면 -01 추가
+  if (/^\d{4}-\d{2}$/.test(dateString)) {
+    return `${dateString}-01`;
+  }
+  // 이미 yyyy-mm-dd 형식이면 그대로 반환
+  return dateString;
+}
+
+/**
  * 인재 등록 폼 제출 핸들러
  *
  * @param params.values - React Hook Form의 폼 값
@@ -200,8 +217,8 @@ export async function submitTalentRegister({
                 schoolName: edu.schoolName || "",
                 major: edu.major,
                 status: edu.status,
-                startDate: edu.startDate,
-                endDate: edu.endDate,
+                startDate: convertMonthToFullDate(edu.startDate),
+                endDate: convertMonthToFullDate(edu.endDate),
                 description: edu.description,
                 degree: edu.degree,
               })
@@ -217,8 +234,8 @@ export async function submitTalentRegister({
                 schoolName: edu.schoolName || "",
                 major: edu.major,
                 status: edu.status,
-                startDate: edu.startDate,
-                endDate: edu.endDate,
+                startDate: convertMonthToFullDate(edu.startDate),
+                endDate: convertMonthToFullDate(edu.endDate),
                 description: edu.description,
                 degree: edu.degree,
               }))
@@ -248,8 +265,8 @@ export async function submitTalentRegister({
                 companyName: career.companyName || "",
                 department: career.department,
                 position: career.position,
-                startDate: career.startDate || "",
-                endDate: career.endDate,
+                startDate: convertMonthToFullDate(career.startDate) || "",
+                endDate: convertMonthToFullDate(career.endDate),
                 isCurrent: career.isCurrent || false,
                 description: career.description,
               })
@@ -265,8 +282,8 @@ export async function submitTalentRegister({
                 companyName: career.companyName || "",
                 department: career.department,
                 position: career.position,
-                startDate: career.startDate || "",
-                endDate: career.endDate,
+                startDate: convertMonthToFullDate(career.startDate) || "",
+                endDate: convertMonthToFullDate(career.endDate),
                 isCurrent: career.isCurrent || false,
                 description: career.description,
               }))
@@ -297,7 +314,7 @@ export async function submitTalentRegister({
               updateAward(activity.id, {
                 title: activity.title || "",
                 organization: activity.organization || "",
-                awardDate: activity.awardDate || "",
+                awardDate: convertMonthToFullDate(activity.awardDate) || "",
                 description: activity.description || "",
               })
             );
@@ -311,7 +328,7 @@ export async function submitTalentRegister({
               newActivities.map((activity) => ({
                 title: activity.title || "",
                 organization: activity.organization || "",
-                awardDate: activity.awardDate || "",
+                awardDate: convertMonthToFullDate(activity.awardDate) || "",
                 description: activity.description || "",
               }))
             )
@@ -339,7 +356,7 @@ export async function submitTalentRegister({
               updateLanguage(lang.id, {
                 languageName: lang.languageName || "",
                 level: lang.level || "",
-                issueDate: lang.issueDate || "",
+                issueDate: convertMonthToFullDate(lang.issueDate) || "",
               })
             );
           }
@@ -352,7 +369,7 @@ export async function submitTalentRegister({
               newLanguages.map((lang) => ({
                 languageName: lang.languageName || "",
                 level: lang.level || "",
-                issueDate: lang.issueDate || "",
+                issueDate: convertMonthToFullDate(lang.issueDate) || "",
               }))
             )
           );
@@ -379,7 +396,7 @@ export async function submitTalentRegister({
               updateCertification(cert.id, {
                 name: cert.name || "",
                 issuer: cert.issuer || "",
-                issueDate: cert.issueDate || "",
+                issueDate: convertMonthToFullDate(cert.issueDate) || "",
               })
             );
           }
@@ -392,7 +409,7 @@ export async function submitTalentRegister({
               newCertificates.map((cert) => ({
                 name: cert.name || "",
                 issuer: cert.issuer || "",
-                issueDate: cert.issueDate || "",
+                issueDate: convertMonthToFullDate(cert.issueDate) || "",
               }))
             )
           );

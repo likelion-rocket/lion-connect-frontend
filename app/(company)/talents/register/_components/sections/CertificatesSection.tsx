@@ -199,7 +199,7 @@ function CertificateItem({
           </label>
           <FormInput
             id={`certificates-${index}-issue-date`}
-            type="text"
+            type="month"
             placeholder="YYYY.MM"
             {...register(`certificates.${index}.issueDate`)}
           />

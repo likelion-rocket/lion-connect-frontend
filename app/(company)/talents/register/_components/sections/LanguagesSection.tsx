@@ -197,7 +197,7 @@ function LanguageItem({
           </label>
           <FormInput
             id={`languages-${index}-issue-date`}
-            type="text"
+            type="month"
             placeholder="YYYY.MM"
             {...register(`languages.${index}.issueDate`)}
           />

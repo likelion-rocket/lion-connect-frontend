@@ -144,7 +144,7 @@ export default function CareerItem({ index, careerId, onDelete }: CareerItemProp
             </label>
             <FormInput
               id={`careers-${index}-start-date`}
-              type="text"
+              type="month"
               placeholder="YYYY.MM"
               {...register(`careers.${index}.startDate`)}
             />
@@ -159,7 +159,7 @@ export default function CareerItem({ index, careerId, onDelete }: CareerItemProp
             </label>
             <FormInput
               id={`careers-${index}-end-date`}
-              type="text"
+              type="month"
               placeholder="YYYY.MM"
               {...register(`careers.${index}.endDate`)}
             />

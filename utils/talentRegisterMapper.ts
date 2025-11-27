@@ -22,6 +22,23 @@ import { findJobGroupById, findJobRoleById } from "@/constants/jobMapping";
 import { EXP_TAG_ID_MAP } from "@/lib/expTags/map";
 
 /**
+ * yyyy-mm-dd 형식을 yyyy-mm 형식으로 변환
+ * @param dateString - yyyy-mm-dd 형식의 날짜 문자열
+ * @returns yyyy-mm 형식의 날짜 문자열 (빈 값이면 빈 문자열)
+ */
+function convertFullDateToMonth(dateString?: string | null): string {
+  if (!dateString || dateString.trim() === "") {
+    return "";
+  }
+  // yyyy-mm-dd 형식이면 yyyy-mm만 추출
+  if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
+    return dateString.substring(0, 7); // "2025-01-01" → "2025-01"
+  }
+  // 이미 yyyy-mm 형식이면 그대로 반환
+  return dateString;
+}
+
+/**
  * API 응답 데이터를 폼 값으로 변환
  *
  * @param data - useTalentRegisterStore에 저장된 데이터
@@ -91,8 +108,8 @@ export function mapApiDataToFormValues(
               edu.status === "GRADUATED" || edu.status === "ENROLLED" || edu.status === "COMPLETED"
                 ? edu.status
                 : undefined,
-            startDate: edu.startDate,
-            endDate: edu.endDate || "",
+            startDate: convertFullDateToMonth(edu.startDate),
+            endDate: convertFullDateToMonth(edu.endDate),
             description: edu.description || "",
             degree: edu.degree || "",
           }))
@@ -116,8 +133,8 @@ export function mapApiDataToFormValues(
             companyName: exp.companyName,
             department: exp.department || "",
             position: exp.position || "",
-            startDate: exp.startDate,
-            endDate: exp.endDate || "",
+            startDate: convertFullDateToMonth(exp.startDate),
+            endDate: convertFullDateToMonth(exp.endDate),
             isCurrent: exp.isCurrent,
             description: exp.description || "",
           }))
@@ -151,7 +168,7 @@ export function mapApiDataToFormValues(
             id: award.id,
             title: award.title,
             organization: award.organization,
-            awardDate: award.awardDate,
+            awardDate: convertFullDateToMonth(award.awardDate),
             description: award.description,
           }))
         : [{ title: "", organization: "", awardDate: "", description: "" }],
@@ -163,7 +180,7 @@ export function mapApiDataToFormValues(
             id: lang.id,
             languageName: lang.languageName,
             level: lang.level,
-            issueDate: lang.issueDate,
+            issueDate: convertFullDateToMonth(lang.issueDate),
           }))
         : [{ languageName: "", level: "", issueDate: "" }],
 
@@ -174,7 +191,7 @@ export function mapApiDataToFormValues(
             id: cert.id,
             name: cert.name,
             issuer: cert.issuer || "",
-            issueDate: cert.issueDate,
+            issueDate: convertFullDateToMonth(cert.issueDate),
           }))
         : [{ name: "", issuer: "", issueDate: "" }],
 

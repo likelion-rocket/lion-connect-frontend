@@ -199,7 +199,7 @@ function ActivityItem({
           </label>
           <FormInput
             id={`activities-${index}-award-date`}
-            type="text"
+            type="month"
             placeholder="YYYY.MM"
             {...register(`activities.${index}.awardDate`)}
           />

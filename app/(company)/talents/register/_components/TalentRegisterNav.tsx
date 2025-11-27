@@ -41,7 +41,7 @@ export default function TalentRegisterNav({
       <button
         type="button"
         onClick={handleGoBack}
-        className="flex items-center gap-2 md:gap-4 hover:opacity-80 transition-opacity"
+        className="flex cursor-pointer items-center gap-2 md:gap-4 hover:opacity-80 transition-opacity"
       >
         <span className="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
@@ -82,7 +82,7 @@ export default function TalentRegisterNav({
           className={cn(
             "px-6 py-2.5 md:py-3 cursor-pointer rounded-lg text-base md:text-lg font-medium transition-colors border",
             isSubmitDisabled
-              ? "bg-bg-secondary border-border-tertiary text-text-disabled cursor-not-allowed"
+              ? "bg-bg-secondary border-border-tertiary text-text-disabled"
               : "bg-bg-accent text-text-inverse-primary border-bg-accent hover:bg-brand-06 hover:border-brand-06"
           )}
         >

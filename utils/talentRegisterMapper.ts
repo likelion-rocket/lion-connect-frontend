@@ -63,11 +63,11 @@ export function mapApiDataToFormValues(
   // 프로필 썸네일 찾기
   const thumbnail = data.profileLinks.find((link) => link.type === "THUMBNAIL");
 
-  // 일반 링크들 (LINK 타입만) 추출
+  // 일반 링크들 (LINK로 시작하는 타입만) 추출
   const generalLinks = data.profileLinks
-    .filter((link) => link.type === "LINK")
+    .filter((link) => link.type.startsWith("LINK"))
     .map((link) => ({
-      id: link.id,
+      type: link.type, // LINK, LINK2, LINK3, ... (DELETE/PUT API에 필요)
       url: link.url,
     }));
 
@@ -195,8 +195,8 @@ export function mapApiDataToFormValues(
           }))
         : [{ name: "", issuer: "", issueDate: "" }],
 
-    // 링크 (LINK 타입 배열)
-    links: generalLinks.length > 0 ? generalLinks : [{ url: "" }],
+    // 링크 (LINK로 시작하는 타입 배열)
+    links: generalLinks.length > 0 ? generalLinks : [{ type: "LINK", url: "" }],
 
     // 포트폴리오 URL (profile.storageUrl)
     portfolio: data.profile?.storageUrl || "",

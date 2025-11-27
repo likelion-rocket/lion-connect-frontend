@@ -52,6 +52,8 @@ export function useInitializeTalentForm(
     const formValues = mapApiDataToFormValues(storeData, user);
 
     console.log("mapper 결과 formValues:", formValues);
+    console.log("mapper 결과 formValues.skills:", formValues.skills);
+
     if (formValues.educations) {
       console.log("educations 배열:", formValues.educations);
       formValues.educations.forEach((edu, idx) => {
@@ -65,62 +67,114 @@ export function useInitializeTalentForm(
     // reset 후 id 값이 제거되었으므로 명시적으로 복구
     // 모든 배열 필드에 대해 동일하게 처리
 
-    // 경력 (배열 필드)
+    // 직무 카테고리 (job.category, job.role)
+    // jobCategories[0]은 직군, jobCategories[1]은 직무
+    if (formValues.job) {
+      console.log("job 필드 복구:", {
+        category: formValues.job.category,
+        role: formValues.job.role,
+      });
+      if (formValues.job.category) {
+        methods.setValue("job.category", formValues.job.category);
+      }
+      if (formValues.job.role) {
+        methods.setValue("job.role", formValues.job.role);
+      }
+    }
+
+    // 경력 (배열 필드 - id 포함 전체 필드 복구)
     if (formValues.careers && formValues.careers.length > 0) {
       formValues.careers.forEach((career, idx) => {
-        if ((career as any).id !== undefined) {
-          methods.setValue(`careers.${idx}.id`, (career as any).id);
+        const careerItem = career as any;
+        if (careerItem.id !== undefined) {
+          methods.setValue(`careers.${idx}.id`, careerItem.id);
         }
       });
     }
 
-    // 학력
+    // 학력 (배열 필드 - id 포함 전체 필드 복구)
     if (formValues.educations && formValues.educations.length > 0) {
       formValues.educations.forEach((edu, idx) => {
-        if ((edu as any).id !== undefined) {
-          methods.setValue(`educations.${idx}.id`, (edu as any).id);
+        const eduItem = edu as any;
+        if (eduItem.id !== undefined) {
+          methods.setValue(`educations.${idx}.id`, eduItem.id);
         }
       });
     }
 
-    // 어학
+    // 어학 (배열 필드 - id 포함 전체 필드 복구)
     if (formValues.languages && formValues.languages.length > 0) {
       formValues.languages.forEach((lang, idx) => {
-        if ((lang as any).id !== undefined) {
-          methods.setValue(`languages.${idx}.id`, (lang as any).id);
+        const langItem = lang as any;
+        if (langItem.id !== undefined) {
+          methods.setValue(`languages.${idx}.id`, langItem.id);
         }
       });
     }
 
-    // 자격증
+    // 자격증 (배열 필드 - id 포함 전체 필드 복구)
     if (formValues.certificates && formValues.certificates.length > 0) {
       formValues.certificates.forEach((cert, idx) => {
-        if ((cert as any).id !== undefined) {
-          methods.setValue(`certificates.${idx}.id`, (cert as any).id);
+        const certItem = cert as any;
+        if (certItem.id !== undefined) {
+          methods.setValue(`certificates.${idx}.id`, certItem.id);
         }
       });
     }
 
-    // 수상/활동
+    // 수상/활동 (배열 필드 - id 포함 전체 필드 복구)
     if (formValues.activities && formValues.activities.length > 0) {
       formValues.activities.forEach((activity, idx) => {
-        if ((activity as any).id !== undefined) {
-          methods.setValue(`activities.${idx}.id`, (activity as any).id);
+        const activityItem = activity as any;
+        if (activityItem.id !== undefined) {
+          methods.setValue(`activities.${idx}.id`, activityItem.id);
         }
       });
     }
 
-    // 링크
+    // 링크 (id, url 명시적 복구)
     if (formValues.links && formValues.links.length > 0) {
       formValues.links.forEach((link, idx) => {
-        if ((link as any).id !== undefined) {
-          methods.setValue(`links.${idx}.id`, (link as any).id);
+        const linkItem = link as { id?: number; url?: string };
+        if (linkItem.id !== undefined) {
+          methods.setValue(`links.${idx}.id`, linkItem.id);
+        }
+        if (linkItem.url !== undefined) {
+          methods.setValue(`links.${idx}.url`, linkItem.url);
+        }
+      });
+    }
+
+    // 스킬 (id, name 명시적 복구)
+    if (formValues.skills?.main && formValues.skills.main.length > 0) {
+      formValues.skills.main.forEach((skill, idx) => {
+        const skillItem = skill as { id?: number; name?: string };
+        if (skillItem.id !== undefined) {
+          methods.setValue(`skills.main.${idx}.id`, skillItem.id);
+        }
+        if (skillItem.name !== undefined) {
+          methods.setValue(`skills.main.${idx}.name`, skillItem.name);
         }
       });
     }
 
     // reset 직후 폼 값 확인
     setTimeout(() => {
+      const jobCategory = methods.getValues("job.category");
+      const jobRole = methods.getValues("job.role");
+      console.log("reset 후 job 필드:", { category: jobCategory, role: jobRole });
+
+      const skillsValues = methods.getValues("skills.main");
+      console.log("reset 후 skills.main:", skillsValues);
+      if (skillsValues && skillsValues.length > 0) {
+        skillsValues.forEach((skill, idx) => {
+          console.log(`reset 후 skills.main[${idx}]:`, {
+            id: (skill as any).id,
+            name: (skill as any).name,
+          });
+        });
+      }
+
       const resetValues = methods.getValues("educations");
       console.log("reset 후 educations:", resetValues);
       if (resetValues && resetValues.length > 0) {

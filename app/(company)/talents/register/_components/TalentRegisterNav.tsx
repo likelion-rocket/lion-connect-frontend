@@ -80,7 +80,7 @@ export default function TalentRegisterNav({
           onClick={!formId ? onSubmit : undefined}
           disabled={isSubmitDisabled}
           className={cn(
-            "px-6 py-2.5 md:py-3 rounded-lg text-base md:text-lg font-medium transition-colors border",
+            "px-6 py-2.5 md:py-3 cursor-pointer rounded-lg text-base md:text-lg font-medium transition-colors border",
             isSubmitDisabled
               ? "bg-bg-secondary border-border-tertiary text-text-disabled cursor-not-allowed"
               : "bg-bg-accent text-text-inverse-primary border-bg-accent hover:bg-brand-06 hover:border-brand-06"

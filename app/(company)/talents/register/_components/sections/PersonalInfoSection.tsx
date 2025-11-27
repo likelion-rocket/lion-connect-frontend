@@ -85,6 +85,7 @@ export default function PersonalInfoSection() {
               type="tel"
               placeholder="010 0000 0000"
               error={!!errors.profile?.phone}
+              disabled
               {...register("profile.phone")}
             />
             {errors.profile?.phone && (
@@ -107,6 +108,7 @@ export default function PersonalInfoSection() {
               type="email"
               placeholder="email@example.com"
               error={!!errors.profile?.email}
+              disabled
               {...register("profile.email")}
             />
             {errors.profile?.email && (

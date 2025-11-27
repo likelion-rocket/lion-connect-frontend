@@ -41,6 +41,8 @@ export function FormInput({ error, className, ref, ...props }: FormInputProps) {
         "lc-input",
         // 에러 상태
         error && "border-border-error focus:border-border-error",
+        // disabled 상태
+        "disabled:opacity-50 disabled:bg-bg-secondary disabled:text-text-tertiary",
         // 외부에서 전달된 className (최우선 적용)
         className
       )}

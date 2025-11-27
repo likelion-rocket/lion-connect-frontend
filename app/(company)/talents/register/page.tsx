@@ -230,7 +230,12 @@ export default function TalentRegisterPage() {
               </button>
               <button
                 type="submit"
-                className="w-full cursor-pointer md:w-auto px-8 py-3 bg-bg-accent text-text-inverse-primary rounded-lg text-base font-bold hover:bg-brand-06 transition-colors"
+                disabled={isSubmitDisabled}
+                className={`w-full md:w-auto px-8 py-3 rounded-lg text-base font-bold transition-colors ${
+                  isSubmitDisabled
+                    ? "bg-bg-tertiary text-text-quaternary outline-1 outline-border-quaternary -outline-offset-1 cursor-not-allowed"
+                    : "bg-bg-accent text-text-inverse-primary hover:bg-brand-06 cursor-pointer"
+                }`}
               >
                 작성 완료
               </button>

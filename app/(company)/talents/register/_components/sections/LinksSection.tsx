@@ -1,8 +1,12 @@
 /**
  * 링크 섹션 컴포넌트
  * 필드: links[] (포트폴리오, 블로그 등 자유 입력 링크 배열)
- * 각 링크는 { id?: number, url: string } 형태
- * DELETE API: deleteProfileLink(id)
+ * 각 링크는 { type: string, url: string } 형태
+ *
+ * API:
+ * - GET /api/profile/me/links : 모든 링크 조회
+ * - PUT /api/profile/me/links/{type} : 링크 저장/수정
+ * - DELETE /api/profile/me/links/{type} : 링크 삭제
  */
 
 "use client";
@@ -12,7 +16,7 @@ import Image from "next/image";
 import { useFormContext, useFieldArray, useWatch } from "react-hook-form";
 import type { TalentRegisterFormValues } from "@/schemas/talent/talentRegisterSchema";
 import { FormContainer } from "@/components/form/FormContainer";
-import { deleteProfileLink } from "@/lib/api/profileThumbnail";
+import { deleteMyProfileLink } from "@/lib/api/profileThumbnail";
 import AddButton from "../AddButton";
 
 export default function LinksSection() {
@@ -27,11 +31,11 @@ export default function LinksSection() {
   // 개별 항목의 포커스 상태 관리
   const [focusedIndex, setFocusedIndex] = useState<number | null>(null);
 
-  // 링크 삭제 핸들러
-  const handleDeleteLink = async (index: number, linkId?: number) => {
+  // 링크 삭제 핸들러 (type 기반)
+  const handleDeleteLink = async (index: number, linkType?: string) => {
     try {
-      if (linkId) {
-        await deleteProfileLink(linkId);
+      if (linkType) {
+        await deleteMyProfileLink(linkType);
       }
       remove(index);
       setDeleteError(null);
@@ -42,7 +46,23 @@ export default function LinksSection() {
   };
 
   const handleAddLink = () => {
-    append({ url: "" });
+    // 현재 존재하는 LINK 타입들을 가져와서 다음 번호 찾기
+    const currentLinks = getValues("links") || [];
+    const existingTypes = currentLinks.map((link) => link.type).filter(Boolean);
+
+    // LINK, LINK2, LINK3, ... 중 다음 번호 찾기
+    let nextType = "LINK";
+    let counter = 2;
+
+    // "LINK"가 이미 있으면 LINK2부터 시작
+    if (existingTypes.includes("LINK")) {
+      while (existingTypes.includes(`LINK${counter}`)) {
+        counter++;
+      }
+      nextType = `LINK${counter}`;
+    }
+
+    append({ type: nextType, url: "" });
   };
 
   return (
@@ -58,13 +78,13 @@ export default function LinksSection() {
       <div className="links-list flex flex-col gap-4">
         {fields.map((field, index) => {
           const linkData = getValues("links")?.[index];
-          const linkId = linkData?.id;
+          const linkType = linkData?.type;
 
           return (
             <LinkItem
               key={field.id}
               index={index}
-              linkId={linkId}
+              linkType={linkType}
               onDelete={handleDeleteLink}
               isFocused={focusedIndex === index}
               onFocus={() => setFocusedIndex(index)}
@@ -81,14 +101,14 @@ export default function LinksSection() {
 
 interface LinkItemProps {
   index: number;
-  linkId?: number; // 서버에서 받은 id (기존 데이터인 경우)
-  onDelete?: (index: number, linkId?: number) => void | Promise<void>; // DELETE 핸들러
+  linkType?: string; // 링크 타입 (LINK, LINK2, LINK3, ...)
+  onDelete?: (index: number, linkType?: string) => void | Promise<void>; // DELETE 핸들러
   isFocused: boolean;
   onFocus: () => void;
   onBlur: () => void;
 }
 
-function LinkItem({ index, linkId, onDelete, isFocused, onFocus, onBlur }: LinkItemProps) {
+function LinkItem({ index, linkType, onDelete, isFocused, onFocus, onBlur }: LinkItemProps) {
   const [isDeleting, setIsDeleting] = useState(false);
   const {
     register,
@@ -112,7 +132,7 @@ function LinkItem({ index, linkId, onDelete, isFocused, onFocus, onBlur }: LinkI
 
     try {
       setIsDeleting(true);
-      await onDelete(index, linkId);
+      await onDelete(index, linkType);
     } catch (error) {
       // Error handling
     } finally {

@@ -217,7 +217,7 @@ export default function TalentRegisterPage() {
             <LikelionCodeSection />
 
             {/* Work Driven 테스트 섹션 */}
-            <WorkDrivenTestSection />
+            {/* <WorkDrivenTestSection /> */}
 
             {/* Page Footer */}
             <footer className="page-footer flex flex-col md:flex-row items-center justify-end gap-4 pt-8 border-t border-border-quaternary">

@@ -12,7 +12,10 @@ export default function BusinessConnectButton() {
   const handleBusinessConnectClick = () => {
     const element = document.getElementById("business-connect");
     if (element) {
-      element.scrollIntoView({ behavior: "smooth", block: "start" });
+      const rect = element.getBoundingClientRect();
+      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+      const target = rect.top + scrollTop - 300;
+      window.scrollTo({ top: Math.max(0, target), behavior: "smooth" });
     }
   };
 

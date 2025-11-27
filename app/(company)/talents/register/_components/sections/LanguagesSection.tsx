@@ -173,7 +173,7 @@ function LanguageItem({
           />
         </div>
 
-        <div className="field">
+        {/* <div className="field">
           <label
             htmlFor={`languages-${index}-level`}
             className="block text-sm font-medium text-text-secondary mb-2"
@@ -186,7 +186,7 @@ function LanguageItem({
             placeholder="수준을 입력해주세요 (예: 상, 중, 하)"
             {...register(`languages.${index}.level`)}
           />
-        </div>
+        </div> */}
 
         <div className="field">
           <label

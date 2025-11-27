@@ -7,7 +7,7 @@ function InquiryDetailPage() {
     <div className="flex flex-col mx-auto w-[907px]">
       {/* 서브 헤더 */}
       <div className="relative flex h-[71px] items-center justify-between rounded-t-lg bg-brand-02 px-6">
-        <Link href="/admin/inquiries" className="flex items-center gap-4">
+        <Link href="/admin/inquiries" className="flex cursor-pointer items-center gap-4">
           <ChevronLeft className="size-6 text-text-primary" />
           <span className="text-sm font-medium text-text-primary">이전 페이지</span>
         </Link>

@@ -220,17 +220,17 @@ export default function TalentRegisterPage() {
             {/* <WorkDrivenTestSection /> */}
 
             {/* Page Footer */}
-            <footer className="page-footer flex flex-col md:flex-row items-center justify-end gap-4 pt-8 border-t border-border-quaternary">
+            <footer className="page-footer flex flex-col md:flex-row items-center justify-end gap-4 pt-8">
               <button
                 type="button"
                 onClick={handleGoBack}
-                className="w-full md:w-auto px-8 py-3 border border-border-quaternary rounded-lg text-base font-medium text-text-secondary hover:bg-bg-tertiary transition-colors"
+                className="w-full cursor-pointer md:w-auto px-8 py-3 border border-border-quaternary rounded-lg text-base font-medium text-text-secondary hover:bg-bg-tertiary transition-colors"
               >
                 취소
               </button>
               <button
                 type="submit"
-                className="w-full md:w-auto px-8 py-3 bg-bg-accent text-text-inverse-primary rounded-lg text-base font-bold hover:bg-brand-06 transition-colors"
+                className="w-full cursor-pointer md:w-auto px-8 py-3 bg-bg-accent text-text-inverse-primary rounded-lg text-base font-bold hover:bg-brand-06 transition-colors"
               >
                 전체 저장
               </button>

@@ -418,9 +418,16 @@ export async function submitTalentRegister({
             parallelPromises.push(
               updateProfileLink(link.id, {
                 url: link.url || "",
-                originalFilename: link.originalFilename || "text/uri",
-                contentType: link.contentType || "text/uri-list",
-                fileSize: link.fileSize || 0,
+                // 빈 문자열("")도 체크하여 기본값 적용
+                originalFilename:
+                  link.originalFilename && link.originalFilename.trim() !== ""
+                    ? link.originalFilename
+                    : "text/uri",
+                contentType:
+                  link.contentType && link.contentType.trim() !== ""
+                    ? link.contentType
+                    : "text/uri-list",
+                fileSize: link.fileSize ?? 0,
               })
             );
           }

@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Pager from "@/components/Pager";
 import TalentSearchHeader from "./_components/TalentSearchHeader";
@@ -65,7 +66,7 @@ type TalentCardItem = {
  * 4. 페이지 컴포넌트
  * ================================ */
 
-export default function TalentsPage() {
+function TalentsPageContent() {
   const searchParams = useSearchParams();
 
   const currentPage = searchParams.get("page") ? Number(searchParams.get("page")) : 1;
@@ -217,5 +218,13 @@ export default function TalentsPage() {
         )}
       </div>
     </main>
+  );
+}
+
+export default function TalentsPage() {
+  return (
+    <Suspense>
+      <TalentsPageContent />
+    </Suspense>
   );
 }

@@ -93,7 +93,7 @@ export default function TalentRegisterPage() {
   const methods = useForm<TalentRegisterFormValues>({
     resolver: formResolver,
     defaultValues: defaultTalentRegisterValues,
-    mode: "onChange", // 실시간 validation (버튼 활성화 위해)
+    mode: "onSubmit", // 제출 시 validation
     shouldFocusError: true, // 에러 발생 시 첫 번째 필드로 자동 포커스
     shouldUnregister: true, // 컴포넌트 언마운트 시 필드 등록 해제 및 값 삭제
   });
@@ -232,7 +232,7 @@ export default function TalentRegisterPage() {
                 type="submit"
                 className="w-full cursor-pointer md:w-auto px-8 py-3 bg-bg-accent text-text-inverse-primary rounded-lg text-base font-bold hover:bg-brand-06 transition-colors"
               >
-                전체 저장
+                작성 완료
               </button>
             </footer>
           </form>

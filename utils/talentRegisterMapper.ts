@@ -107,7 +107,7 @@ export function mapApiDataToFormValues(
             status:
               edu.status === "GRADUATED" || edu.status === "ENROLLED" || edu.status === "COMPLETED"
                 ? edu.status
-                : undefined,
+                : ("ENROLLED" as "ENROLLED" | "GRADUATED" | "COMPLETED"),
             startDate: convertFullDateToMonth(edu.startDate),
             endDate: convertFullDateToMonth(edu.endDate),
             description: edu.description || "",
@@ -117,7 +117,7 @@ export function mapApiDataToFormValues(
             {
               schoolName: "",
               major: "",
-              status: undefined,
+              status: "ENROLLED" as "ENROLLED" | "GRADUATED" | "COMPLETED",
               startDate: "",
               endDate: "",
               description: "",

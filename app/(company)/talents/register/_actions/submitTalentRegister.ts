@@ -12,7 +12,6 @@
 
 import type { UseFormReturn } from "react-hook-form";
 import type { TalentRegisterFormValues } from "@/schemas/talent/talentRegisterSchema";
-import type { QueryClient } from "@tanstack/react-query";
 
 // API 함수들
 import { createProfile, updateMyProfile } from "@/lib/api/profiles";
@@ -24,7 +23,6 @@ import { createAwards, updateAward } from "@/lib/api/awards";
 import { updateMyExpTags } from "@/lib/api/expTags";
 import { updateJobs } from "@/lib/api/jobs";
 import { updateMySkills } from "@/lib/api/skills";
-import { updateProfileLink } from "@/lib/api/profileThumbnail";
 import { SKILL_OPTIONS } from "@/constants/skills";
 import { EXP_TAG_ID_MAP, type ExpTagKey } from "@/lib/expTags/map";
 import { findJobGroupByCode, findJobRoleByCode } from "@/constants/jobMapping";
@@ -417,57 +415,30 @@ export async function submitTalentRegister({
       }
     }
 
-    // 링크 (POST/PUT) - 배열
-    // id가 있으면 PUT으로 개별 수정, 없으면 POST로 일괄 생성
+    // 링크 (PUT) - 배열
+    // type 기반으로 각 링크를 PUT /api/profile/me/links/{type}로 저장
     // 주의: dirtyFields.links는 배열 길이 변화(삭제)를 감지하지 못함
     // → values.links이 존재하면 항상 체크 (삭제 감지 위해)
     if (values.links && values.links.length > 0) {
       const validLinks = values.links.filter((link) => link.url && link.url.trim() !== "");
 
-      if (validLinks.length > 0) {
-        // 기존 링크 (id가 있는 것)과 신규 링크 (id가 없는 것) 분리
-        const existingLinks = validLinks.filter((link) => link.id);
-        const newLinks = validLinks.filter((link) => !link.id);
+      // 각 링크를 PUT 요청으로 개별 저장
+      for (const link of validLinks) {
+        if (!link.type || !link.url) continue;
 
-        // 기존 링크: 각각 PUT 요청 (id 값이 동일하거나 변경된 경우)
-        existingLinks.forEach((link) => {
-          if (link.id) {
-            parallelPromises.push(
-              updateProfileLink(link.id, {
-                url: link.url || "",
-                // 빈 문자열("")도 체크하여 기본값 적용
-                originalFilename:
-                  link.originalFilename && link.originalFilename.trim() !== ""
-                    ? link.originalFilename
-                    : "text/uri",
-                contentType:
-                  link.contentType && link.contentType.trim() !== ""
-                    ? link.contentType
-                    : "text/uri-list",
-                fileSize: link.fileSize ?? 0,
-              })
-            );
-          }
-        });
-
-        // 신규 링크: 개별 POST 요청 (타입: LINK)
-        for (const link of newLinks) {
-          if (!link.url) continue;
-
-          parallelPromises.push(
-            upsertMyProfileLink(
-              "LINK",
-              {
-                type: "LINK",
-                url: link.url,
-                originalFilename: "", // URL 링크는 파일명 없음
-                contentType: "text/uri-list", // URI 목록 MIME 타입
-                fileSize: 0,
-              },
-              "POST" // 신규 링크는 POST
-            )
-          );
-        }
+        parallelPromises.push(
+          upsertMyProfileLink(
+            link.type, // LINK, LINK2, LINK3, ...
+            {
+              type: link.type,
+              url: link.url,
+              originalFilename: "", // URL 링크는 파일명 없음
+              contentType: "text/uri-list", // URI 목록 MIME 타입
+              fileSize: 0,
+            },
+            "PUT" // type 기반 API는 PUT 사용
+          )
+        );
       }
     }
 

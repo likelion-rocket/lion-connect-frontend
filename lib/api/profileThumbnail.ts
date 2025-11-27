@@ -36,10 +36,14 @@ export function upsertMyProfileLink(
 ): Promise<ProfileResponse> {
   const endpoint = API_ENDPOINTS.PROFILE_LINKS.UPSERT(type);
 
-  const payload: ProfileLinkUpsertRequest = {
-    ...body,
-    type,
-  };
+  // API spec: 배열 형식으로 전송
+  const payload = [
+    {
+      ...body,
+      type,
+      sortOrder: 0,
+    },
+  ];
 
   if (method === "POST") {
     return post<ProfileResponse>(endpoint, payload, { credentials: "include" });
@@ -67,7 +71,7 @@ export function upsertMyThumbnailLink(body: {
   contentType: string;
   fileSize: number;
 }): Promise<ProfileResponse> {
-  const endpoint = API_ENDPOINTS.PROFILE_LINKS.UPSERT("thumbnail");
+  const endpoint = API_ENDPOINTS.PROFILE_LINKS.UPSERT("THUMBNAIL");
 
   // API spec: 배열 형식으로 전송
   const payload = [
@@ -77,15 +81,16 @@ export function upsertMyThumbnailLink(body: {
       originalFilename: body.originalFilename,
       contentType: body.contentType,
       fileSize: body.fileSize,
+      sortOrder: 0,
     },
   ];
 
   return put<ProfileResponse>(endpoint, payload, { credentials: "include" });
 }
 
-/** 썸네일 링크 삭제 (DELETE /api/profile/me/links/thumbnail) */
+/** 썸네일 링크 삭제 (DELETE /api/profile/me/links/THUMBNAIL) */
 export function deleteMyThumbnailLink(): Promise<void> {
-  return deleteMyProfileLink("thumbnail");
+  return deleteMyProfileLink("THUMBNAIL");
 }
 
 /** 프로필 링크 수정 (PUT /api/profile/me/links/{id}) */

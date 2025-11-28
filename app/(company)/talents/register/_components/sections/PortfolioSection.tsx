@@ -1,19 +1,67 @@
 /**
  * 포트폴리오 섹션 컴포넌트
- * 필드: portfolio
+ * 필드: portfolioFile
  */
 
 "use client";
 
+import { useRef } from "react";
 import { useFormContext } from "react-hook-form";
 import Image from "next/image";
 import type { TalentRegisterFormValues } from "@/schemas/talent/talentRegisterSchema";
+import AddButton from "../AddButton";
+import { useTalentRegisterStore } from "@/store/talentRegisterStore";
 
 export default function PortfolioSection() {
   const {
-    register,
+    setValue,
+    watch,
     formState: { errors },
   } = useFormContext<TalentRegisterFormValues>();
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Store에서 기존 포트폴리오 가져오기
+  const profileLinks = useTalentRegisterStore((state) => state.profileLinks);
+  const existingPortfolio = profileLinks.find((link) => link.type === "PORTFOLIO");
+
+  // 새로 선택한 파일
+  const selectedFile = watch("portfolioFile");
+
+  /**
+   * 파일 선택 핸들러
+   */
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // 파일 타입 검증 (PDF만 허용)
+    if (file.type !== "application/pdf") {
+      alert("PDF 파일만 업로드 가능합니다.");
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+      return;
+    }
+
+    // React Hook Form에 저장
+    setValue("portfolioFile", file, { shouldValidate: true, shouldDirty: true });
+  };
+
+  /**
+   * 파일 선택 창 열기
+   */
+  const handleOpenFilePicker = () => {
+    fileInputRef.current?.click();
+  };
+
+  /**
+   * 파일명 표시
+   */
+  const displayFileName =
+    selectedFile instanceof File
+      ? selectedFile.name
+      : existingPortfolio?.originalFilename || "PDF 파일을 첨부해주세요.";
 
   return (
     <section className="section section-portfolio flex flex-col gap-6">
@@ -35,20 +83,36 @@ export default function PortfolioSection() {
         <div className="flex-1">
           <div className="field">
             <label
-              htmlFor="portfolio"
+              htmlFor="portfolio-file"
               className="block text-sm font-medium text-text-secondary mb-2"
             >
-              포트폴리오 링크<span className="required text-text-error">*</span>
+              포트폴리오 PDF<span className="required text-text-error">*</span>
             </label>
             <input
-              id="portfolio"
-              type="url"
-              placeholder="포트폴리오 링크를 입력해주세요"
-              className="lc-input w-full h-14 px-4 py-3 bg-bg-primary border border-border-quaternary rounded-lg text-base text-text-primary placeholder:text-text-tertiary focus:outline-none focus:border-border-accent transition-colors"
-              {...register("portfolio")}
+              ref={fileInputRef}
+              id="portfolio-file"
+              type="file"
+              accept="application/pdf"
+              className="hidden"
+              onChange={handleFileChange}
             />
-            {errors.portfolio && (
-              <p className="field-error text-sm text-text-error mt-1">{errors.portfolio.message}</p>
+            <div className="flex items-center gap-4">
+              {/* 파일명 표시 */}
+              <button
+                type="button"
+                onClick={handleOpenFilePicker}
+                className="flex-1 h-14 px-4 py-3 bg-bg-primary border border-border-quaternary rounded-lg flex items-center hover:bg-bg-tertiary transition-colors cursor-pointer"
+              >
+                <p className="text-sm md:text-base text-text-tertiary truncate text-left">
+                  {displayFileName}
+                </p>
+              </button>
+              <AddButton label="PDF 파일 업로드" onClick={handleOpenFilePicker} />
+            </div>
+            {errors.portfolioFile && (
+              <p className="field-error text-sm text-text-error mt-1">
+                {String(errors.portfolioFile.message || "")}
+              </p>
             )}
           </div>
         </div>

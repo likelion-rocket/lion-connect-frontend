@@ -15,6 +15,7 @@ import { fetchMyAwards } from "./awards";
 import { fetchMyExpTags } from "./expTags";
 import { fetchMyJobs } from "./jobs";
 import { fetchMySkills } from "./skills";
+import { fetchWorkDrivenTestResult } from "./workDriven";
 import type {
   ProfileResponse,
   EducationResponse,
@@ -26,6 +27,7 @@ import type {
   JobCategoryResponse,
   ProfileLinkResponse,
   SkillResponse,
+  WorkDrivenTestResultResponse,
 } from "@/types/talent";
 
 /**
@@ -51,6 +53,7 @@ export type TalentRegisterData = {
   jobCategories: JobCategoryResponse[];
   profileLinks: ProfileLinkResponse[];
   skills: SkillResponse[];
+  workDrivenTestResult: WorkDrivenTestResultResponse | null;
 };
 
 /**
@@ -73,6 +76,7 @@ export async function fetchTalentRegisterData(): Promise<TalentRegisterData> {
       jobCategories,
       profileLinks,
       skills,
+      workDrivenTestResult,
     ] = await Promise.allSettled([
       fetchMyProfile(),
       fetchMyEducations(),
@@ -84,6 +88,7 @@ export async function fetchTalentRegisterData(): Promise<TalentRegisterData> {
       fetchMyJobs(),
       fetchMyProfileLinks(),
       fetchMySkills(),
+      fetchWorkDrivenTestResult(),
     ]);
 
     return {
@@ -100,6 +105,10 @@ export async function fetchTalentRegisterData(): Promise<TalentRegisterData> {
       jobCategories: jobCategories.status === "fulfilled" ? jobCategories.value : [],
       profileLinks: profileLinks.status === "fulfilled" ? profileLinks.value : [],
       skills: skills.status === "fulfilled" ? skills.value : [],
+
+      // Work Driven 테스트 결과 (없으면 null)
+      workDrivenTestResult:
+        workDrivenTestResult.status === "fulfilled" ? workDrivenTestResult.value : null,
     };
   } catch (error) {
     console.error("Failed to fetch talent register data:", error);

@@ -10,6 +10,7 @@ import type {
   JobCategoryResponse,
   ProfileLinkResponse,
   SkillResponse,
+  WorkDrivenTestResultResponse,
 } from "@/types/talent";
 
 /**
@@ -27,6 +28,7 @@ type TalentRegisterState = {
   jobCategories: JobCategoryResponse[];
   profileLinks: ProfileLinkResponse[];
   skills: SkillResponse[];
+  workDrivenTestResult: WorkDrivenTestResultResponse | null;
 
   // 로딩/에러 상태
   isLoading: boolean;
@@ -82,6 +84,9 @@ type TalentRegisterActions = {
   // 스킬
   setSkills: (data: SkillResponse[]) => void;
 
+  // Work Driven 테스트
+  setWorkDrivenTestResult: (data: WorkDrivenTestResultResponse | null) => void;
+
   // 로딩/에러 상태
   setLoading: (loading: boolean) => void;
   setError: (error: string | null) => void;
@@ -101,6 +106,7 @@ const initialState: TalentRegisterState = {
   jobCategories: [],
   profileLinks: [],
   skills: [],
+  workDrivenTestResult: null,
   isLoading: false,
   error: null,
 };
@@ -208,6 +214,9 @@ export const useTalentRegisterStore = create<TalentRegisterState & TalentRegiste
 
     // 스킬
     setSkills: (data) => set({ skills: data }),
+
+    // Work Driven 테스트
+    setWorkDrivenTestResult: (data) => set({ workDrivenTestResult: data }),
 
     // 로딩/에러 상태
     setLoading: (loading) => set({ isLoading: loading }),

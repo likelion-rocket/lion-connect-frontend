@@ -82,15 +82,15 @@ export async function submitTalentRegister({
       visibility: "PUBLIC" as const,
     };
 
-    let profileResponse;
-
-    if (existingProfileId) {
-      // ✅ 프로필이 이미 존재 → PUT 요청
-      profileResponse = await updateMyProfile(profilePayload);
-    } else {
-      // ✅ 프로필이 없음 → POST 요청
-      profileResponse = await createProfile(profilePayload);
-    }
+    // let profileResponse;
+    await createProfile(profilePayload);
+    // if (existingProfileId) {
+    //   // ✅ 프로필이 이미 존재 → PUT 요청
+    //   profileResponse = await updateMyProfile(profilePayload);
+    // } else {
+    // ✅ 프로필이 없음 → POST 요청
+    //   profileResponse =
+    // }
 
     // 2. 프로필 사진 업로드 (프로필 생성 후 처리)
     if (dirtyFields.profile?.avatar && values.profile.avatar instanceof File) {

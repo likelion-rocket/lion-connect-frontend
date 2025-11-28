@@ -5,6 +5,7 @@ import { persist } from "zustand/middleware";
  * 사용자 정보 타입
  */
 export type User = {
+  name: string;
   id: number;
   email: string;
   phoneNumber: string | null;

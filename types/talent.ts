@@ -305,3 +305,28 @@ export interface TalentDetailResponse {
   awards: AwardResponse[];
   languageDetails: LanguageResponse[];
 }
+
+/**
+ * Work Driven 테스트 제출 요청 타입
+ */
+export interface WorkDrivenTestSubmitRequest {
+  answers: {
+    questionId: number;
+    score: number;
+  }[];
+}
+
+/**
+ * Work Driven 테스트 결과 응답 타입
+ */
+export interface WorkDrivenTestResultResponse {
+  totalScore: number;
+  averageScore: number;
+  level: number;
+  testedAt: string;
+  questionScores: {
+    questionId: number;
+    orderIndex: number;
+    score: number;
+  }[];
+}

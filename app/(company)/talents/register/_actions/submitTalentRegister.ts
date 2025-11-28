@@ -33,6 +33,7 @@ import {
   upsertMyProfileLink,
 } from "@/lib/api/profileThumbnail";
 import { presignPortfolio, uploadPortfolioToS3 } from "@/lib/api/profilePortfolio";
+import { submitWorkDrivenTest } from "@/lib/api/workDriven";
 
 interface SubmitTalentRegisterParams {
   values: TalentRegisterFormValues;
@@ -467,6 +468,28 @@ export async function submitTalentRegister({
             "PUT" // type 기반 API는 PUT 사용
           )
         );
+      }
+    }
+
+    // Work Driven 테스트 (POST)
+    // workDrivenTest 객체의 q1~q16 값이 있으면 API 호출
+    if (values.workDrivenTest) {
+      const answers = [];
+
+      // q1~q16을 questionId와 score로 변환
+      for (let i = 1; i <= 16; i++) {
+        const score = (values.workDrivenTest as any)[`q${i}`];
+        if (score !== undefined && score !== null) {
+          answers.push({
+            questionId: i,
+            score: score,
+          });
+        }
+      }
+
+      // 모든 질문에 답변이 있으면 API 호출
+      if (answers.length === 16) {
+        parallelPromises.push(submitWorkDrivenTest({ answers }));
       }
     }
 

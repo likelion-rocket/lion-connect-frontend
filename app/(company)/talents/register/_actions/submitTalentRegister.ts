@@ -32,6 +32,7 @@ import {
   upsertMyThumbnailLink,
   upsertMyProfileLink,
 } from "@/lib/api/profileThumbnail";
+import { presignPortfolio, uploadPortfolioToS3 } from "@/lib/api/profilePortfolio";
 
 interface SubmitTalentRegisterParams {
   values: TalentRegisterFormValues;
@@ -114,7 +115,34 @@ export async function submitTalentRegister({
       });
     }
 
-    // 3. 나머지 병렬 저장
+    // 3. 포트폴리오 PDF 업로드 (프로필 생성 후 처리)
+    if (dirtyFields.portfolioFile && values.portfolioFile instanceof File) {
+      const file = values.portfolioFile;
+
+      // Presign URL 발급
+      const presignResponse = await presignPortfolio({
+        originalFilename: file.name,
+        contentType: file.type,
+      });
+
+      // S3에 업로드
+      await uploadPortfolioToS3(presignResponse.uploadUrl, file);
+
+      // 프로필 링크 저장 (API spec: 배열 형식)
+      await upsertMyProfileLink(
+        "PORTFOLIO",
+        {
+          type: "PORTFOLIO",
+          url: presignResponse.fileUrl,
+          originalFilename: file.name,
+          contentType: file.type,
+          fileSize: file.size,
+        },
+        "PUT"
+      );
+    }
+
+    // 4. 나머지 병렬 저장
     const parallelPromises: Promise<unknown>[] = [];
 
     // 직무 카테고리 (PUT)

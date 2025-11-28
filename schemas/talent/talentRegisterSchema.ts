@@ -98,10 +98,8 @@ export const talentRegisterSchema = z.object({
       })
     )
     .optional(),
-  portfolio: z
-    .string()
-    .url("올바른 URL 형식을 입력해주세요.")
-    .min(1, "포트폴리오 링크는 필수입니다."),
+  portfolio: z.string().optional().or(z.literal("")),
+  portfolioFile: z.any().optional(),
   likelion: z.object({
     code: z.string().optional(),
   }),
@@ -144,6 +142,7 @@ export const defaultTalentRegisterValues: TalentRegisterFormValues = {
   certificates: [],
   links: [],
   portfolio: "",
+  portfolioFile: null,
   likelion: {
     code: "",
   },

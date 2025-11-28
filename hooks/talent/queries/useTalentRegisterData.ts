@@ -34,6 +34,7 @@ export function useTalentRegisterData() {
     setJobCategories,
     setProfileLinks,
     setSkills,
+    setCustomSkills,
     setWorkDrivenTestResult,
     setLoading,
     setError,
@@ -64,6 +65,7 @@ export function useTalentRegisterData() {
       setJobCategories(query.data.jobCategories);
       setProfileLinks(query.data.profileLinks);
       setSkills(query.data.skills);
+      setCustomSkills(query.data.customSkills);
       setWorkDrivenTestResult(query.data.workDrivenTestResult);
     }
   }, [
@@ -78,6 +80,7 @@ export function useTalentRegisterData() {
     setJobCategories,
     setProfileLinks,
     setSkills,
+    setCustomSkills,
     setWorkDrivenTestResult,
   ]);
 

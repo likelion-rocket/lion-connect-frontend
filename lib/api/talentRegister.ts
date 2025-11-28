@@ -15,6 +15,7 @@ import { fetchMyAwards } from "./awards";
 import { fetchMyExpTags } from "./expTags";
 import { fetchMyJobs } from "./jobs";
 import { fetchMySkills } from "./skills";
+import { fetchMyCustomSkills } from "./customSkills";
 import { fetchWorkDrivenTestResult } from "./workDriven";
 import type {
   ProfileResponse,
@@ -27,6 +28,7 @@ import type {
   JobCategoryResponse,
   ProfileLinkResponse,
   SkillResponse,
+  CustomSkillResponse,
   WorkDrivenTestResultResponse,
 } from "@/types/talent";
 
@@ -53,6 +55,7 @@ export type TalentRegisterData = {
   jobCategories: JobCategoryResponse[];
   profileLinks: ProfileLinkResponse[];
   skills: SkillResponse[];
+  customSkills: CustomSkillResponse[];
   workDrivenTestResult: WorkDrivenTestResultResponse | null;
 };
 
@@ -76,6 +79,7 @@ export async function fetchTalentRegisterData(): Promise<TalentRegisterData> {
       jobCategories,
       profileLinks,
       skills,
+      customSkills,
       workDrivenTestResult,
     ] = await Promise.allSettled([
       fetchMyProfile(),
@@ -88,6 +92,7 @@ export async function fetchTalentRegisterData(): Promise<TalentRegisterData> {
       fetchMyJobs(),
       fetchMyProfileLinks(),
       fetchMySkills(),
+      fetchMyCustomSkills(),
       fetchWorkDrivenTestResult(),
     ]);
 
@@ -105,6 +110,7 @@ export async function fetchTalentRegisterData(): Promise<TalentRegisterData> {
       jobCategories: jobCategories.status === "fulfilled" ? jobCategories.value : [],
       profileLinks: profileLinks.status === "fulfilled" ? profileLinks.value : [],
       skills: skills.status === "fulfilled" ? skills.value : [],
+      customSkills: customSkills.status === "fulfilled" ? customSkills.value : [],
 
       // Work Driven 테스트 결과 (없으면 null)
       workDrivenTestResult:

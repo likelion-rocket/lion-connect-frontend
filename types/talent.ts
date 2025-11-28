@@ -130,6 +130,14 @@ export interface SkillResponse {
   category: string;
 }
 
+/**
+ * 커스텀 스킬 응답 타입
+ */
+export interface CustomSkillResponse {
+  id: number;
+  name: string;
+}
+
 // ========================
 // Request 타입 (POST/PUT 요청)
 // ========================
@@ -198,6 +206,13 @@ export interface AwardRequest {
   organization: string;
   awardDate: string; // YYYY-MM-DD
   description: string;
+}
+
+/**
+ * 커스텀 스킬 업데이트 요청 타입
+ */
+export interface CustomSkillUpdateRequest {
+  customSkills: string[];
 }
 
 /**

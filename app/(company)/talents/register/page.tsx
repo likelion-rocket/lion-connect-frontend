@@ -33,8 +33,6 @@ import { submitTalentRegister } from "./_actions/submitTalentRegister";
 // 훅
 import { useTalentRegisterData } from "@/hooks/talent/queries/useTalentRegisterData";
 import { useInitializeTalentForm } from "@/hooks/talent/queries/useInitializeTalentForm";
-// 임시 훅 - 초기 프로필 생성 (나중에 삭제하기)
-import { useCreateInitialProfile } from "@/hooks/talent/queries/useCreateInitialProfile";
 
 // Store
 import { useTalentRegisterStore } from "@/store/talentRegisterStore";
@@ -90,9 +88,6 @@ export default function TalentRegisterPage() {
   // 페이지 진입 시 모든 데이터 조회 (자동으로 store에 저장됨)
   // 각 섹션 컴포넌트에서 useTalentRegisterStore로 직접 사용
   const { isLoading, error } = useTalentRegisterData();
-
-  // 프로필이 없으면 초기 프로필 생성
-  useCreateInitialProfile();
 
   // 프로필 존재 여부 확인 (POST vs PUT 분기용)
   const existingProfile = useTalentRegisterStore((state) => state.profile);

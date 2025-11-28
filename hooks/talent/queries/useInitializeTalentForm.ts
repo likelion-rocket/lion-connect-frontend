@@ -29,6 +29,7 @@ export function useInitializeTalentForm(
   const jobCategories = useTalentRegisterStore((state) => state.jobCategories);
   const profileLinks = useTalentRegisterStore((state) => state.profileLinks);
   const skills = useTalentRegisterStore((state) => state.skills);
+  const workDrivenTestResult = useTalentRegisterStore((state) => state.workDrivenTestResult);
   const user = useAuthStore((state) => state.user);
 
   useEffect(() => {
@@ -143,6 +144,16 @@ export function useInitializeTalentForm(
         }
       });
     }
+
+    // Work Driven 테스트 결과 (q1~q16 점수 복구)
+    if (workDrivenTestResult && workDrivenTestResult.questionScores) {
+      workDrivenTestResult.questionScores.forEach((questionScore) => {
+        const { questionId, score } = questionScore;
+        if (questionId && score !== undefined) {
+          methods.setValue(`workDrivenTest.q${questionId}` as any, score);
+        }
+      });
+    }
   }, [
     isLoading,
     profile,
@@ -155,6 +166,7 @@ export function useInitializeTalentForm(
     jobCategories,
     profileLinks,
     skills,
+    workDrivenTestResult,
     user,
     methods,
   ]);

@@ -7,6 +7,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { loginSchema, LoginSchemaType } from "@/schemas/auth/loginSchema";
 import { useLogin } from "@/hooks/auth/useLogin";
+import { useCreateInitialProfile } from "@/hooks/auth/useCreateInitialProfile";
 import Image from "next/image";
 import Input from "@/app/(auth)/_components/Input";
 
@@ -18,6 +19,7 @@ import Input from "@/app/(auth)/_components/Input";
 export default function LoginForm() {
   const router = useRouter();
   const { login, isLoading, error, isSuccess } = useLogin();
+  const { createInitialProfile } = useCreateInitialProfile();
   const [showPassword, setShowPassword] = useState(false);
 
   const {
@@ -30,13 +32,15 @@ export default function LoginForm() {
     mode: "onChange", // 실시간 유효성 검사
   });
 
-  // 로그인 성공 시 리다이렉트
+  // 로그인 성공 시 프로필 생성 및 리다이렉트
   useEffect(() => {
     if (isSuccess) {
+      createInitialProfile();
       reset();
       router.push("/");
     }
-  }, [isSuccess, reset, router]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isSuccess]);
 
   const onSubmit = (data: LoginSchemaType) => {
     // TanStack Query mutation 실행

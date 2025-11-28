@@ -105,6 +105,11 @@ export const API_ENDPOINTS = {
   TALENTS: {
     SEARCH: "/profiles/search", // GET - 인재 검색 (jobGroupId, jobRoleId, q, page, size)
   },
+  // Work Driven 테스트
+  WORK_DRIVEN: {
+    SUBMIT: "/profile/work-driven/submit", // POST - 테스트 제출
+    RESULT: "/profile/work-driven/result", // GET - 결과 조회
+  },
 } as const;
 
 // HTTP 메서드

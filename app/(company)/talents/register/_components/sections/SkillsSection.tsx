@@ -1,6 +1,6 @@
 "use client";
 
-import { useFormContext, useFieldArray, useWatch } from "react-hook-form";
+import { useFormContext, useFieldArray, Controller } from "react-hook-form";
 import type { TalentRegisterFormValues } from "@/schemas/talent/talentRegisterSchema";
 import AddButton from "../AddButton";
 import SkillInput from "../SkillInput";
@@ -15,18 +15,12 @@ import { useEffect } from "react";
  */
 
 export default function SkillsSection() {
-  const { control, setValue } = useFormContext<TalentRegisterFormValues>();
+  const { control } = useFormContext<TalentRegisterFormValues>();
 
   const { fields, append, remove } = useFieldArray({
     control,
     name: "skills.main" as any,
   });
-
-  // useWatch로 필드 값 감지 (성능 최적화)
-  const skillsValues = useWatch({
-    control,
-    name: "skills.main",
-  }) as { id?: number; name: string }[] | undefined;
 
   // 최소 1개 필드 유지 - 초기 로드 시 필드가 없으면 빈 필드 추가
   useEffect(() => {
@@ -43,14 +37,7 @@ export default function SkillsSection() {
     // 최소 1개 필드 유지
     if (fields.length > 1) {
       remove(index);
-      // 배열 길이 변화를 dirtyFields에 반영하기 위해 명시적으로 trigger
-      // useFieldArray의 remove는 자동으로 shouldDirty를 true로 설정하지만,
-      // 배열 길이 변화 감지를 위해 수동으로 필드를 dirty로 표시
     }
-  };
-
-  const updateSkill = (index: number, value: string) => {
-    setValue(`skills.main.${index}.name`, value, { shouldValidate: true, shouldDirty: true });
   };
 
   return (
@@ -74,14 +61,25 @@ export default function SkillsSection() {
         <div className="flex-1 flex flex-col gap-14">
           {/* 직무 스킬 입력 필드 그리드 (최대 3개씩 가로 배치) */}
           <div className="inline-flex justify-start items-start gap-14 flex-wrap content-start">
-            {fields.map((field, index) => (
-              <SkillInput
-                key={field.id}
-                value={(skillsValues?.[index]?.name as string) || ""}
-                onChange={(value) => updateSkill(index, value)}
-                onDelete={fields.length > 1 ? () => removeSkill(index) : undefined}
-              />
-            ))}
+            {fields.map((field, index) => {
+              const fieldName = `skills.main.${index}.name` as const;
+              return (
+                <Controller
+                  key={field.id}
+                  control={control}
+                  name={fieldName}
+                  render={({ field: { onChange, onBlur, value, name } }) => (
+                    <SkillInput
+                      name={name}
+                      value={value || ""}
+                      onChange={onChange}
+                      onBlur={onBlur}
+                      onDelete={fields.length > 1 ? () => removeSkill(index) : undefined}
+                    />
+                  )}
+                />
+              );
+            })}
           </div>
 
           {/* 직무 스킬 추가 버튼 */}

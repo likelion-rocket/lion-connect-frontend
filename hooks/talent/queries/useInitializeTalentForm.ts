@@ -29,6 +29,7 @@ export function useInitializeTalentForm(
   const jobCategories = useTalentRegisterStore((state) => state.jobCategories);
   const profileLinks = useTalentRegisterStore((state) => state.profileLinks);
   const skills = useTalentRegisterStore((state) => state.skills);
+  const customSkills = useTalentRegisterStore((state) => state.customSkills);
   const workDrivenTestResult = useTalentRegisterStore((state) => state.workDrivenTestResult);
   const user = useAuthStore((state) => state.user);
 
@@ -47,6 +48,7 @@ export function useInitializeTalentForm(
       jobCategories,
       profileLinks,
       skills,
+      customSkills,
     };
 
     // API 데이터를 폼 형식으로 변환
@@ -166,6 +168,7 @@ export function useInitializeTalentForm(
     jobCategories,
     profileLinks,
     skills,
+    customSkills,
     workDrivenTestResult,
     user,
     methods,

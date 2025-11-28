@@ -24,6 +24,7 @@ export default function TrashButtonInput({
   inputClassName,
   width = "w-80",
   className,
+  onBlur,
   ...props
 }: TrashButtonInputProps) {
   const [isHovered, setIsHovered] = useState(false);
@@ -51,7 +52,13 @@ export default function TrashButtonInput({
         type="text"
         value={value}
         onFocus={() => setIsFocused(true)}
-        onBlur={() => setIsFocused(false)}
+        onBlur={(e) => {
+          setIsFocused(false);
+          // Controller의 onBlur도 호출
+          if (onBlur) {
+            onBlur(e);
+          }
+        }}
         className={cn(
           "flex-1 text-neutral-800 text-base font-normal font-['Pretendard'] leading-6 bg-transparent outline-none placeholder:text-neutral-400",
           inputClassName,

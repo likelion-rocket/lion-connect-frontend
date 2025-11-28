@@ -22,8 +22,7 @@ import { createCertifications, updateCertification } from "@/lib/api/certificati
 import { createAwards, updateAward } from "@/lib/api/awards";
 import { updateMyExpTags } from "@/lib/api/expTags";
 import { updateJobs } from "@/lib/api/jobs";
-import { updateMySkills } from "@/lib/api/skills";
-import { SKILL_OPTIONS } from "@/constants/skills";
+import { updateMyCustomSkills } from "@/lib/api/customSkills";
 import { EXP_TAG_ID_MAP, type ExpTagKey } from "@/lib/expTags/map";
 import { findJobGroupByCode, findJobRoleByCode } from "@/constants/jobMapping";
 import {
@@ -187,39 +186,38 @@ export async function submitTalentRegister({
       }
     }
 
-    // 스킬 (PUT) - 배열
-    // 주의: Skills는 {ids: [id1, id2, ...]} 형식으로 전송하며, DELETE 요청이 없음
-    // 모든 스킬을 한번에 보내서 덮어씀
+    // 커스텀 스킬 (PUT) - 배열
+    // 주의: Custom Skills는 {customSkills: [name1, name2, ...]} 형식으로 전송하며, DELETE 요청이 없음
+    // 모든 커스텀 스킬을 한번에 보내서 덮어씀
     //
-    // 중요: dirtyFields.skills?.main만으로는 배열 길이 변화(삭제)를 감지하지 못함
-    // → values.skills.main이 존재하면 항상 API 호출 (삭제 감지 위해)
-    const skillsChanged =
-      dirtyFields.skills?.main || (values.skills?.main && values.skills.main.length > 0);
+    // 중요: Controller가 개별 필드(skills.main.0.name)로 등록되어 있어서
+    // getValues('skills.main')을 사용해서 배열 전체를 가져옴
+    const currentSkills = methods.getValues("skills.main" as any);
 
-    if (skillsChanged) {
-      // 기존 스킬 (id가 있는 것) + 신규 스킬 (name으로 조회한 id) 통합
-      const skillIds: number[] = [];
+    // 개별 필드 값도 확인
+    if (currentSkills && Array.isArray(currentSkills)) {
+      currentSkills.forEach((_, idx) => {
+        const fieldValue = methods.getValues(`skills.main.${idx}.name` as any);
+      });
+    }
 
-      values.skills?.main?.forEach((skill) => {
-        const skillItem = skill as { id?: number; name: string };
-        // 기존 스킬: id가 있으면 그대로 사용
-        if (skillItem.id !== undefined) {
-          skillIds.push(skillItem.id);
-        } else if (skillItem.name && skillItem.name.trim() !== "") {
-          // 신규 스킬: name을 SKILL_OPTIONS에서 조회하여 id로 변환
-          const foundSkill = SKILL_OPTIONS.find((s) => s.name === skillItem.name);
-          if (foundSkill?.id) {
-            skillIds.push(foundSkill.id);
-          }
+    // 전체 formValues도 확인
+    const allFormValues = methods.getValues();
+
+    if (currentSkills && Array.isArray(currentSkills)) {
+      // 스킬 이름 추출 (빈 문자열 제외)
+      const skillNames: string[] = [];
+
+      currentSkills.forEach((skill: any, idx: number) => {
+        // Controller가 개별 name 필드로 등록되어 있어서 skill 자체가 string일 수 있음
+        const skillName = typeof skill === "string" ? skill : skill?.name;
+        if (skillName && skillName.trim() !== "") {
+          skillNames.push(skillName);
         }
       });
 
-      // 빈 문자열 필드는 제외
-      const validSkillIds = skillIds.filter((id) => id !== undefined);
-
-      if (validSkillIds.length > 0) {
-        parallelPromises.push(updateMySkills({ ids: validSkillIds }));
-      }
+      // 항상 API 호출 (빈 배열이라도 보내서 모든 스킬 삭제 처리)
+      parallelPromises.push(updateMyCustomSkills({ customSkills: skillNames }));
     }
 
     // 학력 (POST/PUT) - 배열

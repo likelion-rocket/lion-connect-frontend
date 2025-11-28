@@ -68,15 +68,21 @@ export default function SkillsSection() {
                   key={field.id}
                   control={control}
                   name={fieldName}
-                  render={({ field: { onChange, onBlur, value, name } }) => (
-                    <SkillInput
-                      name={name}
-                      value={value || ""}
-                      onChange={onChange}
-                      onBlur={onBlur}
-                      onDelete={fields.length > 1 ? () => removeSkill(index) : undefined}
-                    />
-                  )}
+                  render={({ field: controllerField }) => {
+                    return (
+                      <SkillInput
+                        name={controllerField.name}
+                        value={controllerField.value || ""}
+                        onChange={(e) => {
+                          controllerField.onChange(e);
+                        }}
+                        onBlur={(e) => {
+                          controllerField.onBlur();
+                        }}
+                        onDelete={fields.length > 1 ? () => removeSkill(index) : undefined}
+                      />
+                    );
+                  }}
                 />
               );
             })}

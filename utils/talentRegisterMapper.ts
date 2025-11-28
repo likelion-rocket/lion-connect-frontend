@@ -16,6 +16,7 @@ import type {
   JobCategoryResponse,
   ProfileLinkResponse,
   SkillResponse,
+  CustomSkillResponse,
 } from "@/types/talent";
 import type { User } from "@/store/authStore";
 import { findJobGroupById, findJobRoleById } from "@/constants/jobMapping";
@@ -57,6 +58,7 @@ export function mapApiDataToFormValues(
     jobCategories: JobCategoryResponse[];
     profileLinks: ProfileLinkResponse[];
     skills: SkillResponse[];
+    customSkills?: CustomSkillResponse[];
   },
   user: User | null
 ): Partial<TalentRegisterFormValues> {
@@ -150,15 +152,20 @@ export function mapApiDataToFormValues(
             },
           ],
 
-    // 스킬 (SkillResponse[] → {id, name}[] 구조로 변경하여 명시적 id 관리)
+    // 스킬 (CustomSkillResponse[] → {name}[] 구조)
+    // 커스텀 스킬이 있으면 커스텀 스킬을 사용하고, 없으면 일반 스킬 사용
     skills: {
       main:
-        data.skills.length > 0
-          ? data.skills.map((skill) => ({
-              id: skill.id,
+        data.customSkills && data.customSkills.length > 0
+          ? data.customSkills.map((skill) => ({
               name: skill.name,
             }))
-          : [{ name: "" }],
+          : data.skills.length > 0
+            ? data.skills.map((skill) => ({
+                id: skill.id,
+                name: skill.name,
+              }))
+            : [{ name: "" }],
     },
 
     // 수상/활동 (awards → activities 매핑)

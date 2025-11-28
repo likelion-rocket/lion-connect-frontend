@@ -83,10 +83,10 @@ export async function submitTalentRegister({
     };
 
     // let profileResponse;
-    await createProfile(profilePayload);
+    // await createProfile(profilePayload);
     // if (existingProfileId) {
     //   // ✅ 프로필이 이미 존재 → PUT 요청
-    //   profileResponse = await updateMyProfile(profilePayload);
+    await updateMyProfile(profilePayload);
     // } else {
     // ✅ 프로필이 없음 → POST 요청
     //   profileResponse =

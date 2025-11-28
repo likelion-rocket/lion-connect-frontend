@@ -30,6 +30,7 @@ export type LoginResponse = {
   user: {
     id: number;
     email: string;
+    name: string;
     phoneNumber: string | null;
     phoneVerified: boolean;
     roles: string[];

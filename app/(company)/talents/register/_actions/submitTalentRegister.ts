@@ -38,6 +38,7 @@ interface SubmitTalentRegisterParams {
   values: TalentRegisterFormValues;
   methods: UseFormReturn<TalentRegisterFormValues>;
   existingProfileId?: number;
+  isTempSave?: boolean; // 임시 저장 여부 (true: validation 우회, false: 최종 제출)
 }
 
 /**
@@ -86,10 +87,12 @@ export async function submitTalentRegister({
   values,
   methods,
   existingProfileId,
+  isTempSave = false,
 }: SubmitTalentRegisterParams): Promise<{
   success: boolean;
   error?: unknown;
   data?: TalentRegisterFormValues;
+  isTempSave?: boolean;
 }> {
   const { dirtyFields } = methods.formState;
   const updatedValues = JSON.parse(JSON.stringify(values)) as TalentRegisterFormValues;
@@ -720,9 +723,9 @@ export async function submitTalentRegister({
     }
 
     // TODO: 성공 시 리다이렉트 또는 토스트 메시지
-    return { success: true, data: updatedValues };
+    return { success: true, data: updatedValues, isTempSave };
   } catch (error) {
     // TODO: 에러 처리 (ApiError 타입 체크)
-    return { success: false, error };
+    return { success: false, error, isTempSave };
   }
 }

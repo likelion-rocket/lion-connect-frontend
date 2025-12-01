@@ -58,6 +58,23 @@ function convertMonthToFullDate(dateString?: string): string | undefined {
 }
 
 /**
+ * yyyy-mm-dd 형식을 yyyy-mm 형식으로 변환
+ * @param dateString - yyyy-mm-dd 형식의 날짜 문자열
+ * @returns yyyy-mm 형식의 날짜 문자열 (빈 값이면 빈 문자열)
+ */
+function convertFullDateToMonth(dateString?: string | null): string {
+  if (!dateString || dateString.trim() === "") {
+    return "";
+  }
+  // yyyy-mm-dd 형식이면 yyyy-mm만 추출
+  if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
+    return dateString.substring(0, 7); // "2025-01-01" → "2025-01"
+  }
+  // 이미 yyyy-mm 형식이면 그대로 반환
+  return dateString;
+}
+
+/**
  * 인재 등록 폼 제출 핸들러
  *
  * @param params.values - React Hook Form의 폼 값
@@ -69,8 +86,13 @@ export async function submitTalentRegister({
   values,
   methods,
   existingProfileId,
-}: SubmitTalentRegisterParams): Promise<{ success: boolean; error?: unknown }> {
+}: SubmitTalentRegisterParams): Promise<{
+  success: boolean;
+  error?: unknown;
+  data?: TalentRegisterFormValues;
+}> {
   const { dirtyFields } = methods.formState;
+  const updatedValues = JSON.parse(JSON.stringify(values)) as TalentRegisterFormValues;
 
   try {
     // 1. 프로필 생성 또는 수정 (최우선 호출 - 프로필이 생성되어야 다른 데이터를 저장할 수 있음)
@@ -221,22 +243,36 @@ export async function submitTalentRegister({
     }
 
     // 학력 (POST/PUT) - 배열
-    // id가 있으면 PUT으로 개별 수정, 없으면 POST로 일괄 생성
-    // 주의: dirtyFields.educations는 배열 길이 변화(삭제)를 감지하지 못함
-    // → values.educations이 존재하면 항상 체크 (삭제 감지 위해)
+    // 변경된 항목만 처리 (dirtyFields 대신 값 비교 사용)
+    // dirtyFields는 배열 요소 삭제/이동 시 인덱스 문제로 정확하지 않을 수 있음
     if (values.educations && values.educations.length > 0) {
-      const validEducations = values.educations.filter(
-        (edu) => edu.schoolName || edu.major || edu.degree
-      );
+      const newEducationsToPost: { data: any; index: number }[] = [];
+      const defaultEducations = methods.formState.defaultValues?.educations || [];
 
-      if (validEducations.length > 0) {
-        // 기존 학력 (id가 있는 것)과 신규 학력 (id가 없는 것) 분리
-        const existingEducations = validEducations.filter((edu) => edu.id);
-        const newEducations = validEducations.filter((edu) => !edu.id);
+      values.educations.forEach((edu, index) => {
+        // 유효하지 않은 데이터(빈 값)는 건너뜀
+        if (!edu.schoolName && !edu.major && !edu.degree) {
+          return;
+        }
 
-        // 기존 학력: 각각 PUT 요청 (id 값이 동일하거나 변경된 경우)
-        existingEducations.forEach((edu) => {
-          if (edu.id) {
+        if (edu.id) {
+          // 기존 학력: defaultValues와 비교하여 변경된 경우만 PUT
+          const originalEdu = Array.isArray(defaultEducations)
+            ? defaultEducations.find((e) => e?.id === edu.id)
+            : undefined;
+
+          // 변경 여부 확인
+          const isChanged =
+            !originalEdu ||
+            originalEdu.schoolName !== edu.schoolName ||
+            originalEdu.major !== edu.major ||
+            originalEdu.status !== edu.status ||
+            originalEdu.startDate !== edu.startDate ||
+            originalEdu.endDate !== edu.endDate ||
+            originalEdu.description !== edu.description ||
+            originalEdu.degree !== edu.degree;
+
+          if (isChanged) {
             parallelPromises.push(
               updateEducation(edu.id, {
                 schoolName: edu.schoolName || "",
@@ -246,27 +282,76 @@ export async function submitTalentRegister({
                 endDate: convertMonthToFullDate(edu.endDate),
                 description: edu.description,
                 degree: edu.degree,
+              }).then((updatedEdu) => {
+                // 업데이트된 값 반영
+                if (updatedValues.educations && updatedValues.educations[index]) {
+                  updatedValues.educations[index] = {
+                    ...updatedValues.educations[index],
+                    id: updatedEdu.id,
+                    schoolName: updatedEdu.schoolName,
+                    major: updatedEdu.major || "",
+                    status:
+                      updatedEdu.status === "GRADUATED" ||
+                      updatedEdu.status === "ENROLLED" ||
+                      updatedEdu.status === "COMPLETED"
+                        ? updatedEdu.status
+                        : ("ENROLLED" as "ENROLLED" | "GRADUATED" | "COMPLETED"),
+                    startDate: convertFullDateToMonth(updatedEdu.startDate),
+                    endDate: convertFullDateToMonth(updatedEdu.endDate),
+                    description: updatedEdu.description || "",
+                    degree: updatedEdu.degree || "",
+                  };
+                }
               })
             );
           }
-        });
-
-        // 신규 학력: POST 배열 요청
-        if (newEducations.length > 0) {
-          parallelPromises.push(
-            createEducations(
-              newEducations.map((edu) => ({
-                schoolName: edu.schoolName || "",
-                major: edu.major,
-                status: edu.status,
-                startDate: convertMonthToFullDate(edu.startDate),
-                endDate: convertMonthToFullDate(edu.endDate),
-                description: edu.description,
-                degree: edu.degree,
-              }))
-            )
-          );
+        } else {
+          // 신규 학력: POST 요청을 위해 수집
+          newEducationsToPost.push({
+            data: {
+              schoolName: edu.schoolName || "",
+              major: edu.major,
+              status: edu.status,
+              startDate: convertMonthToFullDate(edu.startDate),
+              endDate: convertMonthToFullDate(edu.endDate),
+              description: edu.description,
+              degree: edu.degree,
+            },
+            index,
+          });
         }
+      });
+
+      // 신규 학력 일괄 POST
+      if (newEducationsToPost.length > 0) {
+        parallelPromises.push(
+          createEducations(newEducationsToPost.map((item) => item.data)).then(
+            (createdEducations) => {
+              // 생성된 학력 ID 반영
+              createdEducations.forEach((createdEdu, i) => {
+                const originalIndex = newEducationsToPost[i].index;
+                if (updatedValues.educations && updatedValues.educations[originalIndex]) {
+                  updatedValues.educations[originalIndex] = {
+                    ...updatedValues.educations[originalIndex],
+                    id: createdEdu.id,
+                    schoolName: createdEdu.schoolName,
+                    major: createdEdu.major || "",
+                    status:
+                      createdEdu.status === "GRADUATED" ||
+                      createdEdu.status === "ENROLLED" ||
+                      createdEdu.status === "COMPLETED"
+                        ? createdEdu.status
+                        : ("ENROLLED" as "ENROLLED" | "GRADUATED" | "COMPLETED"),
+                    startDate: convertFullDateToMonth(createdEdu.startDate),
+                    endDate: convertFullDateToMonth(createdEdu.endDate),
+                    description: createdEdu.description || "",
+                    degree: createdEdu.degree || "",
+                  };
+                }
+              });
+            }
+          )
+        );
       }
     }
 
@@ -497,7 +582,7 @@ export async function submitTalentRegister({
     }
 
     // TODO: 성공 시 리다이렉트 또는 토스트 메시지
-    return { success: true };
+    return { success: true, data: updatedValues };
   } catch (error) {
     // TODO: 에러 처리 (ApiError 타입 체크)
     return { success: false, error };

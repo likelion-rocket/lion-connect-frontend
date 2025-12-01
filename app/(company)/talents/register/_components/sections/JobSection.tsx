@@ -27,10 +27,14 @@ interface FilterOption {
 }
 
 export default function JobSection() {
-  const { control, setValue } = useFormContext<TalentRegisterFormValues>();
+  const { control, setValue, register } = useFormContext<TalentRegisterFormValues>();
 
   const selectedCategory = useWatch({ control, name: "job.category" }) || "";
   const selectedRole = useWatch({ control, name: "job.role" }) || "";
+
+  // 필드를 React Hook Form에 등록 (isValid 계산에 포함되도록)
+  register("job.category");
+  register("job.role");
 
   const handleCategoryChange = (value: string) => {
     setValue("job.category", value, { shouldValidate: true, shouldDirty: true });

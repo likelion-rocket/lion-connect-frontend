@@ -356,20 +356,32 @@ export async function submitTalentRegister({
     }
 
     // 경력 (POST/PUT) - 배열
-    // id가 있으면 PUT으로 개별 수정, 없으면 POST로 일괄 생성
-    // 주의: dirtyFields.careers는 배열 길이 변화(삭제)를 감지하지 못함
-    // → values.careers이 존재하면 항상 체크 (삭제 감지 위해)
     if (values.careers && values.careers.length > 0) {
-      const validCareers = values.careers.filter((career) => career.companyName || career.position);
+      const newCareersToPost: { data: any; index: number }[] = [];
+      const defaultCareers = methods.formState.defaultValues?.careers || [];
 
-      if (validCareers.length > 0) {
-        // 기존 경력 (id가 있는 것)과 신규 경력 (id가 없는 것) 분리
-        const existingCareers = validCareers.filter((career) => career.id);
-        const newCareers = validCareers.filter((career) => !career.id);
+      values.careers.forEach((career, index) => {
+        if (!career.companyName && !career.position) {
+          return;
+        }
 
-        // 기존 경력: 각각 PUT 요청 (id 값이 동일하거나 변경된 경우)
-        existingCareers.forEach((career) => {
-          if (career.id) {
+        if (career.id) {
+          // 기존 경력: defaultValues와 비교
+          const originalCareer = Array.isArray(defaultCareers)
+            ? defaultCareers.find((c) => c?.id === career.id)
+            : undefined;
+
+          const isChanged =
+            !originalCareer ||
+            originalCareer.companyName !== career.companyName ||
+            originalCareer.department !== career.department ||
+            originalCareer.position !== career.position ||
+            originalCareer.startDate !== career.startDate ||
+            originalCareer.endDate !== career.endDate ||
+            originalCareer.isCurrent !== career.isCurrent ||
+            originalCareer.description !== career.description;
+
+          if (isChanged) {
             parallelPromises.push(
               updateExperience(career.id, {
                 companyName: career.companyName || "",
@@ -379,151 +391,290 @@ export async function submitTalentRegister({
                 endDate: convertMonthToFullDate(career.endDate),
                 isCurrent: career.isCurrent || false,
                 description: career.description,
+              }).then((updatedCareer) => {
+                if (updatedValues.careers && updatedValues.careers[index]) {
+                  updatedValues.careers[index] = {
+                    ...updatedValues.careers[index],
+                    id: updatedCareer.id,
+                    companyName: updatedCareer.companyName,
+                    department: updatedCareer.department || "",
+                    position: updatedCareer.position || "",
+                    startDate: convertFullDateToMonth(updatedCareer.startDate),
+                    endDate: convertFullDateToMonth(updatedCareer.endDate),
+                    isCurrent: updatedCareer.isCurrent,
+                    description: updatedCareer.description || "",
+                  };
+                }
               })
             );
           }
-        });
-
-        // 신규 경력: POST 배열 요청
-        if (newCareers.length > 0) {
-          parallelPromises.push(
-            createExperiences(
-              newCareers.map((career) => ({
-                companyName: career.companyName || "",
-                department: career.department,
-                position: career.position,
-                startDate: convertMonthToFullDate(career.startDate) || "",
-                endDate: convertMonthToFullDate(career.endDate),
-                isCurrent: career.isCurrent || false,
-                description: career.description,
-              }))
-            )
-          );
+        } else {
+          // 신규 경력
+          newCareersToPost.push({
+            data: {
+              companyName: career.companyName || "",
+              department: career.department,
+              position: career.position,
+              startDate: convertMonthToFullDate(career.startDate) || "",
+              endDate: convertMonthToFullDate(career.endDate),
+              isCurrent: career.isCurrent || false,
+              description: career.description,
+            },
+            index,
+          });
         }
+      });
+
+      if (newCareersToPost.length > 0) {
+        parallelPromises.push(
+          createExperiences(newCareersToPost.map((item) => item.data)).then((createdCareers) => {
+            createdCareers.forEach((createdCareer, i) => {
+              const originalIndex = newCareersToPost[i].index;
+              if (updatedValues.careers && updatedValues.careers[originalIndex]) {
+                updatedValues.careers[originalIndex] = {
+                  ...updatedValues.careers[originalIndex],
+                  id: createdCareer.id,
+                  companyName: createdCareer.companyName,
+                  department: createdCareer.department || "",
+                  position: createdCareer.position || "",
+                  startDate: convertFullDateToMonth(createdCareer.startDate),
+                  endDate: convertFullDateToMonth(createdCareer.endDate),
+                  isCurrent: createdCareer.isCurrent,
+                  description: createdCareer.description || "",
+                };
+              }
+            });
+          })
+        );
       }
     }
 
     // 수상/활동 (POST/PUT) - 배열
-    // id가 있으면 PUT으로 개별 수정, 없으면 POST로 일괄 생성
-    // 주의: dirtyFields.activities는 배열 길이 변화(삭제)를 감지하지 못함
-    // → values.activities이 존재하면 항상 체크 (삭제 감지 위해)
     if (values.activities && values.activities.length > 0) {
-      const validActivities = values.activities.filter(
-        (activity) => activity.title || activity.organization
-      );
+      const newActivitiesToPost: { data: any; index: number }[] = [];
+      const defaultActivities = methods.formState.defaultValues?.activities || [];
 
-      if (validActivities.length > 0) {
-        // 기존 활동 (id가 있는 것)과 신규 활동 (id가 없는 것) 분리
-        const existingActivities = validActivities.filter((activity) => activity.id);
-        const newActivities = validActivities.filter((activity) => !activity.id);
+      values.activities.forEach((activity, index) => {
+        if (!activity.title && !activity.organization) {
+          return;
+        }
 
-        // 기존 활동: 각각 PUT 요청 (id 값이 동일하거나 변경된 경우)
-        existingActivities.forEach((activity) => {
-          if (activity.id) {
+        if (activity.id) {
+          // 기존 활동: defaultValues와 비교
+          const originalActivity = Array.isArray(defaultActivities)
+            ? defaultActivities.find((a) => a?.id === activity.id)
+            : undefined;
+
+          const isChanged =
+            !originalActivity ||
+            originalActivity.title !== activity.title ||
+            originalActivity.organization !== activity.organization ||
+            originalActivity.awardDate !== activity.awardDate ||
+            originalActivity.description !== activity.description;
+
+          if (isChanged) {
             parallelPromises.push(
               updateAward(activity.id, {
                 title: activity.title || "",
                 organization: activity.organization || "",
                 awardDate: convertMonthToFullDate(activity.awardDate) || "",
                 description: activity.description || "",
+              }).then((updatedAward) => {
+                if (updatedValues.activities && updatedValues.activities[index]) {
+                  updatedValues.activities[index] = {
+                    ...updatedValues.activities[index],
+                    id: updatedAward.id,
+                    title: updatedAward.title,
+                    organization: updatedAward.organization,
+                    awardDate: convertFullDateToMonth(updatedAward.awardDate),
+                    description: updatedAward.description,
+                  };
+                }
               })
             );
           }
-        });
-
-        // 신규 활동: POST 배열 요청
-        if (newActivities.length > 0) {
-          parallelPromises.push(
-            createAwards(
-              newActivities.map((activity) => ({
-                title: activity.title || "",
-                organization: activity.organization || "",
-                awardDate: convertMonthToFullDate(activity.awardDate) || "",
-                description: activity.description || "",
-              }))
-            )
-          );
+        } else {
+          // 신규 활동
+          newActivitiesToPost.push({
+            data: {
+              title: activity.title || "",
+              organization: activity.organization || "",
+              awardDate: convertMonthToFullDate(activity.awardDate) || "",
+              description: activity.description || "",
+            },
+            index,
+          });
         }
+      });
+
+      if (newActivitiesToPost.length > 0) {
+        parallelPromises.push(
+          createAwards(newActivitiesToPost.map((item) => item.data)).then((createdAwards) => {
+            createdAwards.forEach((createdAward, i) => {
+              const originalIndex = newActivitiesToPost[i].index;
+              if (updatedValues.activities && updatedValues.activities[originalIndex]) {
+                updatedValues.activities[originalIndex] = {
+                  ...updatedValues.activities[originalIndex],
+                  id: createdAward.id,
+                  title: createdAward.title,
+                  organization: createdAward.organization,
+                  awardDate: convertFullDateToMonth(createdAward.awardDate),
+                  description: createdAward.description,
+                };
+              }
+            });
+          })
+        );
       }
     }
 
     // 언어 (POST/PUT) - 배열
-    // id가 있으면 PUT으로 개별 수정, 없으면 POST로 일괄 생성
-    // 주의: dirtyFields.languages는 배열 길이 변화(삭제)를 감지하지 못함
-    // → values.languages이 존재하면 항상 체크 (삭제 감지 위해)
     if (values.languages && values.languages.length > 0) {
-      const validLanguages = values.languages.filter((lang) => lang.languageName || lang.level);
+      const newLanguagesToPost: { data: any; index: number }[] = [];
+      const defaultLanguages = methods.formState.defaultValues?.languages || [];
 
-      if (validLanguages.length > 0) {
-        // 기존 언어 (id가 있는 것)과 신규 언어 (id가 없는 것) 분리
-        const existingLanguages = validLanguages.filter((lang) => lang.id);
-        const newLanguages = validLanguages.filter((lang) => !lang.id);
+      values.languages.forEach((lang, index) => {
+        if (!lang.languageName && !lang.level) {
+          return;
+        }
 
-        // 기존 언어: 각각 PUT 요청 (id 값이 동일하거나 변경된 경우)
-        existingLanguages.forEach((lang) => {
-          if (lang.id) {
+        if (lang.id) {
+          // 기존 언어: defaultValues와 비교
+          const originalLang = Array.isArray(defaultLanguages)
+            ? defaultLanguages.find((l) => l?.id === lang.id)
+            : undefined;
+
+          const isChanged =
+            !originalLang ||
+            originalLang.languageName !== lang.languageName ||
+            originalLang.level !== lang.level ||
+            originalLang.issueDate !== lang.issueDate;
+
+          if (isChanged) {
             parallelPromises.push(
               updateLanguage(lang.id, {
                 languageName: lang.languageName || "",
                 level: lang.level || "",
                 issueDate: convertMonthToFullDate(lang.issueDate) || "",
+              }).then((updatedLang) => {
+                if (updatedValues.languages && updatedValues.languages[index]) {
+                  updatedValues.languages[index] = {
+                    ...updatedValues.languages[index],
+                    id: updatedLang.id,
+                    languageName: updatedLang.languageName,
+                    level: updatedLang.level,
+                    issueDate: convertFullDateToMonth(updatedLang.issueDate),
+                  };
+                }
               })
             );
           }
-        });
-
-        // 신규 언어: POST 배열 요청
-        if (newLanguages.length > 0) {
-          parallelPromises.push(
-            createLanguages(
-              newLanguages.map((lang) => ({
-                languageName: lang.languageName || "",
-                level: lang.level || "",
-                issueDate: convertMonthToFullDate(lang.issueDate) || "",
-              }))
-            )
-          );
+        } else {
+          // 신규 언어
+          newLanguagesToPost.push({
+            data: {
+              languageName: lang.languageName || "",
+              level: lang.level || "",
+              issueDate: convertMonthToFullDate(lang.issueDate) || "",
+            },
+            index,
+          });
         }
+      });
+
+      if (newLanguagesToPost.length > 0) {
+        parallelPromises.push(
+          createLanguages(newLanguagesToPost.map((item) => item.data)).then((createdLanguages) => {
+            createdLanguages.forEach((createdLang, i) => {
+              const originalIndex = newLanguagesToPost[i].index;
+              if (updatedValues.languages && updatedValues.languages[originalIndex]) {
+                updatedValues.languages[originalIndex] = {
+                  ...updatedValues.languages[originalIndex],
+                  id: createdLang.id,
+                  languageName: createdLang.languageName,
+                  level: createdLang.level,
+                  issueDate: convertFullDateToMonth(createdLang.issueDate),
+                };
+              }
+            });
+          })
+        );
       }
     }
 
     // 자격증 (POST/PUT) - 배열
-    // id가 있으면 PUT으로 개별 수정, 없으면 POST로 일괄 생성
-    // 주의: dirtyFields.certificates는 배열 길이 변화(삭제)를 감지하지 못함
-    // → values.certificates이 존재하면 항상 체크 (삭제 감지 위해)
     if (values.certificates && values.certificates.length > 0) {
-      const validCertificates = values.certificates.filter((cert) => cert.name || cert.issuer);
+      const newCertificatesToPost: { data: any; index: number }[] = [];
+      const defaultCertificates = methods.formState.defaultValues?.certificates || [];
 
-      if (validCertificates.length > 0) {
-        // 기존 자격증 (id가 있는 것)과 신규 자격증 (id가 없는 것) 분리
-        const existingCertificates = validCertificates.filter((cert) => cert.id);
-        const newCertificates = validCertificates.filter((cert) => !cert.id);
+      values.certificates.forEach((cert, index) => {
+        if (!cert.name && !cert.issuer) {
+          return;
+        }
 
-        // 기존 자격증: 각각 PUT 요청 (id 값이 동일하거나 변경된 경우)
-        existingCertificates.forEach((cert) => {
-          if (cert.id) {
+        if (cert.id) {
+          // 기존 자격증: defaultValues와 비교
+          const originalCert = Array.isArray(defaultCertificates)
+            ? defaultCertificates.find((c) => c?.id === cert.id)
+            : undefined;
+
+          const isChanged =
+            !originalCert ||
+            originalCert.name !== cert.name ||
+            originalCert.issuer !== cert.issuer ||
+            originalCert.issueDate !== cert.issueDate;
+
+          if (isChanged) {
             parallelPromises.push(
               updateCertification(cert.id, {
                 name: cert.name || "",
                 issuer: cert.issuer || "",
                 issueDate: convertMonthToFullDate(cert.issueDate) || "",
+              }).then((updatedCert) => {
+                if (updatedValues.certificates && updatedValues.certificates[index]) {
+                  updatedValues.certificates[index] = {
+                    ...updatedValues.certificates[index],
+                    id: updatedCert.id,
+                    name: updatedCert.name,
+                    issuer: updatedCert.issuer || "",
+                    issueDate: convertFullDateToMonth(updatedCert.issueDate),
+                  };
+                }
               })
             );
           }
-        });
-
-        // 신규 자격증: POST 배열 요청
-        if (newCertificates.length > 0) {
-          parallelPromises.push(
-            createCertifications(
-              newCertificates.map((cert) => ({
-                name: cert.name || "",
-                issuer: cert.issuer || "",
-                issueDate: convertMonthToFullDate(cert.issueDate) || "",
-              }))
-            )
-          );
+        } else {
+          // 신규 자격증
+          newCertificatesToPost.push({
+            data: {
+              name: cert.name || "",
+              issuer: cert.issuer || "",
+              issueDate: convertMonthToFullDate(cert.issueDate) || "",
+            },
+            index,
+          });
         }
+      });
+
+      if (newCertificatesToPost.length > 0) {
+        parallelPromises.push(
+          createCertifications(newCertificatesToPost.map((item) => item.data)).then(
+            (createdCertificates) => {
+              createdCertificates.forEach((createdCert, i) => {
+                const originalIndex = newCertificatesToPost[i].index;
+                if (updatedValues.certificates && updatedValues.certificates[originalIndex]) {
+                  updatedValues.certificates[originalIndex] = {
+                    ...updatedValues.certificates[originalIndex],
+                    id: createdCert.id,
+                    name: createdCert.name,
+                    issuer: createdCert.issuer || "",
+                    issueDate: convertFullDateToMonth(createdCert.issueDate),
+                  };
+                }
+              });
+            }
+          )
+        );
       }
     }
 

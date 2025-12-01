@@ -158,6 +158,9 @@ function LanguageItem({
         disabled={isDeleting}
         className="flex-1 rounded-xl p-4 md:p-6 flex flex-col gap-4"
       >
+        {/* ID 필드 (Hidden) */}
+        <input type="hidden" {...register(`languages.${index}.id`)} />
+
         <div className="field">
           <label
             htmlFor={`languages-${index}-name`}

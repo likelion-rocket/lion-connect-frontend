@@ -264,7 +264,7 @@ export async function submitTalentRegister({
 
           if (isChanged) {
             parallelPromises.push(
-              updateEducation(edu.id, {
+              updateEducation(Number(edu.id), {
                 schoolName: edu.schoolName || "",
                 major: edu.major,
                 status: edu.status,
@@ -373,7 +373,7 @@ export async function submitTalentRegister({
 
           if (isChanged) {
             parallelPromises.push(
-              updateExperience(career.id, {
+              updateExperience(Number(career.id), {
                 companyName: career.companyName || "",
                 department: career.department,
                 position: career.position,
@@ -464,7 +464,7 @@ export async function submitTalentRegister({
 
           if (isChanged) {
             parallelPromises.push(
-              updateAward(activity.id, {
+              updateAward(Number(activity.id), {
                 title: activity.title || "",
                 organization: activity.organization || "",
                 awardDate: convertMonthToFullDate(activity.awardDate) || "",
@@ -542,7 +542,7 @@ export async function submitTalentRegister({
 
           if (isChanged) {
             parallelPromises.push(
-              updateLanguage(lang.id, {
+              updateLanguage(Number(lang.id), {
                 languageName: lang.languageName || "",
                 level: lang.level || "",
                 issueDate: convertMonthToFullDate(lang.issueDate) || "",
@@ -616,7 +616,7 @@ export async function submitTalentRegister({
 
           if (isChanged) {
             parallelPromises.push(
-              updateCertification(cert.id, {
+              updateCertification(Number(cert.id), {
                 name: cert.name || "",
                 issuer: cert.issuer || "",
                 issueDate: convertMonthToFullDate(cert.issueDate) || "",

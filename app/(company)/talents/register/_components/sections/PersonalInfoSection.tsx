@@ -25,10 +25,10 @@ export default function PersonalInfoSection() {
   useEffect(() => {
     if (user) {
       if (user.phoneNumber) {
-        setValue("profile.phone", user.phoneNumber);
+        setValue("profile.phone", user.phoneNumber, { shouldValidate: true });
       }
       if (user.email) {
-        setValue("profile.email", user.email);
+        setValue("profile.email", user.email, { shouldValidate: true });
       }
     }
   }, [user, setValue]);

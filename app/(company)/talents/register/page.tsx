@@ -95,11 +95,16 @@ export default function TalentRegisterPage() {
   const methods = useForm<TalentRegisterFormValues>({
     resolver: formResolver,
     defaultValues: defaultTalentRegisterValues,
-    mode: "onChange", // 값 변경 시마다 validation 실행
+    mode: "onSubmit", // 값 변경 시마다 validation 실행
     shouldFocusError: true, // 에러 발생 시 첫 번째 필드로 자동 포커스
-    shouldUnregister: true, // 컴포넌트 언마운트 시 필드 등록 해제 및 값 삭제
+    // shouldUnregister: true를 제거 - 등록되지 않은 필드가 isValid를 false로 만드는 문제 해결
   });
-
+  // 디버깅용: formState 상태 확인
+  console.log("formState:", {
+    isValid: methods.formState.isValid,
+    errors: methods.formState.errors,
+    dirtyFields: methods.formState.dirtyFields,
+  });
   // 데이터가 로드되면 자동으로 React Hook Form을 초기화
   useInitializeTalentForm(methods, isLoading);
 
@@ -108,9 +113,76 @@ export default function TalentRegisterPage() {
   };
 
   /**
+   * 서버에서 생성된 ID만 폼에 업데이트
+   * dirty/valid 상태를 유지하면서 ID만 동기화
+   */
+  const updateFormWithServerIds = (serverData: TalentRegisterFormValues) => {
+    // 학력 ID 업데이트
+    if (serverData.educations) {
+      serverData.educations.forEach((edu, index) => {
+        if (edu.id) {
+          methods.setValue(`educations.${index}.id`, edu.id, {
+            shouldDirty: false,
+            shouldValidate: false,
+          });
+        }
+      });
+    }
+
+    // 경력 ID 업데이트
+    if (serverData.careers) {
+      serverData.careers.forEach((career, index) => {
+        if (career.id) {
+          methods.setValue(`careers.${index}.id`, career.id, {
+            shouldDirty: false,
+            shouldValidate: false,
+          });
+        }
+      });
+    }
+
+    // 수상/활동 ID 업데이트
+    if (serverData.activities) {
+      serverData.activities.forEach((activity, index) => {
+        if (activity.id) {
+          methods.setValue(`activities.${index}.id`, activity.id, {
+            shouldDirty: false,
+            shouldValidate: false,
+          });
+        }
+      });
+    }
+
+    // 언어 ID 업데이트
+    if (serverData.languages) {
+      serverData.languages.forEach((lang, index) => {
+        if (lang.id) {
+          methods.setValue(`languages.${index}.id`, lang.id, {
+            shouldDirty: false,
+            shouldValidate: false,
+          });
+        }
+      });
+    }
+
+    // 자격증 ID 업데이트
+    if (serverData.certificates) {
+      serverData.certificates.forEach((cert, index) => {
+        if (cert.id) {
+          methods.setValue(`certificates.${index}.id`, cert.id, {
+            shouldDirty: false,
+            shouldValidate: false,
+          });
+        }
+      });
+    }
+  };
+
+  /**
    * 임시 저장 핸들러
    * - validation 체크 없이 현재 입력된 값으로 submit
    * - 현재 페이지에 머무르면서 데이터만 저장
+   * - dirty/valid 상태를 유지하고 서버에서 생성된 ID만 업데이트
    */
   const handleTempSave = async () => {
     const currentValues = methods.getValues();
@@ -118,11 +190,13 @@ export default function TalentRegisterPage() {
       values: currentValues,
       methods,
       existingProfileId: existingProfile?.id,
+      isTempSave: true,
     });
 
     if (result.success) {
       if (result.data) {
-        methods.reset(result.data);
+        // 임시 저장: 서버에서 생성된 ID만 업데이트 (dirty/valid 상태 유지)
+        updateFormWithServerIds(result.data);
       }
       showToast("임시 저장되었습니다!");
     } else {
@@ -173,8 +247,74 @@ export default function TalentRegisterPage() {
     }
   };
 
-  // 필수 필드 체크: formState.isValid 활용
-  const isSubmitDisabled = !methods.formState.isValid;
+  /**
+   * validation 에러 발생 시 가장 위에 있는 에러 필드로 스크롤 + 토스트 알림
+   */
+  const onError = (errors: any) => {
+    // 모든 에러 정보 수집 (key와 message)
+    const getAllErrors = (obj: any, prefix = ""): { key: string; message: string }[] => {
+      const result: { key: string; message: string }[] = [];
+
+      for (const key in obj) {
+        const fullKey = prefix ? `${prefix}.${key}` : key;
+        const value = obj[key];
+
+        // 배열인 경우 (예: educations.0.schoolName)
+        if (Array.isArray(value)) {
+          for (let i = 0; i < value.length; i++) {
+            if (value[i]) {
+              result.push(...getAllErrors(value[i], `${fullKey}.${i}`));
+            }
+          }
+        }
+        // 에러 객체인 경우 (message가 있음)
+        else if (value?.message) {
+          result.push({ key: fullKey, message: value.message });
+        }
+        // 중첩 객체인 경우
+        else if (typeof value === "object" && value !== null) {
+          result.push(...getAllErrors(value, fullKey));
+        }
+      }
+      return result;
+    };
+
+    const allErrors = getAllErrors(errors);
+
+    if (allErrors.length > 0) {
+      // DOM에서 가장 위에 있는 에러 필드 찾기
+      let topErrorElement: Element | null = null;
+      let topErrorMessage = allErrors[0].message;
+      let minTop = Infinity;
+
+      for (const error of allErrors) {
+        const element = document.querySelector(`[name="${error.key}"]`);
+        if (element) {
+          const rect = element.getBoundingClientRect();
+          const absoluteTop = rect.top + window.scrollY;
+
+          if (absoluteTop < minTop) {
+            minTop = absoluteTop;
+            topErrorElement = element;
+            topErrorMessage = error.message;
+          }
+        }
+      }
+
+      // 토스트 알림 표시 (가장 위에 있는 에러 메시지)
+      showToast(topErrorMessage, "error");
+
+      // 가장 위에 있는 에러 필드로 스크롤
+      if (topErrorElement) {
+        topErrorElement.scrollIntoView({ behavior: "smooth", block: "center" });
+        (topErrorElement as HTMLElement).focus?.();
+      }
+    }
+  };
+
+  // mode: "onSubmit"에서는 submit 전까지 isValid가 정확하지 않음
+  // 버튼은 항상 활성화하고, validation은 handleSubmit에서 처리
+  const isSubmitDisabled = false;
 
   return (
     <FormProvider {...methods}>
@@ -191,7 +331,7 @@ export default function TalentRegisterPage() {
         <main className="max-w-[1440px] mx-auto px-4 md:px-8 py-8 md:py-16">
           <form
             id="talent-register-form"
-            onSubmit={methods.handleSubmit(onSubmit)}
+            onSubmit={methods.handleSubmit(onSubmit, onError)}
             className="talent-register-form max-w-[1142px] mx-auto flex flex-col gap-60"
           >
             {/* 프로필 사진 섹션 */}

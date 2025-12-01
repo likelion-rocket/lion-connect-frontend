@@ -81,7 +81,7 @@ export const API_ENDPOINTS = {
     },
   },
   JOBS: {
-    GET: "/profile/job-categories", // GET
+    GET: "/profile/job-categories-with-groups", // GET
     UPDATE: "/profile/job-categories", // PUT
   },
   AWARDS: {

@@ -95,7 +95,7 @@ export default function TalentRegisterPage() {
   const methods = useForm<TalentRegisterFormValues>({
     resolver: formResolver,
     defaultValues: defaultTalentRegisterValues,
-    mode: "onSubmit", // 제출 시 validation
+    mode: "onChange", // 값 변경 시마다 validation 실행
     shouldFocusError: true, // 에러 발생 시 첫 번째 필드로 자동 포커스
     shouldUnregister: true, // 컴포넌트 언마운트 시 필드 등록 해제 및 값 삭제
   });

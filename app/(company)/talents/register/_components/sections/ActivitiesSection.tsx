@@ -64,7 +64,7 @@ export default function ActivitiesSection() {
       <div className="activities-list flex flex-col gap-6">
         {fields.map((field, index) => {
           const activityData = getValues("activities")?.[index];
-          const activityId = activityData?.id;
+          const activityId = activityData?.id ? Number(activityData.id) : undefined;
 
           return (
             <ActivityItem

@@ -62,7 +62,7 @@ export default function LanguagesSection() {
       <div className="languages-list flex flex-col gap-6">
         {fields.map((field, index) => {
           const languageData = getValues("languages")?.[index];
-          const languageId = languageData?.id;
+          const languageId = languageData?.id ? Number(languageData.id) : undefined;
 
           return (
             <LanguageItem

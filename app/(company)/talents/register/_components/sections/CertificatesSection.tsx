@@ -62,7 +62,7 @@ export default function CertificatesSection() {
       <div className="certificates-list flex flex-col gap-6">
         {fields.map((field, index) => {
           const certificateData = getValues("certificates")?.[index];
-          const certificateId = certificateData?.id;
+          const certificateId = certificateData?.id ? Number(certificateData.id) : undefined;
 
           return (
             <CertificateItem

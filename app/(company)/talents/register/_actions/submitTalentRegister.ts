@@ -24,7 +24,7 @@ import { updateMyExpTags } from "@/lib/api/expTags";
 import { updateJobs } from "@/lib/api/jobs";
 import { updateMyCustomSkills } from "@/lib/api/customSkills";
 import { EXP_TAG_ID_MAP, type ExpTagKey } from "@/lib/expTags/map";
-import { findJobGroupByCode, findJobRoleByCode } from "@/constants/jobMapping";
+import { findJobRoleByCode } from "@/constants/jobMapping";
 import {
   presignThumbnail,
   uploadThumbnailToS3,
@@ -168,27 +168,14 @@ export async function submitTalentRegister({
     const parallelPromises: Promise<unknown>[] = [];
 
     // 직무 카테고리 (PUT)
+    // 직무(job role) ID만 전송 (직군은 직무에 포함되어 있으므로 불필요)
     if (dirtyFields.job?.category || dirtyFields.job?.role) {
-      const jobIds: number[] = [];
-
-      // 직군 ID 추가
-      if (values.job.category) {
-        const jobGroup = findJobGroupByCode(values.job.category);
-        if (jobGroup) {
-          jobIds.push(jobGroup.id);
-        }
-      }
-
-      // 직무 ID 추가
+      // 직무 ID만 추가
       if (values.job.role) {
         const jobRoleResult = findJobRoleByCode(values.job.role);
         if (jobRoleResult) {
-          jobIds.push(jobRoleResult.role.id);
+          parallelPromises.push(updateJobs({ ids: [jobRoleResult.role.id] }));
         }
-      }
-
-      if (jobIds.length > 0) {
-        parallelPromises.push(updateJobs({ ids: jobIds }));
       }
     }
 

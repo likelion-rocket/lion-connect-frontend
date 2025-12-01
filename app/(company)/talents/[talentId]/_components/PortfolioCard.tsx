@@ -16,7 +16,7 @@ function isPdfUrl(url: string): boolean {
   return lowerUrl.endsWith(".pdf") || lowerUrl.includes("application/pdf");
 }
 
-export default function PorfolioCard({
+export default function PortfolioCard({
   fileUrl,
   height = 520,
   className = "",

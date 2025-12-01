@@ -10,6 +10,8 @@ import IntroduceCard from "./[talentId]/_components/IntroduceCard";
 import { useTalents } from "@/hooks/company/useTalents";
 import type { BadgeType } from "@/components/ui/badge";
 import { JOB_ROLE_ID_BY_NAME, findJobGroupByJobName } from "@/constants/jobs";
+import { useRequireRoles } from "@/hooks/common/useAuth";
+import { UserRole } from "@/utils/rbac";
 
 /* ================================
  * 1. 경험 배지 매핑
@@ -221,7 +223,17 @@ function TalentsPageContent() {
   );
 }
 
+/** 인재탐색 페이지 접근 가능 역할 */
+const TALENTS_PAGE_ROLES = [UserRole.ADMIN, UserRole.JOINEDCOMPANY, UserRole.COMPANY];
+
 export default function TalentsPage() {
+  const { hasAccess, isLoading } = useRequireRoles(TALENTS_PAGE_ROLES);
+
+  // 로딩 중이거나 권한 체크 중에는 아무것도 렌더링하지 않음 (깜빡임 방지)
+  if (isLoading || !hasAccess) {
+    return null;
+  }
+
   return (
     <Suspense>
       <TalentsPageContent />

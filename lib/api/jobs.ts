@@ -8,19 +8,30 @@ export type JobCategoryItem = {
   name: string;
 };
 
-/** 내 직무 카테고리 선택 목록 조회 (GET /profile/job-categories) */
+/**
+ * 내 직무 카테고리 선택 목록 조회 (GET /profile/job-categories-with-groups)
+ * 응답 형식: [{ id: 직군ID, name: 직군명 }, { id: 직무ID, name: 직무명 }]
+ * - 0번째 요소: 직군 (Job Group)
+ * - 1번째 요소: 직무 (Job Role)
+ */
 export function fetchMyJobs(): Promise<JobCategoryItem[]> {
   return get<JobCategoryItem[]>(API_ENDPOINTS.JOBS.GET, {
     credentials: "include",
   });
 }
 
-/** 직무 카테고리 선택 목록 치환 요청 바디 */
+/**
+ * 직무 카테고리 선택 목록 치환 요청 바디
+ * 직무(Job Role) ID만 전송 (직군은 직무에 포함되어 있으므로 불필요)
+ */
 export type UpdateJobsRequest = {
-  ids: number[];
+  ids: number[]; // 직무 ID 배열 (일반적으로 1개의 ID만 포함)
 };
 
-/** 직무 카테고리 선택 목록 치환 (PUT /profile/job-categories) */
+/**
+ * 직무 카테고리 선택 목록 치환 (PUT /profile/job-categories)
+ * 직무 ID만 전송하면 서버에서 해당 직무와 연관된 직군을 자동으로 처리
+ */
 export function updateJobs(body: UpdateJobsRequest): Promise<JobCategoryItem[]> {
   return put<JobCategoryItem[]>(API_ENDPOINTS.JOBS.UPDATE, body, {
     credentials: "include",

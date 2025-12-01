@@ -16,17 +16,23 @@ export default function PortfolioSection() {
   const {
     setValue,
     watch,
+    register,
     formState: { errors },
   } = useFormContext<TalentRegisterFormValues>();
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Store에서 기존 포트폴리오 가져오기
+  // 필드를 React Hook Form에 등록 (isValid 계산에 포함되도록)
+  register("portfolioFile");
+
+  // Store에서 기존 포트폴리오 가져오기 (파일명 표시용)
   const profileLinks = useTalentRegisterStore((state) => state.profileLinks);
   const existingPortfolio = profileLinks.find((link) => link.type === "PORTFOLIO");
 
-  // 새로 선택한 파일
+  // 폼에 저장된 파일 (File 객체 또는 기존 포트폴리오 정보)
   const selectedFile = watch("portfolioFile");
+
+  // 포트폴리오 초기화는 useInitializeTalentForm 훅에서 처리
 
   /**
    * 파일 선택 핸들러
@@ -61,7 +67,9 @@ export default function PortfolioSection() {
   const displayFileName =
     selectedFile instanceof File
       ? selectedFile.name
-      : existingPortfolio?.originalFilename || "PDF 파일을 첨부해주세요.";
+      : selectedFile?.originalFilename ||
+        existingPortfolio?.originalFilename ||
+        "PDF 파일을 첨부해주세요.";
 
   return (
     <section className="section section-portfolio flex flex-col gap-6">

@@ -85,6 +85,9 @@ export default function CareerItem({ index, careerId, onDelete }: CareerItemProp
         disabled={isDeleting}
         className="flex-1 rounded-xl p-4 md:p-6 flex flex-col gap-4"
       >
+        {/* ID 필드 (Hidden) */}
+        <input type="hidden" {...register(`careers.${index}.id`)} />
+
         {/* 회사명 */}
         <div className="field">
           <label

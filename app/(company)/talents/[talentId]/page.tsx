@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import IntroduceCard from "./_components/IntroduceCard";
 import ResumeCard from "./_components/ResumeCard";
-import PortfolioCard from "./_components/PorfolioCard";
+import PortfolioCard from "./_components/PortfolioCard";
 import { useTalentDetail } from "@/hooks/talent/queries/useTalentDetail";
 import { useParams } from "next/navigation";
 import { mapTalentDataToComponents } from "./_utils/mapTalentData";

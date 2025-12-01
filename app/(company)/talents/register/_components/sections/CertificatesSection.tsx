@@ -62,7 +62,7 @@ export default function CertificatesSection() {
       <div className="certificates-list flex flex-col gap-6">
         {fields.map((field, index) => {
           const certificateData = getValues("certificates")?.[index];
-          const certificateId = certificateData?.id;
+          const certificateId = certificateData?.id ? Number(certificateData.id) : undefined;
 
           return (
             <CertificateItem
@@ -160,6 +160,9 @@ function CertificateItem({
         disabled={isDeleting}
         className="flex-1 rounded-xl p-4 md:p-6 flex flex-col gap-4"
       >
+        {/* ID 필드 (Hidden) */}
+        <input type="hidden" {...register(`certificates.${index}.id`)} />
+
         <div className="field">
           <label
             htmlFor={`certificates-${index}-name`}

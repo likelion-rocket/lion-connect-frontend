@@ -29,8 +29,16 @@ const QUESTIONS = [
 ];
 
 export default function WorkDrivenTestSection() {
-  const { watch, setValue } = useFormContext<TalentRegisterFormValues>();
+  const {
+    watch,
+    setValue,
+    register,
+    formState: { errors },
+  } = useFormContext<TalentRegisterFormValues>();
   const workDrivenTest = watch("workDrivenTest") || {};
+
+  // 필드를 React Hook Form에 등록 (isValid 계산에 포함되도록)
+  register("workDrivenTest");
 
   const handleScoreChange = (questionIndex: number, score: number) => {
     setValue(`workDrivenTest.q${questionIndex + 1}` as any, score, {
@@ -39,11 +47,17 @@ export default function WorkDrivenTestSection() {
     });
   };
 
+  // workDrivenTest 에러 메시지
+  const workDrivenTestError = errors.workDrivenTest?.message as string | undefined;
+
   return (
     <section className="section section-work-driven-test flex flex-col gap-4 md:gap-6">
-      <h2 className="text-lg md:text-xl font-bold text-text-primary">
-        Work Driven 테스트<span className="text-text-error">*</span>
-      </h2>
+      <div className="flex items-center gap-2">
+        <h2 className="text-lg md:text-xl font-bold text-text-primary">
+          Work Driven 테스트<span className="text-text-error">*</span>
+        </h2>
+        {workDrivenTestError && <p className="text-sm text-text-error">({workDrivenTestError})</p>}
+      </div>
 
       <div className="flex gap-4 items-start rounded-lg p-4">
         <div className="w-12 h-12 bg-bg-tertiary  flex items-center justify-center bg-bg-primary rounded-lg shrink-0">

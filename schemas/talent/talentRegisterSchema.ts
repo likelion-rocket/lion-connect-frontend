@@ -9,8 +9,8 @@ export const talentRegisterSchema = z.object({
   profile: z.object({
     avatar: z.any().nullable(),
     name: z.string().min(1, "이름은 필수입니다."),
-    phone: z.string().min(1, "전화번호는 필수입니다."),
-    email: z.string().email("이메일 형식이 올바르지 않습니다."),
+    phone: z.string().min(1, "전화번호는 필수입니다.").optional(),
+    email: z.string().email("이메일 형식이 올바르지 않습니다.").optional(),
     introduction: z.string().min(1, "간단 소개는 필수입니다."),
   }),
   job: z.object({
@@ -21,7 +21,7 @@ export const talentRegisterSchema = z.object({
   educations: z
     .array(
       z.object({
-        id: z.number().optional(), // 기존 학력인 경우 id 존재 (수정 시 필요)
+        id: z.union([z.number(), z.string(), z.undefined()]).optional(), // 기존 학력인 경우 id 존재 (수정 시 필요)
         schoolName: z.string().min(1, "학교명은 필수입니다."),
         major: z.string().min(1, "전공은 필수입니다."),
         status: z.enum(["ENROLLED", "GRADUATED", "COMPLETED"]),
@@ -35,7 +35,7 @@ export const talentRegisterSchema = z.object({
   careers: z
     .array(
       z.object({
-        id: z.number().optional(), // 기존 경력인 경우 id 존재 (삭제 시 필요)
+        id: z.union([z.number(), z.string(), z.undefined()]).optional(), // 기존 경력인 경우 id 존재 (삭제 시 필요)
         companyName: z.string().optional(),
         department: z.string().optional(),
         position: z.string().optional(),
@@ -50,7 +50,7 @@ export const talentRegisterSchema = z.object({
     main: z
       .array(
         z.object({
-          id: z.number().optional(), // 기존 스킬인 경우 id 존재 (수정/삭제 시 필요)
+          id: z.union([z.number(), z.string(), z.undefined()]).optional(), // 기존 스킬인 경우 id 존재 (수정/삭제 시 필요)
           name: z.string().optional(),
         })
       )
@@ -59,7 +59,7 @@ export const talentRegisterSchema = z.object({
   activities: z
     .array(
       z.object({
-        id: z.number().optional(), // 기존 수상/활동인 경우 id 존재 (삭제 시 필요)
+        id: z.union([z.number(), z.string(), z.undefined()]).optional(), // 기존 수상/활동인 경우 id 존재 (삭제 시 필요)
         title: z.string().optional(),
         organization: z.string().optional(),
         awardDate: z.string().optional(),
@@ -70,7 +70,7 @@ export const talentRegisterSchema = z.object({
   languages: z
     .array(
       z.object({
-        id: z.number().optional(), // 기존 언어인 경우 id 존재 (삭제 시 필요)
+        id: z.union([z.number(), z.string(), z.undefined()]).optional(), // 기존 언어인 경우 id 존재 (삭제 시 필요)
         languageName: z.string().optional(),
         level: z.string().optional(),
         issueDate: z.string().optional(),
@@ -80,7 +80,7 @@ export const talentRegisterSchema = z.object({
   certificates: z
     .array(
       z.object({
-        id: z.number().optional(), // 기존 자격증인 경우 id 존재 (삭제 시 필요)
+        id: z.union([z.number(), z.string(), z.undefined()]).optional(), // 기존 자격증인 경우 id 존재 (삭제 시 필요)
         name: z.string().optional(),
         issuer: z.string().optional(),
         issueDate: z.string().optional(),
@@ -99,11 +99,33 @@ export const talentRegisterSchema = z.object({
     )
     .optional(),
   portfolio: z.string().optional().or(z.literal("")),
-  portfolioFile: z.any().optional(),
+  portfolioFile: z.any().refine(
+    (file) => {
+      // 새로 업로드한 File 객체이거나, 기존 포트폴리오 정보(truthy 값)가 있으면 통과
+      return file instanceof File || (file && typeof file === "object" && file.url);
+    },
+    {
+      message: "포트폴리오 PDF 파일을 업로드해주세요.",
+    }
+  ),
   likelion: z.object({
     code: z.string().optional(),
   }),
-  workDrivenTest: z.record(z.string(), z.number().min(1).max(5)).optional(),
+  workDrivenTest: z
+    .record(z.string(), z.number().min(1).max(5))
+    .optional()
+    .refine(
+      (data) => {
+        // data가 없거나 빈 객체면 실패
+        if (!data || Object.keys(data).length === 0) return false;
+        // q1 ~ q16 모두 존재하는지 확인
+        for (let i = 1; i <= 16; i++) {
+          if (data[`q${i}`] === undefined) return false;
+        }
+        return true;
+      },
+      { message: "Work Driven 테스트의 모든 질문에 응답해주세요." }
+    ),
 });
 
 export type TalentRegisterFormValues = z.infer<typeof talentRegisterSchema>;

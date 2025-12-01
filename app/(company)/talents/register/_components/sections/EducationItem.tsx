@@ -87,6 +87,9 @@ export default function EducationItem({ index, educationId, onDelete }: Educatio
         disabled={isDeleting}
         className="flex-1 rounded-xl p-4 md:p-6 flex flex-col gap-4"
       >
+        {/* ID 필드 (Hidden) - 중요: reset 후 ID 유지를 위해 필수 */}
+        <input type="hidden" {...register(`educations.${index}.id`)} />
+
         {/* 학교명 */}
         <div className="field">
           <label

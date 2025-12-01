@@ -1,68 +1,40 @@
 "use client";
 
 import { useFormContext, useWatch } from "react-hook-form";
+import { useMemo } from "react";
 import Image from "next/image";
 import FilterSelect from "@/components/form/FilterSelect";
+import { JOB_GROUPS, findJobGroupByCode } from "@/constants/jobMapping";
 import type { TalentRegisterFormValues } from "@/schemas/talent/talentRegisterSchema";
 
 /**
  * 직군 및 직무 선택 섹션 컴포넌트
  * 필드: job.category, job.role
+ *
+ * API 응답 형식:
+ * - jobCategories[0]: 직군 (Job Group) { id: number, name: string }
+ * - jobCategories[1]: 직무 (Job Role) { id: number, name: string }
+ *
+ * 데이터 흐름:
+ * - API → Store (useTalentRegisterStore.jobCategories)
+ * - Store → Mapper (mapApiDataToFormValues) → Form (job.category, job.role as codes)
+ * - Form → UI (JOB_GROUPS constant for dropdown options)
  */
 
-type JobCategory = "development" | "design" | "data" | "marketing" | "project";
-
-interface JobRole {
+interface FilterOption {
   value: string;
   label: string;
 }
 
-interface JobCategoryConfig {
-  value: JobCategory;
-  label: string;
-  roles: JobRole[];
-}
-
-const JOB_CATEGORIES: JobCategoryConfig[] = [
-  {
-    value: "development",
-    label: "개발",
-    roles: [
-      { value: "frontend", label: "프론트엔드" },
-      { value: "backend", label: "백엔드" },
-      { value: "ios", label: "iOS" },
-      { value: "android", label: "Android" },
-      { value: "unity", label: "Unity" },
-      { value: "ai", label: "AI" },
-    ],
-  },
-  {
-    value: "design",
-    label: "디자인",
-    roles: [{ value: "ux/ui", label: "UI/UX" }],
-  },
-  {
-    value: "data",
-    label: "데이터 분석",
-    roles: [{ value: "data", label: "데이터 분석" }],
-  },
-  {
-    value: "marketing",
-    label: "마케팅",
-    roles: [{ value: "growth marketing", label: "그로스 마케팅" }],
-  },
-  {
-    value: "project",
-    label: "기획",
-    roles: [{ value: "pm", label: "PM" }],
-  },
-];
-
 export default function JobSection() {
-  const { control, setValue } = useFormContext<TalentRegisterFormValues>();
+  const { control, setValue, register } = useFormContext<TalentRegisterFormValues>();
 
   const selectedCategory = useWatch({ control, name: "job.category" }) || "";
   const selectedRole = useWatch({ control, name: "job.role" }) || "";
+
+  // 필드를 React Hook Form에 등록 (isValid 계산에 포함되도록)
+  register("job.category");
+  register("job.role");
 
   const handleCategoryChange = (value: string) => {
     setValue("job.category", value, { shouldValidate: true, shouldDirty: true });
@@ -73,12 +45,26 @@ export default function JobSection() {
     setValue("job.role", value, { shouldValidate: true, shouldDirty: true });
   };
 
-  const categoryOptions = JOB_CATEGORIES.map((cat) => ({
-    value: cat.value,
-    label: cat.label,
-  }));
+  // 직군 옵션: JOB_GROUPS에서 전체 직군 목록 가져오기
+  const categoryOptions: FilterOption[] = useMemo(() => {
+    return JOB_GROUPS.map((group) => ({
+      value: group.code,
+      label: group.name,
+    }));
+  }, []);
 
-  const availableRoles = JOB_CATEGORIES.find((cat) => cat.value === selectedCategory)?.roles || [];
+  // 직무 옵션: 선택된 직군에 해당하는 직무 목록
+  const availableRoles: FilterOption[] = useMemo(() => {
+    if (!selectedCategory) return [];
+
+    const jobGroup = findJobGroupByCode(selectedCategory);
+    if (!jobGroup) return [];
+
+    return jobGroup.roles.map((role) => ({
+      value: role.code,
+      label: role.name,
+    }));
+  }, [selectedCategory]);
 
   return (
     <section className="section section-job flex flex-col gap-6 md:gap-8">

@@ -121,6 +121,9 @@ export default function TalentRegisterPage() {
     });
 
     if (result.success) {
+      if (result.data) {
+        methods.reset(result.data);
+      }
       showToast("임시 저장되었습니다!");
     } else {
       // TODO: 에러 처리
@@ -159,6 +162,9 @@ export default function TalentRegisterPage() {
     });
 
     if (result.success) {
+      if (result.data) {
+        methods.reset(result.data);
+      }
       // 성공 시 토스트 표시 후 랜딩페이지로 이동
       showToast("인재 프로필이 성공적으로 등록되었습니다!");
       router.push("/");

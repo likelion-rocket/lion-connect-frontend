@@ -156,6 +156,12 @@ export function useInitializeTalentForm(
         }
       });
     }
+
+    // 포트폴리오 파일 (기존 포트폴리오가 있으면 설정)
+    const existingPortfolio = profileLinks.find((link) => link.type === "PORTFOLIO");
+    if (existingPortfolio) {
+      methods.setValue("portfolioFile", existingPortfolio, { shouldValidate: true });
+    }
   }, [
     isLoading,
     profile,

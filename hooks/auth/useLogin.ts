@@ -4,6 +4,7 @@ import { useMutation } from "@tanstack/react-query";
 import { LoginFormData, LoginResponse } from "@/types/auth";
 import { loginAPI } from "@/lib/api/auth";
 import { useAuthStore } from "@/store/authStore";
+import { setUserRolesCookie } from "@/utils/auth-cookies";
 
 /**
  * 로그인 Mutation 훅 (TanStack Query 기반)
@@ -11,6 +12,7 @@ import { useAuthStore } from "@/store/authStore";
  * - 자동 재시도
  * - 로딩 상태 자동 관리
  * - Zustand에 액세스 토큰 및 사용자 정보 저장
+ * - 미들웨어용 역할 쿠키 설정
  *
  * 보안 개선사항:
  * - 액세스 토큰: Zustand 메모리에 저장 (sessionStorage persist)
@@ -41,6 +43,9 @@ export function useLogin() {
       // 로그인 성공 시 Zustand에 토큰과 사용자 정보 저장
       // Zustand store에 액세스 토큰과 사용자 정보 저장
       setAuth(data.accessToken, data.user);
+
+      // 미들웨어용 역할 쿠키 설정 (역할 기반 라우팅 보호)
+      setUserRolesCookie(data.user.roles);
     },
     retry: 1, // 실패 시 1회 재시도
     retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),

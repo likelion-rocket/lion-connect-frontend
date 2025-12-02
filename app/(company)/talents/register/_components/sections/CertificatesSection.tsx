@@ -12,6 +12,7 @@ import { useFormContext, useFieldArray, useWatch } from "react-hook-form";
 import type { TalentRegisterFormValues } from "@/schemas/talent/talentRegisterSchema";
 import { FormInput } from "@/components/form/FormInput";
 import { FormContainer } from "@/components/form/FormContainer";
+import { MonthPicker } from "@/components/form/MonthPicker";
 import { deleteCertification } from "@/lib/api/certifications";
 import AddButton from "../AddButton";
 
@@ -44,7 +45,7 @@ export default function CertificatesSection() {
   const handleAddCertificate = () => {
     append({
       name: "",
-      issuer: "",
+      issuer: "default",
       issueDate: "",
     });
   };
@@ -109,8 +110,7 @@ function CertificateItem({
     name: `certificates.${index}`,
   });
 
-  const hasCertificateValue =
-    certificateFields?.name || certificateFields?.issuer || certificateFields?.issueDate;
+  const hasCertificateValue = certificateFields?.name || certificateFields?.issueDate;
 
   // DELETE 핸들러
   const handleDelete = async () => {
@@ -164,49 +164,20 @@ function CertificateItem({
         <input type="hidden" {...register(`certificates.${index}.id`)} />
 
         <div className="field">
-          <label
-            htmlFor={`certificates-${index}-name`}
-            className="block text-sm font-medium text-text-secondary mb-2"
-          >
-            자격증명
-          </label>
           <FormInput
             id={`certificates-${index}-name`}
             type="text"
             placeholder="자격증을 입력해주세요"
+            className="border-0 focus:border-0"
             {...register(`certificates.${index}.name`)}
           />
         </div>
 
-        <div className="field">
-          <label
-            htmlFor={`certificates-${index}-issuer`}
-            className="block text-sm font-medium text-text-secondary mb-2"
-          >
-            발급 기관
-          </label>
-          <FormInput
-            id={`certificates-${index}-issuer`}
-            type="text"
-            placeholder="발급 기관을 입력해주세요"
-            {...register(`certificates.${index}.issuer`)}
-          />
-        </div>
-
-        <div className="field">
-          <label
-            htmlFor={`certificates-${index}-issue-date`}
-            className="block text-sm font-medium text-text-secondary mb-2"
-          >
-            취득일자
-          </label>
-          <FormInput
-            id={`certificates-${index}-issue-date`}
-            type="month"
-            placeholder="YYYY.MM"
-            {...register(`certificates.${index}.issueDate`)}
-          />
-        </div>
+        <MonthPicker
+          value={certificateFields?.issueDate}
+          register={register(`certificates.${index}.issueDate`)}
+          id={`certificates-${index}-issue-date`}
+        />
       </FormContainer>
     </div>
   );

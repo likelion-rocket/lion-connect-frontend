@@ -12,6 +12,7 @@ import { useFormContext, useFieldArray, useWatch } from "react-hook-form";
 import type { TalentRegisterFormValues } from "@/schemas/talent/talentRegisterSchema";
 import { FormInput } from "@/components/form/FormInput";
 import { FormContainer } from "@/components/form/FormContainer";
+import { MonthPicker } from "@/components/form/MonthPicker";
 import { deleteLanguage } from "@/lib/api/languages";
 import AddButton from "../AddButton";
 
@@ -162,16 +163,11 @@ function LanguageItem({
         <input type="hidden" {...register(`languages.${index}.id`)} />
 
         <div className="field">
-          <label
-            htmlFor={`languages-${index}-name`}
-            className="block text-sm font-medium text-text-secondary mb-2"
-          >
-            언어명
-          </label>
           <FormInput
             id={`languages-${index}-name`}
             type="text"
             placeholder="언어를 입력해주세요"
+            className="border-0 focus:border-0"
             {...register(`languages.${index}.languageName`)}
           />
         </div>
@@ -191,20 +187,11 @@ function LanguageItem({
           />
         </div> */}
 
-        <div className="field">
-          <label
-            htmlFor={`languages-${index}-issue-date`}
-            className="block text-sm font-medium text-text-secondary mb-2"
-          >
-            취득/검정 일자
-          </label>
-          <FormInput
-            id={`languages-${index}-issue-date`}
-            type="month"
-            placeholder="YYYY.MM"
-            {...register(`languages.${index}.issueDate`)}
-          />
-        </div>
+        <MonthPicker
+          value={languageFields?.issueDate}
+          register={register(`languages.${index}.issueDate`)}
+          id={`languages-${index}-issue-date`}
+        />
       </FormContainer>
     </div>
   );

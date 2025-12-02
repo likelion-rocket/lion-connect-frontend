@@ -13,6 +13,7 @@ import type { TalentRegisterFormValues } from "@/schemas/talent/talentRegisterSc
 import { FormInput } from "@/components/form/FormInput";
 import { FormTextarea } from "@/components/form/FormTextarea";
 import { FormContainer } from "@/components/form/FormContainer";
+import { MonthPicker } from "@/components/form/MonthPicker";
 import { deleteAward } from "@/lib/api/awards";
 import AddButton from "../AddButton";
 
@@ -162,64 +163,29 @@ function ActivityItem({
 
         {/* 활동명 */}
         <div className="field">
-          <label
-            htmlFor={`activities-${index}-title`}
-            className="block text-sm font-medium text-text-secondary mb-2"
-          >
-            활동명/수상명
-          </label>
           <FormInput
             id={`activities-${index}-title`}
             type="text"
             placeholder="활동명/수상명을 입력해주세요"
+            className="border-0 focus:border-0"
             {...register(`activities.${index}.title`)}
           />
         </div>
 
-        {/* 주최 기관 */}
-        <div className="field">
-          <label
-            htmlFor={`activities-${index}-organization`}
-            className="block text-sm font-medium text-text-secondary mb-2"
-          >
-            주최 기관
-          </label>
-          <FormInput
-            id={`activities-${index}-organization`}
-            type="text"
-            placeholder="주최 기관을 입력해주세요"
-            {...register(`activities.${index}.organization`)}
-          />
-        </div>
-
         {/* 수상/활동 일자 */}
-        <div className="field">
-          <label
-            htmlFor={`activities-${index}-award-date`}
-            className="block text-sm font-medium text-text-secondary mb-2"
-          >
-            수상/활동 일자
-          </label>
-          <FormInput
-            id={`activities-${index}-award-date`}
-            type="month"
-            placeholder="YYYY.MM"
-            {...register(`activities.${index}.awardDate`)}
-          />
-        </div>
+        <MonthPicker
+          value={activityFields?.awardDate}
+          register={register(`activities.${index}.awardDate`)}
+          id={`activities-${index}-award-date`}
+        />
 
         {/* 활동 내용 */}
         <div className="field">
-          <label
-            htmlFor={`activities-${index}-description`}
-            className="block text-sm font-medium text-text-secondary mb-2"
-          >
-            활동 내용
-          </label>
           <FormTextarea
             id={`activities-${index}-description`}
             placeholder="활동 내용을 입력해주세요"
             rows={3}
+            className="border-0 focus:border-0"
             {...register(`activities.${index}.description`)}
           />
         </div>

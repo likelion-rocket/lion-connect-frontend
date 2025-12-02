@@ -11,6 +11,7 @@ import type { TalentRegisterFormValues } from "@/schemas/talent/talentRegisterSc
 import { FormInput } from "@/components/form/FormInput";
 import { FormTextarea } from "@/components/form/FormTextarea";
 import { FormContainer } from "@/components/form/FormContainer";
+import { MonthRangePicker } from "@/components/form/MonthRangePicker";
 
 interface CareerItemProps {
   index: number;
@@ -90,87 +91,50 @@ export default function CareerItem({ index, careerId, onDelete }: CareerItemProp
 
         {/* 회사명 */}
         <div className="field">
-          <label
-            htmlFor={`careers-${index}-company`}
-            className="block text-sm font-medium text-text-secondary mb-2"
-          >
-            회사명
-          </label>
           <FormInput
             id={`careers-${index}-company`}
             type="text"
             placeholder="회사명을 입력해주세요"
+            className="border-0 focus:border-0"
             {...register(`careers.${index}.companyName`)}
           />
         </div>
 
-        {/* 부서 */}
-        <div className="field">
-          <label
-            htmlFor={`careers-${index}-department`}
-            className="block text-sm font-medium text-text-secondary mb-2"
-          >
-            부서
-          </label>
-          <FormInput
-            id={`careers-${index}-department`}
-            type="text"
-            placeholder="부서를 입력해주세요"
-            {...register(`careers.${index}.department`)}
-          />
-        </div>
-
-        {/* 직책 */}
-        <div className="field">
-          <label
-            htmlFor={`careers-${index}-position`}
-            className="block text-sm font-medium text-text-secondary mb-2"
-          >
-            직책
-          </label>
-          <FormInput
-            id={`careers-${index}-position`}
-            type="text"
-            placeholder="직책을 입력해주세요"
-            {...register(`careers.${index}.position`)}
-          />
-        </div>
-
         {/* 근무 기간 */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <MonthRangePicker
+          startValue={careerFields?.startDate}
+          endValue={careerFields?.endDate}
+          startRegister={register(`careers.${index}.startDate`)}
+          endRegister={register(`careers.${index}.endDate`)}
+          startId={`careers-${index}-start-date`}
+          endId={`careers-${index}-end-date`}
+        />
+
+        <div className="grid md:grid-cols-2 gap-4">
+          {/* 부서 · 직무 */}
           <div className="field">
-            <label
-              htmlFor={`careers-${index}-start-date`}
-              className="block text-sm font-medium text-text-secondary mb-2"
-            >
-              근무 시작일
-            </label>
             <FormInput
-              id={`careers-${index}-start-date`}
-              type="month"
-              placeholder="YYYY.MM"
-              {...register(`careers.${index}.startDate`)}
+              id={`careers-${index}-department`}
+              type="text"
+              placeholder="부서를 입력해주세요"
+              className="border-0 focus:border-0"
+              {...register(`careers.${index}.department`)}
             />
           </div>
 
+          {/* 직급 · 직책 */}
           <div className="field">
-            <label
-              htmlFor={`careers-${index}-end-date`}
-              className="block text-sm font-medium text-text-secondary mb-2"
-            >
-              근무 종료일
-            </label>
             <FormInput
-              id={`careers-${index}-end-date`}
-              type="month"
-              placeholder="YYYY.MM"
-              {...register(`careers.${index}.endDate`)}
+              id={`careers-${index}-position`}
+              type="text"
+              placeholder="직책을 입력해주세요"
+              className="border-0 focus:border-0"
+              {...register(`careers.${index}.position`)}
             />
           </div>
         </div>
-
         {/* 재직 중 */}
-        <div className="field">
+        {/* <div className="field">
           <label className="flex items-center gap-2 cursor-pointer">
             <input
               type="checkbox"
@@ -179,20 +143,15 @@ export default function CareerItem({ index, careerId, onDelete }: CareerItemProp
             />
             <span className="text-sm font-medium text-text-secondary">재직 중</span>
           </label>
-        </div>
+        </div> */}
 
         {/* 담당 업무 */}
         <div className="field">
-          <label
-            htmlFor={`careers-${index}-description`}
-            className="block text-sm font-medium text-text-secondary mb-2"
-          >
-            담당 업무/설명
-          </label>
           <FormTextarea
             id={`careers-${index}-description`}
-            placeholder="담당 업무를 입력해주세요"
+            placeholder="경력에 대한 설명을 입력해주세요."
             rows={3}
+            className="border-0 focus:border-0"
             {...register(`careers.${index}.description`)}
           />
         </div>

@@ -12,6 +12,7 @@ import { FormInput } from "@/components/form/FormInput";
 import { FormTextarea } from "@/components/form/FormTextarea";
 import { FormSelect } from "@/components/form/FormSelect";
 import { FormContainer } from "@/components/form/FormContainer";
+import { MonthRangePicker } from "@/components/form/MonthRangePicker";
 
 interface EducationItemProps {
   index: number;
@@ -114,59 +115,14 @@ export default function EducationItem({ index, educationId, onDelete }: Educatio
         </div>
 
         {/* 재학 기간 */}
-        <div className="field">
-          <div className="relative h-14 md:h-16 bg-bg-primary rounded-lg px-4 flex items-center gap-2">
-            {/* 커스텀 UI 표시 레이어 */}
-            <div className="flex items-center gap-2 pointer-events-none">
-              <span
-                className={educationFields?.startDate ? "text-text-primary" : "text-text-tertiary"}
-              >
-                {educationFields?.startDate || "YYYY.MM"}
-              </span>
-              <span className="text-text-tertiary">~</span>
-              <span
-                className={educationFields?.endDate ? "text-text-primary" : "text-text-tertiary"}
-              >
-                {educationFields?.endDate || "YYYY.MM"}
-              </span>
-            </div>
-
-            {/* 숨겨진 실제 input들 */}
-            <div className="absolute inset-0 flex items-center gap-1 opacity-0">
-              <FormInput
-                id={`educations-${index}-start-date`}
-                type="month"
-                placeholder=""
-                className="border-0 focus:border-0 w-[85px] cursor-pointer"
-                onClick={(e) => {
-                  const target = e.target as HTMLInputElement;
-                  try {
-                    target.showPicker?.();
-                  } catch (error) {
-                    // showPicker not supported, fallback to default behavior
-                  }
-                }}
-                {...register(`educations.${index}.startDate`)}
-              />
-              <span className="text-text-tertiary">~</span>
-              <FormInput
-                id={`educations-${index}-end-date`}
-                type="month"
-                placeholder=""
-                className="border-0 focus:border-0 w-[85px] cursor-pointer"
-                onClick={(e) => {
-                  const target = e.target as HTMLInputElement;
-                  try {
-                    target.showPicker?.();
-                  } catch (error) {
-                    // showPicker not supported, fallback to default behavior
-                  }
-                }}
-                {...register(`educations.${index}.endDate`)}
-              />
-            </div>
-          </div>
-        </div>
+        <MonthRangePicker
+          startValue={educationFields?.startDate}
+          endValue={educationFields?.endDate}
+          startRegister={register(`educations.${index}.startDate`)}
+          endRegister={register(`educations.${index}.endDate`)}
+          startId={`educations-${index}-start-date`}
+          endId={`educations-${index}-end-date`}
+        />
 
         {/* 학위 */}
         {/* <div className="field">

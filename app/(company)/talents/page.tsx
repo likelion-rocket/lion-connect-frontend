@@ -212,7 +212,7 @@ function TalentsPageContent() {
                   workDrivenLevel={t.workDrivenLevel}
                   email={t.email ?? undefined}
                   phoneNumber={t.phoneNumber ?? undefined}
-                  showContacts={false}
+                  showContacts={true}
                   showDetailButton={true}
                   className="
                     w-full

@@ -29,8 +29,8 @@ export const talentRegisterSchema = z.object({
         }),
         startDate: z.string().min(1, "시작일은 필수입니다."),
         endDate: z.string().min(1, "종료일은 필수입니다."),
-        description: z.string().min(1, "설명은 필수입니다."),
-        degree: z.string().min(1, "학위는 필수입니다."),
+        description: z.string().optional(),
+        degree: z.string().optional(),
       })
     )
     .min(1, "최소 1개의 학력을 입력해주세요."),

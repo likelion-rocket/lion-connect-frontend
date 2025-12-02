@@ -33,10 +33,13 @@ export default function ProfileImageSection() {
   /**
    * 초기 로드: Store의 기존 썸네일 표시
    * existingThumbnail이 변경될 때마다 미리보기 업데이트
+   * 캐시 버스터 추가하여 브라우저 캐시 문제 방지
    */
   useEffect(() => {
     if (existingThumbnail?.url) {
-      setPreviewUrl(existingThumbnail.url);
+      // S3 URL이 같은 경로에 덮어쓰기하므로 캐시 버스터 추가
+      const cacheBustedUrl = `${existingThumbnail.url}${existingThumbnail.url.includes("?") ? "&" : "?"}v=${Date.now()}`;
+      setPreviewUrl(cacheBustedUrl);
     } else {
       setPreviewUrl("/images/default-profile.png");
     }
@@ -58,11 +61,16 @@ export default function ProfileImageSection() {
 
   /**
    * 파일명 표시
+   * - File 객체: 새로 선택한 파일명
+   * - 문자열 (URL 아님): 임시저장 후 저장된 파일명
+   * - 기존 썸네일: store에서 가져온 originalFilename
    */
   const displayFileName =
     selectedFile instanceof File
       ? selectedFile.name
-      : existingThumbnail?.originalFilename || "jpg 나 png 사진을 첨부해주세요.";
+      : typeof selectedFile === "string" && selectedFile && !selectedFile.startsWith("http")
+        ? selectedFile // 임시저장 후 저장된 파일명 (URL이 아닌 경우만)
+        : existingThumbnail?.originalFilename || "jpg 나 png 사진을 첨부해주세요.";
 
   /**
    * 파일 선택 핸들러

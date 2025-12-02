@@ -27,7 +27,7 @@ const navLinks: RoleBasedNavLink[] = [
     requiredRoles: [UserRole.ADMIN, UserRole.JOINEDCOMPANY, UserRole.COMPANY],
   },
   { label: "기업문의", href: "/#business-connect" },
-  { label: "인재등록", href: "/talents/register" },
+  { label: "인재등록", href: "/profile/register" },
   // { label: "참여기업", href: "/talents/partners" },
   { label: "어드민", href: "/admin", requiredRoles: [UserRole.ADMIN] },
 ];

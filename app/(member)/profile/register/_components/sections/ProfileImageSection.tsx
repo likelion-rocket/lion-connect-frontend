@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect, useState, useMemo } from "react";
 import { useFormContext } from "react-hook-form";
 import Image from "next/image";
 import type { TalentRegisterFormValues } from "@/schemas/talent/talentRegisterSchema";
@@ -17,7 +17,12 @@ export default function ProfileImageSection() {
 
   // Store에서 기존 썸네일 가져오기
   const profileLinks = useTalentRegisterStore((state) => state.profileLinks);
-  const existingThumbnail = profileLinks.find((link) => link.type === "THUMBNAIL");
+
+  // THUMBNAIL 타입의 링크 찾기 (useMemo로 최적화)
+  const existingThumbnail = useMemo(
+    () => profileLinks.find((link) => link.type === "THUMBNAIL"),
+    [profileLinks]
+  );
 
   // 새로 선택한 파일
   const selectedFile = watch("profile.avatar");
@@ -27,6 +32,7 @@ export default function ProfileImageSection() {
 
   /**
    * 초기 로드: Store의 기존 썸네일 표시
+   * existingThumbnail이 변경될 때마다 미리보기 업데이트
    */
   useEffect(() => {
     if (existingThumbnail?.url) {
@@ -34,7 +40,7 @@ export default function ProfileImageSection() {
     } else {
       setPreviewUrl("/images/default-profile.png");
     }
-  }, [existingThumbnail?.url]);
+  }, [existingThumbnail]);
 
   /**
    * 새 파일 선택 시: Object URL로 즉시 미리보기

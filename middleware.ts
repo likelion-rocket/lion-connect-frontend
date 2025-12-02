@@ -83,7 +83,12 @@ function parseRolesFromCookie(cookieValue: string | undefined): string[] {
 }
 
 export function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl;
+  const { pathname, searchParams } = request.nextUrl;
+
+  // RSC/prefetch 요청은 건너뛰기 (Next.js 내부 요청)
+  if (searchParams.has("_rsc")) {
+    return NextResponse.next();
+  }
 
   // 역할 쿠키 읽기
   const rolesCookie = request.cookies.get(USER_ROLES_COOKIE);

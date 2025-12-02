@@ -33,7 +33,7 @@ export default function EducationSection() {
     append({
       schoolName: "",
       major: "",
-      status: "ENROLLED" as "ENROLLED" | "GRADUATED" | "COMPLETED",
+      status: "" as "" | "ENROLLED" | "GRADUATED" | "COMPLETED",
       startDate: "",
       endDate: "",
       description: "",

@@ -92,17 +92,18 @@ export default function EducationItem({ index, educationId, onDelete }: Educatio
 
         {/* 학교명 */}
         <div className="field">
-          <label
+          {/* <label
             htmlFor={`educations-${index}-school`}
             className="block text-sm font-medium text-text-secondary mb-2"
           >
             학교명<span className="required text-text-error">*</span>
-          </label>
+          </label> */}
           <FormInput
             id={`educations-${index}-school`}
             type="text"
             placeholder="학교명을 입력해주세요"
             error={!!errors.educations?.[index]?.schoolName}
+            className="border-0 focus:border-0"
             {...register(`educations.${index}.schoolName`)}
           />
           {errors.educations?.[index]?.schoolName && (
@@ -112,24 +113,63 @@ export default function EducationItem({ index, educationId, onDelete }: Educatio
           )}
         </div>
 
-        {/* 전공 */}
+        {/* 재학 기간 */}
         <div className="field">
-          <label
-            htmlFor={`educations-${index}-major`}
-            className="block text-sm font-medium text-text-secondary mb-2"
-          >
-            전공
-          </label>
-          <FormInput
-            id={`educations-${index}-major`}
-            type="text"
-            placeholder="전공을 입력해주세요"
-            {...register(`educations.${index}.major`)}
-          />
+          <div className="relative h-14 md:h-16 bg-bg-primary rounded-lg px-4 flex items-center gap-2">
+            {/* 커스텀 UI 표시 레이어 */}
+            <div className="flex items-center gap-2 pointer-events-none">
+              <span
+                className={educationFields?.startDate ? "text-text-primary" : "text-text-tertiary"}
+              >
+                {educationFields?.startDate || "YYYY.MM"}
+              </span>
+              <span className="text-text-tertiary">~</span>
+              <span
+                className={educationFields?.endDate ? "text-text-primary" : "text-text-tertiary"}
+              >
+                {educationFields?.endDate || "YYYY.MM"}
+              </span>
+            </div>
+
+            {/* 숨겨진 실제 input들 */}
+            <div className="absolute inset-0 flex items-center gap-1 opacity-0">
+              <FormInput
+                id={`educations-${index}-start-date`}
+                type="month"
+                placeholder=""
+                className="border-0 focus:border-0 w-[85px] cursor-pointer"
+                onClick={(e) => {
+                  const target = e.target as HTMLInputElement;
+                  try {
+                    target.showPicker?.();
+                  } catch (error) {
+                    // showPicker not supported, fallback to default behavior
+                  }
+                }}
+                {...register(`educations.${index}.startDate`)}
+              />
+              <span className="text-text-tertiary">~</span>
+              <FormInput
+                id={`educations-${index}-end-date`}
+                type="month"
+                placeholder=""
+                className="border-0 focus:border-0 w-[85px] cursor-pointer"
+                onClick={(e) => {
+                  const target = e.target as HTMLInputElement;
+                  try {
+                    target.showPicker?.();
+                  } catch (error) {
+                    // showPicker not supported, fallback to default behavior
+                  }
+                }}
+                {...register(`educations.${index}.endDate`)}
+              />
+            </div>
+          </div>
         </div>
 
         {/* 학위 */}
-        <div className="field">
+        {/* <div className="field">
           <label
             htmlFor={`educations-${index}-degree`}
             className="block text-sm font-medium text-text-secondary mb-2"
@@ -142,69 +182,57 @@ export default function EducationItem({ index, educationId, onDelete }: Educatio
             placeholder="학위를 입력해주세요 (예: 학사, 석사)"
             {...register(`educations.${index}.degree`)}
           />
-        </div>
-
-        {/* 재학 상태 */}
-        <div className="field">
-          <label
+        </div> */}
+        <div className="grid md:grid-cols-2 gap-4">
+          {/* 졸업 상태 */}
+          <div className="field">
+            {/* <label
             htmlFor={`educations-${index}-status`}
             className="block text-sm font-medium text-text-secondary mb-2"
           >
-            재학 상태
-          </label>
-          <FormSelect id={`educations-${index}-status`} {...register(`educations.${index}.status`)}>
-            <option value="">선택해주세요</option>
-            <option value="ENROLLED">재학</option>
-            <option value="GRADUATED">졸업</option>
-            <option value="COMPLETED">수료</option>
-          </FormSelect>
-        </div>
-
-        {/* 재학 기간 */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="field">
-            <label
-              htmlFor={`educations-${index}-start-date`}
-              className="block text-sm font-medium text-text-secondary mb-2"
+            졸업 상태
+          </label> */}
+            <FormSelect
+              id={`educations-${index}-status`}
+              className={`border-0 focus:border-0 ${!educationFields?.status ? "text-text-tertiary" : ""}`}
+              {...register(`educations.${index}.status`)}
             >
-              재학 시작일
-            </label>
-            <FormInput
-              id={`educations-${index}-start-date`}
-              type="month"
-              placeholder="YYYY.MM"
-              {...register(`educations.${index}.startDate`)}
-            />
+              <option value="">졸업상태</option>
+              <option value="ENROLLED">재학</option>
+              <option value="GRADUATED">졸업</option>
+              <option value="COMPLETED">수료</option>
+            </FormSelect>
           </div>
-
+          {/* 전공 */}
           <div className="field">
-            <label
-              htmlFor={`educations-${index}-end-date`}
-              className="block text-sm font-medium text-text-secondary mb-2"
-            >
-              재학 종료일
-            </label>
+            {/* <label
+            htmlFor={`educations-${index}-major`}
+            className="block text-sm font-medium text-text-secondary mb-2"
+          >
+            전공
+          </label> */}
             <FormInput
-              id={`educations-${index}-end-date`}
-              type="month"
-              placeholder="YYYY.MM"
-              {...register(`educations.${index}.endDate`)}
+              id={`educations-${index}-major`}
+              type="text"
+              placeholder="전공을 입력해주세요"
+              className="border-0 focus:border-0"
+              {...register(`educations.${index}.major`)}
             />
           </div>
         </div>
-
-        {/* 설명 */}
+        {/* 내용 */}
         <div className="field">
-          <label
+          {/* <label
             htmlFor={`educations-${index}-description`}
             className="block text-sm font-medium text-text-secondary mb-2"
           >
-            설명
-          </label>
+            내용
+          </label> */}
           <FormTextarea
             id={`educations-${index}-description`}
             placeholder="학력에 대한 추가 설명을 입력해주세요"
             rows={3}
+            className="border-0 focus:border-0"
             {...register(`educations.${index}.description`)}
           />
         </div>

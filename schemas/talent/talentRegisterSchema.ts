@@ -24,7 +24,9 @@ export const talentRegisterSchema = z.object({
         id: z.union([z.number(), z.string(), z.undefined()]).optional(), // 기존 학력인 경우 id 존재 (수정 시 필요)
         schoolName: z.string().min(1, "학교명은 필수입니다."),
         major: z.string().min(1, "전공은 필수입니다."),
-        status: z.enum(["ENROLLED", "GRADUATED", "COMPLETED"]),
+        status: z.enum(["ENROLLED", "GRADUATED", "COMPLETED", ""]).refine((val) => val !== "", {
+          message: "졸업 상태를 선택해주세요.",
+        }),
         startDate: z.string().min(1, "시작일은 필수입니다."),
         endDate: z.string().min(1, "종료일은 필수입니다."),
         description: z.string().min(1, "설명은 필수입니다."),
@@ -148,7 +150,7 @@ export const defaultTalentRegisterValues: TalentRegisterFormValues = {
     {
       schoolName: "",
       major: "",
-      status: "ENROLLED" as "ENROLLED" | "GRADUATED" | "COMPLETED",
+      status: "" as "" | "ENROLLED" | "GRADUATED" | "COMPLETED",
       startDate: "",
       endDate: "",
       description: "",

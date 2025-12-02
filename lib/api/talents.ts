@@ -16,6 +16,8 @@ export type TalentListItem = {
   id: number;
   name: string;
   introduction: string;
+  email: string | null;
+  phoneNumber: string | null;
   experiences: string[];
   tendencies: string[];
   education: TalentEducation | null; // ← 응답 예시 기준

@@ -3,7 +3,7 @@
 import { useAuthStore } from "@/store/authStore";
 import { recoverTokenAPI } from "@/lib/api/auth";
 import { useEffect } from "react";
-import { setUserRolesCookie, clearUserRolesCookie } from "@/utils/auth-cookies";
+import { setAuthCookies, clearAuthCookies } from "@/actions/auth";
 
 /**
  * 앱 초기화 훅 (토큰 복구)
@@ -35,15 +35,15 @@ export function useInitializeAuth() {
 
         // user가 없으면 로그인 상태가 아니므로 스킵
         if (!user) {
-          // 역할 쿠키도 정리
-          clearUserRolesCookie();
+          // 역할 쿠키도 정리 (Server Action으로 HttpOnly 쿠키 삭제)
+          await clearAuthCookies();
           return;
         }
 
         // accessToken이 이미 있으면 스킵 (이미 로그인된 상태)
         if (accessToken) {
-          // 역할 쿠키가 없을 수 있으므로 설정
-          setUserRolesCookie(user.roles);
+          // 역할 쿠키가 없을 수 있으므로 설정 (Server Action으로 HttpOnly 쿠키 설정)
+          await setAuthCookies(user.roles);
           return;
         }
 
@@ -55,8 +55,8 @@ export function useInitializeAuth() {
         // (이미 updateAccessToken이 호출되었지만, isAuthenticated를 확실하게 true로 설정)
         useAuthStore.getState().setAuth(newAccessToken, user);
 
-        // 미들웨어용 역할 쿠키 설정
-        setUserRolesCookie(user.roles);
+        // 미들웨어용 역할 쿠키 설정 (Server Action으로 HttpOnly 쿠키 설정)
+        await setAuthCookies(user.roles);
       } catch (error) {
         console.error("❌ 세션 복구 실패:", error);
         // 복구 실패: 기존 상태 유지 (로그아웃 상태)
@@ -68,8 +68,8 @@ export function useInitializeAuth() {
         // 안전하게 한 번 더 호출 (중복 호출해도 문제없음)
         useAuthStore.getState().clearAuth();
 
-        // 역할 쿠키도 삭제
-        clearUserRolesCookie();
+        // 역할 쿠키도 삭제 (Server Action으로 HttpOnly 쿠키 삭제)
+        await clearAuthCookies();
       } finally {
         // 초기화 완료 (성공/실패 상관없음)
         setInitialized(true);

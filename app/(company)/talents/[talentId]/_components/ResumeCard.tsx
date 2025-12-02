@@ -36,6 +36,7 @@ export type ResumeCardProps = {
   languages: Language[];
   certificates: Certificate[];
   links: LinkItem[];
+  skills?: string[];
   className?: string;
   defaultOpen?: boolean;
 };
@@ -75,6 +76,7 @@ export default function ResumeCard({
   languages,
   certificates,
   links,
+  skills = [],
   className = "",
   defaultOpen = false,
 }: ResumeCardProps) {
@@ -297,6 +299,25 @@ export default function ResumeCard({
             </div>
           )}
         </section>
+
+        {/* 스킬 */}
+        {skills.length > 0 && (
+          <section aria-labelledby="resume-skill">
+            <SectionHeader id="resume-skill">스킬</SectionHeader>
+            <div className="pb-12 inline-flex justify-start items-center gap-4 flex-wrap">
+              {skills.map((skill, i) => (
+                <div
+                  key={`${skill}-${i}`}
+                  className="px-3 py-1.5 bg-white rounded-lg outline outline-[0.80px] outline-offset-[-0.80px] outline-neutral-300 flex justify-start items-center gap-4"
+                >
+                  <div className="text-center justify-center text-neutral-800 text-sm font-semibold">
+                    {skill}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
       </div>
     </details>
   );

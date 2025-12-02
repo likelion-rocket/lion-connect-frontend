@@ -303,6 +303,8 @@ export interface TalentDetailResponse {
   id: number;
   name: string;
   introduction: string;
+  email: string | null;
+  phoneNumber: string | null;
   jobRoles: string[];
   tendencies: string[];
   experiences: string[];

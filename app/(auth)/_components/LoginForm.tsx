@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import { loginSchema, LoginSchemaType } from "@/schemas/auth/loginSchema";
 import { useLogin } from "@/hooks/auth/useLogin";
 import { useCreateInitialProfile } from "@/hooks/auth/useCreateInitialProfile";
+import { setAuthCookies } from "@/actions/auth";
 import Image from "next/image";
 import Input from "@/app/(auth)/_components/Input";
 
@@ -18,29 +19,40 @@ import Input from "@/app/(auth)/_components/Input";
  */
 export default function LoginForm() {
   const router = useRouter();
-  const { login, isLoading, error, isSuccess } = useLogin();
   const { createInitialProfile } = useCreateInitialProfile();
   const [showPassword, setShowPassword] = useState(false);
+
+  // useLogin 훅에 onSuccess 콜백 전달
+  const { login, isLoading, error } = useLogin({
+    onSuccess: async (data) => {
+      try {
+        // 1. Server Action으로 쿠키 설정 (서버에서 HttpOnly, Secure 플래그와 함께 설정)
+        await setAuthCookies(data.user.roles);
+
+        // 2. 프로필 생성
+        createInitialProfile();
+
+        // 3. 서버 컴포넌트 캐시 갱신 (새 쿠키 값 인식)
+        router.refresh();
+
+        // 4. 쿠키 설정 완료 후 리다이렉트 (타이밍 이슈 해결)
+        router.push("/");
+      } catch (e) {
+        console.error("로그인 후처리 실패:", e);
+        // 쿠키 설정 실패 시에도 일단 홈으로 이동 (백엔드 JWT가 더 중요)
+        router.push("/");
+      }
+    },
+  });
 
   const {
     register,
     handleSubmit,
     formState: { errors, isValid },
-    reset,
   } = useForm<LoginSchemaType>({
     resolver: zodResolver(loginSchema),
     mode: "onChange", // 실시간 유효성 검사
   });
-
-  // 로그인 성공 시 프로필 생성 및 리다이렉트
-  useEffect(() => {
-    if (isSuccess) {
-      createInitialProfile();
-      reset();
-      router.push("/");
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isSuccess]);
 
   const onSubmit = (data: LoginSchemaType) => {
     // TanStack Query mutation 실행

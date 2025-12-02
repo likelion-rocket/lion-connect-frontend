@@ -18,7 +18,7 @@ import AddButton from "../AddButton";
 
 export default function CertificatesSection() {
   const [deleteError, setDeleteError] = useState<string | null>(null);
-  const { control, getValues } = useFormContext<TalentRegisterFormValues>();
+  const { control, getValues, reset } = useFormContext<TalentRegisterFormValues>();
   const { fields, append, remove } = useFieldArray({
     control,
     name: "certificates",
@@ -34,6 +34,11 @@ export default function CertificatesSection() {
         await deleteCertification(certificateId);
       }
       remove(index);
+
+      // defaultValues를 현재 상태로 업데이트하여 삭제된 항목이 다시 사용되지 않도록 함
+      const currentValues = getValues();
+      reset(currentValues, { keepDirty: true, keepTouched: true, keepErrors: true });
+
       setDeleteError(null);
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "자격증 삭제에 실패했습니다";
@@ -44,6 +49,7 @@ export default function CertificatesSection() {
   // 자격증 추가
   const handleAddCertificate = () => {
     append({
+      id: undefined, // 명시적으로 undefined 설정 - 삭제 후 추가 시 이전 id가 재사용되는 문제 방지
       name: "",
       issuer: "default",
       issueDate: "",

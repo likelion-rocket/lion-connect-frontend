@@ -99,12 +99,7 @@ export default function TalentRegisterPage() {
     shouldFocusError: true, // 에러 발생 시 첫 번째 필드로 자동 포커스
     // shouldUnregister: true를 제거 - 등록되지 않은 필드가 isValid를 false로 만드는 문제 해결
   });
-  // 디버깅용: formState 상태 확인
-  console.log("formState:", {
-    isValid: methods.formState.isValid,
-    errors: methods.formState.errors,
-    dirtyFields: methods.formState.dirtyFields,
-  });
+
   // 데이터가 로드되면 자동으로 React Hook Form을 초기화
   useInitializeTalentForm(methods, isLoading);
 
@@ -195,8 +190,9 @@ export default function TalentRegisterPage() {
 
     if (result.success) {
       if (result.data) {
-        // 임시 저장: 서버에서 생성된 ID만 업데이트 (dirty/valid 상태 유지)
-        updateFormWithServerIds(result.data);
+        // 임시 저장: 서버에서 받은 전체 데이터(ID 포함)로 reset하여 defaultValues 업데이트
+        // 이렇게 해야 다시 임시저장 시 POST가 아닌 PUT이 호출됨
+        methods.reset(result.data, { keepDirty: true, keepTouched: true, keepErrors: true });
       }
       showToast("임시 저장되었습니다!");
     } else {

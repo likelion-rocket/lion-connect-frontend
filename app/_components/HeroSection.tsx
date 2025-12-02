@@ -36,7 +36,7 @@ export default function HeroSection({
         {/* Title & Subtitle */}
         <hgroup className="w-[517px] flex flex-col items-center gap-2">
           <h1 className="text-center bg-linear-to-r from-[#FF9859] via-[#FF9859] via-20% to-[#FF6000] bg-clip-text text-transparent text-4xl font-bold font-ko-title leading-10 animate-[fadeInUp_1s_ease-out_0.4s_forwards] opacity-0">
-            IT 인재 탐색 및 채용 플롯폼
+            IT 인재 탐색 및 채용 플랫폼
             <br />
             라이언 커넥트
           </h1>

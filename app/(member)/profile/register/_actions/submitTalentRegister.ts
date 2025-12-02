@@ -245,11 +245,18 @@ export async function submitTalentRegister({
           return;
         }
 
-        if (edu.id) {
-          // 기존 학력: defaultValues와 비교하여 변경된 경우만 PUT
-          const originalEdu = Array.isArray(defaultEducations)
-            ? defaultEducations.find((e) => e?.id === edu.id)
-            : undefined;
+        // id를 숫자로 변환하여 유효성 검사
+        // 삭제 후 추가된 항목에 이전 id가 남아있는 문제 방지
+        const numericId = typeof edu.id === "number" ? edu.id : Number(edu.id);
+        const isExistingEducation =
+          !isNaN(numericId) &&
+          numericId > 0 &&
+          Array.isArray(defaultEducations) &&
+          defaultEducations.some((e) => e?.id === numericId);
+
+        if (isExistingEducation) {
+          // 기존 학력: defaultValues에 존재하는 경우만 PUT
+          const originalEdu = defaultEducations.find((e) => e?.id === numericId);
 
           // 변경 여부 확인
           const isChanged =
@@ -264,7 +271,7 @@ export async function submitTalentRegister({
 
           if (isChanged) {
             parallelPromises.push(
-              updateEducation(Number(edu.id), {
+              updateEducation(numericId, {
                 schoolName: edu.schoolName || "",
                 major: edu.major,
                 status: edu.status,
@@ -355,11 +362,18 @@ export async function submitTalentRegister({
           return;
         }
 
-        if (career.id) {
-          // 기존 경력: defaultValues와 비교
-          const originalCareer = Array.isArray(defaultCareers)
-            ? defaultCareers.find((c) => c?.id === career.id)
-            : undefined;
+        // id를 숫자로 변환하여 유효성 검사
+        // 삭제 후 추가된 항목에 이전 id가 남아있는 문제 방지
+        const numericId = typeof career.id === "number" ? career.id : Number(career.id);
+        const isExistingCareer =
+          !isNaN(numericId) &&
+          numericId > 0 &&
+          Array.isArray(defaultCareers) &&
+          defaultCareers.some((c) => c?.id === numericId);
+
+        if (isExistingCareer) {
+          // 기존 경력: defaultValues에 존재하는 경우만 PUT
+          const originalCareer = defaultCareers.find((c) => c?.id === numericId);
 
           const isChanged =
             !originalCareer ||
@@ -373,7 +387,7 @@ export async function submitTalentRegister({
 
           if (isChanged) {
             parallelPromises.push(
-              updateExperience(Number(career.id), {
+              updateExperience(numericId, {
                 companyName: career.companyName || "",
                 department: career.department,
                 position: career.position,
@@ -449,11 +463,18 @@ export async function submitTalentRegister({
           return;
         }
 
-        if (activity.id) {
-          // 기존 활동: defaultValues와 비교
-          const originalActivity = Array.isArray(defaultActivities)
-            ? defaultActivities.find((a) => a?.id === activity.id)
-            : undefined;
+        // id를 숫자로 변환하여 유효성 검사
+        // 삭제 후 추가된 항목에 이전 id가 남아있는 문제 방지
+        const numericId = typeof activity.id === "number" ? activity.id : Number(activity.id);
+        const isExistingActivity =
+          !isNaN(numericId) &&
+          numericId > 0 &&
+          Array.isArray(defaultActivities) &&
+          defaultActivities.some((a) => a?.id === numericId);
+
+        if (isExistingActivity) {
+          // 기존 활동: defaultValues에 존재하는 경우만 PUT
+          const originalActivity = defaultActivities.find((a) => a?.id === numericId);
 
           const isChanged =
             !originalActivity ||
@@ -463,7 +484,7 @@ export async function submitTalentRegister({
 
           if (isChanged) {
             parallelPromises.push(
-              updateAward(Number(activity.id), {
+              updateAward(numericId, {
                 title: activity.title || "",
                 organization: "default",
                 awardDate: convertMonthToFullDate(activity.awardDate) || "",
@@ -527,11 +548,18 @@ export async function submitTalentRegister({
           return;
         }
 
-        if (lang.id) {
-          // 기존 언어: defaultValues와 비교
-          const originalLang = Array.isArray(defaultLanguages)
-            ? defaultLanguages.find((l) => l?.id === lang.id)
-            : undefined;
+        // id를 숫자로 변환하여 유효성 검사
+        // 삭제 후 추가된 항목에 이전 id가 남아있는 문제 방지
+        const numericId = typeof lang.id === "number" ? lang.id : Number(lang.id);
+        const isExistingLanguage =
+          !isNaN(numericId) &&
+          numericId > 0 &&
+          Array.isArray(defaultLanguages) &&
+          defaultLanguages.some((l) => l?.id === numericId);
+
+        if (isExistingLanguage) {
+          // 기존 언어: defaultValues에 존재하는 경우만 PUT
+          const originalLang = defaultLanguages.find((l) => l?.id === numericId);
 
           const isChanged =
             !originalLang ||
@@ -541,7 +569,7 @@ export async function submitTalentRegister({
 
           if (isChanged) {
             parallelPromises.push(
-              updateLanguage(Number(lang.id), {
+              updateLanguage(numericId, {
                 languageName: lang.languageName || "",
                 level: lang.level || "",
                 issueDate: convertMonthToFullDate(lang.issueDate) || "",
@@ -601,11 +629,18 @@ export async function submitTalentRegister({
           return;
         }
 
-        if (cert.id) {
-          // 기존 자격증: defaultValues와 비교
-          const originalCert = Array.isArray(defaultCertificates)
-            ? defaultCertificates.find((c) => c?.id === cert.id)
-            : undefined;
+        // id를 숫자로 변환하여 유효성 검사
+        // 삭제 후 추가된 항목에 이전 id가 남아있는 문제 방지
+        const numericId = typeof cert.id === "number" ? cert.id : Number(cert.id);
+        const isExistingCertificate =
+          !isNaN(numericId) &&
+          numericId > 0 &&
+          Array.isArray(defaultCertificates) &&
+          defaultCertificates.some((c) => c?.id === numericId);
+
+        if (isExistingCertificate) {
+          // 기존 자격증: defaultValues에 존재하는 경우만 PUT
+          const originalCert = defaultCertificates.find((c) => c?.id === numericId);
 
           const isChanged =
             !originalCert ||
@@ -615,7 +650,7 @@ export async function submitTalentRegister({
 
           if (isChanged) {
             parallelPromises.push(
-              updateCertification(Number(cert.id), {
+              updateCertification(numericId, {
                 name: cert.name || "",
                 issuer: cert.issuer || "default",
                 issueDate: convertMonthToFullDate(cert.issueDate) || "",

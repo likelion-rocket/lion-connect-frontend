@@ -180,6 +180,12 @@ export default function IntroduceCard(props: IntroduceCardProps) {
               {(university || major) && (
                 <div className="self-stretch inline-flex justify-start items-center gap-16">
                   <div className="flex justify-start items-center gap-2">
+                    <Image
+                      src="/icons/outline-academic-cap.svg"
+                      alt="academic"
+                      width={16}
+                      height={16}
+                    />
                     <div className="text-sm text-gray-500">학교 · 전공</div>
                   </div>
                   <div className="text-sm font-medium text-neutral-800">
@@ -194,6 +200,12 @@ export default function IntroduceCard(props: IntroduceCardProps) {
               {(jobGroup || job) && (
                 <div className="self-stretch inline-flex justify-start items-center gap-16">
                   <div className="flex justify-start items-center gap-2">
+                    <Image
+                      src="/icons/outline-briefcase.svg"
+                      alt="briefcase"
+                      width={16}
+                      height={16}
+                    />
                     <div className="text-sm text-gray-500">직군 · 직무</div>
                   </div>
                   <div className="text-sm font-medium text-neutral-800">
@@ -208,6 +220,7 @@ export default function IntroduceCard(props: IntroduceCardProps) {
               {skills.length > 0 && (
                 <div className="self-stretch inline-flex justify-start items-start gap-16">
                   <div className="flex justify-start items-center gap-2">
+                    <Image src="/icons/outline-code.svg" alt="code" width={16} height={16} />
                     <div className="min-w-14 text-sm text-gray-500">스킬</div>
                   </div>
                   <div className="flex justify-start items-center gap-4">

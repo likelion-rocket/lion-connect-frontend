@@ -19,7 +19,7 @@ import AddButton from "../AddButton";
 
 export default function ActivitiesSection() {
   const [deleteError, setDeleteError] = useState<string | null>(null);
-  const { control, getValues } = useFormContext<TalentRegisterFormValues>();
+  const { control, getValues, reset } = useFormContext<TalentRegisterFormValues>();
   const { fields, append, remove } = useFieldArray({
     control,
     name: "activities",
@@ -35,6 +35,11 @@ export default function ActivitiesSection() {
         await deleteAward(activityId);
       }
       remove(index);
+
+      // defaultValues를 현재 상태로 업데이트하여 삭제된 항목이 다시 사용되지 않도록 함
+      const currentValues = getValues();
+      reset(currentValues, { keepDirty: true, keepTouched: true, keepErrors: true });
+
       setDeleteError(null);
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "활동 삭제에 실패했습니다";
@@ -45,6 +50,7 @@ export default function ActivitiesSection() {
   // 활동 추가
   const handleAddActivity = () => {
     append({
+      id: undefined, // 명시적으로 undefined 설정 - 삭제 후 추가 시 이전 id가 재사용되는 문제 방지
       title: "",
       organization: "",
       awardDate: "",

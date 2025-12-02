@@ -19,7 +19,7 @@ import AddButton from "../AddButton";
 import EducationItem from "./EducationItem";
 
 export default function EducationSection() {
-  const { control, getValues } = useFormContext<TalentRegisterFormValues>();
+  const { control, getValues, reset } = useFormContext<TalentRegisterFormValues>();
   const [deleteError, setDeleteError] = useState<string | null>(null);
 
   // useFieldArray로 배열 관리
@@ -31,6 +31,7 @@ export default function EducationSection() {
   // 학력 추가 핸들러
   const handleAddEducation = () => {
     append({
+      id: undefined, // 명시적으로 undefined 설정 - 삭제 후 추가 시 이전 id가 재사용되는 문제 방지
       schoolName: "",
       major: "",
       status: "" as "" | "ENROLLED" | "GRADUATED" | "COMPLETED",
@@ -53,6 +54,10 @@ export default function EducationSection() {
 
       // 폼에서 필드 제거
       remove(index);
+
+      // defaultValues를 현재 상태로 업데이트하여 삭제된 항목이 다시 사용되지 않도록 함
+      const currentValues = getValues();
+      reset(currentValues, { keepDirty: true, keepTouched: true, keepErrors: true });
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "학력 삭제에 실패했습니다.";
       setDeleteError(errorMessage);

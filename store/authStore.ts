@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import { useEffect, useState } from "react";
 
 /**
  * 사용자 정보 타입
@@ -21,6 +22,7 @@ type AuthState = {
   user: User | null;
   isAuthenticated: boolean;
   isInitialized: boolean; // 앱 초기화 완료 여부 (메모리에만 유지)
+  _hasHydrated: boolean; // persist 하이드레이션 완료 여부
 };
 
 /**
@@ -31,6 +33,7 @@ type AuthActions = {
   clearAuth: () => void;
   updateAccessToken: (accessToken: string) => void;
   setInitialized: (initialized: boolean) => void; // 초기화 완료 설정
+  setHasHydrated: (hydrated: boolean) => void; // 하이드레이션 완료 설정
 };
 
 /**
@@ -61,6 +64,7 @@ export const useAuthStore = create<AuthState & AuthActions>()(
       user: null,
       isAuthenticated: false,
       isInitialized: false,
+      _hasHydrated: false,
 
       // 로그인 성공 시 호출
       setAuth: (accessToken: string, user: User) =>
@@ -90,13 +94,51 @@ export const useAuthStore = create<AuthState & AuthActions>()(
         set({
           isInitialized: initialized,
         }),
+
+      // 하이드레이션 완료 설정
+      setHasHydrated: (hydrated: boolean) =>
+        set({
+          _hasHydrated: hydrated,
+        }),
     }),
     {
       name: "auth-store",
-      // user만 localStorage에 저장 (accessToken과 isInitialized는 메모리만)
+      // user만 localStorage에 저장 (accessToken, isInitialized, _hasHydrated는 메모리만)
       partialize: (state) => ({
         user: state.user,
       }),
+      // 하이드레이션 완료 시 콜백
+      onRehydrateStorage: () => (state) => {
+        state?.setHasHydrated(true);
+      },
     }
   )
 );
+
+/**
+ * Zustand persist 하이드레이션 상태를 추적하는 훅
+ * - localStorage에서 상태 복원이 완료될 때까지 기다림
+ * - SSR/새로고침 시 깜빡임 방지용
+ */
+export function useHydration(): boolean {
+  const [hydrated, setHydrated] = useState(useAuthStore.getState()._hasHydrated);
+
+  useEffect(() => {
+    // 이미 하이드레이션이 완료된 경우
+    if (useAuthStore.getState()._hasHydrated) {
+      setHydrated(true);
+      return;
+    }
+
+    // 하이드레이션 완료를 구독
+    const unsubscribe = useAuthStore.subscribe((state) => {
+      if (state._hasHydrated) {
+        setHydrated(true);
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  return hydrated;
+}

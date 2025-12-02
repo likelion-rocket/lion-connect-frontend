@@ -1,0 +1,141 @@
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
+
+/**
+ * 사용자 역할 (utils/rbac.ts와 동기화)
+ */
+enum UserRole {
+  ADMIN = "ADMIN",
+  JOINEDCOMPANY = "JOINEDCOMPANY",
+  COMPANY = "COMPANY",
+  JOINEDUSER = "JOINEDUSER",
+  USER = "USER",
+}
+
+/**
+ * 역할 쿠키 이름 상수
+ * - 로그인 시 설정, 로그아웃 시 삭제
+ * - 미들웨어에서 역할 체크에 사용
+ */
+export const USER_ROLES_COOKIE = "user-roles";
+
+/**
+ * 보호된 경로 설정
+ * - path: 보호할 경로 패턴 (startsWith 매칭)
+ * - roles: 접근 가능한 역할들 (OR 조건)
+ * - redirectTo: 권한 없을 때 리다이렉트 경로
+ */
+type ProtectedRoute = {
+  path: string;
+  roles: UserRole[];
+  redirectTo: string;
+};
+
+const PROTECTED_ROUTES: ProtectedRoute[] = [
+  // 인재탐색 - 기업 전용
+  {
+    path: "/talents",
+    roles: [UserRole.ADMIN, UserRole.COMPANY, UserRole.JOINEDCOMPANY],
+    redirectTo: "/",
+  },
+  // 관리자 페이지
+  {
+    path: "/admin",
+    roles: [UserRole.ADMIN],
+    redirectTo: "/",
+  },
+  // 필요시 추가...
+];
+
+/**
+ * 로그인이 필요한 경로 (역할 무관)
+ */
+const AUTH_REQUIRED_PATHS = [
+  "/profile",
+  "/talents",
+  "/admin",
+  // 필요시 추가...
+];
+
+/**
+ * 로그인한 사용자가 접근하면 안 되는 경로
+ */
+const GUEST_ONLY_PATHS = ["/login", "/signup"];
+
+/**
+ * 사용자가 특정 역할 중 하나라도 가지고 있는지 확인
+ */
+function hasAnyRole(userRoles: string[], requiredRoles: UserRole[]): boolean {
+  return requiredRoles.some((role) => userRoles.includes(role));
+}
+
+/**
+ * 쿠키에서 역할 배열 파싱
+ */
+function parseRolesFromCookie(cookieValue: string | undefined): string[] {
+  if (!cookieValue) return [];
+  try {
+    const parsed = JSON.parse(cookieValue);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
+export function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+
+  // 역할 쿠키 읽기
+  const rolesCookie = request.cookies.get(USER_ROLES_COOKIE);
+  const userRoles = parseRolesFromCookie(rolesCookie?.value);
+  const isLoggedIn = userRoles.length > 0;
+
+  // 1. 게스트 전용 경로 체크 (로그인한 사용자는 접근 불가)
+  if (isLoggedIn && GUEST_ONLY_PATHS.some((path) => pathname.startsWith(path))) {
+    return NextResponse.redirect(new URL("/", request.url));
+  }
+
+  // 2. 인증 필요 경로 체크
+  if (!isLoggedIn && AUTH_REQUIRED_PATHS.some((path) => pathname.startsWith(path))) {
+    const loginUrl = new URL("/login", request.url);
+    loginUrl.searchParams.set("callbackUrl", pathname);
+    return NextResponse.redirect(loginUrl);
+  }
+
+  // 3. 역할 기반 접근 제어
+  for (const route of PROTECTED_ROUTES) {
+    if (pathname.startsWith(route.path)) {
+      // 로그인하지 않은 경우
+      if (!isLoggedIn) {
+        const loginUrl = new URL("/login", request.url);
+        loginUrl.searchParams.set("callbackUrl", pathname);
+        return NextResponse.redirect(loginUrl);
+      }
+
+      // 역할 체크
+      if (!hasAnyRole(userRoles, route.roles)) {
+        return NextResponse.redirect(new URL(route.redirectTo, request.url));
+      }
+    }
+  }
+
+  return NextResponse.next();
+}
+
+/**
+ * 미들웨어가 실행될 경로 설정
+ * - 정적 파일, API 라우트 등은 제외
+ */
+export const config = {
+  matcher: [
+    /*
+     * Match all request paths except:
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico, robots.txt, sitemap.xml
+     * - public files (images, etc.)
+     * - api routes
+     */
+    "/((?!_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml|images|api).*)",
+  ],
+};

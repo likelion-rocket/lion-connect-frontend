@@ -190,8 +190,9 @@ export default function TalentRegisterPage() {
 
     if (result.success) {
       if (result.data) {
-        // 임시 저장: 서버에서 생성된 ID만 업데이트 (dirty/valid 상태 유지)
-        updateFormWithServerIds(result.data);
+        // 임시 저장: 서버에서 받은 전체 데이터(ID 포함)로 reset하여 defaultValues 업데이트
+        // 이렇게 해야 다시 임시저장 시 POST가 아닌 PUT이 호출됨
+        methods.reset(result.data, { keepDirty: true, keepTouched: true, keepErrors: true });
       }
       showToast("임시 저장되었습니다!");
     } else {

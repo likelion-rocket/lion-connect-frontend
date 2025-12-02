@@ -12,6 +12,7 @@ export type TalentEducation = {
 // ───────────────── DTO 타입들 ─────────────────
 
 export type TalentListItem = {
+  workDrivenLevel: any;
   id: number;
   name: string;
   introduction: string;

@@ -374,7 +374,7 @@ export default function TalentRegisterPage() {
             <PortfolioSection />
 
             {/* 멋사 수료생 코드 섹션 */}
-            <LikelionCodeSection />
+            {/* <LikelionCodeSection /> */}
 
             {/* Work Driven 테스트 섹션 */}
             <WorkDrivenTestSection />

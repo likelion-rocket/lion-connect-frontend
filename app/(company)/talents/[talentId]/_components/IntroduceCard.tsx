@@ -13,7 +13,7 @@ type IntroduceCardProps = {
   profileImageUrl?: string | null;
   badges?: BadgeItem[];
   tendencies?: string[];
-  phone?: string | null;
+  phoneNumber?: string | null;
   email?: string | null;
   university?: string | null;
   major?: string | null;
@@ -44,7 +44,7 @@ export default function IntroduceCard(props: IntroduceCardProps) {
     profileImageUrl,
     badges = [],
     tendencies = [],
-    phone,
+    phoneNumber,
     email,
     university,
     major,
@@ -159,12 +159,12 @@ export default function IntroduceCard(props: IntroduceCardProps) {
             {/* 상세 정보 */}
             <div className="self-stretch px-2 flex flex-col justify-start items-start gap-4">
               {/* 연락처 */}
-              {showContacts && (phone || email) && (
+              {showContacts && (phoneNumber || email) && (
                 <div className="self-stretch h-9 inline-flex justify-start items-center gap-8">
-                  {phone && (
+                  {phoneNumber && (
                     <div className="flex justify-start items-center gap-2">
                       <Image src="/icons/solid-phone.svg" alt="phone" width={16} height={16} />
-                      <div className="text-sm font-medium text-neutral-800">{phone}</div>
+                      <div className="text-sm font-medium text-neutral-800">{phoneNumber}</div>
                     </div>
                   )}
                   {email && (

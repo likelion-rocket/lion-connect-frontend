@@ -62,6 +62,10 @@ type TalentCardItem = {
   summary: string;
   /** 🔥 카드에서도 썸네일 보관 */
   thumbnailUrl?: string | null;
+  /** Work Driven Level (1-5) */
+  workDrivenLevel?: number;
+  email?: string | null;
+  phoneNumber?: string | null;
 };
 
 /* ================================
@@ -165,6 +169,10 @@ function TalentsPageContent() {
       summary: t.introduction,
       /** 🔥 썸네일 URL 그대로 보관 (없으면 null) */
       thumbnailUrl: t.thumbnailUrl ?? null,
+      /** Work Driven Level */
+      workDrivenLevel: t.workDrivenLevel,
+      email: t.email ?? null,
+      phoneNumber: t.phoneNumber ?? null,
     };
   });
 
@@ -201,7 +209,11 @@ function TalentsPageContent() {
                   skills={t.skills}
                   /** 🔥 여기서 프로필 이미지로 썸네일 전달 */
                   thumbnailUrl={t.thumbnailUrl ?? "/images/default-profile.png"}
+                  workDrivenLevel={t.workDrivenLevel}
+                  email={t.email ?? undefined}
+                  phoneNumber={t.phoneNumber ?? undefined}
                   showContacts={false}
+                  showDetailButton={true}
                   className="
                     w-full
                     transition-shadow

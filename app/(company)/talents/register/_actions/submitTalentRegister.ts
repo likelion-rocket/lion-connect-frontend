@@ -445,7 +445,7 @@ export async function submitTalentRegister({
       const defaultActivities = methods.formState.defaultValues?.activities || [];
 
       values.activities.forEach((activity, index) => {
-        if (!activity.title && !activity.organization) {
+        if (!activity.title) {
           return;
         }
 
@@ -458,7 +458,6 @@ export async function submitTalentRegister({
           const isChanged =
             !originalActivity ||
             originalActivity.title !== activity.title ||
-            originalActivity.organization !== activity.organization ||
             originalActivity.awardDate !== activity.awardDate ||
             originalActivity.description !== activity.description;
 
@@ -466,7 +465,7 @@ export async function submitTalentRegister({
             parallelPromises.push(
               updateAward(Number(activity.id), {
                 title: activity.title || "",
-                organization: activity.organization || "",
+                organization: "default",
                 awardDate: convertMonthToFullDate(activity.awardDate) || "",
                 description: activity.description || "",
               }).then((updatedAward) => {
@@ -488,7 +487,7 @@ export async function submitTalentRegister({
           newActivitiesToPost.push({
             data: {
               title: activity.title || "",
-              organization: activity.organization || "",
+              organization: "default",
               awardDate: convertMonthToFullDate(activity.awardDate) || "",
               description: activity.description || "",
             },
@@ -598,7 +597,7 @@ export async function submitTalentRegister({
       const defaultCertificates = methods.formState.defaultValues?.certificates || [];
 
       values.certificates.forEach((cert, index) => {
-        if (!cert.name && !cert.issuer) {
+        if (!cert.name) {
           return;
         }
 
@@ -618,7 +617,7 @@ export async function submitTalentRegister({
             parallelPromises.push(
               updateCertification(Number(cert.id), {
                 name: cert.name || "",
-                issuer: cert.issuer || "",
+                issuer: cert.issuer || "default",
                 issueDate: convertMonthToFullDate(cert.issueDate) || "",
               }).then((updatedCert) => {
                 if (updatedValues.certificates && updatedValues.certificates[index]) {
@@ -626,7 +625,7 @@ export async function submitTalentRegister({
                     ...updatedValues.certificates[index],
                     id: updatedCert.id,
                     name: updatedCert.name,
-                    issuer: updatedCert.issuer || "",
+                    issuer: updatedCert.issuer || "default",
                     issueDate: convertFullDateToMonth(updatedCert.issueDate),
                   };
                 }
@@ -638,7 +637,7 @@ export async function submitTalentRegister({
           newCertificatesToPost.push({
             data: {
               name: cert.name || "",
-              issuer: cert.issuer || "",
+              issuer: cert.issuer || "default",
               issueDate: convertMonthToFullDate(cert.issueDate) || "",
             },
             index,
@@ -657,7 +656,7 @@ export async function submitTalentRegister({
                     ...updatedValues.certificates[originalIndex],
                     id: createdCert.id,
                     name: createdCert.name,
-                    issuer: createdCert.issuer || "",
+                    issuer: createdCert.issuer || "default",
                     issueDate: convertFullDateToMonth(createdCert.issueDate),
                   };
                 }

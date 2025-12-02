@@ -30,6 +30,12 @@ type IntroduceCardProps = {
   showSummary?: boolean;
   /** 🔥 API에서 오는 썸네일 URL */
   thumbnailUrl?: string | null;
+  /** Work Driven Level (1-5) */
+  workDrivenLevel?: number;
+  /** 경험 타입 배열 (서버에서 받아오는 데이터) */
+  experiences?: string[];
+  /** 리스팅 페이지에서 상세보기 버튼 표시 여부 */
+  showDetailButton?: boolean;
 };
 
 export default function IntroduceCard(props: IntroduceCardProps) {
@@ -53,6 +59,9 @@ export default function IntroduceCard(props: IntroduceCardProps) {
     summary,
     showSummary = true,
     thumbnailUrl,
+    workDrivenLevel,
+    experiences = [],
+    showDetailButton = false,
   } = props;
 
   // 프로필 이미지 URL 처리: thumbnailUrl 우선, 없으면 profileImageUrl, 둘 다 없으면 기본 이미지
@@ -78,6 +87,14 @@ export default function IntroduceCard(props: IntroduceCardProps) {
   const src = getValidImageSrc(thumbnailUrl ?? profileImageUrl);
   const href = detailHref ?? (talentId ? `/talents/${talentId}` : undefined);
 
+  // 경험 텍스트를 Badge 타입으로 매핑
+  const EXPERIENCE_TO_BADGE_TYPE: Record<string, BadgeType> = {
+    "부트캠프 경험자": "bootcamp",
+    "창업 경험자": "startup",
+    "자격증 보유자": "certified",
+    전공자: "major",
+  };
+
   // Badge 타입별 우선순위 (밝은색부터 어두운색 순)
   const badgeOrder: Record<BadgeType, number> = {
     bootcamp: 1,
@@ -86,116 +103,141 @@ export default function IntroduceCard(props: IntroduceCardProps) {
     major: 4,
   };
 
-  // Badges를 색상 순서로 정렬
-  const sortedBadges = [...badges].sort((a, b) => badgeOrder[a.type] - badgeOrder[b.type]);
+  // experiences 배열을 Badge 형태로 변환
+  const experienceBadges: BadgeItem[] = experiences
+    .map((exp) => {
+      const type = EXPERIENCE_TO_BADGE_TYPE[exp];
+      if (!type) return null;
+      return { label: exp, type };
+    })
+    .filter((badge): badge is BadgeItem => badge !== null);
+
+  // experiences가 있으면 우선 사용, 없으면 기존 badges 사용
+  const finalBadges = experienceBadges.length > 0 ? experienceBadges : badges;
+  const sortedBadges = finalBadges.sort((a, b) => badgeOrder[a.type] - badgeOrder[b.type]);
+
+  // Work Driven Level 이미지 경로
+  const validLevel = workDrivenLevel ? Math.min(Math.max(1, Math.round(workDrivenLevel)), 5) : null;
+  const levelImagePath = validLevel ? `/images/detailpage-type=level${validLevel}.svg` : null;
 
   const CardBody = (
-    <section
-      className={`w-[910px] mx-auto mb-6 rounded-2xl shadow-[0px_1px_2px_rgba(0,0,0,0.06),0px_1px_3px_rgba(0,0,0,0.10)] bg-white p-8 ${className}`}
-    >
-      <div className="flex items-start gap-[88px]">
-        {/* 왼쪽: 프로필 + 버튼 자리 */}
-        <div className="shrink-0">
-          <div className="w-40 h-48 relative rounded-md overflow-hidden bg-[#F5F5F5] border border-border-quaternary">
+    <section className={`mx-auto mb-6 rounded-2xl bg-white p-8 ${className}`}>
+      <div className="inline-flex justify-start items-center gap-12">
+        {/* 왼쪽: 프로필 */}
+        <div className="w-40 inline-flex flex-col justify-start items-start gap-8">
+          <div className="w-40 h-48 relative rounded-lg overflow-hidden bg-[#F5F5F5] border border-border-quaternary">
             <Image src={src} alt={`${name} 프로필 이미지`} fill className="object-cover" priority />
           </div>
-
-          {href && (
-            <span
-              className="mt-3 block h-10 w-40 rounded-md bg-[#FF6000] text-white text-center leading-10 font-semibold
-                         hover:opacity-90 transition"
+          {/* 리스팅 페이지에서만 상세보기 버튼 표시 */}
+          {showDetailButton && href && (
+            <Link
+              href={href}
+              className="w-40 px-8 py-2 bg-orange-600 rounded-lg inline-flex justify-center items-center gap-2.5 hover:bg-orange-700 transition"
             >
-              {ctaLabel}
-            </span>
+              <span className="text-white text-base font-bold">{ctaLabel}</span>
+            </Link>
           )}
         </div>
 
-        {/* 오른쪽: 본문 */}
-        <div className="flex-1 min-w-0 mb-4">
-          <div className="flex items-center gap-3 flex-wrap">
-            <h2 className="text-[18px] sm:text-[20px] font-bold text-black">{name}</h2>
-            {sortedBadges.length > 0 && (
-              <div className="flex flex-wrap gap-3">
-                {sortedBadges.map((b) => (
-                  <Badge key={`${b.type}-${b.label}`} label={b.label} type={b.type} />
-                ))}
+        {/* 중간: 본문 컨텐츠 */}
+        <div className="px-2.5 inline-flex flex-col justify-start items-start gap-2.5">
+          <div className="flex flex-col justify-start items-start gap-6">
+            {/* 이름 & 배지 */}
+            <div className="inline-flex justify-start items-center gap-8">
+              <div className="p-2 flex justify-center items-center gap-2.5">
+                <h2 className="text-xl font-semibold text-neutral-800">{name}</h2>
               </div>
-            )}
-          </div>
-
-          {tendencies.length > 0 && <Slider items={tendencies} className="mt-4" />}
-
-          {showSummary && !!summary && (
-            <p
-              className="mt-4 text-[14px] leading-6 text-[#111] border-none outline-none bg-transparent"
-              style={{
-                display: "-webkit-box",
-                WebkitLineClamp: 3,
-                WebkitBoxOrient: "vertical",
-                overflow: "hidden",
-              }}
-            >
-              {summary}
-            </p>
-          )}
-
-          {showContacts && (phone || email) && (
-            <div className="mt-4 flex items-center gap-12 text-[14px] text-black">
-              {phone && (
-                <span className="flex items-center gap-2">
-                  <Image src="/icons/solid-phone.svg" alt="phone" width={16} height={16} />
-                  <span>{phone}</span>
-                </span>
-              )}
-              {email && (
-                <span className="flex items-center gap-2">
-                  <Image src="/icons/solid-mail.svg" alt="mail" width={16} height={16} />
-                  <span>{email}</span>
-                </span>
+              {sortedBadges.length > 0 && (
+                <div className="w-[471px] flex justify-start items-center gap-3 flex-wrap">
+                  {sortedBadges.map((b) => (
+                    <Badge key={`${b.type}-${b.label}`} label={b.label} type={b.type} />
+                  ))}
+                </div>
               )}
             </div>
-          )}
 
-          {/* 🔹 학교·전공 / 직무·직군 / 스킬: 하나의 컬럼으로 묶어서 간격 통일 */}
-          <div className="mt-6 flex flex-col gap-3 text-[14px]">
-            {/* 학교 · 전공 */}
-            {(university || major) && (
-              <div className="flex items-center gap-10">
-                <span className="text-[#888] w-[72px]">학교 · 전공</span>
-                <span className="text-[#111] font-medium">
-                  {university ?? "-"}
-                  {university && major ? " · " : ""}
-                  {major ?? (university ? "" : "-")}
-                </span>
-              </div>
-            )}
+            {/* 상세 정보 */}
+            <div className="self-stretch px-2 flex flex-col justify-start items-start gap-4">
+              {/* 연락처 */}
+              {showContacts && (phone || email) && (
+                <div className="self-stretch h-9 inline-flex justify-start items-center gap-8">
+                  {phone && (
+                    <div className="flex justify-start items-center gap-2">
+                      <Image src="/icons/solid-phone.svg" alt="phone" width={16} height={16} />
+                      <div className="text-sm font-medium text-neutral-800">{phone}</div>
+                    </div>
+                  )}
+                  {email && (
+                    <div className="flex justify-start items-center gap-2">
+                      <Image src="/icons/solid-mail.svg" alt="mail" width={16} height={16} />
+                      <div className="text-sm font-medium text-neutral-800">{email}</div>
+                    </div>
+                  )}
+                </div>
+              )}
 
-            {/* 직무 · 직군 */}
-            {(jobGroup || job) && (
-              <div className="flex items-center gap-10">
-                <span className="text-[#888] w-[72px]">직군 · 직무</span>
-                <span className="text-[#111] font-medium">
-                  {jobGroup ?? "-"}
-                  {jobGroup && job ? " · " : ""}
-                  {job ?? (jobGroup ? "" : "-")}
-                </span>
-              </div>
-            )}
+              {/* 학교 · 전공 */}
+              {(university || major) && (
+                <div className="self-stretch inline-flex justify-start items-center gap-16">
+                  <div className="flex justify-start items-center gap-2">
+                    <div className="text-sm text-gray-500">학교 · 전공</div>
+                  </div>
+                  <div className="text-sm font-medium text-neutral-800">
+                    {university ?? "-"}
+                    {university && major ? " · " : ""}
+                    {major ?? (university ? "" : "-")}
+                  </div>
+                </div>
+              )}
 
-            {/* 스킬 */}
-            {skills.length > 0 && (
-              <div className="flex items-start gap-10">
-                <span className="text-[#888] w-[72px]">스킬</span>
-                <SkillChips skills={skills} />
-              </div>
-            )}
+              {/* 직군 · 직무 */}
+              {(jobGroup || job) && (
+                <div className="self-stretch inline-flex justify-start items-center gap-16">
+                  <div className="flex justify-start items-center gap-2">
+                    <div className="text-sm text-gray-500">직군 · 직무</div>
+                  </div>
+                  <div className="text-sm font-medium text-neutral-800">
+                    {jobGroup ?? "-"}
+                    {jobGroup && job ? " · " : ""}
+                    {job ?? (jobGroup ? "" : "-")}
+                  </div>
+                </div>
+              )}
+
+              {/* 스킬 */}
+              {skills.length > 0 && (
+                <div className="self-stretch inline-flex justify-start items-start gap-16">
+                  <div className="flex justify-start items-center gap-2">
+                    <div className="min-w-14 text-sm text-gray-500">스킬</div>
+                  </div>
+                  <div className="flex justify-start items-center gap-4">
+                    <SkillChips skills={skills} />
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
+
+        {/* Work Driven Level Card */}
+        {levelImagePath && (
+          <div className="w-72 h-72 relative bg-white rounded-2xl overflow-hidden">
+            <Image
+              src={levelImagePath}
+              alt={`Work Driven Level ${validLevel}`}
+              width={288}
+              height={288}
+              className="w-72 h-72 object-contain"
+              priority
+            />
+          </div>
+        )}
       </div>
     </section>
   );
 
-  return href ? (
+  // showDetailButton이 true면 버튼이 있으므로 Link로 감싸지 않음
+  return href && !showDetailButton ? (
     <Link href={href} aria-label={`${name} 상세 페이지로 이동`} className="block rounded-2xl">
       {CardBody}
     </Link>

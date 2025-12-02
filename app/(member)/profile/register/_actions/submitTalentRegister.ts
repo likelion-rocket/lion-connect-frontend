@@ -138,6 +138,9 @@ export async function submitTalentRegister({
         contentType: file.type,
         fileSize: file.size,
       });
+
+      // 업로드 후 새 파일명 저장 (reset 후에도 파일명 유지)
+      updatedValues.profile.avatar = file.name;
     }
 
     // 3. 포트폴리오 PDF 업로드 (프로필 생성 후 처리)

@@ -99,12 +99,7 @@ export default function TalentRegisterPage() {
     shouldFocusError: true, // 에러 발생 시 첫 번째 필드로 자동 포커스
     // shouldUnregister: true를 제거 - 등록되지 않은 필드가 isValid를 false로 만드는 문제 해결
   });
-  // 디버깅용: formState 상태 확인
-  console.log("formState:", {
-    isValid: methods.formState.isValid,
-    errors: methods.formState.errors,
-    dirtyFields: methods.formState.dirtyFields,
-  });
+
   // 데이터가 로드되면 자동으로 React Hook Form을 초기화
   useInitializeTalentForm(methods, isLoading);
 

@@ -33,89 +33,54 @@ export default function PersonalInfoSection() {
     }
   }, [user, setValue]);
   return (
-    <section className="section section-personal-info flex flex-col gap-6 md:gap-8">
-      <h2 className="text-lg md:text-xl font-bold text-text-primary">
-        인적 사항<span className="text-text-error">*</span>
+    <section className="section section-personal-info flex flex-col gap-14">
+      <h2 className="text-lg font-bold text-neutral-800">
+        인적 사항<span className="text-red-500">*</span>
       </h2>
 
-      <div className="flex items-start gap-4">
-        <div className="w-10 h-10 md:w-12 md:h-12 bg-bg-tertiary rounded-lg flex items-center justify-center shrink-0">
-          <Image
-            src="/icons/outline-user-circle.svg"
-            alt="User"
-            width={24}
-            height={24}
-            className="text-icon-secondary"
-          />
+      <div className="flex items-center gap-4 flex-wrap">
+        <div className="w-12 h-12 bg-neutral-100 rounded-lg flex items-center justify-center shrink-0">
+          <Image src="/icons/outline-user-circle.svg" alt="User" width={24} height={24} />
         </div>
 
-        <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
-          {/* 이름 */}
-          <div className="field">
-            <label
-              htmlFor="profile-name"
-              className="block text-sm font-medium text-text-secondary mb-2"
-            >
-              이름<span className="required text-text-error">*</span>
-            </label>
-            <FormInput
-              id="profile-name"
-              type="text"
-              placeholder="이름을 입력해주세요"
-              error={!!errors.profile?.name}
-              {...register("profile.name")}
-            />
-            {errors.profile?.name && (
-              <p className="field-error text-sm text-text-error mt-1">
-                {errors.profile.name.message}
-              </p>
-            )}
-          </div>
+        <div className="flex-1 flex flex-col gap-6">
+          {/* 에러 메시지 */}
+          {(errors.profile?.name || errors.profile?.phone || errors.profile?.email) && (
+            <p className="text-red-500 text-sm font-normal">*필수 정보를 모두 입력해주세요.</p>
+          )}
 
-          {/* 전화번호 */}
-          <div className="field">
-            <label
-              htmlFor="profile-phone"
-              className="block text-sm font-medium text-text-secondary mb-2"
-            >
-              전화번호<span className="required text-text-error">*</span>
-            </label>
-            <FormInput
-              id="profile-phone"
-              type="tel"
-              placeholder="010 0000 0000"
-              error={!!errors.profile?.phone}
-              disabled
-              {...register("profile.phone")}
-            />
-            {errors.profile?.phone && (
-              <p className="field-error text-sm text-text-error mt-1">
-                {errors.profile.phone.message}
-              </p>
-            )}
-          </div>
+          <div className="flex items-center gap-8 flex-wrap">
+            {/* 이름 */}
+            <div className="flex items-center gap-2 w-64">
+              <FormInput
+                id="profile-name"
+                type="text"
+                placeholder="이름을 입력해주세요."
+                className="w-full h-16 px-4 py-3 bg-white rounded-lg"
+                error={!!errors.profile?.name}
+                {...register("profile.name")}
+              />
+            </div>
 
-          {/* 이메일 */}
-          <div className="field">
-            <label
-              htmlFor="profile-email"
-              className="block text-sm font-medium text-text-secondary mb-2"
-            >
-              이메일<span className="required text-text-error">*</span>
-            </label>
-            <FormInput
-              id="profile-email"
-              type="email"
-              placeholder="email@example.com"
-              error={!!errors.profile?.email}
-              disabled
-              {...register("profile.email")}
-            />
-            {errors.profile?.email && (
-              <p className="field-error text-sm text-text-error mt-1">
-                {errors.profile.email.message}
-              </p>
-            )}
+            {/* 전화번호 */}
+            <div className="flex items-center gap-2 w-64">
+              <div className="w-12 h-12 flex items-center justify-center shrink-0">
+                <Image src="/icons/outline-phone.svg" alt="Phone" width={24} height={24} />
+              </div>
+              <div className="px-4 py-2 rounded-lg text-neutral-400 text-base font-normal">
+                {user?.phoneNumber || "010 0000 0000"}
+              </div>
+            </div>
+
+            {/* 이메일 */}
+            <div className="flex items-center gap-2 w-64">
+              <div className="w-12 h-12 flex items-center justify-center shrink-0">
+                <Image src="/icons/outline-mail.svg" alt="Email" width={24} height={24} />
+              </div>
+              <div className="p-4 rounded-lg text-neutral-400 text-base font-normal">
+                {user?.email || "email@gmail.com"}
+              </div>
+            </div>
           </div>
         </div>
       </div>

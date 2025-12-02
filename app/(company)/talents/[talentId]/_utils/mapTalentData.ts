@@ -58,7 +58,7 @@ function mapToIntroduceCardProps(data: TalentDetailResponse) {
   return {
     name: data.name,
     profileImageUrl: data.thumbnailUrl,
-    badges: mapExperiencesToBadges(data.experiences),
+    experiences: data.experiences, // experiences 직접 전달
     tendencies: data.tendencies,
     phone: null, // API에서 제공하지 않음
     email: null, // API에서 제공하지 않음
@@ -70,6 +70,7 @@ function mapToIntroduceCardProps(data: TalentDetailResponse) {
     summary: data.introduction,
     showSummary: true,
     showContacts: false, // 연락처 정보가 없으므로 숨김
+    workDrivenLevel: data.workDrivenLevel,
   };
 }
 

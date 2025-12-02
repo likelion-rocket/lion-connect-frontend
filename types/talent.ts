@@ -319,6 +319,7 @@ export interface TalentDetailResponse {
   certifications: CertificationResponse[];
   awards: AwardResponse[];
   languageDetails: LanguageResponse[];
+  workDrivenLevel: number;
 }
 
 /**

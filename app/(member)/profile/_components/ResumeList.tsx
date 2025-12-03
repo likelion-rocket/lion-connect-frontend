@@ -4,7 +4,7 @@ import { ResumeCard } from "./ResumeCard";
 
 export interface Resume {
   id: string;
-  name: string;
+  title: string;
   status: "작성 완료" | "작성 미완료";
   isPublic: boolean;
   isViewing?: boolean;
@@ -30,7 +30,7 @@ export function ResumeList({
       {resumes.map((resume) => (
         <ResumeCard
           key={resume.id}
-          name={resume.name}
+          title={resume.title}
           status={resume.status}
           isPublic={resume.isPublic}
           isViewing={resume.isViewing}

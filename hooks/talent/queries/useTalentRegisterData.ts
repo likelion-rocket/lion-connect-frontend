@@ -10,15 +10,15 @@ import { useEffect } from "react";
  * 인재 등록 페이지 데이터 조회 훅
  *
  * 기능:
- * 1. 페이지 진입 시 모든 섹션 데이터 조회
+ * 1. 페이지 진입 시 특정 프로필의 모든 섹션 데이터 조회
  * 2. 조회한 데이터를 전역 상태(useTalentRegisterStore)에 자동 저장
  * 3. authStore에서 user 정보(전화번호, 이메일) 가져오기
  *
  * 사용법:
- * - page.tsx에서 호출하여 데이터 fetch 트리거
+ * - page.tsx에서 profileId와 함께 호출하여 데이터 fetch 트리거
  * - 각 섹션 컴포넌트는 useTalentRegisterStore에서 필요한 데이터만 선택적으로 구독
  */
-export function useTalentRegisterData() {
+export function useTalentRegisterData(profileId: number) {
   const accessToken = useAuthStore((s) => s.accessToken);
   const user = useAuthStore((s) => s.user);
   const userId = user?.id;
@@ -40,11 +40,11 @@ export function useTalentRegisterData() {
     setError,
   } = useTalentRegisterStore();
 
-  const enabled = !!accessToken && !!userId;
+  const enabled = !!accessToken && !!userId && !!profileId;
 
   const query = useQuery({
-    queryKey: ["talentRegister", "me", userId],
-    queryFn: fetchTalentRegisterData,
+    queryKey: ["talentRegister", profileId, userId],
+    queryFn: () => fetchTalentRegisterData(profileId),
     enabled,
     retry: false, // apiClient가 401 자동 처리
     refetchOnMount: "always", // 최신 데이터 보장

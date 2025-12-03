@@ -18,7 +18,11 @@ import { deleteEducation } from "@/lib/api/educations";
 import AddButton from "../AddButton";
 import EducationItem from "./EducationItem";
 
-export default function EducationSection() {
+interface EducationSectionProps {
+  profileId: number;
+}
+
+export default function EducationSection({ profileId }: EducationSectionProps) {
   const { control, getValues, reset } = useFormContext<TalentRegisterFormValues>();
   const [deleteError, setDeleteError] = useState<string | null>(null);
 
@@ -49,7 +53,7 @@ export default function EducationSection() {
 
       // 서버에서 데이터가 있는 경우 (id 존재) - DELETE API 호출
       if (educationId) {
-        await deleteEducation(educationId);
+        await deleteEducation(profileId, educationId);
       }
 
       // 폼에서 필드 제거

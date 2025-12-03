@@ -14,7 +14,11 @@ import { deleteExperience } from "@/lib/api/experiences";
 import AddButton from "../AddButton";
 import CareerItem from "./CareerItem";
 
-export default function CareerSection() {
+interface CareerSectionProps {
+  profileId: number;
+}
+
+export default function CareerSection({ profileId }: CareerSectionProps) {
   const { control, getValues, reset } = useFormContext<TalentRegisterFormValues>();
   const [deleteError, setDeleteError] = useState<string | null>(null);
 
@@ -45,7 +49,7 @@ export default function CareerSection() {
 
       // 서버에서 데이터가 있는 경우 (id 존재) - DELETE API 호출
       if (careerId) {
-        await deleteExperience(careerId);
+        await deleteExperience(profileId, careerId);
       }
 
       // 폼에서 필드 제거

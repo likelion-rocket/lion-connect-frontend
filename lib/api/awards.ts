@@ -6,37 +6,69 @@ import type { AwardRequest, AwardResponse } from "@/types/talent";
 export type { AwardRequest, AwardResponse };
 export type AwardListItem = AwardResponse;
 
-/** 수상 생성 (POST /api/profile/awards) - 단일 생성 (deprecated) */
+/**
+ * ✅ 수상 배치 생성 (POST /api/profile/awards?profileId={profileId})
+ * - 배열 전송으로 여러 수상을 한번에 생성
+ */
+export function createAwards(
+  profileId: string | number,
+  body: AwardRequest[]
+): Promise<AwardResponse[]> {
+  return post<AwardResponse[]>(`${API_ENDPOINTS.AWARDS.CREATE}?profileId=${profileId}`, body, {
+    credentials: "include",
+  });
+}
+
+/**
+ * ✅ 수상 목록 조회 (GET /api/profile/awards?profileId={profileId})
+ * - 특정 프로필의 수상 목록 조회
+ */
+export function fetchAwards(profileId: string | number): Promise<AwardListItem[]> {
+  return get<AwardListItem[]>(`${API_ENDPOINTS.AWARDS.LIST}?profileId=${profileId}`, {
+    credentials: "include",
+  });
+}
+
+/**
+ * ✅ 수상 수정 (PUT /api/profile/awards/{id}?profileId={profileId})
+ * - 특정 수상 항목 수정
+ */
+export function updateAward(
+  profileId: string | number,
+  id: number,
+  body: AwardRequest
+): Promise<AwardResponse> {
+  return put<AwardResponse>(`${API_ENDPOINTS.AWARDS.UPDATE(id)}?profileId=${profileId}`, body, {
+    credentials: "include",
+  });
+}
+
+/**
+ * ✅ 수상 삭제 (DELETE /api/profile/awards/{id}?profileId={profileId})
+ * - 특정 수상 항목 삭제
+ */
+export async function deleteAward(profileId: string | number, id: number): Promise<void> {
+  await del<void>(`${API_ENDPOINTS.AWARDS.DELETE(id)}?profileId=${profileId}`, {
+    credentials: "include",
+  });
+}
+
+// ==================== 하위 호환성을 위한 기존 함수 유지 ====================
+
+/**
+ * ⚠️ Deprecated: 하위 호환성을 위해 유지
+ */
 export function createAward(body: AwardRequest): Promise<AwardResponse> {
   return post<AwardResponse>(API_ENDPOINTS.AWARDS.CREATE, body, {
     credentials: "include",
   });
 }
 
-/** 수상 배치 생성 (POST /api/profile/awards) - 배열 전송 */
-export function createAwards(body: AwardRequest[]): Promise<AwardResponse[]> {
-  return post<AwardResponse[]>(API_ENDPOINTS.AWARDS.CREATE, body, {
-    credentials: "include",
-  });
-}
-
-// LIST
+/**
+ * ⚠️ Deprecated: 하위 호환성을 위해 유지
+ */
 export function fetchMyAwards(): Promise<AwardListItem[]> {
   return get<AwardListItem[]>(API_ENDPOINTS.AWARDS.LIST, {
-    credentials: "include",
-  });
-}
-
-// UPDATE
-export function updateAward(id: number, body: AwardRequest): Promise<AwardResponse> {
-  return put<AwardResponse>(API_ENDPOINTS.AWARDS.UPDATE(id), body, {
-    credentials: "include",
-  });
-}
-
-// DELETE
-export async function deleteAward(id: number): Promise<void> {
-  await del<void>(API_ENDPOINTS.AWARDS.DELETE(id), {
     credentials: "include",
   });
 }

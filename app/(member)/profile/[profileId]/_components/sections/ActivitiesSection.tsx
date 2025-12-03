@@ -17,7 +17,11 @@ import { MonthPicker } from "@/components/form/MonthPicker";
 import { deleteAward } from "@/lib/api/awards";
 import AddButton from "../AddButton";
 
-export default function ActivitiesSection() {
+interface ActivitiesSectionProps {
+  profileId: number;
+}
+
+export default function ActivitiesSection({ profileId }: ActivitiesSectionProps) {
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const { control, getValues, reset } = useFormContext<TalentRegisterFormValues>();
   const { fields, append, remove } = useFieldArray({
@@ -32,7 +36,7 @@ export default function ActivitiesSection() {
   const handleDeleteActivity = async (index: number, activityId?: number) => {
     try {
       if (activityId) {
-        await deleteAward(activityId);
+        await deleteAward(profileId, activityId);
       }
       remove(index);
 

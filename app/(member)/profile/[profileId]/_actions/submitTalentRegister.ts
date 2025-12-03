@@ -14,22 +14,22 @@ import type { UseFormReturn } from "react-hook-form";
 import type { TalentRegisterFormValues } from "@/schemas/talent/talentRegisterSchema";
 
 // API 함수들
-import { createProfile, updateMyProfile } from "@/lib/api/profiles";
+import { updateProfile } from "@/lib/api/profiles";
 import { createEducations, updateEducation } from "@/lib/api/educations";
 import { createExperiences, updateExperience } from "@/lib/api/experiences";
 import { createLanguages, updateLanguage } from "@/lib/api/languages";
 import { createCertifications, updateCertification } from "@/lib/api/certifications";
 import { createAwards, updateAward } from "@/lib/api/awards";
-import { updateMyExpTags } from "@/lib/api/expTags";
+import { updateExpTags } from "@/lib/api/expTags";
 import { updateJobs } from "@/lib/api/jobs";
-import { updateMyCustomSkills } from "@/lib/api/customSkills";
+import { updateCustomSkills } from "@/lib/api/customSkills";
 import { EXP_TAG_ID_MAP, type ExpTagKey } from "@/lib/expTags/map";
 import { findJobRoleByCode } from "@/constants/jobMapping";
 import {
   presignThumbnail,
   uploadThumbnailToS3,
-  upsertMyThumbnailLink,
-  upsertMyProfileLink,
+  upsertThumbnailLink,
+  upsertProfileLink,
 } from "@/lib/api/profileThumbnail";
 import { presignPortfolio, uploadPortfolioToS3 } from "@/lib/api/profilePortfolio";
 import { submitWorkDrivenTest } from "@/lib/api/workDriven";
@@ -37,7 +37,7 @@ import { submitWorkDrivenTest } from "@/lib/api/workDriven";
 interface SubmitTalentRegisterParams {
   values: TalentRegisterFormValues;
   methods: UseFormReturn<TalentRegisterFormValues>;
-  existingProfileId?: number;
+  profileId: number;
   isTempSave?: boolean; // 임시 저장 여부 (true: validation 우회, false: 최종 제출)
 }
 
@@ -80,13 +80,13 @@ function convertFullDateToMonth(dateString?: string | null): string {
  *
  * @param params.values - React Hook Form의 폼 값
  * @param params.methods - React Hook Form의 메서드 (formState 접근용)
- * @param params.existingProfileId - 기존 프로필 ID (있으면 PUT, 없으면 POST)
+ * @param params.profileId - 프로필 ID (URL에서 추출)
  * @returns 성공 시 { success: true }, 실패 시 { success: false, error }
  */
 export async function submitTalentRegister({
   values,
   methods,
-  existingProfileId,
+  profileId,
   isTempSave = false,
 }: SubmitTalentRegisterParams): Promise<{
   success: boolean;
@@ -98,30 +98,23 @@ export async function submitTalentRegister({
   const updatedValues = JSON.parse(JSON.stringify(values)) as TalentRegisterFormValues;
 
   try {
-    // 1. 프로필 생성 또는 수정 (최우선 호출 - 프로필이 생성되어야 다른 데이터를 저장할 수 있음)
+    // 1. 프로필 수정 (PUT 요청)
     const profilePayload = {
       name: values.profile.name,
+      title: values.profile.title || "",
       introduction: values.profile.introduction || "",
       storageUrl: values.portfolio || "", // 포트폴리오 URL
       likelionCode: values.likelion.code,
       visibility: "PUBLIC" as const,
     };
 
-    // let profileResponse;
-    // await createProfile(profilePayload);
-    // if (existingProfileId) {
-    //   // ✅ 프로필이 이미 존재 → PUT 요청
-    await updateMyProfile(profilePayload);
-    // } else {
-    // ✅ 프로필이 없음 → POST 요청
-    //   profileResponse =
-    // }
+    await updateProfile(profileId, profilePayload);
 
-    // 2. 프로필 사진 업로드 (프로필 생성 후 처리)
+    // 2. 프로필 사진 업로드
     if (dirtyFields.profile?.avatar && values.profile.avatar instanceof File) {
       const file = values.profile.avatar;
 
-      // Presign URL 발급
+      // Presign URL 발급 (accessToken으로 사용자 식별)
       const presignResponse = await presignThumbnail({
         originalFilename: file.name,
         contentType: file.type,
@@ -130,8 +123,8 @@ export async function submitTalentRegister({
       // S3에 업로드
       await uploadThumbnailToS3(presignResponse.uploadUrl, file);
 
-      // 프로필 링크 저장 (API spec: 배열 형식)
-      await upsertMyThumbnailLink({
+      // 프로필 링크 저장
+      await upsertThumbnailLink(profileId, {
         type: "THUMBNAIL",
         url: presignResponse.fileUrl,
         originalFilename: file.name,
@@ -139,15 +132,15 @@ export async function submitTalentRegister({
         fileSize: file.size,
       });
 
-      // 업로드 후 새 파일명 저장 (reset 후에도 파일명 유지)
+      // 업로드 후 새 파일명 저장
       updatedValues.profile.avatar = file.name;
     }
 
-    // 3. 포트폴리오 PDF 업로드 (프로필 생성 후 처리)
+    // 3. 포트폴리오 PDF 업로드
     if (dirtyFields.portfolioFile && values.portfolioFile instanceof File) {
       const file = values.portfolioFile;
 
-      // Presign URL 발급
+      // Presign URL 발급 (accessToken으로 사용자 식별)
       const presignResponse = await presignPortfolio({
         originalFilename: file.name,
         contentType: file.type,
@@ -156,8 +149,9 @@ export async function submitTalentRegister({
       // S3에 업로드
       await uploadPortfolioToS3(presignResponse.uploadUrl, file);
 
-      // 프로필 링크 저장 (API spec: 배열 형식)
-      await upsertMyProfileLink(
+      // 프로필 링크 저장
+      await upsertProfileLink(
+        profileId,
         "PORTFOLIO",
         {
           type: "PORTFOLIO",
@@ -180,7 +174,7 @@ export async function submitTalentRegister({
       if (values.job.role) {
         const jobRoleResult = findJobRoleByCode(values.job.role);
         if (jobRoleResult) {
-          parallelPromises.push(updateJobs({ ids: [jobRoleResult.role.id] }));
+          parallelPromises.push(updateJobs(profileId, { ids: [jobRoleResult.role.id] }));
         }
       }
     }
@@ -197,34 +191,18 @@ export async function submitTalentRegister({
         .filter((id) => id !== undefined);
 
       if (expTagIds.length > 0) {
-        parallelPromises.push(updateMyExpTags({ ids: expTagIds }));
+        parallelPromises.push(updateExpTags(profileId, { ids: expTagIds }));
       }
     }
 
     // 커스텀 스킬 (PUT) - 배열
-    // 주의: Custom Skills는 {customSkills: [name1, name2, ...]} 형식으로 전송하며, DELETE 요청이 없음
-    // 모든 커스텀 스킬을 한번에 보내서 덮어씀
-    //
-    // 중요: Controller가 개별 필드(skills.main.0.name)로 등록되어 있어서
-    // getValues('skills.main')을 사용해서 배열 전체를 가져옴
     const currentSkills = methods.getValues("skills.main" as any);
-
-    // 개별 필드 값도 확인
-    if (currentSkills && Array.isArray(currentSkills)) {
-      currentSkills.forEach((_, idx) => {
-        const fieldValue = methods.getValues(`skills.main.${idx}.name` as any);
-      });
-    }
-
-    // 전체 formValues도 확인
-    const allFormValues = methods.getValues();
 
     if (currentSkills && Array.isArray(currentSkills)) {
       // 스킬 이름 추출 (빈 문자열 제외)
       const skillNames: string[] = [];
 
-      currentSkills.forEach((skill: any, idx: number) => {
-        // Controller가 개별 name 필드로 등록되어 있어서 skill 자체가 string일 수 있음
+      currentSkills.forEach((skill: any) => {
         const skillName = typeof skill === "string" ? skill : skill?.name;
         if (skillName && skillName.trim() !== "") {
           skillNames.push(skillName);
@@ -232,7 +210,7 @@ export async function submitTalentRegister({
       });
 
       // 항상 API 호출 (빈 배열이라도 보내서 모든 스킬 삭제 처리)
-      parallelPromises.push(updateMyCustomSkills({ customSkills: skillNames }));
+      parallelPromises.push(updateCustomSkills(profileId, { customSkills: skillNames }));
     }
 
     // 학력 (POST/PUT) - 배열
@@ -274,7 +252,7 @@ export async function submitTalentRegister({
 
           if (isChanged) {
             parallelPromises.push(
-              updateEducation(numericId, {
+              updateEducation(profileId, numericId, {
                 schoolName: edu.schoolName || "",
                 major: edu.major,
                 status: edu.status,
@@ -325,32 +303,33 @@ export async function submitTalentRegister({
       // 신규 학력 일괄 POST
       if (newEducationsToPost.length > 0) {
         parallelPromises.push(
-          createEducations(newEducationsToPost.map((item) => item.data)).then(
-            (createdEducations) => {
-              // 생성된 학력 ID 반영
-              createdEducations.forEach((createdEdu, i) => {
-                const originalIndex = newEducationsToPost[i].index;
-                if (updatedValues.educations && updatedValues.educations[originalIndex]) {
-                  updatedValues.educations[originalIndex] = {
-                    ...updatedValues.educations[originalIndex],
-                    id: createdEdu.id,
-                    schoolName: createdEdu.schoolName,
-                    major: createdEdu.major || "",
-                    status:
-                      createdEdu.status === "GRADUATED" ||
-                      createdEdu.status === "ENROLLED" ||
-                      createdEdu.status === "COMPLETED"
-                        ? createdEdu.status
-                        : ("ENROLLED" as "ENROLLED" | "GRADUATED" | "COMPLETED"),
-                    startDate: convertFullDateToMonth(createdEdu.startDate),
-                    endDate: convertFullDateToMonth(createdEdu.endDate),
-                    description: createdEdu.description || "",
-                    degree: createdEdu.degree || "",
-                  };
-                }
-              });
-            }
-          )
+          createEducations(
+            profileId,
+            newEducationsToPost.map((item) => item.data)
+          ).then((createdEducations) => {
+            // 생성된 학력 ID 반영
+            createdEducations.forEach((createdEdu, i) => {
+              const originalIndex = newEducationsToPost[i].index;
+              if (updatedValues.educations && updatedValues.educations[originalIndex]) {
+                updatedValues.educations[originalIndex] = {
+                  ...updatedValues.educations[originalIndex],
+                  id: createdEdu.id,
+                  schoolName: createdEdu.schoolName,
+                  major: createdEdu.major || "",
+                  status:
+                    createdEdu.status === "GRADUATED" ||
+                    createdEdu.status === "ENROLLED" ||
+                    createdEdu.status === "COMPLETED"
+                      ? createdEdu.status
+                      : ("ENROLLED" as "ENROLLED" | "GRADUATED" | "COMPLETED"),
+                  startDate: convertFullDateToMonth(createdEdu.startDate),
+                  endDate: convertFullDateToMonth(createdEdu.endDate),
+                  description: createdEdu.description || "",
+                  degree: createdEdu.degree || "",
+                };
+              }
+            });
+          })
         );
       }
     }
@@ -390,7 +369,7 @@ export async function submitTalentRegister({
 
           if (isChanged) {
             parallelPromises.push(
-              updateExperience(numericId, {
+              updateExperience(profileId, numericId, {
                 companyName: career.companyName || "",
                 department: career.department,
                 position: career.position,
@@ -434,7 +413,10 @@ export async function submitTalentRegister({
 
       if (newCareersToPost.length > 0) {
         parallelPromises.push(
-          createExperiences(newCareersToPost.map((item) => item.data)).then((createdCareers) => {
+          createExperiences(
+            profileId,
+            newCareersToPost.map((item) => item.data)
+          ).then((createdCareers) => {
             createdCareers.forEach((createdCareer, i) => {
               const originalIndex = newCareersToPost[i].index;
               if (updatedValues.careers && updatedValues.careers[originalIndex]) {
@@ -487,7 +469,7 @@ export async function submitTalentRegister({
 
           if (isChanged) {
             parallelPromises.push(
-              updateAward(numericId, {
+              updateAward(profileId, numericId, {
                 title: activity.title || "",
                 organization: "default",
                 awardDate: convertMonthToFullDate(activity.awardDate) || "",
@@ -522,7 +504,10 @@ export async function submitTalentRegister({
 
       if (newActivitiesToPost.length > 0) {
         parallelPromises.push(
-          createAwards(newActivitiesToPost.map((item) => item.data)).then((createdAwards) => {
+          createAwards(
+            profileId,
+            newActivitiesToPost.map((item) => item.data)
+          ).then((createdAwards) => {
             createdAwards.forEach((createdAward, i) => {
               const originalIndex = newActivitiesToPost[i].index;
               if (updatedValues.activities && updatedValues.activities[originalIndex]) {
@@ -572,7 +557,7 @@ export async function submitTalentRegister({
 
           if (isChanged) {
             parallelPromises.push(
-              updateLanguage(numericId, {
+              updateLanguage(profileId, numericId, {
                 languageName: lang.languageName || "",
                 level: lang.level || "",
                 issueDate: convertMonthToFullDate(lang.issueDate) || "",
@@ -604,7 +589,10 @@ export async function submitTalentRegister({
 
       if (newLanguagesToPost.length > 0) {
         parallelPromises.push(
-          createLanguages(newLanguagesToPost.map((item) => item.data)).then((createdLanguages) => {
+          createLanguages(
+            profileId,
+            newLanguagesToPost.map((item) => item.data)
+          ).then((createdLanguages) => {
             createdLanguages.forEach((createdLang, i) => {
               const originalIndex = newLanguagesToPost[i].index;
               if (updatedValues.languages && updatedValues.languages[originalIndex]) {
@@ -653,7 +641,7 @@ export async function submitTalentRegister({
 
           if (isChanged) {
             parallelPromises.push(
-              updateCertification(numericId, {
+              updateCertification(profileId, numericId, {
                 name: cert.name || "",
                 issuer: cert.issuer || "default",
                 issueDate: convertMonthToFullDate(cert.issueDate) || "",
@@ -685,22 +673,23 @@ export async function submitTalentRegister({
 
       if (newCertificatesToPost.length > 0) {
         parallelPromises.push(
-          createCertifications(newCertificatesToPost.map((item) => item.data)).then(
-            (createdCertificates) => {
-              createdCertificates.forEach((createdCert, i) => {
-                const originalIndex = newCertificatesToPost[i].index;
-                if (updatedValues.certificates && updatedValues.certificates[originalIndex]) {
-                  updatedValues.certificates[originalIndex] = {
-                    ...updatedValues.certificates[originalIndex],
-                    id: createdCert.id,
-                    name: createdCert.name,
-                    issuer: createdCert.issuer || "default",
-                    issueDate: convertFullDateToMonth(createdCert.issueDate),
-                  };
-                }
-              });
-            }
-          )
+          createCertifications(
+            profileId,
+            newCertificatesToPost.map((item) => item.data)
+          ).then((createdCertificates) => {
+            createdCertificates.forEach((createdCert, i) => {
+              const originalIndex = newCertificatesToPost[i].index;
+              if (updatedValues.certificates && updatedValues.certificates[originalIndex]) {
+                updatedValues.certificates[originalIndex] = {
+                  ...updatedValues.certificates[originalIndex],
+                  id: createdCert.id,
+                  name: createdCert.name,
+                  issuer: createdCert.issuer || "default",
+                  issueDate: convertFullDateToMonth(createdCert.issueDate),
+                };
+              }
+            });
+          })
         );
       }
     }
@@ -717,7 +706,8 @@ export async function submitTalentRegister({
         if (!link.type || !link.url) continue;
 
         parallelPromises.push(
-          upsertMyProfileLink(
+          upsertProfileLink(
+            profileId,
             link.type, // LINK, LINK2, LINK3, ...
             {
               type: link.type,
@@ -750,7 +740,7 @@ export async function submitTalentRegister({
 
       // 모든 질문에 답변이 있으면 API 호출
       if (answers.length === 16) {
-        parallelPromises.push(submitWorkDrivenTest({ answers }));
+        parallelPromises.push(submitWorkDrivenTest(profileId, { answers }));
       }
     }
 

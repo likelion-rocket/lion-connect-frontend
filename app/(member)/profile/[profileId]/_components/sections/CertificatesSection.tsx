@@ -16,7 +16,11 @@ import { MonthPicker } from "@/components/form/MonthPicker";
 import { deleteCertification } from "@/lib/api/certifications";
 import AddButton from "../AddButton";
 
-export default function CertificatesSection() {
+interface CertificatesSectionProps {
+  profileId: number;
+}
+
+export default function CertificatesSection({ profileId }: CertificatesSectionProps) {
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const { control, getValues, reset } = useFormContext<TalentRegisterFormValues>();
   const { fields, append, remove } = useFieldArray({
@@ -31,7 +35,7 @@ export default function CertificatesSection() {
   const handleDeleteCertificate = async (index: number, certificateId?: number) => {
     try {
       if (certificateId) {
-        await deleteCertification(certificateId);
+        await deleteCertification(profileId, certificateId);
       }
       remove(index);
 

@@ -11,14 +11,43 @@ export type UpdateExpTagsRequest = {
   ids: number[];
 };
 
-// ✅ 내 경험 태그 선택 목록 조회 (GET /api/profile/exp-tags)
+/**
+ * ✅ 경험 태그 선택 목록 조회 (GET /api/profile/exp-tags?profileId={profileId})
+ * - 특정 프로필의 경험 태그 목록 조회
+ */
+export function fetchExpTags(profileId: string | number): Promise<ExpTagItem[]> {
+  return get<ExpTagItem[]>(`${API_ENDPOINTS.EXP_TAGS.GET}?profileId=${profileId}`, {
+    credentials: "include",
+  });
+}
+
+/**
+ * ✅ 경험 태그 선택 목록 치환 (PUT /api/profile/exp-tags?profileId={profileId})
+ * - 특정 프로필의 경험 태그 목록 업데이트
+ */
+export function updateExpTags(
+  profileId: string | number,
+  body: UpdateExpTagsRequest
+): Promise<ExpTagItem[]> {
+  return put<ExpTagItem[]>(`${API_ENDPOINTS.EXP_TAGS.UPDATE}?profileId=${profileId}`, body, {
+    credentials: "include",
+  });
+}
+
+// ==================== 하위 호환성을 위한 기존 함수 유지 ====================
+
+/**
+ * ⚠️ Deprecated: 하위 호환성을 위해 유지
+ */
 export function fetchMyExpTags(): Promise<ExpTagItem[]> {
   return get<ExpTagItem[]>(API_ENDPOINTS.EXP_TAGS.GET, {
     credentials: "include",
   });
 }
 
-// ✅ 내 경험 태그 선택 목록 치환 (PUT /api/profile/exp-tags)
+/**
+ * ⚠️ Deprecated: 하위 호환성을 위해 유지
+ */
 export function updateMyExpTags(body: UpdateExpTagsRequest): Promise<ExpTagItem[]> {
   return put<ExpTagItem[]>(API_ENDPOINTS.EXP_TAGS.UPDATE, body, {
     credentials: "include",

@@ -6,42 +6,80 @@ import type { CertificationRequest, CertificationResponse } from "@/types/talent
 export type { CertificationRequest, CertificationResponse };
 export type CertificationListItem = CertificationResponse;
 
-/** 자격증 생성 (POST /api/profile/certifications) - 단일 생성 (deprecated) */
+/**
+ * ✅ 자격증 배치 생성 (POST /api/profile/certifications?profileId={profileId})
+ * - 배열 전송으로 여러 자격증을 한번에 생성
+ */
+export function createCertifications(
+  profileId: string | number,
+  body: CertificationRequest[]
+): Promise<CertificationResponse[]> {
+  return post<CertificationResponse[]>(
+    `${API_ENDPOINTS.CERTIFICATIONS.CREATE}?profileId=${profileId}`,
+    body,
+    {
+      credentials: "include",
+    }
+  );
+}
+
+/**
+ * ✅ 자격증 목록 조회 (GET /api/profile/certifications?profileId={profileId})
+ * - 특정 프로필의 자격증 목록 조회
+ */
+export function fetchCertifications(profileId: string | number): Promise<CertificationResponse[]> {
+  return get<CertificationResponse[]>(
+    `${API_ENDPOINTS.CERTIFICATIONS.LIST}?profileId=${profileId}`,
+    {
+      credentials: "include",
+    }
+  );
+}
+
+/**
+ * ✅ 자격증 수정 (PUT /api/profile/certifications/{id}?profileId={profileId})
+ * - 특정 자격증 항목 수정
+ */
+export function updateCertification(
+  profileId: string | number,
+  id: number,
+  body: CertificationRequest
+): Promise<CertificationResponse> {
+  return put<CertificationResponse>(
+    `${API_ENDPOINTS.CERTIFICATIONS.UPDATE(id)}?profileId=${profileId}`,
+    body,
+    {
+      credentials: "include",
+    }
+  );
+}
+
+/**
+ * ✅ 자격증 삭제 (DELETE /api/profile/certifications/{id}?profileId={profileId})
+ * - 특정 자격증 항목 삭제
+ */
+export async function deleteCertification(profileId: string | number, id: number): Promise<void> {
+  await del<void>(`${API_ENDPOINTS.CERTIFICATIONS.DELETE(id)}?profileId=${profileId}`, {
+    credentials: "include",
+  });
+}
+
+// ==================== 하위 호환성을 위한 기존 함수 유지 ====================
+
+/**
+ * ⚠️ Deprecated: 하위 호환성을 위해 유지
+ */
 export function createCertification(body: CertificationRequest): Promise<CertificationResponse> {
   return post<CertificationResponse>(API_ENDPOINTS.CERTIFICATIONS.CREATE, body, {
     credentials: "include",
   });
 }
 
-/** 자격증 배치 생성 (POST /api/profile/certifications) - 배열 전송 */
-export function createCertifications(
-  body: CertificationRequest[]
-): Promise<CertificationResponse[]> {
-  return post<CertificationResponse[]>(API_ENDPOINTS.CERTIFICATIONS.CREATE, body, {
-    credentials: "include",
-  });
-}
-
-/** 내 경력 목록 조회 (GET /api/profile/certifications) */
+/**
+ * ⚠️ Deprecated: 하위 호환성을 위해 유지
+ */
 export function fetchMyCertifications(): Promise<CertificationResponse[]> {
   return get<CertificationResponse[]>(API_ENDPOINTS.CERTIFICATIONS.LIST, {
-    credentials: "include",
-  });
-}
-
-/** 경력 수정 (PUT /api/profile/certifications/{id}) */
-export function updateCertification(
-  id: number,
-  body: CertificationRequest
-): Promise<CertificationResponse> {
-  return put<CertificationResponse>(API_ENDPOINTS.CERTIFICATIONS.UPDATE(id), body, {
-    credentials: "include",
-  });
-}
-
-/** 경력 삭제 (DELETE /api/profile/certifications/{id}) → 204 No Content */
-export async function deleteCertification(id: number): Promise<void> {
-  await del<void>(API_ENDPOINTS.CERTIFICATIONS.DELETE(id), {
     credentials: "include",
   });
 }

@@ -79,7 +79,7 @@ export default function TalentRegisterNav({
           <button
             type="button"
             onClick={handleTempSave}
-            className="px-4 py-2.5 md:py-3 border border-border-secondary bg-bg-primary rounded-lg text-base md:text-lg font-bold text-text-primary hover:bg-bg-secondary transition-colors hover:cursor-pointer"
+            className="px-4 py-2.5 md:py-3 border border-border-accent bg-bg-primary rounded-lg text-base md:text-lg font-bold text-text-accent hover:bg-bg-secondary transition-colors hover:cursor-pointer"
           >
             임시 저장
           </button>

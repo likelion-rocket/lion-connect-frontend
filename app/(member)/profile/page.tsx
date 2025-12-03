@@ -7,12 +7,14 @@ import { ResumeListHeader } from "./_components/ResumeListHeader";
 import { useMyProfiles } from "@/hooks/talent/queries/useMyProfiles";
 import { createEmptyProfile, updateProfile, deleteProfile } from "@/lib/api/profiles";
 import { useToastStore } from "@/store/toastStore";
+import { useAuthStore } from "@/store/authStore";
 
 function ProfilePage() {
   const router = useRouter();
   const queryClient = useQueryClient();
   const { data: profiles, isLoading, error } = useMyProfiles();
   const showToast = useToastStore((state) => state.showToast);
+  const userId = useAuthStore((state) => state.user?.id);
 
   // 신규 이력서 생성 mutation
   const createMutation = useMutation({
@@ -34,7 +36,7 @@ function ProfilePage() {
       }),
     onSuccess: () => {
       showToast("공개 설정이 변경되었습니다.");
-      queryClient.invalidateQueries({ queryKey: ["profiles", "me"] });
+      queryClient.invalidateQueries({ queryKey: ["profile", "list", userId] });
     },
     onError: () => {
       showToast("공개 설정 변경에 실패했습니다.", "error");
@@ -46,7 +48,8 @@ function ProfilePage() {
     mutationFn: (id: number) => deleteProfile(id),
     onSuccess: () => {
       showToast("이력서가 삭제되었습니다.");
-      queryClient.invalidateQueries({ queryKey: ["profiles", "me"] });
+      // useMyProfiles의 queryKey와 동일하게 설정하여 캐시 무효화
+      queryClient.invalidateQueries({ queryKey: ["profile", "list", userId] });
     },
     onError: () => {
       showToast("이력서 삭제에 실패했습니다.", "error");

@@ -1,10 +1,10 @@
 // lib/api/profiles.ts
 import { post, get, put } from "@/lib/apiClient";
 import { API_ENDPOINTS } from "@/constants/api";
-import type { ProfileRequest, ProfileResponse } from "@/types/talent";
+import type { ProfileRequest, ProfileResponse, ProfileListResponse } from "@/types/talent";
 
-// Re-export ProfileResponse for other modules
-export type { ProfileResponse };
+// Re-export types for other modules
+export type { ProfileResponse, ProfileListResponse };
 
 /**
  * ✅ 프로필 생성 API (POST /api/profile/me)
@@ -46,6 +46,16 @@ export function updateMyProfile(body: ProfileRequest): Promise<ProfileResponse> 
   }
 
   return put<ProfileResponse>(API_ENDPOINTS.PROFILES.UPDATE, cleanBody, {
+    credentials: "include",
+  });
+}
+
+/**
+ * ✅ 프로필 목록 조회 API (GET /api/profile)
+ * - 현재 로그인한 사용자의 모든 프로필 목록 조회
+ */
+export function fetchMyProfiles(): Promise<ProfileListResponse[]> {
+  return get<ProfileListResponse[]>(API_ENDPOINTS.PROFILES.LIST, {
     credentials: "include",
   });
 }

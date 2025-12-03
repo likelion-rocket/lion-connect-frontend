@@ -7,7 +7,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { loginSchema, LoginSchemaType } from "@/schemas/auth/loginSchema";
 import { useLogin } from "@/hooks/auth/useLogin";
-import { useCreateInitialProfile } from "@/hooks/auth/useCreateInitialProfile";
 import { setAuthCookies } from "@/actions/auth";
 import Image from "next/image";
 import Input from "@/app/(auth)/_components/Input";
@@ -19,7 +18,6 @@ import Input from "@/app/(auth)/_components/Input";
  */
 export default function LoginForm() {
   const router = useRouter();
-  const { createInitialProfile } = useCreateInitialProfile();
   const [showPassword, setShowPassword] = useState(false);
 
   // useLogin 훅에 onSuccess 콜백 전달
@@ -28,9 +26,6 @@ export default function LoginForm() {
       try {
         // 1. Server Action으로 쿠키 설정 (서버에서 HttpOnly, Secure 플래그와 함께 설정)
         await setAuthCookies(data.user.roles);
-
-        // 2. 프로필 생성
-        createInitialProfile();
 
         // 3. 서버 컴포넌트 캐시 갱신 (새 쿠키 값 인식)
         router.refresh();

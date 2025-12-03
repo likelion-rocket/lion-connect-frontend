@@ -2,33 +2,12 @@
 
 import { ResumeList, Resume } from "./_components/ResumeList";
 import { ResumeListHeader } from "./_components/ResumeListHeader";
-
-// 임시 데이터
-const mockResumes: Resume[] = [
-  {
-    id: "1",
-    name: "김이름 1",
-    status: "작성 완료",
-    isPublic: true,
-    isViewing: true,
-  },
-  {
-    id: "2",
-    name: "김이름 2",
-    status: "작성 완료",
-    isPublic: false,
-    isViewing: false,
-  },
-  {
-    id: "3",
-    name: "김이름 3",
-    status: "작성 미완료",
-    isPublic: false,
-    isViewing: false,
-  },
-];
+import { useMyProfiles } from "@/hooks/talent/queries/useMyProfiles";
 
 function ProfilePage() {
+  // ✅ API 데이터 조회
+  const { data: profiles, isLoading, error } = useMyProfiles();
+
   const handleRegister = () => {
     console.log("Register new resume");
   };
@@ -49,12 +28,39 @@ function ProfilePage() {
     console.log("Close alert:", id);
   };
 
+  // ✅ API 응답 데이터를 컴포넌트에 맞게 변환
+  const resumes: Resume[] =
+    profiles?.map((profile) => ({
+      id: String(profile.id),
+      name: profile.name || "이름 없음",
+      status: profile.status === "COMPLETED" ? "작성 완료" : "작성 미완료",
+      isPublic: profile.visibility === "PUBLIC",
+      isViewing: false, // 필요시 로직 추가
+    })) ?? [];
+
+  // ✅ 로딩/에러 상태 처리
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-page p-8 flex justify-center items-center">
+        <div>로딩 중...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-page p-8 flex justify-center items-center">
+        <div>에러가 발생했습니다: {error.message}</div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-page p-8 flex justify-center">
       <div className="w-full max-w-[1158px] flex flex-col gap-16">
         <ResumeListHeader onRegister={handleRegister} />
         <ResumeList
-          resumes={mockResumes}
+          resumes={resumes}
           onTogglePublic={handleTogglePublic}
           onEdit={handleEdit}
           onDelete={handleDelete}

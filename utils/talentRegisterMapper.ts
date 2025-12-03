@@ -78,6 +78,7 @@ export function mapApiDataToFormValues(
     profile: {
       avatar: thumbnail ? thumbnail.url : null,
       name: data.profile?.name || "",
+      title: data.profile?.title || "",
       phone: user?.phoneNumber || "",
       email: user?.email || "",
       introduction: data.profile?.introduction || "",

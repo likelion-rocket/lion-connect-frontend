@@ -14,6 +14,7 @@
 export interface ProfileResponse {
   id: number;
   name: string;
+  title: string;
   introduction: string;
   storageUrl: string;
   likelionCode: string | null;
@@ -28,6 +29,7 @@ export interface ProfileResponse {
 export interface ProfileListResponse {
   id: number;
   name: string;
+  title: string;
   introduction: string;
   storageUrl: string;
   likelionCode: string | null;
@@ -162,6 +164,7 @@ export interface CustomSkillResponse {
  */
 export interface ProfileRequest {
   name: string;
+  title?: string;
   introduction: string;
   storageUrl: string;
   likelionCode?: string;

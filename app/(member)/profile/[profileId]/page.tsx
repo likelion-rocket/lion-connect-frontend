@@ -353,21 +353,21 @@ export default function TalentRegisterPage({ params }: { params: Promise<{ profi
             <JobExperienceSection />
 
             {/* 학력 섹션 */}
-            <EducationSection />
+            <EducationSection profileId={profileId} />
 
             {/* 경력 섹션 */}
-            <CareerSection />
+            <CareerSection profileId={profileId} />
 
             {/* 직무 스킬 섹션 */}
             <SkillsSection />
 
             {/* 수상/활동/기타 섹션 */}
-            <ActivitiesSection />
+            <ActivitiesSection profileId={profileId} />
 
             {/* 언어 & 자격증 섹션 (2열 레이아웃) */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16">
-              <LanguagesSection />
-              <CertificatesSection />
+              <LanguagesSection profileId={profileId} />
+              <CertificatesSection profileId={profileId} />
             </div>
 
             {/* 링크 섹션 */}

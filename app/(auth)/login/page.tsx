@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 export default function SignInPage() {
   return (
     <>
-      <main className="min-h-screen flex flex-col items-center bg-bg-primary px-4 pt-20">
+      <main className="flex flex-col items-center bg-bg-primary px-4 pt-20 pb-96">
         <div className="w-[570px] inline-flex flex-col justify-start items-start gap-16">
           {/* 페이지 제목 */}
           <div className="self-stretch flex flex-col justify-start items-start gap-16">

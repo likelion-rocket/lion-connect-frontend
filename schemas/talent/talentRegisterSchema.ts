@@ -9,6 +9,7 @@ export const talentRegisterSchema = z.object({
   profile: z.object({
     avatar: z.any().nullable(),
     name: z.string().min(1, "이름은 필수입니다."),
+    title: z.string().optional(),
     phone: z.string().min(1, "전화번호는 필수입니다.").optional(),
     email: z.string().email("이메일 형식이 올바르지 않습니다.").optional(),
     introduction: z.string().min(1, "간단 소개는 필수입니다."),
@@ -137,6 +138,7 @@ export const defaultTalentRegisterValues: TalentRegisterFormValues = {
   profile: {
     avatar: null,
     name: "",
+    title: "",
     phone: "",
     email: "",
     introduction: "",

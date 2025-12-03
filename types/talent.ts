@@ -9,15 +9,32 @@
 // ========================
 
 /**
- * 프로필 응답 타입
+ * 프로필 응답 타입 (단일 조회)
  */
 export interface ProfileResponse {
   id: number;
   name: string;
+  title: string;
   introduction: string;
   storageUrl: string;
   likelionCode: string | null;
   visibility: "PUBLIC" | "PRIVATE";
+  createdAt: string;
+  updatedAt: string;
+}
+
+/**
+ * 프로필 목록 응답 타입 (목록 조회)
+ */
+export interface ProfileListResponse {
+  id: number;
+  name: string;
+  title: string;
+  introduction: string;
+  storageUrl: string;
+  likelionCode: string | null;
+  visibility: "PUBLIC" | "PRIVATE";
+  status: "DRAFT" | "COMPLETED";
   createdAt: string;
   updatedAt: string;
 }
@@ -147,6 +164,7 @@ export interface CustomSkillResponse {
  */
 export interface ProfileRequest {
   name: string;
+  title?: string;
   introduction: string;
   storageUrl: string;
   likelionCode?: string;

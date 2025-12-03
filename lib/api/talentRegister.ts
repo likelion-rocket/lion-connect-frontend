@@ -6,17 +6,17 @@
 
 import { get } from "@/lib/apiClient";
 import { API_ENDPOINTS } from "@/constants/api";
-import { fetchMyProfile } from "./profiles";
-import { fetchMyEducations } from "./educations";
-import { fetchMyExperiences } from "./experiences";
-import { fetchMyLanguages } from "./languages";
-import { fetchMyCertifications } from "./certifications";
-import { fetchMyAwards } from "./awards";
-import { fetchMyExpTags } from "./expTags";
-import { fetchMyJobs } from "./jobs";
-import { fetchMySkills } from "./skills";
-import { fetchMyCustomSkills } from "./customSkills";
+import { fetchProfile } from "./profiles";
+import { fetchEducations } from "./educations";
+import { fetchExperiences } from "./experiences";
+import { fetchLanguages } from "./languages";
+import { fetchCertifications } from "./certifications";
+import { fetchAwards } from "./awards";
+import { fetchExpTags } from "./expTags";
+import { fetchJobs } from "./jobs";
+import { fetchCustomSkills } from "./customSkills";
 import { fetchWorkDrivenTestResult } from "./workDriven";
+import { fetchProfileLinks } from "./profileThumbnail";
 import type {
   ProfileResponse,
   EducationResponse,
@@ -31,15 +31,6 @@ import type {
   CustomSkillResponse,
   WorkDrivenTestResultResponse,
 } from "@/types/talent";
-
-/**
- * 프로필 링크 목록 조회 (GET /api/profile/me/links)
- */
-export function fetchMyProfileLinks(): Promise<ProfileLinkResponse[]> {
-  return get<ProfileLinkResponse[]>(API_ENDPOINTS.PROFILE_LINKS.LIST, {
-    credentials: "include",
-  });
-}
 
 /**
  * 인재 등록 페이지 전체 데이터 타입
@@ -65,7 +56,7 @@ export type TalentRegisterData = {
  * - 프로필이 없으면 null 반환 (신규 등록)
  * - 다른 섹션은 빈 배열 반환
  */
-export async function fetchTalentRegisterData(): Promise<TalentRegisterData> {
+export async function fetchTalentRegisterData(profileId: number): Promise<TalentRegisterData> {
   try {
     // 병렬로 모든 데이터 조회
     const [
@@ -78,22 +69,20 @@ export async function fetchTalentRegisterData(): Promise<TalentRegisterData> {
       expTags,
       jobCategories,
       profileLinks,
-      skills,
       customSkills,
       workDrivenTestResult,
     ] = await Promise.allSettled([
-      fetchMyProfile(),
-      fetchMyEducations(),
-      fetchMyExperiences(),
-      fetchMyLanguages(),
-      fetchMyCertifications(),
-      fetchMyAwards(),
-      fetchMyExpTags(),
-      fetchMyJobs(),
-      fetchMyProfileLinks(),
-      fetchMySkills(),
-      fetchMyCustomSkills(),
-      fetchWorkDrivenTestResult(),
+      fetchProfile(profileId),
+      fetchEducations(profileId),
+      fetchExperiences(profileId),
+      fetchLanguages(profileId),
+      fetchCertifications(profileId),
+      fetchAwards(profileId),
+      fetchExpTags(profileId),
+      fetchJobs(profileId),
+      fetchProfileLinks(profileId),
+      fetchCustomSkills(profileId),
+      fetchWorkDrivenTestResult(profileId),
     ]);
 
     return {
@@ -109,7 +98,7 @@ export async function fetchTalentRegisterData(): Promise<TalentRegisterData> {
       expTags: expTags.status === "fulfilled" ? expTags.value : [],
       jobCategories: jobCategories.status === "fulfilled" ? jobCategories.value : [],
       profileLinks: profileLinks.status === "fulfilled" ? profileLinks.value : [],
-      skills: skills.status === "fulfilled" ? skills.value : [],
+      skills: [], // ⚠️ Legacy - 빈 배열 반환
       customSkills: customSkills.status === "fulfilled" ? customSkills.value : [],
 
       // Work Driven 테스트 결과 (없으면 null)

@@ -17,7 +17,7 @@
  * formState.dirtyFields로 dirty checking하여 필요한 API만 호출
  */
 
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -62,12 +62,16 @@ import WorkDrivenTestSection from "./_components/sections/WorkDrivenTestSection"
 // resolver를 컴포넌트 외부로 이동 (재생성 방지)
 const formResolver = zodResolver(talentRegisterSchema);
 
-export default function TalentRegisterPage() {
+export default function TalentRegisterPage({ params }: { params: Promise<{ profileId: string }> }) {
   const router = useRouter();
   const user = useAuthStore((state) => state.user);
   const isInitialized = useAuthStore((state) => state.isInitialized);
   const [isUserVerified, setIsUserVerified] = useState(false);
   const showToast = useToastStore((state) => state.showToast);
+
+  // URL에서 profileId 추출 (React.use()로 Promise unwrap)
+  const { profileId: profileIdParam } = use(params);
+  const profileId = Number(profileIdParam);
 
   // 인증 상태 초기화 완료 후 사용자 확인
   useEffect(() => {
@@ -85,9 +89,17 @@ export default function TalentRegisterPage() {
     }
   }, [isInitialized, user, router]);
 
+  // profileId 유효성 검사
+  useEffect(() => {
+    if (isUserVerified && (!profileId || isNaN(profileId))) {
+      showToast("유효하지 않은 프로필 ID입니다.", "error");
+      router.push("/profile");
+    }
+  }, [isUserVerified, profileId, router, showToast]);
+
   // 페이지 진입 시 모든 데이터 조회 (자동으로 store에 저장됨)
   // 각 섹션 컴포넌트에서 useTalentRegisterStore로 직접 사용
-  const { isLoading, error } = useTalentRegisterData();
+  const { isLoading, error } = useTalentRegisterData(profileId);
 
   // 프로필 존재 여부 확인 (POST vs PUT 분기용)
   const existingProfile = useTalentRegisterStore((state) => state.profile);
@@ -102,10 +114,6 @@ export default function TalentRegisterPage() {
 
   // 데이터가 로드되면 자동으로 React Hook Form을 초기화
   useInitializeTalentForm(methods, isLoading);
-
-  const handleGoBack = () => {
-    // window.history.back();
-  };
 
   /**
    * 서버에서 생성된 ID만 폼에 업데이트
@@ -184,7 +192,7 @@ export default function TalentRegisterPage() {
     const result = await submitTalentRegister({
       values: currentValues,
       methods,
-      existingProfileId: existingProfile?.id,
+      profileId,
       isTempSave: true,
     });
 
@@ -228,16 +236,16 @@ export default function TalentRegisterPage() {
     const result = await submitTalentRegister({
       values,
       methods,
-      existingProfileId: existingProfile?.id,
+      profileId,
     });
 
     if (result.success) {
       if (result.data) {
         methods.reset(result.data);
       }
-      // 성공 시 토스트 표시 후 랜딩페이지로 이동
+      // 성공 시 토스트 표시 후 프로필 목록으로 이동
       showToast("인재 프로필이 성공적으로 등록되었습니다!");
-      router.push("/");
+      router.push("/profile");
     } else {
       // TODO: 에러 처리
     }
@@ -317,7 +325,6 @@ export default function TalentRegisterPage() {
       <div className="min-h-screen bg-bg-page">
         {/* Navigation Bar */}
         <TalentRegisterNav
-          onBack={handleGoBack}
           onTempSave={handleTempSave}
           formId="talent-register-form"
           isSubmitDisabled={isSubmitDisabled}
@@ -346,21 +353,21 @@ export default function TalentRegisterPage() {
             <JobExperienceSection />
 
             {/* 학력 섹션 */}
-            <EducationSection />
+            <EducationSection profileId={profileId} />
 
             {/* 경력 섹션 */}
-            <CareerSection />
+            <CareerSection profileId={profileId} />
 
             {/* 직무 스킬 섹션 */}
             <SkillsSection />
 
             {/* 수상/활동/기타 섹션 */}
-            <ActivitiesSection />
+            <ActivitiesSection profileId={profileId} />
 
             {/* 언어 & 자격증 섹션 (2열 레이아웃) */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16">
-              <LanguagesSection />
-              <CertificatesSection />
+              <LanguagesSection profileId={profileId} />
+              <CertificatesSection profileId={profileId} />
             </div>
 
             {/* 링크 섹션 */}
@@ -374,28 +381,6 @@ export default function TalentRegisterPage() {
 
             {/* Work Driven 테스트 섹션 */}
             <WorkDrivenTestSection />
-
-            {/* Page Footer */}
-            <footer className="page-footer flex flex-col md:flex-row items-center justify-end gap-4 pt-8">
-              <button
-                type="button"
-                onClick={handleGoBack}
-                className="w-full cursor-pointer md:w-auto px-8 py-3 border border-border-quaternary rounded-lg text-base font-medium text-text-secondary hover:bg-bg-tertiary transition-colors"
-              >
-                취소
-              </button>
-              <button
-                type="submit"
-                disabled={isSubmitDisabled}
-                className={`w-full md:w-auto px-8 py-3 rounded-lg text-base font-bold transition-colors ${
-                  isSubmitDisabled
-                    ? "bg-bg-tertiary text-text-quaternary outline-1 outline-border-quaternary -outline-offset-1 cursor-not-allowed"
-                    : "bg-bg-accent text-text-inverse-primary hover:bg-brand-06 cursor-pointer"
-                }`}
-              >
-                작성 완료
-              </button>
-            </footer>
           </form>
         </main>
       </div>

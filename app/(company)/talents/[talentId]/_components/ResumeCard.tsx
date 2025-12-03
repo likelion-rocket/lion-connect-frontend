@@ -106,10 +106,10 @@ export default function ResumeCard({
       </summary>
 
       {/* 본문 */}
-      <div className="px-6 pb-6 space-y-6 text-[14px] leading-6 text-[#333]">
+      <div className="px-6 pb-6 space-y-6 w-[570px] text-[14px] leading-6 text-[#333]">
         {/* 간단소개 */}
         <section aria-labelledby="resume-summary">
-          <SectionHeader id="resume-summary">간단소개</SectionHeader>
+          <SectionHeader id="resume-summary">간단 소개</SectionHeader>
           <p className="whitespace-pre-wrap">{summary || "간단 소개가 없습니다."}</p>
         </section>
 

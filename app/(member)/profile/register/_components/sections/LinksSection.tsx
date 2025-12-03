@@ -162,7 +162,7 @@ function LinkItem({ index, linkType, onDelete, isFocused, onFocus, onBlur }: Lin
           <input
             id={`links-${index}-url`}
             type="url"
-            placeholder="link를 입력해주세요"
+            placeholder="본인 또는 본인의 프로젝트를 소개할 수 있는 link를 입력해주세요."
             className="lc-input w-full h-14 px-4 py-3 bg-bg-primary rounded-lg text-base text-text-primary placeholder:text-text-tertiary focus:outline-none transition-colors"
             {...register(`links.${index}.url`)}
           />

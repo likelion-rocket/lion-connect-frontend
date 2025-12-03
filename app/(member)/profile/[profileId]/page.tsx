@@ -115,10 +115,6 @@ export default function TalentRegisterPage({ params }: { params: Promise<{ profi
   // 데이터가 로드되면 자동으로 React Hook Form을 초기화
   useInitializeTalentForm(methods, isLoading);
 
-  const handleGoBack = () => {
-    // window.history.back();
-  };
-
   /**
    * 서버에서 생성된 ID만 폼에 업데이트
    * dirty/valid 상태를 유지하면서 ID만 동기화
@@ -329,7 +325,6 @@ export default function TalentRegisterPage({ params }: { params: Promise<{ profi
       <div className="min-h-screen bg-bg-page">
         {/* Navigation Bar */}
         <TalentRegisterNav
-          onBack={handleGoBack}
           onTempSave={handleTempSave}
           formId="talent-register-form"
           isSubmitDisabled={isSubmitDisabled}
@@ -386,28 +381,6 @@ export default function TalentRegisterPage({ params }: { params: Promise<{ profi
 
             {/* Work Driven 테스트 섹션 */}
             <WorkDrivenTestSection />
-
-            {/* Page Footer */}
-            <footer className="page-footer flex flex-col md:flex-row items-center justify-end gap-4 pt-8">
-              <button
-                type="button"
-                onClick={handleGoBack}
-                className="w-full cursor-pointer md:w-auto px-8 py-3 border border-border-quaternary rounded-lg text-base font-medium text-text-secondary hover:bg-bg-tertiary transition-colors"
-              >
-                취소
-              </button>
-              <button
-                type="submit"
-                disabled={isSubmitDisabled}
-                className={`w-full md:w-auto px-8 py-3 rounded-lg text-base font-bold transition-colors ${
-                  isSubmitDisabled
-                    ? "bg-bg-tertiary text-text-quaternary outline-1 outline-border-quaternary -outline-offset-1 cursor-not-allowed"
-                    : "bg-bg-accent text-text-inverse-primary hover:bg-brand-06 cursor-pointer"
-                }`}
-              >
-                작성 완료
-              </button>
-            </footer>
           </form>
         </main>
       </div>

@@ -2,6 +2,7 @@
 
 import { cn } from "@/utils/utils";
 import { useToastStore } from "@/store/toastStore";
+import { useRouter } from "next/navigation";
 
 interface TalentRegisterNavProps extends React.HTMLAttributes<HTMLElement> {
   title?: string;
@@ -23,13 +24,10 @@ export default function TalentRegisterNav({
   ...props
 }: TalentRegisterNavProps) {
   const { showToast } = useToastStore();
+  const router = useRouter();
 
   const handleGoBack = () => {
-    if (onBack) {
-      onBack();
-    } else {
-      window.history.back();
-    }
+    router.push("/profile");
   };
 
   const handleTempSave = async () => {

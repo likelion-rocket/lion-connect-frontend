@@ -90,12 +90,6 @@ export default function PortfolioSection() {
 
         <div className="flex-1">
           <div className="field">
-            <label
-              htmlFor="portfolio-file"
-              className="block text-sm font-medium text-text-secondary mb-2"
-            >
-              포트폴리오 PDF<span className="required text-text-error">*</span>
-            </label>
             <input
               ref={fileInputRef}
               id="portfolio-file"

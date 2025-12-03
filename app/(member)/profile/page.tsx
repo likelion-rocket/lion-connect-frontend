@@ -84,7 +84,7 @@ function ProfilePage() {
   const resumes: Resume[] =
     profiles?.map((profile) => ({
       id: String(profile.id),
-      name: profile.name || "이름 없음",
+      title: profile.title || "제목 없음",
       status: profile.status === "COMPLETED" ? "작성 완료" : "작성 미완료",
       isPublic: profile.visibility === "PUBLIC",
       isViewing: false, // 필요시 로직 추가

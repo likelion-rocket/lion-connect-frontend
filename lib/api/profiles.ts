@@ -11,14 +11,17 @@ export type { ProfileResponse, ProfileListResponse };
  * - 신규 프로필을 생성할 때 사용
  * - 생성 후 profileId를 반환받아 해당 프로필 편집 페이지로 이동
  */
-export function createEmptyProfile(name: string): Promise<ProfileResponse> {
+export function createEmptyProfile(title: string): Promise<ProfileResponse> {
   return post<ProfileResponse>(
     API_ENDPOINTS.PROFILES.CREATE,
     {
-      name,
+      name: "",
+      title,
       introduction: "",
       storageUrl: "",
+      likelionCode: "",
       visibility: "PRIVATE",
+      status: "DRAFT",
     },
     {
       credentials: "include",

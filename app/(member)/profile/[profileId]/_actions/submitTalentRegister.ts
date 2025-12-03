@@ -101,6 +101,7 @@ export async function submitTalentRegister({
     // 1. 프로필 수정 (PUT 요청)
     const profilePayload = {
       name: values.profile.name,
+      title: values.profile.title || "",
       introduction: values.profile.introduction || "",
       storageUrl: values.portfolio || "", // 포트폴리오 URL
       likelionCode: values.likelion.code,

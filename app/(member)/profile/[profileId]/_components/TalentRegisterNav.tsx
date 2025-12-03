@@ -3,10 +3,9 @@
 import { cn } from "@/utils/utils";
 import { useToastStore } from "@/store/toastStore";
 import { useRouter } from "next/navigation";
+import { useFormContext, useWatch } from "react-hook-form";
 
 interface TalentRegisterNavProps extends React.HTMLAttributes<HTMLElement> {
-  title?: string;
-  onBack?: () => void;
   onTempSave?: () => void;
   onSubmit?: () => void;
   formId?: string;
@@ -14,8 +13,6 @@ interface TalentRegisterNavProps extends React.HTMLAttributes<HTMLElement> {
 }
 
 export default function TalentRegisterNav({
-  title = "인재 등록",
-  onBack,
   onTempSave,
   onSubmit,
   formId,
@@ -25,6 +22,10 @@ export default function TalentRegisterNav({
 }: TalentRegisterNavProps) {
   const { showToast } = useToastStore();
   const router = useRouter();
+  const { register, control } = useFormContext();
+
+  // Watch the title value from the form using useWatch
+  const titleValue = useWatch({ control, name: "profile.title" }) || "인재 등록";
 
   const handleGoBack = () => {
     router.push("/profile");
@@ -66,10 +67,19 @@ export default function TalentRegisterNav({
         <span className="text-base md:text-lg font-bold text-text-primary">이전 페이지</span>
       </button>
 
-      {/* 중앙: 페이지 제목 */}
-      <h1 className="absolute left-1/2 -translate-x-1/2 text-lg md:text-xl font-bold text-text-primary">
-        {title}
-      </h1>
+      {/* 중앙: 편집 가능한 페이지 제목 */}
+      <input
+        type="text"
+        {...register("profile.title")}
+        placeholder="이력서 제목"
+        className={cn(
+          "absolute left-1/2 -translate-x-1/2 text-lg md:text-xl font-bold text-text-primary",
+          "text-center bg-transparent border-2 border-transparent rounded px-3 py-1",
+          "hover:border-accent focus:border-accent focus:outline-none",
+          "transition-colors duration-200",
+          "min-w-[200px] max-w-[400px]"
+        )}
+      />
 
       {/* 오른쪽: 임시 저장 + 작성 완료 버튼 */}
       <div className="flex items-center gap-2 md:gap-3">

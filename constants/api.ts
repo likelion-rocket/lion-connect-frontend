@@ -35,6 +35,7 @@ export const API_ENDPOINTS = {
     GET: "/profile/me", // GET - 단일 프로필 조회
     UPDATE: "/profile/me", // PUT - 프로필 수정
     LIST: "/profile", // GET - 프로필 목록 조회
+    DELETE: "/profile/me",
   },
   TENDENCIES: {
     UPDATE: "/profile/tendencies", // PUT

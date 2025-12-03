@@ -16,7 +16,11 @@ import { MonthPicker } from "@/components/form/MonthPicker";
 import { deleteLanguage } from "@/lib/api/languages";
 import AddButton from "../AddButton";
 
-export default function LanguagesSection() {
+interface LanguagesSectionProps {
+  profileId: number;
+}
+
+export default function LanguagesSection({ profileId }: LanguagesSectionProps) {
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const { control, getValues, reset } = useFormContext<TalentRegisterFormValues>();
   const { fields, append, remove } = useFieldArray({
@@ -31,7 +35,7 @@ export default function LanguagesSection() {
   const handleDeleteLanguage = async (index: number, languageId?: number) => {
     try {
       if (languageId) {
-        await deleteLanguage(languageId);
+        await deleteLanguage(profileId, languageId);
       }
       remove(index);
 

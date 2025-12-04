@@ -25,6 +25,14 @@ export function ResumeList({
   onDelete,
   onCloseAlert,
 }: ResumeListProps) {
+  if (resumes.length === 0) {
+    return (
+      <div className="w-full py-20 flex justify-center items-center text-neutral-400 text-lg font-medium">
+        생성된 이력서가 없습니다.
+      </div>
+    );
+  }
+
   return (
     <div className="w-full max-w-[1158px] inline-flex flex-col justify-start items-start gap-16">
       {resumes.map((resume) => (

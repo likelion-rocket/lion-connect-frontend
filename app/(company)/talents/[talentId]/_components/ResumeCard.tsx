@@ -44,8 +44,11 @@ export type ResumeCardProps = {
 // 섹션 헤더
 function SectionHeader({ id, children }: { id: string; children: React.ReactNode }) {
   return (
-    <div className="py-3 border-t border-border-quaternary">
-      <h4 id={id} className="text-[14px] font-semibold text-[#333]">
+    <div className="py-3 border-b border-border-quaternary">
+      <h4
+        id={id}
+        className="justify-start text-neutral-800 text-lg font-bold font-['Pretendard'] leading-7"
+      >
         {children}
       </h4>
     </div>
@@ -106,11 +109,11 @@ export default function ResumeCard({
       </summary>
 
       {/* 본문 */}
-      <div className="px-6 pb-6 space-y-6 w-[570px] text-[14px] leading-6 text-[#333]">
+      <div className="px-6 pb-6 space-y-6 text-[14px] leading-6 text-[#333]">
         {/* 간단소개 */}
         <section aria-labelledby="resume-summary">
           <SectionHeader id="resume-summary">간단 소개</SectionHeader>
-          <p className="whitespace-pre-wrap">{summary || "간단 소개가 없습니다."}</p>
+          <p className="whitespace-pre-wrap p-4">{summary || "간단 소개가 없습니다."}</p>
         </section>
 
         {/* 학력 (단일) */}
@@ -304,7 +307,7 @@ export default function ResumeCard({
         {skills.length > 0 && (
           <section aria-labelledby="resume-skill">
             <SectionHeader id="resume-skill">스킬</SectionHeader>
-            <div className="pb-12 inline-flex justify-start items-center gap-4 flex-wrap">
+            <div className="p-4 inline-flex justify-start items-center gap-4 flex-wrap">
               {skills.map((skill, i) => (
                 <div
                   key={`${skill}-${i}`}

@@ -6,7 +6,8 @@
  *
  * 주요 역할:
  * 1. formState.dirtyFields 기반으로 변경된 필드만 API 호출
- * 2. API 호출 순서 제어 (프로필 생성 → 나머지 병렬 저장)
+ * 2. API 호출 순서 제어 (파일 업로드 및 세부 정보 병렬 저장 → 프로필 업데이트)
+ *    주의: 백엔드 검증 로직 문제로 인해 임시로 프로필 업데이트를 마지막에 수행
  * 3. 에러 처리 및 성공/실패 응답 반환
  */
 
@@ -98,22 +99,7 @@ export async function submitTalentRegister({
   const updatedValues = JSON.parse(JSON.stringify(values)) as TalentRegisterFormValues;
 
   try {
-    // 1. 프로필 수정 (PUT 요청)
-    const profilePayload = {
-      name: values.profile.name,
-      title: values.profile.title || "",
-      introduction: values.profile.introduction || "",
-      storageUrl: values.portfolio || "", // 포트폴리오 URL
-      likelionCode: values.likelion.code,
-      // 기존 visibility 값 유지 (폼에서 가져온 값 사용)
-      visibility: values.profile.visibility || ("PRIVATE" as const),
-      // 임시 저장: DRAFT, 작성 완료: COMPLETED
-      status: isTempSave ? ("DRAFT" as const) : ("COMPLETED" as const),
-    };
-
-    await updateProfile(profileId, profilePayload);
-
-    // 2. 프로필 사진 업로드
+    // 1. 프로필 사진 업로드
     if (dirtyFields.profile?.avatar && values.profile.avatar instanceof File) {
       const file = values.profile.avatar;
 
@@ -754,6 +740,23 @@ export async function submitTalentRegister({
     if (parallelPromises.length > 0) {
       await Promise.all(parallelPromises);
     }
+
+    // TODO: 개선 요망 - 백엔드 검증 로직 문제로 인해 임시로 프로필 업데이트를 맨 마지막에 수행
+    // 백엔드에서 다른 데이터 검증 시 프로필 상태를 체크하는 문제가 있음
+    // 추후 백엔드 검증 로직 개선 후 병렬처리
+    const profilePayload = {
+      name: values.profile.name,
+      title: values.profile.title || "",
+      introduction: values.profile.introduction || "",
+      storageUrl: values.portfolio || "", // 포트폴리오 URL
+      likelionCode: values.likelion.code,
+      // 기존 visibility 값 유지 (폼에서 가져온 값 사용)
+      visibility: values.profile.visibility || ("PRIVATE" as const),
+      // 임시 저장: DRAFT, 작성 완료: COMPLETED
+      status: isTempSave ? ("DRAFT" as const) : ("COMPLETED" as const),
+    };
+
+    await updateProfile(profileId, profilePayload);
 
     // TODO: 성공 시 리다이렉트 또는 토스트 메시지
     return { success: true, data: updatedValues, isTempSave };

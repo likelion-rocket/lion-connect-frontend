@@ -169,6 +169,7 @@ export interface ProfileRequest {
   storageUrl: string;
   likelionCode?: string;
   visibility: "PUBLIC" | "PRIVATE";
+  status?: "DRAFT" | "COMPLETED";
 }
 
 /**

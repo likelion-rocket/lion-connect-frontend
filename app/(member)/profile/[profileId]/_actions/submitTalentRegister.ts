@@ -105,7 +105,10 @@ export async function submitTalentRegister({
       introduction: values.profile.introduction || "",
       storageUrl: values.portfolio || "", // 포트폴리오 URL
       likelionCode: values.likelion.code,
-      visibility: "PUBLIC" as const,
+      // 기존 visibility 값 유지 (폼에서 가져온 값 사용)
+      visibility: values.profile.visibility || ("PRIVATE" as const),
+      // 임시 저장: DRAFT, 작성 완료: COMPLETED
+      status: isTempSave ? ("DRAFT" as const) : ("COMPLETED" as const),
     };
 
     await updateProfile(profileId, profilePayload);
@@ -169,7 +172,8 @@ export async function submitTalentRegister({
 
     // 직무 카테고리 (PUT)
     // 직무(job role) ID만 전송 (직군은 직무에 포함되어 있으므로 불필요)
-    if (dirtyFields.job?.category || dirtyFields.job?.role) {
+    // 작성 완료 시에는 항상 보내고, 임시 저장 시에는 변경된 경우만 보냄
+    if (!isTempSave || dirtyFields.job?.category || dirtyFields.job?.role) {
       // 직무 ID만 추가
       if (values.job.role) {
         const jobRoleResult = findJobRoleByCode(values.job.role);
@@ -180,18 +184,20 @@ export async function submitTalentRegister({
     }
 
     // 경험 태그 (PUT)
+    // 작성 완료 시에는 항상 보내고, 임시 저장 시에는 변경된 경우만 보냄
     if (
-      dirtyFields.job?.experiences &&
-      values.job.experiences &&
-      values.job.experiences.length > 0
+      !isTempSave ||
+      (dirtyFields.job?.experiences && values.job.experiences && values.job.experiences.length > 0)
     ) {
-      // 문자열 키를 숫자 ID로 변환
-      const expTagIds = values.job.experiences
-        .map((key) => EXP_TAG_ID_MAP[key as ExpTagKey])
-        .filter((id) => id !== undefined);
+      if (values.job.experiences && values.job.experiences.length > 0) {
+        // 문자열 키를 숫자 ID로 변환
+        const expTagIds = values.job.experiences
+          .map((key) => EXP_TAG_ID_MAP[key as ExpTagKey])
+          .filter((id) => id !== undefined);
 
-      if (expTagIds.length > 0) {
-        parallelPromises.push(updateExpTags(profileId, { ids: expTagIds }));
+        if (expTagIds.length > 0) {
+          parallelPromises.push(updateExpTags(profileId, { ids: expTagIds }));
+        }
       }
     }
 

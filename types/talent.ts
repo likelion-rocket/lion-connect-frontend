@@ -267,9 +267,7 @@ export interface ThumbnailPresignResponse {
  */
 export interface ThumbnailUploadCompleteResponse {
   objectKey: string;
-  originalFilename: string;
-  contentType: string;
-  fileSize: number;
+  fileUrl: string;
 }
 
 /**

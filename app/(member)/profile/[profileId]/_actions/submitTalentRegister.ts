@@ -113,21 +113,21 @@ export async function submitTalentRegister({
       // Step 2: S3에 업로드
       await uploadThumbnailToS3(presignResponse.uploadUrl, file);
 
-      // Step 3: 업로드 완료 처리 (백엔드에 알림 + 메타데이터 받아오기)
-      const uploadCompleteResponse = await completeThumbnailUpload(profileId, {
+      // Step 3: 업로드 완료 처리 (백엔드에 알림)
+      await completeThumbnailUpload(profileId, {
         objectKey: presignResponse.objectKey,
         originalFilename: file.name,
         contentType: file.type,
         fileSize: file.size,
       });
 
-      // Step 4: 프로필 링크 저장 (완료 응답의 메타데이터 사용)
+      // Step 4: 프로필 링크 저장 (presignResponse의 메타데이터 사용)
       await upsertThumbnailLink(profileId, {
         type: "THUMBNAIL",
         url: presignResponse.fileUrl,
-        originalFilename: uploadCompleteResponse.originalFilename,
-        contentType: uploadCompleteResponse.contentType,
-        fileSize: uploadCompleteResponse.fileSize,
+        originalFilename: file.name,
+        contentType: file.type,
+        fileSize: file.size,
       });
 
       // 업로드 후 새 파일명 저장

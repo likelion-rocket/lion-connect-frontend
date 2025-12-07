@@ -21,6 +21,27 @@ export type SignupRequestData = {
   phoneNumber: string;
 };
 
+// 멋사 수료자 회원가입 폼 데이터 타입 (UI용)
+export type JoinedUserSignupFormData = {
+  name: string;
+  courseName: string;
+  courseNumber: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+  phoneNumber: string;
+  agreeTerms: boolean;
+};
+
+// 멋사 수료자 회원가입 API 요청 타입
+export type JoinedUserSignupRequestData = {
+  email: string;
+  password: string;
+  phoneNumber: string;
+  courseName: string;
+  courseGeneration: number;
+};
+
 // API 응답 타입
 // 백엔드에서 액세스 토큰은 Authorization 헤더로, 리프레시 토큰은 HttpOnly 쿠키로 전달
 export type LoginResponse = {
@@ -46,6 +67,20 @@ export type SignupResponse = {
     email: string;
     phoneNumber: string;
   };
+};
+
+// 멋사 수료자 회원가입 API 응답 타입
+export type JoinedUserSignupResponse = {
+  id: number;
+  name: string;
+  title: string;
+  introduction: string;
+  storageUrl: string;
+  likelionCode: string;
+  visibility: "PUBLIC" | "PRIVATE";
+  status: "DRAFT" | "COMPLETED";
+  createdAt: string;
+  updatedAt: string;
 };
 
 // 에러 응답 타입

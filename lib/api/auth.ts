@@ -4,6 +4,9 @@ import {
   SignupFormData,
   SignupRequestData,
   SignupResponse,
+  JoinedUserSignupFormData,
+  JoinedUserSignupRequestData,
+  JoinedUserSignupResponse,
 } from "@/types/auth";
 import { post, refreshAccessToken } from "@/lib/apiClient";
 import { API_ENDPOINTS, API_BASE_URL } from "@/constants/api";
@@ -124,4 +127,36 @@ export async function signupAPI(data: SignupFormData): Promise<SignupResponse> {
  */
 export async function recoverTokenAPI(): Promise<string> {
   return refreshAccessToken();
+}
+
+/**
+ * 멋사 수료자 회원가입 API 호출
+ * @param data - 멋사 수료자 회원가입 폼 데이터
+ * @returns 회원가입 응답 (프로필 정보 포함)
+ * @throws ApiError - API 요청 실패 시
+ *
+ * 보안 고려사항:
+ * - confirmPassword와 agreeTerms는 클라이언트 측에서만 사용 (서버로 전송 안 함)
+ * - courseNumber를 courseGeneration(숫자)로 변환하여 전송
+ * - 비밀번호는 서버에서 해싱 처리 필요
+ * - HTTPS 통신 필수 (프로덕션 환경)
+ */
+export async function joinedUserSignupAPI(
+  data: JoinedUserSignupFormData
+): Promise<JoinedUserSignupResponse> {
+  // courseNumber에서 숫자만 추출 (예: "4기" → 4)
+  const courseGeneration = parseInt(data.courseNumber.replace(/\D/g, ""), 10);
+
+  // 서버로 전송할 데이터만 추출
+  const requestData: JoinedUserSignupRequestData = {
+    email: data.email,
+    password: data.password,
+    phoneNumber: data.phoneNumber,
+    courseName: data.courseName,
+    courseGeneration,
+  };
+
+  return post<JoinedUserSignupResponse>(API_ENDPOINTS.AUTH.JOINEDUSER_SIGNUP, requestData, {
+    skipAuth: true,
+  });
 }

@@ -10,8 +10,8 @@ interface CompanySignupStep1Data {
 
 interface PersonalSignupStep1Data {
   name: string;
-  courseName: string;
-  courseNumber: string;
+  courseName?: string;
+  courseNumber?: string;
 }
 
 // 회원가입 스토어 타입

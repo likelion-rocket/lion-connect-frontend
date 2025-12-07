@@ -117,10 +117,10 @@ export default function ResumeCard({
         </section>
 
         {/* 학력 (단일) */}
-        <section aria-labelledby="resume-edu">
-          <SectionHeader id="resume-edu">학력</SectionHeader>
+        {education && (
+          <section aria-labelledby="resume-edu">
+            <SectionHeader id="resume-edu">학력</SectionHeader>
 
-          {education ? (
             <IconCard
               icon="/icons/outline-library.svg"
               alt="education"
@@ -142,28 +142,14 @@ export default function ResumeCard({
                 <p className="text-[13px] text-[#666] leading-5">{education.note}</p>
               )}
             </IconCard>
-          ) : (
-            <IconCard
-              icon="/icons/outline-library.svg"
-              alt="education"
-              className="border-0"
-              title="입력받은 학교명이 뜹니다."
-            />
-          )}
-        </section>
+          </section>
+        )}
 
         {/* 경력 */}
-        <section aria-labelledby="resume-career">
-          <SectionHeader id="resume-career">경력</SectionHeader>
+        {careers.length > 0 && (
+          <section aria-labelledby="resume-career">
+            <SectionHeader id="resume-career">경력</SectionHeader>
 
-          {careers.length === 0 ? (
-            <IconCard
-              icon="/icons/solid-briefcase.svg"
-              alt="career"
-              className="border-0" // ✅ 학력과 동일하게 보더 제거
-              title="입력받은 회사명이 뜹니다."
-            />
-          ) : (
             <div className="space-y-3">
               {careers.map((c, i) => (
                 <IconCard
@@ -182,21 +168,14 @@ export default function ResumeCard({
                 </IconCard>
               ))}
             </div>
-          )}
-        </section>
+          </section>
+        )}
 
         {/* 수상 / 활동 / 기타 */}
-        <section aria-labelledby="resume-award">
-          <SectionHeader id="resume-award">수상 / 활동 / 기타</SectionHeader>
+        {awards.length > 0 && (
+          <section aria-labelledby="resume-award">
+            <SectionHeader id="resume-award">수상 / 활동 / 기타</SectionHeader>
 
-          {awards.length === 0 ? (
-            <IconCard
-              icon="/icons/solid-star.svg"
-              alt="award"
-              className="border-0" // ✅ 보더 제거
-              title="활동명이 뜹니다."
-            />
-          ) : (
             <div className="space-y-3">
               {awards.map((a, i) => (
                 <IconCard
@@ -211,21 +190,14 @@ export default function ResumeCard({
                 </IconCard>
               ))}
             </div>
-          )}
-        </section>
+          </section>
+        )}
 
         {/* 언어 */}
-        <section aria-labelledby="resume-lang">
-          <SectionHeader id="resume-lang">언어</SectionHeader>
+        {languages.length > 0 && (
+          <section aria-labelledby="resume-lang">
+            <SectionHeader id="resume-lang">언어</SectionHeader>
 
-          {languages.length === 0 ? (
-            <IconCard
-              icon="/icons/solid-globe.svg"
-              alt="language"
-              className="border-0" // ✅ 보더 제거
-              title="언어명이 뜹니다."
-            />
-          ) : (
             <div className="space-y-3">
               {languages.map((l, i) => (
                 <IconCard
@@ -238,21 +210,14 @@ export default function ResumeCard({
                 />
               ))}
             </div>
-          )}
-        </section>
+          </section>
+        )}
 
         {/* 자격증 */}
-        <section aria-labelledby="resume-cert">
-          <SectionHeader id="resume-cert">자격증</SectionHeader>
+        {certificates.length > 0 && (
+          <section aria-labelledby="resume-cert">
+            <SectionHeader id="resume-cert">자격증</SectionHeader>
 
-          {certificates.length === 0 ? (
-            <IconCard
-              icon="/icons/outline-star.svg"
-              alt="certificate"
-              className="border-0" // ✅ 보더 제거
-              title="입력받은 자격증명이 뜹니다."
-            />
-          ) : (
             <div className="space-y-3">
               {certificates.map((c, i) => (
                 <IconCard
@@ -265,21 +230,14 @@ export default function ResumeCard({
                 />
               ))}
             </div>
-          )}
-        </section>
+          </section>
+        )}
 
         {/* 링크 */}
-        <section aria-labelledby="resume-link">
-          <SectionHeader id="resume-link">링크</SectionHeader>
+        {links.length > 0 && (
+          <section aria-labelledby="resume-link">
+            <SectionHeader id="resume-link">링크</SectionHeader>
 
-          {links.length === 0 ? (
-            <IconCard
-              icon="/icons/outline-paper-clip.svg"
-              alt="link"
-              className="border-0" // ✅ 보더 제거
-              title="입력받은 링크 주소가 뜹니다."
-            />
-          ) : (
             <div className="space-y-3">
               {links.map((l, i) => (
                 <IconCard
@@ -300,8 +258,8 @@ export default function ResumeCard({
                 />
               ))}
             </div>
-          )}
-        </section>
+          </section>
+        )}
 
         {/* 스킬 */}
         {skills.length > 0 && (

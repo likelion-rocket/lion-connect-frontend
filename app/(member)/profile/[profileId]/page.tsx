@@ -371,7 +371,7 @@ export default function TalentRegisterPage({ params }: { params: Promise<{ profi
             </div>
 
             {/* 링크 섹션 */}
-            <LinksSection />
+            <LinksSection profileId={profileId} />
 
             {/* 포트폴리오 섹션 */}
             <PortfolioSection />

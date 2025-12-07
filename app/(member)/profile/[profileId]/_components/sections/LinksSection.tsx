@@ -16,10 +16,14 @@ import Image from "next/image";
 import { useFormContext, useFieldArray, useWatch } from "react-hook-form";
 import type { TalentRegisterFormValues } from "@/schemas/talent/talentRegisterSchema";
 import { FormContainer } from "@/components/form/FormContainer";
-import { deleteMyProfileLink } from "@/lib/api/profileThumbnail";
+import { deleteProfileLinkByType } from "@/lib/api/profileThumbnail";
 import AddButton from "../AddButton";
 
-export default function LinksSection() {
+interface LinksSectionProps {
+  profileId: number;
+}
+
+export default function LinksSection({ profileId }: LinksSectionProps) {
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const { control, getValues } = useFormContext<TalentRegisterFormValues>();
 
@@ -35,7 +39,7 @@ export default function LinksSection() {
   const handleDeleteLink = async (index: number, linkType?: string) => {
     try {
       if (linkType) {
-        await deleteMyProfileLink(linkType);
+        await deleteProfileLinkByType(profileId, linkType);
       }
       remove(index);
       setDeleteError(null);

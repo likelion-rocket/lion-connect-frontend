@@ -5,25 +5,50 @@ import type {
   ProfileResponse,
   ThumbnailPresignRequest,
   ThumbnailPresignResponse,
+  ThumbnailUploadCompleteResponse,
   ProfileLink,
   ProfileLinkUpsertRequest,
 } from "@/types/talent";
 
 /**
- * ✅ 썸네일 업로드용 presign URL 발급 (POST /api/profile/me/thumbnail/presign)
- * - accessToken으로 사용자 구별 (profileId 불필요)
+ * ✅ Step 1: 썸네일 업로드용 presign URL 발급 (POST /api/profile/{profileId}/thumbnail/presign)
  */
-export function presignThumbnail(body: ThumbnailPresignRequest): Promise<ThumbnailPresignResponse> {
-  return post<ThumbnailPresignResponse>(API_ENDPOINTS.PROFILE_THUMBNAIL.PRESIGN, body, {
+export function presignThumbnail(
+  profileId: number | string,
+  body: ThumbnailPresignRequest
+): Promise<ThumbnailPresignResponse> {
+  return post<ThumbnailPresignResponse>(API_ENDPOINTS.PROFILE_THUMBNAIL.PRESIGN(profileId), body, {
     credentials: "include",
   });
 }
 
 /**
- * ✅ 프로필 링크 목록 조회 (GET /api/profile/me/links?profileId={profileId})
+ * ✅ Step 2: 썸네일 업로드 완료 처리 (POST /api/profile/{profileId}/thumbnail)
+ * S3 업로드 완료 후 백엔드에 알려서 프로필 링크 저장을 위한 메타데이터를 받아옴
+ */
+export function completeThumbnailUpload(
+  profileId: number | string,
+  body: {
+    objectKey: string;
+    originalFilename: string;
+    contentType: string;
+    fileSize: number;
+  }
+): Promise<ThumbnailUploadCompleteResponse> {
+  return post<ThumbnailUploadCompleteResponse>(
+    API_ENDPOINTS.PROFILE_THUMBNAIL.UPLOAD_COMPLETE(profileId),
+    body,
+    {
+      credentials: "include",
+    }
+  );
+}
+
+/**
+ * ✅ 프로필 링크 목록 조회 (GET /api/profile/{profileId}/links)
  */
 export function fetchProfileLinks(profileId: string | number): Promise<ProfileLink[]> {
-  return get<ProfileLink[]>(`${API_ENDPOINTS.PROFILE_LINKS.LIST}?profileId=${profileId}`, {
+  return get<ProfileLink[]>(API_ENDPOINTS.PROFILE_LINKS.LIST(profileId), {
     credentials: "include",
   });
 }
@@ -41,7 +66,7 @@ export function upsertProfileLink(
   body: ProfileLinkUpsertRequest,
   method: "PUT" | "POST" = "PUT"
 ): Promise<ProfileResponse> {
-  const endpoint = `${API_ENDPOINTS.PROFILE_LINKS.UPSERT(type)}?profileId=${profileId}`;
+  const endpoint = API_ENDPOINTS.PROFILE_LINKS.UPSERT(profileId, type);
 
   // API spec: 배열 형식으로 전송
   const payload = [
@@ -59,10 +84,10 @@ export function upsertProfileLink(
 }
 
 /**
- * ✅ 任意 type 에 대한 프로필 링크 삭제 (DELETE /api/profile/me/links/{type}?profileId={profileId})
+ * ✅ 任意 type 에 대한 프로필 링크 삭제 (DELETE /api/profile/{profileId}/links/{type})
  */
 export function deleteProfileLinkByType(profileId: string | number, type: string): Promise<void> {
-  const endpoint = `${API_ENDPOINTS.PROFILE_LINKS.DELETE(type)}?profileId=${profileId}`;
+  const endpoint = API_ENDPOINTS.PROFILE_LINKS.DELETE(profileId, type);
   return del<void>(endpoint, {
     credentials: "include",
   });
@@ -85,7 +110,7 @@ export function upsertThumbnailLink(
     fileSize: number;
   }
 ): Promise<ProfileResponse> {
-  const endpoint = `${API_ENDPOINTS.PROFILE_LINKS.UPSERT("THUMBNAIL")}?profileId=${profileId}`;
+  const endpoint = API_ENDPOINTS.PROFILE_LINKS.UPSERT(profileId, "THUMBNAIL");
 
   // API spec: 배열 형식으로 전송
   const payload = [
@@ -103,7 +128,7 @@ export function upsertThumbnailLink(
 }
 
 /**
- * ✅ 썸네일 링크 삭제 (DELETE /api/profile/me/links/THUMBNAIL?profileId={profileId})
+ * ✅ 썸네일 링크 삭제 (DELETE /api/profile/{profileId}/links/THUMBNAIL)
  */
 export function deleteThumbnailLink(profileId: string | number): Promise<void> {
   return deleteProfileLinkByType(profileId, "THUMBNAIL");

@@ -28,6 +28,7 @@ import { EXP_TAG_ID_MAP, type ExpTagKey } from "@/lib/expTags/map";
 import { findJobRoleByCode } from "@/constants/jobMapping";
 import {
   presignThumbnail,
+  completeThumbnailUpload,
   uploadThumbnailToS3,
   upsertThumbnailLink,
   upsertProfileLink,
@@ -99,26 +100,34 @@ export async function submitTalentRegister({
   const updatedValues = JSON.parse(JSON.stringify(values)) as TalentRegisterFormValues;
 
   try {
-    // 1. 프로필 사진 업로드
+    // 1. 프로필 사진 업로드 (3단계 프로세스)
     if (dirtyFields.profile?.avatar && values.profile.avatar instanceof File) {
       const file = values.profile.avatar;
 
-      // Presign URL 발급 (accessToken으로 사용자 식별)
-      const presignResponse = await presignThumbnail({
+      // Step 1: Presign URL 발급
+      const presignResponse = await presignThumbnail(profileId, {
         originalFilename: file.name,
         contentType: file.type,
       });
 
-      // S3에 업로드
+      // Step 2: S3에 업로드
       await uploadThumbnailToS3(presignResponse.uploadUrl, file);
 
-      // 프로필 링크 저장
-      await upsertThumbnailLink(profileId, {
-        type: "THUMBNAIL",
-        url: presignResponse.fileUrl,
+      // Step 3: 업로드 완료 처리 (백엔드에 알림 + 메타데이터 받아오기)
+      const uploadCompleteResponse = await completeThumbnailUpload(profileId, {
+        objectKey: presignResponse.objectKey,
         originalFilename: file.name,
         contentType: file.type,
         fileSize: file.size,
+      });
+
+      // Step 4: 프로필 링크 저장 (완료 응답의 메타데이터 사용)
+      await upsertThumbnailLink(profileId, {
+        type: "THUMBNAIL",
+        url: presignResponse.fileUrl,
+        originalFilename: uploadCompleteResponse.originalFilename,
+        contentType: uploadCompleteResponse.contentType,
+        fileSize: uploadCompleteResponse.fileSize,
       });
 
       // 업로드 후 새 파일명 저장

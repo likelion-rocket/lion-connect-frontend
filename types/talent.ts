@@ -259,6 +259,17 @@ export interface ThumbnailPresignRequest {
 export interface ThumbnailPresignResponse {
   uploadUrl: string;
   fileUrl: string;
+  objectKey: string;
+}
+
+/**
+ * 썸네일 업로드 완료 응답 타입 (Step 2)
+ */
+export interface ThumbnailUploadCompleteResponse {
+  objectKey: string;
+  originalFilename: string;
+  contentType: string;
+  fileSize: number;
 }
 
 /**

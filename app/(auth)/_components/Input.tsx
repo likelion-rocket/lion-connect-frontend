@@ -23,13 +23,13 @@ export type InputProps = InputHTMLAttributes<HTMLInputElement> & {
 
 function Input({ className, wrapperClassName, error, type = "text", ref, ...props }: InputProps) {
   return (
-    <div className={wrapperClassName}>
+    <div className={`w-full ${wrapperClassName || ""}`}>
       <input
         ref={ref}
         type={type}
         className={`
           lc-input
-          w-full px-4 py-3 rounded-[12px]
+          w-full px-4 py-3 rounded-xl
           border border-border-quaternary
           ${error ? "border-border-error!" : ""}
           placeholder-text-tertiary

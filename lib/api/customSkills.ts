@@ -25,23 +25,3 @@ export function updateCustomSkills(profileId: string | number, body: CustomSkill
     }
   );
 }
-
-// ==================== 하위 호환성을 위한 기존 함수 유지 ====================
-
-/**
- * ⚠️ Deprecated: 하위 호환성을 위해 유지
- */
-export function fetchMyCustomSkills() {
-  return get<CustomSkillResponse[]>(API_ENDPOINTS.CUSTOM_SKILLS.GET, {
-    credentials: "include",
-  });
-}
-
-/**
- * ⚠️ Deprecated: 하위 호환성을 위해 유지
- */
-export function updateMyCustomSkills(body: CustomSkillUpdateRequest) {
-  return put<CustomSkillResponse[]>(API_ENDPOINTS.CUSTOM_SKILLS.UPDATE, body, {
-    credentials: "include",
-  });
-}

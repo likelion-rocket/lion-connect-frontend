@@ -82,6 +82,7 @@ export function mapApiDataToFormValues(
       phone: user?.phoneNumber || "",
       email: user?.email || "",
       introduction: data.profile?.introduction || "",
+      visibility: data.profile?.visibility || "PRIVATE",
     },
 
     // 직무 카테고리 & 경험 태그

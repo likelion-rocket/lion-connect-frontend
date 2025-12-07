@@ -13,8 +13,11 @@ export type ResumePresignResponse = {
 };
 
 /** 이력서(PDF) S3 presigned URL 발급 */
-export function presignResume(body: ResumePresignRequest): Promise<ResumePresignResponse> {
-  return post<ResumePresignResponse>(API_ENDPOINTS.PROFILE_RESUME.PRESIGN, body, {
+export function presignResume(
+  profileId: number | string,
+  body: ResumePresignRequest
+): Promise<ResumePresignResponse> {
+  return post<ResumePresignResponse>(API_ENDPOINTS.PROFILE_RESUME.PRESIGN(profileId), body, {
     credentials: "include",
   });
 }

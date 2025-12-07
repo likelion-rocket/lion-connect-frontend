@@ -6,7 +6,8 @@
  *
  * 주요 역할:
  * 1. formState.dirtyFields 기반으로 변경된 필드만 API 호출
- * 2. API 호출 순서 제어 (프로필 생성 → 나머지 병렬 저장)
+ * 2. API 호출 순서 제어 (파일 업로드 및 세부 정보 병렬 저장 → 프로필 업데이트)
+ *    주의: 백엔드 검증 로직 문제로 인해 임시로 프로필 업데이트를 마지막에 수행
  * 3. 에러 처리 및 성공/실패 응답 반환
  */
 
@@ -27,11 +28,12 @@ import { EXP_TAG_ID_MAP, type ExpTagKey } from "@/lib/expTags/map";
 import { findJobRoleByCode } from "@/constants/jobMapping";
 import {
   presignThumbnail,
+  completeThumbnailUpload,
   uploadThumbnailToS3,
   upsertThumbnailLink,
   upsertProfileLink,
 } from "@/lib/api/profileThumbnail";
-import { presignPortfolio, uploadPortfolioToS3 } from "@/lib/api/profilePortfolio";
+import { presignPortfolio, completePortfolioUpload, uploadPortfolioToS3 } from "@/lib/api/profilePortfolio";
 import { submitWorkDrivenTest } from "@/lib/api/workDriven";
 
 interface SubmitTalentRegisterParams {
@@ -98,32 +100,28 @@ export async function submitTalentRegister({
   const updatedValues = JSON.parse(JSON.stringify(values)) as TalentRegisterFormValues;
 
   try {
-    // 1. 프로필 수정 (PUT 요청)
-    const profilePayload = {
-      name: values.profile.name,
-      title: values.profile.title || "",
-      introduction: values.profile.introduction || "",
-      storageUrl: values.portfolio || "", // 포트폴리오 URL
-      likelionCode: values.likelion.code,
-      visibility: "PUBLIC" as const,
-    };
-
-    await updateProfile(profileId, profilePayload);
-
-    // 2. 프로필 사진 업로드
+    // 1. 프로필 사진 업로드 (3단계 프로세스)
     if (dirtyFields.profile?.avatar && values.profile.avatar instanceof File) {
       const file = values.profile.avatar;
 
-      // Presign URL 발급 (accessToken으로 사용자 식별)
-      const presignResponse = await presignThumbnail({
+      // Step 1: Presign URL 발급
+      const presignResponse = await presignThumbnail(profileId, {
         originalFilename: file.name,
         contentType: file.type,
       });
 
-      // S3에 업로드
+      // Step 2: S3에 업로드
       await uploadThumbnailToS3(presignResponse.uploadUrl, file);
 
-      // 프로필 링크 저장
+      // Step 3: 업로드 완료 처리 (백엔드에 알림)
+      await completeThumbnailUpload(profileId, {
+        objectKey: presignResponse.objectKey,
+        originalFilename: file.name,
+        contentType: file.type,
+        fileSize: file.size,
+      });
+
+      // Step 4: 프로필 링크 저장 (presignResponse의 메타데이터 사용)
       await upsertThumbnailLink(profileId, {
         type: "THUMBNAIL",
         url: presignResponse.fileUrl,
@@ -136,29 +134,37 @@ export async function submitTalentRegister({
       updatedValues.profile.avatar = file.name;
     }
 
-    // 3. 포트폴리오 PDF 업로드
+    // 3. 포트폴리오 PDF 업로드 (3단계 프로세스)
     if (dirtyFields.portfolioFile && values.portfolioFile instanceof File) {
       const file = values.portfolioFile;
 
-      // Presign URL 발급 (accessToken으로 사용자 식별)
-      const presignResponse = await presignPortfolio({
+      // Step 1: Presign URL 발급
+      const presignResponse = await presignPortfolio(profileId, {
         originalFilename: file.name,
         contentType: file.type,
       });
 
-      // S3에 업로드
+      // Step 2: S3에 업로드
       await uploadPortfolioToS3(presignResponse.uploadUrl, file);
 
-      // 프로필 링크 저장
+      // Step 3: 업로드 완료 처리 (백엔드에 알림 + 메타데이터 받아오기)
+      const uploadCompleteResponse = await completePortfolioUpload(profileId, {
+        objectKey: presignResponse.objectKey,
+        originalFilename: file.name,
+        contentType: file.type,
+        fileSize: file.size,
+      });
+
+      // Step 4: 프로필 링크 저장 (완료 응답의 메타데이터 사용)
       await upsertProfileLink(
         profileId,
         "PORTFOLIO",
         {
           type: "PORTFOLIO",
-          url: presignResponse.fileUrl,
-          originalFilename: file.name,
-          contentType: file.type,
-          fileSize: file.size,
+          url: uploadCompleteResponse.fileUrl,
+          originalFilename: uploadCompleteResponse.originalFilename,
+          contentType: uploadCompleteResponse.contentType,
+          fileSize: uploadCompleteResponse.fileSize,
         },
         "PUT"
       );
@@ -169,7 +175,8 @@ export async function submitTalentRegister({
 
     // 직무 카테고리 (PUT)
     // 직무(job role) ID만 전송 (직군은 직무에 포함되어 있으므로 불필요)
-    if (dirtyFields.job?.category || dirtyFields.job?.role) {
+    // 작성 완료 시에는 항상 보내고, 임시 저장 시에는 변경된 경우만 보냄
+    if (!isTempSave || dirtyFields.job?.category || dirtyFields.job?.role) {
       // 직무 ID만 추가
       if (values.job.role) {
         const jobRoleResult = findJobRoleByCode(values.job.role);
@@ -180,18 +187,20 @@ export async function submitTalentRegister({
     }
 
     // 경험 태그 (PUT)
+    // 작성 완료 시에는 항상 보내고, 임시 저장 시에는 변경된 경우만 보냄
     if (
-      dirtyFields.job?.experiences &&
-      values.job.experiences &&
-      values.job.experiences.length > 0
+      !isTempSave ||
+      (dirtyFields.job?.experiences && values.job.experiences && values.job.experiences.length > 0)
     ) {
-      // 문자열 키를 숫자 ID로 변환
-      const expTagIds = values.job.experiences
-        .map((key) => EXP_TAG_ID_MAP[key as ExpTagKey])
-        .filter((id) => id !== undefined);
+      if (values.job.experiences && values.job.experiences.length > 0) {
+        // 문자열 키를 숫자 ID로 변환
+        const expTagIds = values.job.experiences
+          .map((key) => EXP_TAG_ID_MAP[key as ExpTagKey])
+          .filter((id) => id !== undefined);
 
-      if (expTagIds.length > 0) {
-        parallelPromises.push(updateExpTags(profileId, { ids: expTagIds }));
+        if (expTagIds.length > 0) {
+          parallelPromises.push(updateExpTags(profileId, { ids: expTagIds }));
+        }
       }
     }
 
@@ -748,6 +757,23 @@ export async function submitTalentRegister({
     if (parallelPromises.length > 0) {
       await Promise.all(parallelPromises);
     }
+
+    // TODO: 개선 요망 - 백엔드 검증 로직 문제로 인해 임시로 프로필 업데이트를 맨 마지막에 수행
+    // 백엔드에서 다른 데이터 검증 시 프로필 상태를 체크하는 문제가 있음
+    // 추후 백엔드 검증 로직 개선 후 병렬처리
+    const profilePayload = {
+      name: values.profile.name,
+      title: values.profile.title || "",
+      introduction: values.profile.introduction || "",
+      storageUrl: values.portfolio || "", // 포트폴리오 URL
+      likelionCode: values.likelion.code,
+      // 기존 visibility 값 유지 (폼에서 가져온 값 사용)
+      visibility: values.profile.visibility || ("PRIVATE" as const),
+      // 임시 저장: DRAFT, 작성 완료: COMPLETED
+      status: isTempSave ? ("DRAFT" as const) : ("COMPLETED" as const),
+    };
+
+    await updateProfile(profileId, profilePayload);
 
     // TODO: 성공 시 리다이렉트 또는 토스트 메시지
     return { success: true, data: updatedValues, isTempSave };

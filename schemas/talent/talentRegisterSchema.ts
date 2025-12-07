@@ -13,6 +13,7 @@ export const talentRegisterSchema = z.object({
     phone: z.string().min(1, "전화번호는 필수입니다.").optional(),
     email: z.string().email("이메일 형식이 올바르지 않습니다.").optional(),
     introduction: z.string().min(1, "간단 소개는 필수입니다."),
+    visibility: z.enum(["PUBLIC", "PRIVATE"]).optional(),
   }),
   job: z.object({
     category: z.string().min(1, "직군을 선택해 주세요."),
@@ -93,7 +94,7 @@ export const talentRegisterSchema = z.object({
   links: z
     .array(
       z.object({
-        type: z.string(), // 링크 타입 (LINK, LINK2, LINK3, ...) - DELETE/PUT API에 필요
+        type: z.string().optional(), // 링크 타입 (LINK, LINK2, LINK3, ...) - DELETE/PUT API에 필요
         url: z.string().url().optional().or(z.literal("")),
         originalFilename: z.string().optional(), // 파일명 (PUT 요청 시 필요)
         contentType: z.string().optional(), // MIME 타입 (PUT 요청 시 필요)
@@ -142,6 +143,7 @@ export const defaultTalentRegisterValues: TalentRegisterFormValues = {
     phone: "",
     email: "",
     introduction: "",
+    visibility: "PRIVATE",
   },
   job: {
     category: "",

@@ -14,6 +14,7 @@ export const API_ENDPOINTS = {
   AUTH: {
     LOGIN: "/auth/login",
     SIGNUP: "/users/signup",
+    JOINEDUSER_SIGNUP: "/users/joineduser-signup",
     LOGOUT: "/auth/logout",
     REFRESH_TOKEN: "/auth/refresh",
   },
@@ -94,18 +95,20 @@ export const API_ENDPOINTS = {
   },
   // ✅ 프로필 링크(썸네일 포함)
   PROFILE_LINKS: {
-    LIST: "/profile/me/links", // GET
-    UPSERT: (type: string) => `/profile/me/links/${type}`, // POST/PUT
-    DELETE: (type: string) => `/profile/me/links/${type}`, // DELETE
+    LIST: (profileId: number | string) => `/profile/${profileId}/links`, // GET
+    UPSERT: (profileId: number | string, type: string) => `/profile/${profileId}/links/${type}`, // POST/PUT
+    DELETE: (profileId: number | string, type: string) => `/profile/${profileId}/links/${type}`, // DELETE
   },
 
   // ✅ 프로필 썸네일 presign
   PROFILE_THUMBNAIL: {
-    PRESIGN: "/profile/me/thumbnail/presign", // POST
+    PRESIGN: (profileId: number | string) => `/profile/${profileId}/thumbnail/presign`, // POST
+    UPLOAD_COMPLETE: (profileId: number | string) => `/profile/${profileId}/thumbnail`, // POST
   },
   //프로필 PDF presign
   PROFILE_RESUME: {
-    PRESIGN: "/profile/me/resume/presign",
+    PRESIGN: (profileId: number | string) => `/profile/${profileId}/portfolio/presign`, // POST
+    UPLOAD_COMPLETE: (profileId: number | string) => `/profile/${profileId}/portfolio`, // POST
   },
   // 공개 인재 검색
   TALENTS: {

@@ -169,6 +169,7 @@ export interface ProfileRequest {
   storageUrl: string;
   likelionCode?: string;
   visibility: "PUBLIC" | "PRIVATE";
+  status?: "DRAFT" | "COMPLETED";
 }
 
 /**
@@ -258,6 +259,45 @@ export interface ThumbnailPresignRequest {
 export interface ThumbnailPresignResponse {
   uploadUrl: string;
   fileUrl: string;
+  objectKey: string;
+}
+
+/**
+ * 썸네일 업로드 완료 응답 타입 (Step 2)
+ */
+export interface ThumbnailUploadCompleteResponse {
+  objectKey: string;
+  fileUrl: string;
+}
+
+/**
+ * 포트폴리오 presign 요청 타입
+ */
+export interface PortfolioPresignRequest {
+  originalFilename: string;
+  contentType: string;
+}
+
+/**
+ * 포트폴리오 presign 응답 타입
+ */
+export interface PortfolioPresignResponse {
+  uploadUrl: string;
+  fileUrl: string;
+  objectKey: string;
+}
+
+/**
+ * 포트폴리오 업로드 완료 응답 타입 (Step 2)
+ */
+export interface PortfolioUploadCompleteResponse {
+  id: number;
+  objectKey: string;
+  fileUrl: string;
+  originalFilename: string;
+  contentType: string;
+  fileSize: number;
+  createdAt: string;
 }
 
 /**

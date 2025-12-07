@@ -1,25 +1,44 @@
 // lib/api/profilePortfolio.ts
 import { post } from "@/lib/apiClient";
 import { API_ENDPOINTS } from "@/constants/api";
-
-export type PortfolioPresignRequest = {
-  originalFilename: string;
-  contentType: string;
-};
-
-export type PortfolioPresignResponse = {
-  uploadUrl: string;
-  fileUrl: string;
-};
+import type {
+  PortfolioPresignRequest,
+  PortfolioPresignResponse,
+  PortfolioUploadCompleteResponse,
+} from "@/types/talent";
 
 /**
- * ✅ 포트폴리오(PDF) S3 presigned URL 발급 (POST /api/profile/me/resume/presign)
- * - accessToken으로 사용자 구별 (profileId 불필요)
+ * ✅ Step 1: 포트폴리오(PDF) presigned URL 발급 (POST /api/profile/{profileId}/portfolio/presign)
  */
-export function presignPortfolio(body: PortfolioPresignRequest): Promise<PortfolioPresignResponse> {
-  return post<PortfolioPresignResponse>(API_ENDPOINTS.PROFILE_RESUME.PRESIGN, body, {
+export function presignPortfolio(
+  profileId: number | string,
+  body: PortfolioPresignRequest
+): Promise<PortfolioPresignResponse> {
+  return post<PortfolioPresignResponse>(API_ENDPOINTS.PROFILE_RESUME.PRESIGN(profileId), body, {
     credentials: "include",
   });
+}
+
+/**
+ * ✅ Step 2: 포트폴리오 업로드 완료 처리 (POST /api/profile/{profileId}/portfolio)
+ * S3 업로드 완료 후 백엔드에 알려서 프로필 링크 저장을 위한 메타데이터를 받아옴
+ */
+export function completePortfolioUpload(
+  profileId: number | string,
+  body: {
+    objectKey: string;
+    originalFilename: string;
+    contentType: string;
+    fileSize: number;
+  }
+): Promise<PortfolioUploadCompleteResponse> {
+  return post<PortfolioUploadCompleteResponse>(
+    API_ENDPOINTS.PROFILE_RESUME.UPLOAD_COMPLETE(profileId),
+    body,
+    {
+      credentials: "include",
+    }
+  );
 }
 
 /**

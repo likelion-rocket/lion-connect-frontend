@@ -14,6 +14,7 @@ export const API_ENDPOINTS = {
   AUTH: {
     LOGIN: "/auth/login",
     SIGNUP: "/users/signup",
+    JOINEDUSER_SIGNUP: "/users/joineduser-signup",
     LOGOUT: "/auth/logout",
     REFRESH_TOKEN: "/auth/refresh",
   },

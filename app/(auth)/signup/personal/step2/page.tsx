@@ -6,6 +6,9 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import Input from "@/app/(auth)/_components/Input";
 import { z } from "zod";
+import { useSignupStore } from "@/store/signupStore";
+import { useJoinedUserSignup } from "@/hooks/auth/useJoinedUserSignup";
+import { useSignup } from "@/hooks/auth/useSignup";
 
 // Step 2 schema: 추가 정보
 const personalStep2Schema = z
@@ -29,6 +32,9 @@ type PersonalStep2Type = z.infer<typeof personalStep2Schema>;
 
 export default function PersonalSignupStep2Page() {
   const router = useRouter();
+  const { personalStep1, clearPersonalStep1 } = useSignupStore();
+  const joinedUserSignup = useJoinedUserSignup();
+  const normalSignup = useSignup();
 
   const {
     register,
@@ -46,38 +52,43 @@ export default function PersonalSignupStep2Page() {
     },
   });
 
-  // Step 1 데이터가 없으면 Step 1로 리다이렉트
+  // 회원가입 성공 시 처리
   useEffect(() => {
-    const step1Data = sessionStorage.getItem("personalSignupStep1");
-    if (!step1Data) {
-      router.push("/signup/personal/step1");
+    if (joinedUserSignup.isSuccess || normalSignup.isSuccess) {
+      // Step 1 데이터 삭제
+      clearPersonalStep1();
+      // 완료 페이지로 이동
+      router.push("/signup/complete");
     }
-  }, [router]);
+  }, [joinedUserSignup.isSuccess, normalSignup.isSuccess, clearPersonalStep1, router]);
 
-  const onSubmit = async (data: PersonalStep2Type) => {
-    // Step 1 데이터 가져오기
-    const step1Data = sessionStorage.getItem("personalSignupStep1");
-    if (!step1Data) {
-      router.push("/signup/personal/step1");
-      return;
+  const onSubmit = (data: PersonalStep2Type) => {
+    // Step 1에 courseName과 courseNumber가 모두 있으면 멋사 수료자 회원가입
+    if (personalStep1?.courseName && personalStep1?.courseNumber) {
+      const joinedUserData = {
+        name: personalStep1.name,
+        courseName: personalStep1.courseName,
+        courseNumber: personalStep1.courseNumber,
+        email: data.email,
+        password: data.password,
+        confirmPassword: data.passwordConfirm,
+        phoneNumber: data.phoneNumber,
+        agreeTerms: data.agreeTerms,
+      };
+
+      joinedUserSignup.signup(joinedUserData);
+    } else {
+      // 일반 회원가입
+      const normalSignupData = {
+        email: data.email,
+        password: data.password,
+        confirmPassword: data.passwordConfirm,
+        phoneNumber: data.phoneNumber,
+        agreeTerms: data.agreeTerms,
+      };
+
+      normalSignup.signup(normalSignupData);
     }
-
-    const step1 = JSON.parse(step1Data);
-    const completeData = {
-      ...step1,
-      ...data,
-    };
-
-    console.log("Complete signup data:", completeData);
-
-    // TODO: API 호출로 회원가입 처리
-    // await signupMutation.mutateAsync(completeData);
-
-    // 임시 데이터 삭제
-    sessionStorage.removeItem("personalSignupStep1");
-
-    // 완료 페이지로 이동
-    router.push("/signup/complete");
   };
 
   return (
@@ -114,11 +125,11 @@ export default function PersonalSignupStep2Page() {
                 error={!!errors.email}
                 {...register("email")}
               />
-              {errors.email && (
-                <p className="text-sm text-text-error">{errors.email.message}</p>
-              )}
+              {errors.email && <p className="text-sm text-text-error">{errors.email.message}</p>}
               {!errors.email && (
-                <p className="text-sm text-bg-accent">*기업에게 스카우트 받을 이메일을 입력해주세요.</p>
+                <p className="text-sm text-bg-accent">
+                  *기업에게 스카우트 받을 이메일을 입력해주세요.
+                </p>
               )}
             </div>
 
@@ -181,7 +192,9 @@ export default function PersonalSignupStep2Page() {
                 <p className="text-sm text-text-error">{errors.phoneNumber.message}</p>
               )}
               {!errors.phoneNumber && (
-                <p className="text-sm text-bg-accent">*기업에게 스카우트 받을 전화번호를 입력해주세요.</p>
+                <p className="text-sm text-bg-accent">
+                  *기업에게 스카우트 받을 전화번호를 입력해주세요.
+                </p>
               )}
             </div>
 
@@ -198,7 +211,9 @@ export default function PersonalSignupStep2Page() {
                 회원가입에 동의합니다.
               </span>
             </div>
-            {errors.agreeTerms && <p className="text-sm text-text-error">{errors.agreeTerms.message}</p>}
+            {errors.agreeTerms && (
+              <p className="text-sm text-text-error">{errors.agreeTerms.message}</p>
+            )}
           </div>
 
           {/* 버튼 그룹 */}

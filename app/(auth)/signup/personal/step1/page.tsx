@@ -5,23 +5,27 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import Input from "@/app/(auth)/_components/Input";
 import { z } from "zod";
+import { useSignupStore } from "@/store/signupStore";
+import { useEffect } from "react";
 
 // Step 1 schema: 기본 정보
 const personalStep1Schema = z.object({
   name: z.string().min(1, "이름을 입력해주세요."),
-  courseName: z.string().min(1, "수료 과정명을 입력해주세요."),
-  courseNumber: z.string().min(1, "수료 기수를 입력해주세요."),
+  courseName: z.string().optional(),
+  courseNumber: z.string().optional(),
 });
 
 type PersonalStep1Type = z.infer<typeof personalStep1Schema>;
 
 export default function PersonalSignupStep1Page() {
   const router = useRouter();
+  const { personalStep1, setPersonalStep1 } = useSignupStore();
 
   const {
     register,
     handleSubmit,
     formState: { errors, isValid },
+    reset,
   } = useForm<PersonalStep1Type>({
     resolver: zodResolver(personalStep1Schema),
     mode: "onChange",
@@ -32,9 +36,16 @@ export default function PersonalSignupStep1Page() {
     },
   });
 
+  // 저장된 데이터가 있으면 폼에 복원
+  useEffect(() => {
+    if (personalStep1) {
+      reset(personalStep1);
+    }
+  }, [personalStep1, reset]);
+
   const onSubmit = (data: PersonalStep1Type) => {
-    // 데이터를 세션 스토리지에 임시 저장
-    sessionStorage.setItem("personalSignupStep1", JSON.stringify(data));
+    // Zustand 스토어에 저장 (localStorage에 자동 persist)
+    setPersonalStep1(data);
     // Step 2로 이동
     router.push("/signup/personal/step2");
   };
@@ -111,7 +122,7 @@ export default function PersonalSignupStep1Page() {
               <Input
                 id="courseNumber"
                 type="text"
-                placeholder="수료 기수를 입력해주세요. (ex. 4기)"
+                placeholder="수료 기수를 입력해주세요. (ex. 4)"
                 error={!!errors.courseNumber}
                 {...register("courseNumber")}
               />

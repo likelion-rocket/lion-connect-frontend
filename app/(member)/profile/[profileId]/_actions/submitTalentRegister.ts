@@ -33,7 +33,7 @@ import {
   upsertThumbnailLink,
   upsertProfileLink,
 } from "@/lib/api/profileThumbnail";
-import { presignPortfolio, uploadPortfolioToS3 } from "@/lib/api/profilePortfolio";
+import { presignPortfolio, completePortfolioUpload, uploadPortfolioToS3 } from "@/lib/api/profilePortfolio";
 import { submitWorkDrivenTest } from "@/lib/api/workDriven";
 
 interface SubmitTalentRegisterParams {
@@ -134,29 +134,37 @@ export async function submitTalentRegister({
       updatedValues.profile.avatar = file.name;
     }
 
-    // 3. 포트폴리오 PDF 업로드
+    // 3. 포트폴리오 PDF 업로드 (3단계 프로세스)
     if (dirtyFields.portfolioFile && values.portfolioFile instanceof File) {
       const file = values.portfolioFile;
 
-      // Presign URL 발급 (accessToken으로 사용자 식별)
-      const presignResponse = await presignPortfolio({
+      // Step 1: Presign URL 발급
+      const presignResponse = await presignPortfolio(profileId, {
         originalFilename: file.name,
         contentType: file.type,
       });
 
-      // S3에 업로드
+      // Step 2: S3에 업로드
       await uploadPortfolioToS3(presignResponse.uploadUrl, file);
 
-      // 프로필 링크 저장
+      // Step 3: 업로드 완료 처리 (백엔드에 알림 + 메타데이터 받아오기)
+      const uploadCompleteResponse = await completePortfolioUpload(profileId, {
+        objectKey: presignResponse.objectKey,
+        originalFilename: file.name,
+        contentType: file.type,
+        fileSize: file.size,
+      });
+
+      // Step 4: 프로필 링크 저장 (완료 응답의 메타데이터 사용)
       await upsertProfileLink(
         profileId,
         "PORTFOLIO",
         {
           type: "PORTFOLIO",
-          url: presignResponse.fileUrl,
-          originalFilename: file.name,
-          contentType: file.type,
-          fileSize: file.size,
+          url: uploadCompleteResponse.fileUrl,
+          originalFilename: uploadCompleteResponse.originalFilename,
+          contentType: uploadCompleteResponse.contentType,
+          fileSize: uploadCompleteResponse.fileSize,
         },
         "PUT"
       );

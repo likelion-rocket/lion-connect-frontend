@@ -106,7 +106,8 @@ export const API_ENDPOINTS = {
   },
   //프로필 PDF presign
   PROFILE_RESUME: {
-    PRESIGN: "/profile/me/resume/presign",
+    PRESIGN: (profileId: number | string) => `/profile/${profileId}/portfolio/presign`, // POST
+    UPLOAD_COMPLETE: (profileId: number | string) => `/profile/${profileId}/portfolio`, // POST
   },
   // 공개 인재 검색
   TALENTS: {

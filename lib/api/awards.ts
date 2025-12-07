@@ -52,23 +52,3 @@ export async function deleteAward(profileId: string | number, id: number): Promi
     credentials: "include",
   });
 }
-
-// ==================== 하위 호환성을 위한 기존 함수 유지 ====================
-
-/**
- * ⚠️ Deprecated: 하위 호환성을 위해 유지
- */
-export function createAward(body: AwardRequest): Promise<AwardResponse> {
-  return post<AwardResponse>(API_ENDPOINTS.AWARDS.CREATE, body, {
-    credentials: "include",
-  });
-}
-
-/**
- * ⚠️ Deprecated: 하위 호환성을 위해 유지
- */
-export function fetchMyAwards(): Promise<AwardListItem[]> {
-  return get<AwardListItem[]>(API_ENDPOINTS.AWARDS.LIST, {
-    credentials: "include",
-  });
-}

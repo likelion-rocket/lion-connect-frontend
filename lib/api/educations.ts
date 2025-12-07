@@ -61,25 +61,3 @@ export async function deleteEducation(profileId: string | number, id: number): P
     credentials: "include",
   });
 }
-
-// ==================== 하위 호환성을 위한 기존 함수 유지 ====================
-
-/**
- * ⚠️ Deprecated: 하위 호환성을 위해 유지
- * 대신 createEducations(profileId, body) 사용 권장
- */
-export function createEducation(body: EducationRequest): Promise<EducationResponse> {
-  return post<EducationResponse>(API_ENDPOINTS.EDUCATIONS.CREATE, body, {
-    credentials: "include",
-  });
-}
-
-/**
- * ⚠️ Deprecated: 하위 호환성을 위해 유지
- * 대신 fetchEducations(profileId) 사용 권장
- */
-export function fetchMyEducations(): Promise<EducationResponse[]> {
-  return get<EducationResponse[]>(API_ENDPOINTS.EDUCATIONS.LIST, {
-    credentials: "include",
-  });
-}

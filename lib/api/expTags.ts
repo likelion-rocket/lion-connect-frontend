@@ -33,23 +33,3 @@ export function updateExpTags(
     credentials: "include",
   });
 }
-
-// ==================== 하위 호환성을 위한 기존 함수 유지 ====================
-
-/**
- * ⚠️ Deprecated: 하위 호환성을 위해 유지
- */
-export function fetchMyExpTags(): Promise<ExpTagItem[]> {
-  return get<ExpTagItem[]>(API_ENDPOINTS.EXP_TAGS.GET, {
-    credentials: "include",
-  });
-}
-
-/**
- * ⚠️ Deprecated: 하위 호환성을 위해 유지
- */
-export function updateMyExpTags(body: UpdateExpTagsRequest): Promise<ExpTagItem[]> {
-  return put<ExpTagItem[]>(API_ENDPOINTS.EXP_TAGS.UPDATE, body, {
-    credentials: "include",
-  });
-}

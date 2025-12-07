@@ -60,23 +60,3 @@ export async function deleteLanguage(profileId: string | number, id: number): Pr
     credentials: "include",
   });
 }
-
-// ==================== 하위 호환성을 위한 기존 함수 유지 ====================
-
-/**
- * ⚠️ Deprecated: 하위 호환성을 위해 유지
- */
-export function createLanguage(body: LanguageRequest): Promise<LanguageResponse> {
-  return post<LanguageResponse>(API_ENDPOINTS.LANGUAGES.CREATE, body, {
-    credentials: "include",
-  });
-}
-
-/**
- * ⚠️ Deprecated: 하위 호환성을 위해 유지
- */
-export function fetchMyLanguages(): Promise<LanguageResponse[]> {
-  return get<LanguageResponse[]>(API_ENDPOINTS.LANGUAGES.LIST, {
-    credentials: "include",
-  });
-}

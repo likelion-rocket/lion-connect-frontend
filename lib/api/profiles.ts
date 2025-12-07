@@ -77,15 +77,3 @@ export function fetchMyProfiles(): Promise<ProfileListResponse[]> {
     credentials: "include",
   });
 }
-
-// ==================== 하위 호환성을 위한 기존 함수 유지 ====================
-
-/**
- * ⚠️ Deprecated: 하위 호환성을 위해 유지
- * 대신 fetchProfile(profileId) 사용 권장
- */
-export function fetchMyProfile(): Promise<ProfileResponse> {
-  return get<ProfileResponse>(API_ENDPOINTS.PROFILES.GET, {
-    credentials: "include",
-  });
-}

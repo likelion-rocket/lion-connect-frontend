@@ -40,14 +40,3 @@ export function updateJobs(
     credentials: "include",
   });
 }
-
-// ==================== 하위 호환성을 위한 기존 함수 유지 ====================
-
-/**
- * ⚠️ Deprecated: 하위 호환성을 위해 유지
- */
-export function fetchMyJobs(): Promise<JobCategoryItem[]> {
-  return get<JobCategoryItem[]>(API_ENDPOINTS.JOBS.GET, {
-    credentials: "include",
-  });
-}

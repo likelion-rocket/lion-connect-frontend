@@ -63,23 +63,3 @@ export async function deleteCertification(profileId: string | number, id: number
     credentials: "include",
   });
 }
-
-// ==================== 하위 호환성을 위한 기존 함수 유지 ====================
-
-/**
- * ⚠️ Deprecated: 하위 호환성을 위해 유지
- */
-export function createCertification(body: CertificationRequest): Promise<CertificationResponse> {
-  return post<CertificationResponse>(API_ENDPOINTS.CERTIFICATIONS.CREATE, body, {
-    credentials: "include",
-  });
-}
-
-/**
- * ⚠️ Deprecated: 하위 호환성을 위해 유지
- */
-export function fetchMyCertifications(): Promise<CertificationResponse[]> {
-  return get<CertificationResponse[]>(API_ENDPOINTS.CERTIFICATIONS.LIST, {
-    credentials: "include",
-  });
-}

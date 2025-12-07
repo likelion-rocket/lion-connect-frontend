@@ -31,14 +31,3 @@ export function fetchWorkDrivenTestResult(
     }
   );
 }
-
-// ==================== 하위 호환성을 위한 기존 함수 유지 ====================
-
-/**
- * ⚠️ Deprecated: 하위 호환성을 위해 유지
- */
-export function fetchMyWorkDrivenTestResult(): Promise<WorkDrivenTestResultResponse> {
-  return get<WorkDrivenTestResultResponse>(API_ENDPOINTS.WORK_DRIVEN.RESULT, {
-    credentials: "include",
-  });
-}

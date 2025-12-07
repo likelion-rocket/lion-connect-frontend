@@ -94,7 +94,7 @@ export const talentRegisterSchema = z.object({
   links: z
     .array(
       z.object({
-        type: z.string(), // 링크 타입 (LINK, LINK2, LINK3, ...) - DELETE/PUT API에 필요
+        type: z.string().optional(), // 링크 타입 (LINK, LINK2, LINK3, ...) - DELETE/PUT API에 필요
         url: z.string().url().optional().or(z.literal("")),
         originalFilename: z.string().optional(), // 파일명 (PUT 요청 시 필요)
         contentType: z.string().optional(), // MIME 타입 (PUT 요청 시 필요)

@@ -83,6 +83,66 @@ export type JoinedUserSignupResponse = {
   updatedAt: string;
 };
 
+// 기업 이메일 인증 요청 타입
+export type CompanyEmailVerificationRequest = {
+  email: string;
+};
+
+// 기업 이메일 인증 응답 타입
+export type CompanyEmailVerificationResponse = {
+  success: boolean;
+  message: string;
+};
+
+// 기업 이메일 인증 확인 요청 타입
+export type CompanyEmailVerificationCheckRequest = {
+  email: string;
+  verificationToken: string;
+};
+
+// 기업 이메일 인증 확인 응답 타입
+export type CompanyEmailVerificationCheckResponse = {
+  valid: boolean;
+};
+
+// 기업 회원가입 폼 데이터 타입 (Step 1 + Step 2 합친 것)
+export type CompanySignupFormData = {
+  companyName: string;
+  businessNumber: string;
+  employeeCount: string;
+  email: string;
+  verificationToken: string;
+  name: string;
+  phoneNumber: string;
+  password: string;
+  passwordConfirm: string;
+  agreeTerms: boolean;
+};
+
+// 기업 회원가입 API 요청 타입 (서버로 전송되는 데이터)
+export type CompanySignupRequestData = {
+  companyName: string;
+  businessRegistrationNumber: string;
+  numberOfEmployees: number;
+  email: string;
+  verificationToken: string;
+  managerName: string;
+  phoneNumber: string;
+  password: string;
+  agreementChecked: boolean;
+};
+
+// 기업 회원가입 API 응답 타입
+export type CompanySignupResponse = {
+  success: boolean;
+  message: string;
+  user?: {
+    id: string;
+    email: string;
+    companyName: string;
+  };
+};
+
 // 에러 응답 타입
 export type ApiError = {
   code: string;

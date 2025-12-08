@@ -1,6 +1,6 @@
 /**
  * 수상/활동/기타 섹션 컴포넌트
- * 필드: activities[].title, activities[].organization, activities[].awardDate, activities[].description
+ * 필드: activities[].title, activities[].awardDate, activities[].description
  * 배열 구조로 여러 개 활동 추가 가능
  * DELETE API: deleteAward(id) - activities는 API에서 awards로 매핑됨
  */
@@ -56,7 +56,6 @@ export default function ActivitiesSection({ profileId }: ActivitiesSectionProps)
     append({
       id: undefined, // 명시적으로 undefined 설정 - 삭제 후 추가 시 이전 id가 재사용되는 문제 방지
       title: "",
-      organization: "",
       awardDate: "",
       description: "",
     });
@@ -125,7 +124,6 @@ function ActivityItem({
 
   const hasActivityValue =
     activityFields?.title ||
-    activityFields?.organization ||
     activityFields?.awardDate ||
     activityFields?.description;
 

@@ -489,7 +489,6 @@ export async function submitTalentRegister({
                     ...updatedValues.activities[index],
                     id: updatedAward.id,
                     title: updatedAward.title,
-                    organization: updatedAward.organization,
                     awardDate: convertFullDateToMonth(updatedAward.awardDate),
                     description: updatedAward.description,
                   };
@@ -524,7 +523,6 @@ export async function submitTalentRegister({
                   ...updatedValues.activities[originalIndex],
                   id: createdAward.id,
                   title: createdAward.title,
-                  organization: createdAward.organization,
                   awardDate: convertFullDateToMonth(createdAward.awardDate),
                   description: createdAward.description,
                 };
@@ -541,7 +539,7 @@ export async function submitTalentRegister({
       const defaultLanguages = methods.formState.defaultValues?.languages || [];
 
       values.languages.forEach((lang, index) => {
-        if (!lang.languageName && !lang.level) {
+        if (!lang.languageName) {
           return;
         }
 
@@ -561,14 +559,13 @@ export async function submitTalentRegister({
           const isChanged =
             !originalLang ||
             originalLang.languageName !== lang.languageName ||
-            originalLang.level !== lang.level ||
             originalLang.issueDate !== lang.issueDate;
 
           if (isChanged) {
             parallelPromises.push(
               updateLanguage(profileId, numericId, {
                 languageName: lang.languageName || "",
-                level: lang.level || "",
+                level: "default",
                 issueDate: convertMonthToFullDate(lang.issueDate) || "",
               }).then((updatedLang) => {
                 if (updatedValues.languages && updatedValues.languages[index]) {
@@ -576,7 +573,6 @@ export async function submitTalentRegister({
                     ...updatedValues.languages[index],
                     id: updatedLang.id,
                     languageName: updatedLang.languageName,
-                    level: updatedLang.level,
                     issueDate: convertFullDateToMonth(updatedLang.issueDate),
                   };
                 }
@@ -588,7 +584,7 @@ export async function submitTalentRegister({
           newLanguagesToPost.push({
             data: {
               languageName: lang.languageName || "",
-              level: lang.level || "",
+              level: "default",
               issueDate: convertMonthToFullDate(lang.issueDate) || "",
             },
             index,
@@ -609,7 +605,6 @@ export async function submitTalentRegister({
                   ...updatedValues.languages[originalIndex],
                   id: createdLang.id,
                   languageName: createdLang.languageName,
-                  level: createdLang.level,
                   issueDate: convertFullDateToMonth(createdLang.issueDate),
                 };
               }
@@ -645,14 +640,13 @@ export async function submitTalentRegister({
           const isChanged =
             !originalCert ||
             originalCert.name !== cert.name ||
-            originalCert.issuer !== cert.issuer ||
             originalCert.issueDate !== cert.issueDate;
 
           if (isChanged) {
             parallelPromises.push(
               updateCertification(profileId, numericId, {
                 name: cert.name || "",
-                issuer: cert.issuer || "default",
+                issuer: "default",
                 issueDate: convertMonthToFullDate(cert.issueDate) || "",
               }).then((updatedCert) => {
                 if (updatedValues.certificates && updatedValues.certificates[index]) {
@@ -660,7 +654,6 @@ export async function submitTalentRegister({
                     ...updatedValues.certificates[index],
                     id: updatedCert.id,
                     name: updatedCert.name,
-                    issuer: updatedCert.issuer || "default",
                     issueDate: convertFullDateToMonth(updatedCert.issueDate),
                   };
                 }
@@ -672,7 +665,7 @@ export async function submitTalentRegister({
           newCertificatesToPost.push({
             data: {
               name: cert.name || "",
-              issuer: cert.issuer || "default",
+              issuer: "default",
               issueDate: convertMonthToFullDate(cert.issueDate) || "",
             },
             index,
@@ -693,7 +686,6 @@ export async function submitTalentRegister({
                   ...updatedValues.certificates[originalIndex],
                   id: createdCert.id,
                   name: createdCert.name,
-                  issuer: createdCert.issuer || "default",
                   issueDate: convertFullDateToMonth(createdCert.issueDate),
                 };
               }

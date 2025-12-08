@@ -176,11 +176,10 @@ export function mapApiDataToFormValues(
         ? data.awards.map((award) => ({
             id: award.id,
             title: award.title,
-            organization: award.organization,
             awardDate: convertFullDateToMonth(award.awardDate),
             description: award.description,
           }))
-        : [{ title: "", organization: "", awardDate: "", description: "" }],
+        : [{ title: "", awardDate: "", description: "" }],
 
     // 어학
     languages:
@@ -188,10 +187,9 @@ export function mapApiDataToFormValues(
         ? data.languages.map((lang) => ({
             id: lang.id,
             languageName: lang.languageName,
-            level: lang.level,
             issueDate: convertFullDateToMonth(lang.issueDate),
           }))
-        : [{ languageName: "", level: "", issueDate: "" }],
+        : [{ languageName: "", issueDate: "" }],
 
     // 자격증
     certificates:
@@ -199,10 +197,9 @@ export function mapApiDataToFormValues(
         ? data.certifications.map((cert) => ({
             id: cert.id,
             name: cert.name,
-            issuer: cert.issuer || "",
             issueDate: convertFullDateToMonth(cert.issueDate),
           }))
-        : [{ name: "", issuer: "", issueDate: "" }],
+        : [{ name: "", issueDate: "" }],
 
     // 링크 (LINK로 시작하는 타입 배열)
     links: generalLinks.length > 0 ? generalLinks : [{ type: "LINK", url: "" }],

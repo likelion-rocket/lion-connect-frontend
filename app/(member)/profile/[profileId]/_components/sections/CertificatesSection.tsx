@@ -1,6 +1,6 @@
 /**
  * 자격증 섹션 컴포넌트
- * 필드: certificates[].name, certificates[].issuer, certificates[].issueDate
+ * 필드: certificates[].name, certificates[].issueDate
  * 배열 구조로 여러 개 자격증 추가 가능
  * DELETE API: deleteCertification(id)
  */
@@ -55,7 +55,6 @@ export default function CertificatesSection({ profileId }: CertificatesSectionPr
     append({
       id: undefined, // 명시적으로 undefined 설정 - 삭제 후 추가 시 이전 id가 재사용되는 문제 방지
       name: "",
-      issuer: "default",
       issueDate: "",
     });
   };

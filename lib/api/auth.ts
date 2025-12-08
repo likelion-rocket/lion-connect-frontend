@@ -173,17 +173,32 @@ export async function joinedUserSignupAPI(
  * @param email - 인증할 이메일 주소
  * @returns 인증 메일 전송 응답
  * @throws ApiError - API 요청 실패 시
+ *
+ * 서버 응답:
+ * - 성공 시: 204 No Content (응답 body 없음)
+ * - 실패 시: 에러 메시지 포함한 JSON 응답
  */
 export async function sendCompanyEmailVerificationAPI(
   email: string
 ): Promise<CompanyEmailVerificationResponse> {
   const requestData: CompanyEmailVerificationRequest = { email };
 
-  return post<CompanyEmailVerificationResponse>(
+  // 204 No Content 응답을 받을 수 있으므로 빈 객체를 성공 응답으로 처리
+  const response = await post<CompanyEmailVerificationResponse>(
     API_ENDPOINTS.AUTH.COMPANY_EMAIL_VERIFICATION,
     requestData,
     { skipAuth: true }
   );
+
+  // 204 응답의 경우 빈 객체가 반환되므로, 성공 응답으로 변환
+  if (!response || Object.keys(response).length === 0) {
+    return {
+      success: true,
+      message: "인증 메일이 전송되었습니다.",
+    };
+  }
+
+  return response;
 }
 
 /**

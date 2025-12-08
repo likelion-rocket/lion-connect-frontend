@@ -29,7 +29,7 @@ function Input({ className, wrapperClassName, error, type = "text", ref, ...prop
         type={type}
         className={`
           lc-input
-          w-full px-4 py-3 rounded-xl
+          w-full px-4 py-5 rounded-xl
           border border-border-quaternary
           ${error ? "border-border-error!" : ""}
           placeholder-text-tertiary

@@ -7,6 +7,8 @@ import { useEffect } from "react";
 import Input from "@/app/(auth)/_components/Input";
 import { z } from "zod";
 import { useSignupStore } from "@/store/signupStore";
+import { useEmailVerification } from "./hooks/useEmailVerification";
+import EmailVerificationSection from "./_components/EmailVerificationSection";
 
 // Step 2 schema: 담당자 정보
 const companyStep2Schema = z
@@ -34,10 +36,27 @@ export default function CompanySignupStep2Page() {
   const companyStep1 = useSignupStore((state) => state.companyStep1);
   const clearCompanyStep1 = useSignupStore((state) => state.clearCompanyStep1);
 
+  // 이메일 인증 훅
+  const {
+    email,
+    verificationCode,
+    isEmailSent,
+    isVerified,
+    remainingTime,
+    buttonText,
+    setEmail,
+    setVerificationCode,
+    sendVerificationEmail,
+    verifyCode,
+    canSendEmail,
+    canVerify,
+  } = useEmailVerification();
+
   const {
     register,
     handleSubmit,
     formState: { errors, isValid },
+    setValue,
   } = useForm<CompanyStep2Type>({
     resolver: zodResolver(companyStep2Schema),
     mode: "onChange",
@@ -58,9 +77,27 @@ export default function CompanySignupStep2Page() {
     }
   }, [companyStep1, router]);
 
+  // 이메일 변경 핸들러
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newEmail = e.target.value;
+    setEmail(newEmail);
+    setValue("email", newEmail, { shouldValidate: true });
+  };
+
+  // 인증 코드 변경 핸들러
+  const handleVerificationCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setVerificationCode(e.target.value);
+  };
+
   const onSubmit = async (data: CompanyStep2Type) => {
     if (!companyStep1) {
       router.push("/signup/company/step1");
+      return;
+    }
+
+    // 이메일 인증 확인
+    if (!isVerified) {
+      alert("이메일 인증을 완료해주세요.");
       return;
     }
 
@@ -123,25 +160,23 @@ export default function CompanySignupStep2Page() {
         {/* 회원가입 폼 */}
         <form onSubmit={handleSubmit(onSubmit)} className="self-stretch flex flex-col gap-16">
           <div className="self-stretch px-2 flex flex-col justify-start items-start gap-8">
-            {/* 업무용 이메일 입력 */}
-            <div className="self-stretch flex flex-col justify-start items-start gap-4">
-              <label
-                htmlFor="email"
-                className="justify-center text-neutral-800 text-sm font-normal font-['Pretendard'] leading-5"
-              >
-                업무용 이메일
-              </label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="기업 이메일을 입력해주세요."
-                error={!!errors.email}
-                {...register("email")}
-              />
-              {errors.email && (
-                <p className="text-sm text-text-error">{errors.email.message}</p>
-              )}
-            </div>
+            {/* 업무용 이메일 인증 */}
+            <EmailVerificationSection
+              email={email}
+              verificationCode={verificationCode}
+              isEmailSent={isEmailSent}
+              isVerified={isVerified}
+              remainingTime={remainingTime}
+              buttonText={buttonText}
+              canSendEmail={canSendEmail}
+              canVerify={canVerify}
+              emailError={errors.email?.message}
+              onEmailChange={handleEmailChange}
+              onVerificationCodeChange={handleVerificationCodeChange}
+              onSendEmail={sendVerificationEmail}
+              onVerifyCode={verifyCode}
+              emailRegister={register("email")}
+            />
 
             {/* 이름 입력 */}
             <div className="self-stretch flex flex-col justify-start items-start gap-4">

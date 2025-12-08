@@ -121,7 +121,7 @@ function mapToResumeCardProps(data: TalentDetailResponse) {
   }));
 
   // 링크
-  const links = data.externalLink ? [{ url: data.externalLink }] : [];
+  const links = data.externalLinks?.map((url) => ({ url })) || [];
 
   return {
     summary: data.introduction,

@@ -360,6 +360,7 @@ export type LanguageDetail = LanguageResponse;
 export interface TalentDetailResponse {
   id: number;
   name: string;
+  title?: string;
   introduction: string;
   email: string | null;
   phoneNumber: string | null;
@@ -370,7 +371,8 @@ export interface TalentDetailResponse {
   languages: string[];
   thumbnailUrl: string | null;
   portfolioUrl: string | null;
-  externalLink: string | null;
+  externalLink?: string | null;
+  externalLinks?: string[];
   storageUrl: string | null;
   likelionCertified: boolean;
   updatedAt: string; // ISO 8601

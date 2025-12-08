@@ -7,6 +7,9 @@ import { useEffect } from "react";
 import Input from "@/app/(auth)/_components/Input";
 import { z } from "zod";
 import { useSignupStore } from "@/store/signupStore";
+import { useEmailVerification } from "./hooks/useEmailVerification";
+import EmailVerificationSection from "./_components/EmailVerificationSection";
+import { useCompanySignup } from "@/hooks/auth/useCompanySignup";
 
 // Step 2 schema: 담당자 정보
 const companyStep2Schema = z
@@ -34,10 +37,34 @@ export default function CompanySignupStep2Page() {
   const companyStep1 = useSignupStore((state) => state.companyStep1);
   const clearCompanyStep1 = useSignupStore((state) => state.clearCompanyStep1);
 
+  // 이메일 인증 훅
+  const {
+    email,
+    verificationCode,
+    verificationToken,
+    isEmailSent,
+    isVerified,
+    isSending,
+    isVerifying,
+    remainingTime,
+    buttonText,
+    error: emailVerificationError,
+    setEmail,
+    setVerificationCode,
+    sendVerificationEmail,
+    verifyCode,
+    canSendEmail,
+    canVerify,
+  } = useEmailVerification();
+
+  // 기업 회원가입 훅
+  const companySignup = useCompanySignup();
+
   const {
     register,
     handleSubmit,
     formState: { errors, isValid },
+    setValue,
   } = useForm<CompanyStep2Type>({
     resolver: zodResolver(companyStep2Schema),
     mode: "onChange",
@@ -51,12 +78,27 @@ export default function CompanySignupStep2Page() {
     },
   });
 
-  // Step 1 데이터가 없으면 Step 1로 리다이렉트
+  // 회원가입 성공 시 처리
   useEffect(() => {
-    if (!companyStep1) {
-      router.push("/signup/company/step1");
+    if (companySignup.isSuccess) {
+      // Step 1 데이터 삭제
+      clearCompanyStep1();
+      // 완료 페이지로 이동
+      router.push("/signup/complete");
     }
-  }, [companyStep1, router]);
+  }, [companySignup.isSuccess, clearCompanyStep1, router]);
+
+  // 이메일 변경 핸들러
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newEmail = e.target.value;
+    setEmail(newEmail);
+    setValue("email", newEmail, { shouldValidate: true });
+  };
+
+  // 인증 코드 변경 핸들러
+  const handleVerificationCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setVerificationCode(e.target.value);
+  };
 
   const onSubmit = async (data: CompanyStep2Type) => {
     if (!companyStep1) {
@@ -64,22 +106,28 @@ export default function CompanySignupStep2Page() {
       return;
     }
 
-    const completeData = {
-      ...companyStep1,
-      ...data,
-      userType: "COMPANY", // 기업 회원 타입 명시
+    // 이메일 인증 확인
+    if (!isVerified) {
+      alert("이메일 인증을 완료해주세요.");
+      return;
+    }
+
+    // 기업 회원가입 데이터 구성
+    const signupData = {
+      companyName: companyStep1.companyName,
+      businessNumber: companyStep1.businessNumber,
+      employeeCount: companyStep1.employeeCount,
+      email: data.email,
+      verificationToken: verificationToken,
+      name: data.name,
+      phoneNumber: data.phoneNumber,
+      password: data.password,
+      passwordConfirm: data.passwordConfirm,
+      agreeTerms: data.agreeTerms,
     };
 
-    console.log("Complete company signup data:", completeData);
-
-    // TODO: API 호출로 회원가입 처리
-    // await signupMutation.mutateAsync(completeData);
-
-    // 스토어 데이터 삭제
-    clearCompanyStep1();
-
-    // 완료 페이지로 이동
-    router.push("/signup/complete");
+    // API 호출로 회원가입 처리
+    companySignup.signup(signupData);
   };
 
   return (
@@ -123,25 +171,26 @@ export default function CompanySignupStep2Page() {
         {/* 회원가입 폼 */}
         <form onSubmit={handleSubmit(onSubmit)} className="self-stretch flex flex-col gap-16">
           <div className="self-stretch px-2 flex flex-col justify-start items-start gap-8">
-            {/* 업무용 이메일 입력 */}
-            <div className="self-stretch flex flex-col justify-start items-start gap-4">
-              <label
-                htmlFor="email"
-                className="justify-center text-neutral-800 text-sm font-normal font-['Pretendard'] leading-5"
-              >
-                업무용 이메일
-              </label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="기업 이메일을 입력해주세요."
-                error={!!errors.email}
-                {...register("email")}
-              />
-              {errors.email && (
-                <p className="text-sm text-text-error">{errors.email.message}</p>
-              )}
-            </div>
+            {/* 업무용 이메일 인증 */}
+            <EmailVerificationSection
+              email={email}
+              verificationCode={verificationCode}
+              isEmailSent={isEmailSent}
+              isVerified={isVerified}
+              isSending={isSending}
+              isVerifying={isVerifying}
+              remainingTime={remainingTime}
+              buttonText={buttonText}
+              canSendEmail={canSendEmail}
+              canVerify={canVerify}
+              emailError={errors.email?.message}
+              verificationError={emailVerificationError}
+              onEmailChange={handleEmailChange}
+              onVerificationCodeChange={handleVerificationCodeChange}
+              onSendEmail={sendVerificationEmail}
+              onVerifyCode={verifyCode}
+              emailRegister={register("email")}
+            />
 
             {/* 이름 입력 */}
             <div className="self-stretch flex flex-col justify-start items-start gap-4">
@@ -158,9 +207,7 @@ export default function CompanySignupStep2Page() {
                 error={!!errors.name}
                 {...register("name")}
               />
-              {errors.name && (
-                <p className="text-sm text-text-error">{errors.name.message}</p>
-              )}
+              {errors.name && <p className="text-sm text-text-error">{errors.name.message}</p>}
             </div>
 
             {/* 휴대폰 번호 입력 */}
@@ -231,8 +278,17 @@ export default function CompanySignupStep2Page() {
                 회원가입에 동의합니다.
               </span>
             </div>
-            {errors.agreeTerms && <p className="text-sm text-text-error">{errors.agreeTerms.message}</p>}
+            {errors.agreeTerms && (
+              <p className="text-sm text-text-error">{errors.agreeTerms.message}</p>
+            )}
           </div>
+
+          {/* 회원가입 에러 메시지 */}
+          {companySignup.error && (
+            <div className="self-stretch px-2">
+              <p className="text-sm text-text-error">{companySignup.error}</p>
+            </div>
+          )}
 
           {/* 버튼 그룹 */}
           <div className="self-stretch inline-flex justify-start items-center gap-5">
@@ -247,19 +303,19 @@ export default function CompanySignupStep2Page() {
             </button>
             <button
               type="submit"
-              disabled={!isValid}
+              disabled={!isValid || companySignup.isLoading}
               className={`flex-1 px-8 py-4 rounded-lg flex justify-center items-center gap-2.5 transition-colors ${
-                isValid
+                isValid && !companySignup.isLoading
                   ? "bg-bg-accent cursor-pointer hover:bg-brand-06"
                   : "bg-neutral-100 cursor-not-allowed"
               }`}
             >
               <div
                 className={`justify-center text-lg font-bold font-['Pretendard'] leading-7 ${
-                  isValid ? "text-white" : "text-neutral-400"
+                  isValid && !companySignup.isLoading ? "text-white" : "text-neutral-400"
                 }`}
               >
-                가입하기
+                {companySignup.isLoading ? "가입 처리 중..." : "가입하기"}
               </div>
             </button>
           </div>

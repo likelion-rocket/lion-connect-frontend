@@ -7,6 +7,13 @@ import {
   JoinedUserSignupFormData,
   JoinedUserSignupRequestData,
   JoinedUserSignupResponse,
+  CompanyEmailVerificationRequest,
+  CompanyEmailVerificationResponse,
+  CompanyEmailVerificationCheckRequest,
+  CompanyEmailVerificationCheckResponse,
+  CompanySignupFormData,
+  CompanySignupRequestData,
+  CompanySignupResponse,
 } from "@/types/auth";
 import { post, refreshAccessToken } from "@/lib/apiClient";
 import { API_ENDPOINTS, API_BASE_URL } from "@/constants/api";
@@ -157,6 +164,95 @@ export async function joinedUserSignupAPI(
   };
 
   return post<JoinedUserSignupResponse>(API_ENDPOINTS.AUTH.JOINEDUSER_SIGNUP, requestData, {
+    skipAuth: true,
+  });
+}
+
+/**
+ * 기업 이메일 인증 요청 API 호출
+ * @param email - 인증할 이메일 주소
+ * @returns 인증 메일 전송 응답
+ * @throws ApiError - API 요청 실패 시
+ *
+ * 서버 응답:
+ * - 성공 시: 204 No Content (응답 body 없음)
+ * - 실패 시: 에러 메시지 포함한 JSON 응답
+ */
+export async function sendCompanyEmailVerificationAPI(
+  email: string
+): Promise<CompanyEmailVerificationResponse> {
+  const requestData: CompanyEmailVerificationRequest = { email };
+
+  // 204 No Content 응답을 받을 수 있으므로 빈 객체를 성공 응답으로 처리
+  const response = await post<CompanyEmailVerificationResponse>(
+    API_ENDPOINTS.AUTH.COMPANY_EMAIL_VERIFICATION,
+    requestData,
+    { skipAuth: true }
+  );
+
+  // 204 응답의 경우 빈 객체가 반환되므로, 성공 응답으로 변환
+  if (!response || Object.keys(response).length === 0) {
+    return {
+      success: true,
+      message: "인증 메일이 전송되었습니다.",
+    };
+  }
+
+  return response;
+}
+
+/**
+ * 기업 이메일 인증 코드 확인 API 호출
+ * @param email - 인증할 이메일 주소
+ * @param verificationToken - 6자리 인증 코드
+ * @returns 인증 확인 응답 (valid: true/false)
+ * @throws ApiError - API 요청 실패 시
+ */
+export async function checkCompanyEmailVerificationAPI(
+  email: string,
+  verificationToken: string
+): Promise<CompanyEmailVerificationCheckResponse> {
+  const requestData: CompanyEmailVerificationCheckRequest = {
+    email,
+    verificationToken,
+  };
+
+  return post<CompanyEmailVerificationCheckResponse>(
+    API_ENDPOINTS.AUTH.COMPANY_EMAIL_VERIFICATION_CHECK,
+    requestData,
+    { skipAuth: true }
+  );
+}
+
+/**
+ * 기업 회원가입 API 호출
+ * @param data - 기업 회원가입 폼 데이터 (Step 1 + Step 2 통합)
+ * @returns 회원가입 응답
+ * @throws ApiError - API 요청 실패 시
+ *
+ * 보안 고려사항:
+ * - passwordConfirm과 agreeTerms는 클라이언트 측에서만 사용 (서버로 전송 안 함)
+ * - verificationToken은 이메일 인증 완료 후 받은 토큰 사용
+ * - 비밀번호는 서버에서 해싱 처리 필요
+ * - HTTPS 통신 필수 (프로덕션 환경)
+ */
+export async function companySignupAPI(
+  data: CompanySignupFormData
+): Promise<CompanySignupResponse> {
+  // 서버로 전송할 데이터 변환
+  const requestData: CompanySignupRequestData = {
+    companyName: data.companyName,
+    businessRegistrationNumber: data.businessNumber,
+    numberOfEmployees: parseInt(data.employeeCount, 10),
+    email: data.email,
+    verificationToken: data.verificationToken,
+    managerName: data.name,
+    phoneNumber: data.phoneNumber,
+    password: data.password,
+    agreementChecked: data.agreeTerms,
+  };
+
+  return post<CompanySignupResponse>(API_ENDPOINTS.AUTH.COMPANY_SIGNUP, requestData, {
     skipAuth: true,
   });
 }

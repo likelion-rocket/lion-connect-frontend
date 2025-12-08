@@ -248,11 +248,37 @@ export async function apiRequest<T>(endpoint: string, options: RequestOptions = 
               credentials: options.skipCredentials ? "omit" : "include",
               _isRetry: true, // 재시도 플래그 설정
             })
-              .then((retryResponse) => {
-                if (retryResponse.ok) {
-                  return retryResponse.json();
+              .then(async (retryResponse) => {
+                if (!retryResponse.ok) {
+                  return handleResponseError(retryResponse);
                 }
-                return handleResponseError(retryResponse);
+
+                // 204 No Content 처리
+                if (retryResponse.status === HTTP_STATUS.NO_CONTENT) {
+                  return {} as T;
+                }
+
+                // 빈 응답 처리
+                const contentType = retryResponse.headers.get("content-type");
+                const contentLength = retryResponse.headers.get("content-length");
+
+                if (contentLength === "0" || !contentType?.includes("application/json")) {
+                  const text = await retryResponse.text();
+                  if (!text || text.trim() === "") {
+                    return {} as T;
+                  }
+                  try {
+                    return JSON.parse(text) as T;
+                  } catch {
+                    return {} as T;
+                  }
+                }
+
+                try {
+                  return await retryResponse.json();
+                } catch {
+                  return {} as T;
+                }
               })
               .then(resolve)
               .catch(reject);
@@ -286,8 +312,28 @@ export async function apiRequest<T>(endpoint: string, options: RequestOptions = 
           return {} as T;
         }
 
-        const data = await retryResponse.json();
-        return data as T;
+        // 빈 응답 처리
+        const retryContentType = retryResponse.headers.get("content-type");
+        const retryContentLength = retryResponse.headers.get("content-length");
+
+        if (retryContentLength === "0" || !retryContentType?.includes("application/json")) {
+          const text = await retryResponse.text();
+          if (!text || text.trim() === "") {
+            return {} as T;
+          }
+          try {
+            return JSON.parse(text) as T;
+          } catch {
+            return {} as T;
+          }
+        }
+
+        try {
+          const data = await retryResponse.json();
+          return data as T;
+        } catch {
+          return {} as T;
+        }
       } catch (refreshError) {
         isRefreshing = false;
         refreshSubscribers = [];
@@ -305,9 +351,34 @@ export async function apiRequest<T>(endpoint: string, options: RequestOptions = 
       return {} as T;
     }
 
+    // Content-Type 확인 및 빈 응답 처리
+    const contentType = response.headers.get("content-type");
+    const contentLength = response.headers.get("content-length");
+
+    // Content-Length가 0이거나 Content-Type이 JSON이 아닌 경우
+    if (contentLength === "0" || !contentType?.includes("application/json")) {
+      // 빈 응답이면 빈 객체 반환
+      const text = await response.text();
+      if (!text || text.trim() === "") {
+        return {} as T;
+      }
+      // 텍스트가 있으면 JSON 파싱 시도
+      try {
+        return JSON.parse(text) as T;
+      } catch {
+        return {} as T;
+      }
+    }
+
     // JSON 응답 파싱
-    const data = await response.json();
-    return data as T;
+    try {
+      const data = await response.json();
+      return data as T;
+    } catch (error) {
+      // JSON 파싱 실패 시 빈 객체 반환 (빈 응답인 경우)
+      console.warn("Failed to parse JSON response, returning empty object");
+      return {} as T;
+    }
   } catch (error) {
     // ApiError는 그대로 전달
     if (error instanceof ApiError) {

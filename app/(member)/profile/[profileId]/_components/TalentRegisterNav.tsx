@@ -4,6 +4,7 @@ import { cn } from "@/utils/utils";
 import { useToastStore } from "@/store/toastStore";
 import { useRouter } from "next/navigation";
 import { useFormContext, useWatch } from "react-hook-form";
+import { talentRegisterTempSaveSchema } from "@/schemas/talent/talentRegisterSchema";
 
 interface TalentRegisterNavProps extends React.HTMLAttributes<HTMLElement> {
   onTempSave?: () => void;
@@ -22,7 +23,7 @@ export default function TalentRegisterNav({
 }: TalentRegisterNavProps) {
   const { showToast } = useToastStore();
   const router = useRouter();
-  const { register, control } = useFormContext();
+  const { register, control, getValues } = useFormContext();
 
   // Watch the title value from the form using useWatch
   const titleValue = useWatch({ control, name: "profile.title" }) || "인재 등록";
@@ -33,6 +34,17 @@ export default function TalentRegisterNav({
 
   const handleTempSave = async () => {
     if (onTempSave) {
+      // 임시저장 전 검증 수행
+      const currentValues = getValues();
+      const validationResult = talentRegisterTempSaveSchema.safeParse(currentValues);
+
+      if (!validationResult.success) {
+        // 첫 번째 에러 메시지 표시
+        const firstError = validationResult.error.issues[0];
+        showToast(firstError.message, "error");
+        return;
+      }
+
       await onTempSave();
       showToast("임시 저장되었습니다!");
     }

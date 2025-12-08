@@ -78,13 +78,6 @@ export default function CompanySignupStep2Page() {
     },
   });
 
-  // Step 1 데이터가 없으면 Step 1로 리다이렉트
-  useEffect(() => {
-    if (!companyStep1) {
-      router.push("/signup/company/step1");
-    }
-  }, [companyStep1, router]);
-
   // 회원가입 성공 시 처리
   useEffect(() => {
     if (companySignup.isSuccess) {
@@ -214,9 +207,7 @@ export default function CompanySignupStep2Page() {
                 error={!!errors.name}
                 {...register("name")}
               />
-              {errors.name && (
-                <p className="text-sm text-text-error">{errors.name.message}</p>
-              )}
+              {errors.name && <p className="text-sm text-text-error">{errors.name.message}</p>}
             </div>
 
             {/* 휴대폰 번호 입력 */}
@@ -287,7 +278,9 @@ export default function CompanySignupStep2Page() {
                 회원가입에 동의합니다.
               </span>
             </div>
-            {errors.agreeTerms && <p className="text-sm text-text-error">{errors.agreeTerms.message}</p>}
+            {errors.agreeTerms && (
+              <p className="text-sm text-text-error">{errors.agreeTerms.message}</p>
+            )}
           </div>
 
           {/* 회원가입 에러 메시지 */}

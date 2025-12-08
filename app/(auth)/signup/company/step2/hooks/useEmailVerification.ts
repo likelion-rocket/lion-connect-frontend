@@ -108,11 +108,8 @@ export function useEmailVerification(): UseEmailVerificationReturn {
     } catch (err) {
       console.error("인증 코드 확인 실패:", err);
 
-      if (err instanceof ApiError) {
-        setError(err.message || "인증 코드 확인에 실패했습니다.");
-      } else {
-        setError("인증 코드 확인에 실패했습니다. 다시 시도해주세요.");
-      }
+      // 모든 에러를 동일한 메시지로 통일 (보안 및 사용자 경험 개선)
+      setError("인증 코드가 올바르지 않습니다. 다시 확인해주세요.");
     } finally {
       setIsVerifying(false);
     }

@@ -78,18 +78,15 @@ function mapToIntroduceCardProps(data: TalentDetailResponse) {
  * API 응답을 ResumeCard props로 변환
  */
 function mapToResumeCardProps(data: TalentDetailResponse) {
-  // 학력 (첫 번째 항목만)
-  const primaryEducation = data.educations?.[0];
-  const education = primaryEducation
-    ? {
-        school: primaryEducation.schoolName,
-        start: formatDate(primaryEducation.startDate),
-        end: formatDate(primaryEducation.endDate),
-        major: primaryEducation.major,
-        graduate: mapEducationStatus(primaryEducation.status),
-        note: primaryEducation.description,
-      }
-    : null;
+  // 학력 (모든 항목)
+  const educations = data.educations.map((edu) => ({
+    school: edu.schoolName,
+    start: formatDate(edu.startDate),
+    end: formatDate(edu.endDate),
+    major: edu.major,
+    graduate: mapEducationStatus(edu.status),
+    note: edu.description,
+  }));
 
   // 경력
   const careers = data.workExperiences.map((work) => ({
@@ -128,7 +125,7 @@ function mapToResumeCardProps(data: TalentDetailResponse) {
 
   return {
     summary: data.introduction,
-    education,
+    educations,
     careers,
     awards,
     languages,

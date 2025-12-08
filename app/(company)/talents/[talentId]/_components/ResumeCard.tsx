@@ -30,7 +30,7 @@ export type LinkItem = { url: string };
 
 export type ResumeCardProps = {
   summary: string;
-  education?: Education | null;
+  educations: Education[];
   careers: Career[];
   awards: Award[];
   languages: Language[];
@@ -73,7 +73,7 @@ function MetaLine({ items }: { items: (string | undefined | null)[] }) {
 
 export default function ResumeCard({
   summary,
-  education,
+  educations,
   careers,
   awards,
   languages,
@@ -116,32 +116,37 @@ export default function ResumeCard({
           <p className="whitespace-pre-wrap p-4">{summary || "간단 소개가 없습니다."}</p>
         </section>
 
-        {/* 학력 (단일) */}
-        {education && (
+        {/* 학력 */}
+        {educations.length > 0 && (
           <section aria-labelledby="resume-edu">
             <SectionHeader id="resume-edu">학력</SectionHeader>
 
-            <IconCard
-              icon="/icons/outline-library.svg"
-              alt="education"
-              className="border-0"
-              title={education.school}
-              subtitle={
-                <span>
-                  <MetaLine
-                    items={[
-                      `${education.start} - ${education.end}`,
-                      education.major ? `전공(${education.major})` : undefined,
-                      education.graduate,
-                    ]}
-                  />
-                </span>
-              }
-            >
-              {education.note && (
-                <p className="text-[13px] text-[#666] leading-5">{education.note}</p>
-              )}
-            </IconCard>
+            <div className="space-y-3">
+              {educations.map((edu, i) => (
+                <IconCard
+                  key={`${edu.school}-${i}`}
+                  icon="/icons/outline-library.svg"
+                  alt="education"
+                  className="border-0"
+                  title={edu.school}
+                  subtitle={
+                    <span>
+                      <MetaLine
+                        items={[
+                          `${edu.start} - ${edu.end}`,
+                          edu.major ? `전공(${edu.major})` : undefined,
+                          edu.graduate,
+                        ]}
+                      />
+                    </span>
+                  }
+                >
+                  {edu.note && (
+                    <p className="text-[13px] text-[#666] leading-5">{edu.note}</p>
+                  )}
+                </IconCard>
+              ))}
+            </div>
           </section>
         )}
 

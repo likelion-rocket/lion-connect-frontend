@@ -83,9 +83,12 @@ export default function ImageToggleButton({
     <button
       type="button"
       onClick={handleClick}
-      data-state={isActive ? "active" : "inactive"}
+      data-state={isActive ? "active" : "default"}
       className={cn(
-        "inline-flex items-center justify-center cursor-pointer transition-opacity hover:opacity-80",
+        "w-10 p-2.5 rounded-lg inline-flex items-center justify-center cursor-pointer transition-colors",
+        isActive
+          ? "bg-neutral-100 outline outline-[0.80px] outline-offset-[-0.80px] outline-orange-600"
+          : "bg-white outline outline-1 outline-offset-[-1px] outline-neutral-200",
         className
       )}
       aria-pressed={isActive}

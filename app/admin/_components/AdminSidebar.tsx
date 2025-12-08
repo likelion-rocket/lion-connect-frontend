@@ -12,7 +12,7 @@ const menuItems = [
   },
   {
     label: "사용자 계정 관리",
-    href: "/admin/members",
+    href: "/admin/users",
   },
   {
     label: "기업 계정 관리",

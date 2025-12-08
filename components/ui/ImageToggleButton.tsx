@@ -1,17 +1,25 @@
+'use client';
+
 import { cn } from "@/utils/utils";
 import Image from "next/image";
+import { useState } from "react";
 
 interface ImageToggleButtonProps {
   /**
-   * 버튼 활성화 상태
+   * 초기 활성화 상태 (uncontrolled mode)
    * - true: 주황색 이미지 표시
    * - false: 회색 이미지 표시
    */
-  isActive: boolean;
+  defaultActive?: boolean;
   /**
-   * 상태 변경 핸들러
+   * 버튼 활성화 상태 (controlled mode)
+   * - 이 prop이 제공되면 controlled component로 동작
    */
-  onToggle: (isActive: boolean) => void;
+  isActive?: boolean;
+  /**
+   * 상태 변경 핸들러 (controlled mode)
+   */
+  onToggle?: (isActive: boolean) => void;
   /**
    * 회색 이미지 경로 (비활성화 상태)
    */
@@ -39,10 +47,20 @@ interface ImageToggleButtonProps {
  *
  * @description
  * 클릭 시 활성화/비활성화 상태를 토글하며, 상태에 따라 회색 또는 주황색 이미지를 표시하는 버튼입니다.
- * 활성화 상태일 때는 주황색 이미지를, 비활성화 상태일 때는 회색 이미지를 보여줍니다.
+ * Controlled/Uncontrolled 모드를 모두 지원합니다.
  *
  * @example
- * // 기본 사용
+ * // Uncontrolled mode (내부 상태 관리)
+ * <ImageToggleButton
+ *   defaultActive={false}
+ *   grayImageSrc="/icons/icon-gray.svg"
+ *   orangeImageSrc="/icons/icon-orange.svg"
+ *   size={24}
+ *   alt="토글 버튼"
+ * />
+ *
+ * @example
+ * // Controlled mode (외부 상태 관리)
  * const [isActive, setIsActive] = useState(false);
  * 
  * <ImageToggleButton
@@ -53,21 +71,10 @@ interface ImageToggleButtonProps {
  *   size={24}
  *   alt="토글 버튼"
  * />
- *
- * @example
- * // 커스텀 크기와 스타일
- * <ImageToggleButton
- *   isActive={isActive}
- *   onToggle={setIsActive}
- *   grayImageSrc="/icons/star-gray.svg"
- *   orangeImageSrc="/icons/star-orange.svg"
- *   size={32}
- *   className="hover:scale-110 transition-transform"
- *   alt="즐겨찾기"
- * />
  */
 export default function ImageToggleButton({
-  isActive,
+  defaultActive = false,
+  isActive: controlledIsActive,
   onToggle,
   grayImageSrc,
   orangeImageSrc,
@@ -75,8 +82,23 @@ export default function ImageToggleButton({
   className,
   alt = "toggle button",
 }: ImageToggleButtonProps) {
+  // Uncontrolled mode: 내부 상태 관리
+  const [internalActive, setInternalActive] = useState(defaultActive);
+  
+  // Controlled mode인지 확인
+  const isControlled = controlledIsActive !== undefined;
+  const isActive = isControlled ? controlledIsActive : internalActive;
+
   const handleClick = () => {
-    onToggle(!isActive);
+    const newState = !isActive;
+    
+    if (isControlled) {
+      // Controlled mode: 부모에게 상태 변경 알림
+      onToggle?.(newState);
+    } else {
+      // Uncontrolled mode: 내부 상태 업데이트
+      setInternalActive(newState);
+    }
   };
 
   return (

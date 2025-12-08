@@ -27,55 +27,71 @@ export const talentRegisterTempSaveSchema = z.object({
   }),
   educations: z
     .array(
-      z.object({
-        id: z.union([z.number(), z.string(), z.undefined()]).optional(),
-        schoolName: z.string().optional(),
-        major: z.string().optional(),
-        status: z.string().optional(),
-        startDate: z.string().optional(),
-        endDate: z.string().optional(),
-        description: z.string().optional(),
-        degree: z.string().optional(),
-      })
-      .refine(
-        (data) => {
-          const hasAnyValue = data.schoolName || data.major || data.status || data.startDate || data.endDate;
-          // 아무 값도 없으면 통과 (비워두기)
-          if (!hasAnyValue) return true;
-          // 하나라도 있으면 필수 필드 모두 입력해야 함
-          const validStatuses = ["ENROLLED", "GRADUATED", "COMPLETED"];
-          return !!(data.schoolName && data.major && data.status && validStatuses.includes(data.status) && data.startDate && data.endDate);
-        },
-        {
-          message: "학력 정보를 입력하려면 학교명, 전공, 졸업상태, 시작일, 종료일을 모두 입력해주세요.",
-        }
-      )
+      z
+        .object({
+          id: z.union([z.number(), z.string(), z.undefined()]).optional(),
+          schoolName: z.string().optional(),
+          major: z.string().optional(),
+          status: z.string().optional(),
+          startDate: z.string().optional(),
+          endDate: z.string().optional(),
+          description: z.string().optional(),
+          degree: z.string().optional(),
+        })
+        .refine(
+          (data) => {
+            const hasAnyValue =
+              data.schoolName || data.major || data.status || data.startDate || data.endDate;
+            // 아무 값도 없으면 통과 (비워두기)
+            if (!hasAnyValue) return true;
+            // 하나라도 있으면 필수 필드 모두 입력해야 함
+            const validStatuses = ["ENROLLED", "GRADUATED", "COMPLETED"];
+            return !!(
+              data.schoolName &&
+              data.major &&
+              data.status &&
+              validStatuses.includes(data.status) &&
+              data.startDate &&
+              data.endDate
+            );
+          },
+          {
+            message:
+              "학력 정보를 입력하려면 학교명, 전공, 졸업상태, 시작일, 종료일을 모두 입력해주세요.",
+          }
+        )
     )
     .optional(),
   careers: z
     .array(
-      z.object({
-        id: z.union([z.number(), z.string(), z.undefined()]).optional(),
-        companyName: z.string().optional(),
-        department: z.string().optional(),
-        position: z.string().optional(),
-        startDate: z.string().optional(),
-        endDate: z.string().optional(),
-        isCurrent: z.boolean().optional(),
-        description: z.string().optional(),
-      })
-      .refine(
-        (data) => {
-          const hasAnyValue = data.companyName || data.department || data.position || data.startDate || data.endDate;
-          // 아무 값도 없으면 통과
-          if (!hasAnyValue) return true;
-          // 하나라도 있으면 필수 필드 모두 입력해야 함
-          return !!(data.companyName && data.position && data.startDate);
-        },
-        {
-          message: "경력 정보를 입력하려면 회사명, 직급, 시작일을 모두 입력해주세요.",
-        }
-      )
+      z
+        .object({
+          id: z.union([z.number(), z.string(), z.undefined()]).optional(),
+          companyName: z.string().optional(),
+          department: z.string().optional(),
+          position: z.string().optional(),
+          startDate: z.string().optional(),
+          endDate: z.string().optional(),
+          isCurrent: z.boolean().optional(),
+          description: z.string().optional(),
+        })
+        .refine(
+          (data) => {
+            const hasAnyValue =
+              data.companyName ||
+              data.department ||
+              data.position ||
+              data.startDate ||
+              data.endDate;
+            // 아무 값도 없으면 통과
+            if (!hasAnyValue) return true;
+            // 하나라도 있으면 필수 필드 모두 입력해야 함
+            return !!(data.companyName && data.position && data.startDate);
+          },
+          {
+            message: "경력 정보를 입력하려면 회사명, 직급, 시작일을 모두 입력해주세요.",
+          }
+        )
     )
     .optional(),
   skills: z.object({
@@ -90,69 +106,70 @@ export const talentRegisterTempSaveSchema = z.object({
   }),
   activities: z
     .array(
-      z.object({
-        id: z.union([z.number(), z.string(), z.undefined()]).optional(),
-        title: z.string().optional(),
-        organization: z.string().optional(),
-        awardDate: z.string().optional(),
-        description: z.string().optional(),
-      })
-      .refine(
-        (data) => {
-          const hasAnyValue = data.title || data.organization || data.awardDate || data.description;
-          // 아무 값도 없으면 통과
-          if (!hasAnyValue) return true;
-          // 하나라도 있으면 필수 필드 모두 입력해야 함
-          return !!(data.title && data.organization && data.awardDate);
-        },
-        {
-          message: "수상/활동 정보를 입력하려면 제목, 기관, 날짜를 모두 입력해주세요.",
-        }
-      )
+      z
+        .object({
+          id: z.union([z.number(), z.string(), z.undefined()]).optional(),
+          title: z.string().optional(),
+          awardDate: z.string().optional(),
+          description: z.string().optional(),
+        })
+        .refine(
+          (data) => {
+            const hasAnyValue =
+              data.title || data.awardDate || data.description;
+            // 아무 값도 없으면 통과
+            if (!hasAnyValue) return true;
+            // 하나라도 있으면 필수 필드 모두 입력해야 함
+            return !!(data.title && data.awardDate);
+          },
+          {
+            message: "수상/활동 정보를 입력하려면 제목, 날짜를 모두 입력해주세요.",
+          }
+        )
     )
     .optional(),
   languages: z
     .array(
-      z.object({
-        id: z.union([z.number(), z.string(), z.undefined()]).optional(),
-        languageName: z.string().optional(),
-        level: z.string().optional(),
-        issueDate: z.string().optional(),
-      })
-      .refine(
-        (data) => {
-          const hasAnyValue = data.languageName || data.level || data.issueDate;
-          // 아무 값도 없으면 통과
-          if (!hasAnyValue) return true;
-          // 하나라도 있으면 필수 필드 모두 입력해야 함
-          return !!(data.languageName && data.level);
-        },
-        {
-          message: "언어 정보를 입력하려면 언어명과 수준을 모두 입력해주세요.",
-        }
-      )
+      z
+        .object({
+          id: z.union([z.number(), z.string(), z.undefined()]).optional(),
+          languageName: z.string().optional(),
+          issueDate: z.string().optional(),
+        })
+        .refine(
+          (data) => {
+            const hasAnyValue = data.languageName || data.issueDate;
+            // 아무 값도 없으면 통과
+            if (!hasAnyValue) return true;
+            // 하나라도 있으면 필수 필드 모두 입력해야 함
+            return !!(data.languageName);
+          },
+          {
+            message: "언어 정보를 입력하려면 언어명을 입력해주세요.",
+          }
+        )
     )
     .optional(),
   certificates: z
     .array(
-      z.object({
-        id: z.union([z.number(), z.string(), z.undefined()]).optional(),
-        name: z.string().optional(),
-        issuer: z.string().optional(),
-        issueDate: z.string().optional(),
-      })
-      .refine(
-        (data) => {
-          const hasAnyValue = data.name || data.issuer || data.issueDate;
-          // 아무 값도 없으면 통과
-          if (!hasAnyValue) return true;
-          // 하나라도 있으면 필수 필드 모두 입력해야 함
-          return !!(data.name && data.issuer && data.issueDate);
-        },
-        {
-          message: "자격증 정보를 입력하려면 자격증명, 발급기관, 발급일을 모두 입력해주세요.",
-        }
-      )
+      z
+        .object({
+          id: z.union([z.number(), z.string(), z.undefined()]).optional(),
+          name: z.string().optional(),
+          issueDate: z.string().optional(),
+        })
+        .refine(
+          (data) => {
+            const hasAnyValue = data.name || data.issueDate;
+            // 아무 값도 없으면 통과
+            if (!hasAnyValue) return true;
+            // 하나라도 있으면 필수 필드 모두 입력해야 함
+            return !!(data.name && data.issueDate);
+          },
+          {
+            message: "자격증 정보를 입력하려면 자격증명, 발급일을 모두 입력해주세요.",
+          }
+        )
     )
     .optional(),
   links: z
@@ -238,7 +255,6 @@ export const talentRegisterSchema = z.object({
       z.object({
         id: z.union([z.number(), z.string(), z.undefined()]).optional(), // 기존 수상/활동인 경우 id 존재 (삭제 시 필요)
         title: z.string().optional(),
-        organization: z.string().optional(),
         awardDate: z.string().optional(),
         description: z.string().optional(),
       })
@@ -249,7 +265,6 @@ export const talentRegisterSchema = z.object({
       z.object({
         id: z.union([z.number(), z.string(), z.undefined()]).optional(), // 기존 언어인 경우 id 존재 (삭제 시 필요)
         languageName: z.string().optional(),
-        level: z.string().optional(),
         issueDate: z.string().optional(),
       })
     )
@@ -259,7 +274,6 @@ export const talentRegisterSchema = z.object({
       z.object({
         id: z.union([z.number(), z.string(), z.undefined()]).optional(), // 기존 자격증인 경우 id 존재 (삭제 시 필요)
         name: z.string().optional(),
-        issuer: z.string().optional(),
         issueDate: z.string().optional(),
       })
     )

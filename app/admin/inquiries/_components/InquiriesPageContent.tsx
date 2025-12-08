@@ -31,7 +31,7 @@ export default function InquiriesPageContent() {
 
   return (
     <div className="w-full min-h-screen bg-bg-primary mt-5">
-      <div className="max-w-[1440px] mx-auto px-8">
+      <div className="max-w-[1440px] mx-auto">
         {/* 필터 영역 */}
         {/* <div className="w-full max-w-[1043px] bg-bg-primary border-b border-border-quaternary py-6 pr-6">
           <InquiryFilters />

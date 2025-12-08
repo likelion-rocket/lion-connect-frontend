@@ -9,11 +9,14 @@ interface EmailVerificationSectionProps {
   verificationCode: string;
   isEmailSent: boolean;
   isVerified: boolean;
+  isSending: boolean;
+  isVerifying: boolean;
   remainingTime: number;
   buttonText: string;
   canSendEmail: boolean;
   canVerify: boolean;
   emailError?: string;
+  verificationError?: string | null;
   onEmailChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onVerificationCodeChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onSendEmail: () => void;
@@ -22,15 +25,17 @@ interface EmailVerificationSectionProps {
 }
 
 export default function EmailVerificationSection({
-  email,
   verificationCode,
   isEmailSent,
   isVerified,
+  isSending,
+  isVerifying,
   remainingTime,
   buttonText,
   canSendEmail,
   canVerify,
   emailError,
+  verificationError,
   onEmailChange,
   onVerificationCodeChange,
   onSendEmail,
@@ -60,12 +65,16 @@ export default function EmailVerificationSection({
         </div>
         <OrangeBgButton
           type="button"
-          isActive={canSendEmail}
+          isActive={canSendEmail && !isSending}
           onClick={onSendEmail}
-          disabled={!canSendEmail || isVerified}
+          disabled={!canSendEmail || isVerified || isSending}
           className="w-44 h-16 px-4 py-5"
         >
-          {remainingTime > 0 ? `${remainingTime}초 후 다시 전송 가능` : buttonText}
+          {isSending
+            ? "전송 중..."
+            : remainingTime > 0
+              ? `${remainingTime}초 후 다시 전송 가능`
+              : buttonText}
         </OrangeBgButton>
       </div>
 
@@ -81,20 +90,23 @@ export default function EmailVerificationSection({
             value={verificationCode}
             onChange={onVerificationCodeChange}
             disabled={!isEmailSent || isVerified}
-            error={false}
+            error={!!verificationError}
             className="w-full h-full"
           />
         </div>
         <OrangeBgButton
           type="button"
-          isActive={canVerify}
+          isActive={canVerify && !isVerifying}
           onClick={onVerifyCode}
-          disabled={!canVerify || isVerified}
+          disabled={!canVerify || isVerified || isVerifying}
           className="w-44 h-16 px-4 py-5"
         >
-          {isVerified ? "인증 완료" : "확인"}
+          {isVerifying ? "확인 중..." : isVerified ? "인증 완료" : "확인"}
         </OrangeBgButton>
       </div>
+
+      {/* 인증 에러 메시지 */}
+      {verificationError && <p className="text-sm text-text-error">{verificationError}</p>}
 
       {/* 인증 완료 메시지 */}
       {isVerified && <p className="text-sm text-green-600">이메일 인증이 완료되었습니다.</p>}

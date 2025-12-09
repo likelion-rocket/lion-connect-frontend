@@ -1,9 +1,10 @@
-export default function JobEditPage({
+export default async function JobEditPage({
   params,
 }: {
-  params: { jobId: string };
+  params: Promise<{ jobId: string }>;
 }) {
-  const isNew = params.jobId === "new";
+  const { jobId } = await params;
+  const isNew = jobId === "new";
 
   return (
     <div className="container mx-auto py-8">
@@ -13,7 +14,7 @@ export default function JobEditPage({
       <p className="text-gray-600">
         {isNew
           ? "새로운 채용 공고를 등록하는 페이지입니다."
-          : `채용 공고 ID: ${params.jobId}를 수정하는 페이지입니다.`}
+          : `채용 공고 ID: ${jobId}를 수정하는 페이지입니다.`}
       </p>
     </div>
   );

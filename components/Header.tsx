@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import AuthButton from "./buttons/AuthButton";
 import Image from "next/image";
 import { useNavigation, NavLink } from "@/hooks/common/useNavigation";
 import { useAuthStore } from "@/store/authStore";
@@ -22,13 +21,12 @@ type RoleBasedNavLink = RoleBasedItem<NavLink>;
  */
 const navLinks: RoleBasedNavLink[] = [
   {
-    label: "인재탐색",
+    label: "인재 탐색",
     href: "/talents",
     requiredRoles: [UserRole.ADMIN, UserRole.JOINEDCOMPANY, UserRole.COMPANY],
   },
-  { label: "기업문의", href: "/#business-connect" },
-  { label: "인재등록", href: "/profile" },
-  // { label: "참여기업", href: "/talents/partners" },
+  { label: "기업 문의", href: "/#business-connect" },
+  { label: "이력서", href: "/profile" },
   { label: "어드민", href: "/admin", requiredRoles: [UserRole.ADMIN] },
 ];
 
@@ -48,62 +46,101 @@ export default function Header() {
     setMounted(true);
   }, []);
 
-  // SSR 시점에는 기본 링크만 표시 (requiredRoles가 없는 링크들)
-  const defaultLinks = navLinks.filter((link) => !link.requiredRoles?.length);
-  const visibleLinks = mounted ? filterByRole(navLinks, user?.roles) : defaultLinks;
+  // 클라이언트에서만 역할 기반 링크 필터링
+  const visibleLinks = mounted ? filterByRole(navLinks, user?.roles) : [];
 
   const { navRefs, indicatorStyle, handleNavClick, isLinkActive } = useNavigation(visibleLinks);
 
+  // 로그아웃 핸들러
+  const handleLogout = async () => {
+    try {
+      await fetch("/api/auth/logout", { method: "POST" });
+      useAuthStore.getState().clearAuth();
+      window.location.href = "/";
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
+  };
+
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 w-full bg-bg-primary ">
-      <nav className="max-w-7xl min-w-[1444px] mx-auto px-8 h-20 flex items-center justify-between">
+    <header className="fixed top-0 left-0 right-0 z-50 w-full bg-bg-primary border-b border-border-accent">
+      <div className="w-[1440px] h-20 mx-auto px-8 relative">
         {/* Logo */}
-        <Link href="/" className="shrink-0 flex items-center gap-2">
+        <div className="absolute left-8 top-1/2 -translate-y-1/2 flex items-center gap-2">
           <Image
             src="/icons/likelion-favicon-60.svg"
             alt="LikelionConnect Logo"
             width={32}
             height={32}
           />
-          <span className="text-text-accent font-bold text-[24px] leading-[138%] tracking-[0]">
+          <Link href="/" className="text-text-accent text-2xl font-black font-ko-title">
             라이언 커넥트
-          </span>
-        </Link>
-
-        {/* Navigation Links */}
-        <div className="flex gap-36 relative">
-          {visibleLinks.map((link, index) => {
-            const isActive = isLinkActive(link);
-
-            return (
-              <Link
-                key={link.href}
-                href={link.href}
-                ref={(el) => {
-                  navRefs.current[index] = el;
-                }}
-                onClick={(e) => handleNavClick(e, link.href)}
-                className={`font-medium py-1 transition-colors ${
-                  isActive ? "text-text-accent" : "text-black hover:text-text-accent"
-                }`}
-              >
-                {link.label}
-              </Link>
-            );
-          })}
-          {/* Animated Indicator */}
-          <span
-            className="absolute bottom-0 h-0.5 bg-text-accent transition-all duration-300 ease-in-out"
-            style={{
-              left: `${indicatorStyle.left}px`,
-              width: `${indicatorStyle.width}px`,
-            }}
-          />
+          </Link>
         </div>
 
-        {/* Auth Button (Login/Logout) */}
-        <AuthButton />
-      </nav>
+        {/* Navigation Links */}
+        {mounted && (
+          <nav className="absolute left-[340px] top-1/2 -translate-y-1/2 flex items-center gap-10">
+            {visibleLinks.map((link, index) => {
+              const isActive = isLinkActive(link);
+              const isFirstLink = index === 0;
+
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  ref={(el) => {
+                    navRefs.current[index] = el;
+                  }}
+                  onClick={(e) => handleNavClick(e, link.href)}
+                  className={`flex items-center gap-1 text-base font-semibold font-ko-title transition-colors ${
+                    isActive ? "text-text-accent" : "text-text-primary hover:text-text-accent"
+                  }`}
+                >
+                  {link.label}
+                </Link>
+              );
+            })}
+          </nav>
+        )}
+
+        {/* Right Section: User Info & Logout */}
+        {mounted && (
+          <div className="absolute right-8 top-1/2 -translate-y-1/2 flex items-center gap-5">
+            {user ? (
+              <>
+                {/* Bell Icon */}
+                <Image src="/icons/bell.svg" alt="Notifications" width={24} height={24} />
+
+                {/* User Name Display */}
+                <div className="px-3.5 py-1.5 rounded-lg">
+                  <span className="text-text-primary text-xs font-semibold font-ko-title">
+                    {user.email}
+                  </span>
+                </div>
+
+                {/* Logout Button */}
+                <button
+                  onClick={handleLogout}
+                  className="px-3.5 py-1.5 cursor-pointer rounded-lg border border-border-primary hover:bg-bg-secondary transition-colors"
+                >
+                  <span className="text-text-primary text-xs font-semibold font-ko-title">
+                    로그아웃
+                  </span>
+                </button>
+              </>
+            ) : (
+              /* Login Button */
+              <Link
+                href="/login"
+                className="px-4 py-2 bg-accent rounded-lg text-text-inverse-primary text-sm font-semibold font-ko-title hover:opacity-90 transition-opacity"
+              >
+                로그인/회원가입
+              </Link>
+            )}
+          </div>
+        )}
+      </div>
     </header>
   );
 }

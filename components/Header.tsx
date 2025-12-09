@@ -13,19 +13,17 @@ import { UserRole, RoleBasedItem, filterByRole } from "@/utils/rbac";
 type RoleBasedNavLink = RoleBasedItem<NavLink>;
 
 /**
- * 네비게이션 링크 정의 - 기본 링크(모든 사용자)와 역할별 링크 분리
+ * 네비게이션 링크 정의 - 순서대로 정의 (인재탐색 → 기업문의 → 이력서 → 어드민)
+ * requiredRoles가 없으면 모든 사용자에게 표시 (SSR 안전)
  */
-const defaultNavLinks: NavLink[] = [
-  { label: "기업 문의", href: "/#business-connect" },
-  { label: "이력서", href: "/profile" },
-];
-
-const roleBasedNavLinks: RoleBasedNavLink[] = [
+const navLinks: RoleBasedNavLink[] = [
   {
     label: "인재 탐색",
     href: "/talents",
     requiredRoles: [UserRole.ADMIN, UserRole.JOINEDCOMPANY, UserRole.COMPANY],
   },
+  { label: "기업 문의", href: "/#business-connect" },
+  { label: "이력서", href: "/profile" },
   { label: "어드민", href: "/admin", requiredRoles: [UserRole.ADMIN] },
 ];
 
@@ -42,9 +40,10 @@ export default function Header() {
     setMounted(true);
   }, []);
 
-  // SSR: 기본 링크만 / CSR: 역할 기반 링크 추가
-  const additionalLinks = mounted ? filterByRole(roleBasedNavLinks, user?.roles) : [];
-  const visibleLinks: NavLink[] = [...additionalLinks, ...defaultNavLinks];
+  // SSR: requiredRoles 없는 링크만 / CSR: 역할 기반 필터링 (순서 유지)
+  const visibleLinks: NavLink[] = mounted
+    ? filterByRole(navLinks, user?.roles)
+    : navLinks.filter((link) => !link.requiredRoles?.length);
 
   const { navRefs, handleNavClick, isLinkActive } = useNavigation(visibleLinks);
 

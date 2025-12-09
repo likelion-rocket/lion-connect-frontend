@@ -95,14 +95,14 @@
   --text-5xl-size: 3rem; /* 48px */
   --text-5xl-line: 1.1; /* display tighter */
 
-  --font-ko-title: "SUIT", Pretendard, system-ui, "Noto Sans KR", "Malgun Gothic", sans-serif;
-  --font-ko-body: Pretendard, system-ui, "Noto Sans KR", "Malgun Gothic", sans-serif;
+  --font-ko-title: var(--font-suite), Pretendard, system-ui, "Noto Sans KR", "Malgun Gothic", sans-serif;
+  --font-ko-body: var(--font-pretendard), Pretendard, system-ui, "Noto Sans KR", "Malgun Gothic", sans-serif;
 
   --font-en-title: Montserrat, Inter, system-ui, -apple-system, Roboto, sans-serif;
   --font-en-body: Inter, Montserrat, system-ui, -apple-system, Roboto, sans-serif;
 
-  --font-title: "SUIT", Montserrat, Pretendard, Inter, system-ui, sans-serif;
-  --font-body: Pretendard, Inter, system-ui, sans-serif;
+  --font-title: var(--font-suite), Montserrat, Pretendard, Inter, system-ui, sans-serif;
+  --font-body: var(--font-pretendard), Inter, system-ui, sans-serif;
 
   --radius: 0.625rem; /* 10px-ish */
 }

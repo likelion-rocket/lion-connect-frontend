@@ -1,6 +1,6 @@
 "use client";
 
-import { EditDeleteButton } from "./EditDeleteButton";
+import { EditDeleteButton } from "@/components/ui/EditDeleteButton";
 
 type EditButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement>;
 

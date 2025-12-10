@@ -36,7 +36,7 @@ export function JobSelector({
           value={selectedJobGroupId}
           onValueChange={(v) => {
             const newGroupId = v === "all" ? "" : v;
-            onJobGroupChange(newGroupId);
+            onJobGroupChange?.(newGroupId);
           }}
         >
           <SelectTrigger className="w-full h-11 rounded-md bg-[#F5F5F5] border border-border-quaternary justify-between">
@@ -68,7 +68,7 @@ export function JobSelector({
           value={selectedJobRoleId}
           onValueChange={(v) => {
             const newRoleId = v === "all" ? "" : v;
-            onJobRoleChange(newRoleId);
+            onJobRoleChange?.(newRoleId);
           }}
           disabled={!selectedJobGroupId}
         >

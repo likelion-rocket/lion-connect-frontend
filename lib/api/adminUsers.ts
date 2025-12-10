@@ -94,3 +94,19 @@ export async function fetchAdminCompanies({
 
   return get<AdminCompaniesResponse>(url);
 }
+
+/**
+ * 기업 회원 잠금 API
+ * POST /api/admin/companies/{companyId}/lock
+ */
+export async function lockCompany(companyId: number): Promise<ProfileLockResponse> {
+  return post<ProfileLockResponse>(`/admin/companies/${companyId}/lock`);
+}
+
+/**
+ * 기업 회원 잠금 해제 API
+ * POST /api/admin/companies/{companyId}/unlock
+ */
+export async function unlockCompany(companyId: number): Promise<ProfileLockResponse> {
+  return post<ProfileLockResponse>(`/admin/companies/${companyId}/unlock`);
+}

@@ -2,6 +2,7 @@
 
 import ImageToggleButton from "@/components/ui/ImageToggleButton";
 import { useProfileLockStatus } from "@/hooks/admin/useProfileLockStatus";
+import { useAdminPermission } from "@/hooks/admin/useAdminPermission";
 
 interface UserTableRowProps {
   id: number;
@@ -11,7 +12,6 @@ interface UserTableRowProps {
   joinDate: string;
   roles: string[];
   locked?: boolean; // 프로필 잠금 상태
-  initialAdminPermission?: boolean;
 }
 
 /**
@@ -40,16 +40,15 @@ export default function UserTableRow({
   joinDate,
   roles,
   locked = false,
-  initialAdminPermission = false,
 }: UserTableRowProps) {
   // 프로필 잠금/해제 mutation
   const lockMutation = useProfileLockStatus(id);
 
+  // 관리자 권한 부여/제거 mutation
+  const adminMutation = useAdminPermission(id);
+
   // roles 배열에서 admin 여부 확인
   const isAdmin = roles.includes("ROLE_ADMIN") || roles.includes("ADMIN");
-
-  // 디버깅
-  console.log(`[UserTableRow ${id}] locked:`, locked, "isActive:", !locked);
 
   return (
     <tr data-state="default" data-type="normal" className="bg-white border-b-2 border-neutral-100">
@@ -79,11 +78,13 @@ export default function UserTableRow({
         <div className="flex justify-start items-center gap-4">
           {/* Admin Permission Toggle */}
           <ImageToggleButton
-            defaultActive={initialAdminPermission}
+            isActive={isAdmin}
+            onToggle={(isActive) => adminMutation.mutate(isActive)}
             grayImageSrc="/icons/solid-key.svg"
             orangeImageSrc="/icons/solid-key-orange.svg"
             size={20}
             alt="관리자 권한"
+            disabled={adminMutation.isPending}
           />
 
           {/* Active Status Toggle (Lock/Unlock) */}

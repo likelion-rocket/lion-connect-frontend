@@ -30,9 +30,6 @@ export default function UserTable({ users }: UserTableProps) {
               day: '2-digit',
             }).replace(/\. /g, '. ');
 
-            // roles 배열에서 admin 권한 확인
-            const hasAdminRole = user.roles.includes('ROLE_ADMIN') || user.roles.includes('ADMIN');
-
             return (
               <UserTableRow
                 key={user.id}
@@ -43,7 +40,6 @@ export default function UserTable({ users }: UserTableProps) {
                 joinDate={formattedDate}
                 roles={user.roles}
                 locked={user.locked}
-                initialAdminPermission={hasAdminRole}
               />
             );
           })}

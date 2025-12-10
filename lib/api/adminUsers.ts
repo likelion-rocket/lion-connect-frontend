@@ -1,7 +1,7 @@
 // lib/api/adminUsers.ts
 
 import { API_ENDPOINTS } from "@/constants/api";
-import { get, post } from "@/lib/apiClient";
+import { get, post, del } from "@/lib/apiClient";
 import { AdminUsersResponse, ProfileLockResponse } from "@/types/admin";
 
 /**
@@ -44,4 +44,20 @@ export async function lockProfile(profileId: number): Promise<ProfileLockRespons
  */
 export async function unlockProfile(profileId: number): Promise<ProfileLockResponse> {
   return post<ProfileLockResponse>(`/admin/profiles/${profileId}/unlock`);
+}
+
+/**
+ * 관리자 권한 부여 API
+ * POST /api/users/{userId}/roles?role=ADMIN
+ */
+export async function grantAdminRole(userId: number): Promise<void> {
+  return post<void>(`/users/${userId}/roles?role=ADMIN`);
+}
+
+/**
+ * 관리자 권한 제거 API
+ * DELETE /api/users/{userId}/roles?role=ADMIN
+ */
+export async function revokeAdminRole(userId: number): Promise<void> {
+  return del<void>(`/users/${userId}/roles?role=ADMIN`);
 }

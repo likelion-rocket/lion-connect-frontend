@@ -2,7 +2,7 @@
 
 import { API_ENDPOINTS } from "@/constants/api";
 import { get, post, del } from "@/lib/apiClient";
-import { AdminUsersResponse, ProfileLockResponse } from "@/types/admin";
+import { AdminUsersResponse, AdminCompaniesResponse, ProfileLockResponse } from "@/types/admin";
 
 /**
  * 관리자 사용자 목록 조회 파라미터
@@ -60,4 +60,37 @@ export async function grantAdminRole(userId: number): Promise<void> {
  */
 export async function revokeAdminRole(userId: number): Promise<void> {
   return del<void>(`/users/${userId}/roles?role=ADMIN`);
+}
+
+// ───────────────── 기업 회원 관리 ─────────────────
+
+/**
+ * 관리자 기업 회원 목록 조회 파라미터
+ */
+export type FetchAdminCompaniesParams = {
+  page?: number;
+  size?: number;
+  sort?: string;
+};
+
+/**
+ * 관리자 기업 회원 목록 조회 API (클라이언트 컴포넌트용)
+ * GET /api/admin/companies?page={page}&size={size}&sort={sort}
+ */
+export async function fetchAdminCompanies({
+  page = 0,
+  size = 20,
+  sort,
+}: FetchAdminCompaniesParams = {}): Promise<AdminCompaniesResponse> {
+  const params = new URLSearchParams();
+
+  params.set("page", String(page));
+  params.set("size", String(size));
+  if (sort) {
+    params.set("sort", sort);
+  }
+
+  const url = `${API_ENDPOINTS.ADMIN.COMPANIES.LIST}?${params.toString()}`;
+
+  return get<AdminCompaniesResponse>(url);
 }

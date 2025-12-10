@@ -20,7 +20,7 @@ export const jobFormSchema = z.object({
 
   // 고용 형태
   employmentType: z.enum(["FULL_TIME", "INTERN"], {
-    required_error: "고용 형태를 선택해주세요",
+    message: "고용 형태를 선택해주세요",
   }),
 
   // 회사/직무 소개

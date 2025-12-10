@@ -23,15 +23,19 @@ interface JobFormProps {
 
 const employmentTypeOptions: RadioOption[] = [
   { value: "FULL_TIME", label: "정규직" },
-  { value: "INTERN", label: "인턴" }
+  { value: "INTERN", label: "인턴" },
 ];
 
-export function JobForm({ initialData, onSubmit, submitButtonText = "채용 공고 등록하기" }: JobFormProps) {
+export function JobForm({
+  initialData,
+  onSubmit,
+  submitButtonText = "채용 공고 등록하기",
+}: JobFormProps) {
   const {
     register,
     handleSubmit,
     control,
-    formState: { errors, isSubmitting, isValid }
+    formState: { errors, isSubmitting, isValid },
   } = useForm<JobFormData>({
     resolver: zodResolver(jobFormSchema),
     mode: "onChange",
@@ -46,8 +50,8 @@ export function JobForm({ initialData, onSubmit, submitButtonText = "채용 공�
       benefits: "",
       hiringProcess: "",
       location: "",
-      ...initialData
-    }
+      ...initialData,
+    },
   });
 
   const handleFormSubmit = async (data: JobFormData) => {
@@ -55,7 +59,10 @@ export function JobForm({ initialData, onSubmit, submitButtonText = "채용 공�
   };
 
   return (
-    <form onSubmit={handleSubmit(handleFormSubmit)} className="w-[1160px] inline-flex flex-col justify-start items-start gap-12">
+    <form
+      onSubmit={handleSubmit(handleFormSubmit)}
+      className="w-[1160px] inline-flex flex-col justify-start items-start gap-12"
+    >
       {/* 헤더 */}
       <div className="self-stretch justify-start text-neutral-800 text-xl font-semibold font-['Pretendard'] leading-7">
         채용 공고 등록
@@ -85,11 +92,7 @@ export function JobForm({ initialData, onSubmit, submitButtonText = "채용 공�
           <div className="self-stretch p-8 bg-white rounded-lg outline outline-[0.80px] outline-offset-[-0.80px] outline-neutral-200 flex flex-col justify-start items-start gap-12 overflow-hidden">
             {/* 공고명 */}
             <FormField label="공고명" required error={errors.title?.message}>
-              <FormInput
-                {...register("title")}
-                placeholder="공고명"
-                error={!!errors.title}
-              />
+              <FormInput {...register("title")} placeholder="공고명" error={!!errors.title} />
             </FormField>
 
             {/* 고용 형태 */}
@@ -147,7 +150,9 @@ export function JobForm({ initialData, onSubmit, submitButtonText = "채용 공�
             <FormField label="자격요건" required error={errors.requirements?.message}>
               <FormTextarea
                 {...register("requirements")}
-                placeholder={"연차 스킬 등 지원자가 꼭 갖춰야 할 조건을 명확하게 기재해주세요\n예) 해당 직무 경력 2년 이상, Python 사용자"}
+                placeholder={
+                  "연차 스킬 등 지원자가 꼭 갖춰야 할 조건을 명확하게 기재해주세요\n예) 해당 직무 경력 2년 이상, Python 사용자"
+                }
                 rows={8}
                 error={!!errors.requirements}
               />
@@ -157,7 +162,9 @@ export function JobForm({ initialData, onSubmit, submitButtonText = "채용 공�
             <FormField label="우대사항" required error={errors.preferredQualifications?.message}>
               <FormTextarea
                 {...register("preferredQualifications")}
-                placeholder={"기대하는 인재상, 우대 조건(경험, 지식, 관심 등)을 안내해 주세요.\n많은 조건을 입력할수록 다양한 역량을 가진 지원자를 만나볼 가능성이 높아집니다."}
+                placeholder={
+                  "기대하는 인재상, 우대 조건(경험, 지식, 관심 등)을 안내해 주세요.\n많은 조건을 입력할수록 다양한 역량을 가진 지원자를 만나볼 가능성이 높아집니다."
+                }
                 rows={8}
                 error={!!errors.preferredQualifications}
               />
@@ -167,7 +174,9 @@ export function JobForm({ initialData, onSubmit, submitButtonText = "채용 공�
             <FormField label="혜택 및 복지" required error={errors.benefits?.message}>
               <FormTextarea
                 {...register("benefits")}
-                placeholder={"우리 회사의 다양한 혜택 및 복지 제도를 소개해 주세요.\n사람마다 기대하는 혜택이 다르므로, 최대한 많은 요소를 안내할수록 좋습니다."}
+                placeholder={
+                  "우리 회사의 다양한 혜택 및 복지 제도를 소개해 주세요.\n사람마다 기대하는 혜택이 다르므로, 최대한 많은 요소를 안내할수록 좋습니다."
+                }
                 rows={8}
                 error={!!errors.benefits}
               />
@@ -182,7 +191,9 @@ export function JobForm({ initialData, onSubmit, submitButtonText = "채용 공�
             >
               <FormTextarea
                 {...register("hiringProcess")}
-                placeholder={"채용 전형을 입력해주세요.\n예) 서류 전형 -1차 면접(직무 적합성) - 2차 면접(조직 적합성) - 레퍼런스 체크 - 처우협의&입사일 조정"}
+                placeholder={
+                  "채용 전형을 입력해주세요.\n예) 서류 전형 -1차 면접(직무 적합성) - 2차 면접(조직 적합성) - 레퍼런스 체크 - 처우협의&입사일 조정"
+                }
                 rows={8}
                 error={!!errors.hiringProcess}
               />

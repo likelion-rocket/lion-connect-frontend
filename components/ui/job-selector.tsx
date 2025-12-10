@@ -12,10 +12,10 @@ import {
 import { JOB_GROUPS, findJobGroupById } from "@/constants/jobMapping";
 
 type JobSelectorProps = {
-  selectedJobGroupId: string;
-  selectedJobRoleId: string;
-  onJobGroupChange: (jobGroupId: string) => void;
-  onJobRoleChange: (jobRoleId: string) => void;
+  selectedJobGroupId?: string;
+  selectedJobRoleId?: string;
+  onJobGroupChange?: (jobGroupId: string) => void;
+  onJobRoleChange?: (jobRoleId: string) => void;
 };
 
 export function JobSelector({

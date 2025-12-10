@@ -38,7 +38,7 @@ export default function CompanyTable({ companies }: CompanyTableProps) {
                 phoneNumber={company.phoneNumber}
                 email={company.email}
                 joinDate={formattedDate}
-                locked={company.locked}
+                companyLocked={company.companyLocked}
               />
             );
           })}

@@ -11,7 +11,7 @@ import { AdminUsersResponse } from "@/types/admin";
  * - 잠금 상태(locked): lock API 호출
  * - 해제 상태(unlocked): unlock API 호출
  *
- * @param profileId - 대상 프로필 ID
+ * @param userId - 대상 사용자 ID
  *
  * @example
  * const lockMutation = useProfileLockStatus(userId);
@@ -22,16 +22,16 @@ import { AdminUsersResponse } from "@/types/admin";
  * // 해제 상태로 전환 (현재 잠금 상태 → 해제)
  * lockMutation.mutate(false);
  */
-export function useProfileLockStatus(profileId: number) {
+export function useProfileLockStatus(userId: number) {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async (shouldLock: boolean) => {
       // shouldLock이 true면 잠금, false면 해제
       if (shouldLock) {
-        return await lockProfile(profileId);
+        return await lockProfile(userId);
       } else {
-        return await unlockProfile(profileId);
+        return await unlockProfile(userId);
       }
     },
     // Optimistic Update: 서버 응답 전에 UI 즉시 업데이트
@@ -53,7 +53,7 @@ export function useProfileLockStatus(profileId: number) {
           return {
             ...old,
             content: old.content.map((user) =>
-              user.id === profileId
+              user.id === userId
                 ? { ...user, locked: shouldLock } // locked 필드 업데이트
                 : user
             ),

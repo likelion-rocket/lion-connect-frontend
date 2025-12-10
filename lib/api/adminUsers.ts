@@ -32,18 +32,18 @@ export async function fetchAdminUsers({
 
 /**
  * 프로필 잠금 API
- * POST /api/admin/profiles/{profileId}/lock
+ * POST /api/admin/users/{userId}/lock
  */
-export async function lockProfile(profileId: number): Promise<ProfileLockResponse> {
-  return post<ProfileLockResponse>(`/admin/profiles/${profileId}/lock`);
+export async function lockProfile(userId: number): Promise<ProfileLockResponse> {
+  return post<ProfileLockResponse>(`/admin/users/${userId}/lock`);
 }
 
 /**
  * 프로필 잠금 해제 API
- * POST /api/admin/profiles/{profileId}/unlock
+ * POST /api/admin/users/{userId}/unlock
  */
-export async function unlockProfile(profileId: number): Promise<ProfileLockResponse> {
-  return post<ProfileLockResponse>(`/admin/profiles/${profileId}/unlock`);
+export async function unlockProfile(userId: number): Promise<ProfileLockResponse> {
+  return post<ProfileLockResponse>(`/admin/users/${userId}/unlock`);
 }
 
 /**

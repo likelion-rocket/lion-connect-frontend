@@ -1,19 +1,9 @@
 import UserTableHeader from './UserTableHeader';
 import UserTableRow from './UserTableRow';
-
-interface User {
-  id: string;
-  name: string;
-  company: string;
-  email: string;
-  joinDate: string;
-  role: 'admin' | 'normalUser';
-  hasAdminPermission: boolean;
-  isActive: boolean;
-}
+import { AdminUserItem } from '@/types/admin';
 
 interface UserTableProps {
-  users: User[];
+  users: AdminUserItem[];
 }
 
 /**
@@ -32,18 +22,31 @@ export default function UserTable({ users }: UserTableProps) {
       <table className="w-full border-collapse">
         <UserTableHeader />
         <tbody className="bg-white rounded-bl-lg rounded-br-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.06)] shadow-[0px_1px_3px_0px_rgba(0,0,0,0.10)]">
-          {users.map((user) => (
-            <UserTableRow
-              key={user.id}
-              name={user.name}
-              company={user.company}
-              email={user.email}
-              joinDate={user.joinDate}
-              role={user.role}
-              initialAdminPermission={user.hasAdminPermission}
-              initialActivePermission={user.isActive}
-            />
-          ))}
+          {users.map((user) => {
+            // joinedAt을 "YYYY. MM.DD" 형식으로 변환
+            const formattedDate = new Date(user.joinedAt).toLocaleDateString('ko-KR', {
+              year: 'numeric',
+              month: '2-digit',
+              day: '2-digit',
+            }).replace(/\. /g, '. ');
+
+            // roles 배열에서 admin 권한 확인
+            const hasAdminRole = user.roles.includes('ROLE_ADMIN') || user.roles.includes('ADMIN');
+
+            return (
+              <UserTableRow
+                key={user.id}
+                id={user.id}
+                name={user.name}
+                phoneNumber={user.phoneNumber}
+                email={user.email}
+                joinDate={formattedDate}
+                roles={user.roles}
+                initialAdminPermission={hasAdminRole}
+                initialActivePermission={true}
+              />
+            );
+          })}
         </tbody>
       </table>
     </div>

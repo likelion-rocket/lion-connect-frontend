@@ -13,10 +13,11 @@ import {
 type PagerProps = {
   currentPage: number; // 현재 페이지 (1-based)
   totalPages: number; // 전체 페이지 수
+  pageSize?: number; // 페이지 사이즈 (옵션, 있으면 URL에 포함)
   className?: string;
 };
 
-export default function Pager({ currentPage, totalPages, className }: PagerProps) {
+export default function Pager({ currentPage, totalPages, pageSize, className }: PagerProps) {
   // 현재 페이지를 유효 범위로 클램프
   const page = Math.max(1, Math.min(currentPage, totalPages));
 
@@ -41,10 +42,15 @@ export default function Pager({ currentPage, totalPages, className }: PagerProps
     pagesToRender.push(p);
   }
 
-  // "/talents?page=X" 형태를 만들 helper
+  // "/talents?page=X&size=Y" 형태를 만들 helper
   // (필요하다면 basePath나 다른 쿼리도 쉽게 확장 가능)
   const hrefFor = (p: number) => {
-    return `?page=${p}`;
+    const params = new URLSearchParams();
+    params.set("page", String(p));
+    if (pageSize !== undefined) {
+      params.set("size", String(pageSize));
+    }
+    return `?${params.toString()}`;
   };
 
   return (

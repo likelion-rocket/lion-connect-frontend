@@ -85,6 +85,9 @@ export const API_ENDPOINTS = {
       LIST: "/admin/inquiries", // GET
       UPDATE_STATUS: (id: number) => `/admin/inquiries/${id}/status`, // PATCH
     },
+    USERS: {
+      LIST: "/admin/users", // GET - 사용자 목록 조회
+    },
   },
   JOBS: {
     GET: "/profile/job-categories-with-groups", // GET

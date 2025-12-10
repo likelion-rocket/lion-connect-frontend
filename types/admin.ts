@@ -86,3 +86,17 @@ export type ProfileLockResponse = {
   createdAt: string;
   updatedAt: string;
 };
+
+// ───────────────── 기업 회원 관리 타입 ─────────────────
+
+/**
+ * 관리자 - 기업 회원 목록 단일 항목
+ * AdminUserItem과 동일한 구조
+ */
+export type AdminCompanyItem = AdminUserItem;
+
+/**
+ * 관리자 - 기업 회원 목록 응답 (페이지네이션 포함)
+ * AdminUsersResponse와 동일한 구조
+ */
+export type AdminCompaniesResponse = AdminUsersResponse;

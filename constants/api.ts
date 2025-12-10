@@ -88,6 +88,9 @@ export const API_ENDPOINTS = {
     USERS: {
       LIST: "/admin/users", // GET - 사용자 목록 조회
     },
+    COMPANIES: {
+      LIST: "/admin/companies", // GET - 기업 회원 목록 조회
+    },
   },
   JOBS: {
     GET: "/profile/job-categories-with-groups", // GET

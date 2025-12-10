@@ -1,41 +1,41 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { lockProfile, unlockProfile } from "@/lib/api/adminUsers";
+import { grantAdminRole, revokeAdminRole } from "@/lib/api/adminUsers";
 import { AdminUsersResponse } from "@/types/admin";
 
 /**
- * 프로필 잠금/해제 상태 관리 커스텀 훅
+ * 관리자 권한 관리 커스텀 훅
  *
  * @description
- * 관리자가 사용자 프로필을 잠금/해제할 수 있는 기능을 제공합니다.
+ * 사용자에게 관리자 권한을 부여하거나 제거할 수 있는 기능을 제공합니다.
  * Optimistic Update를 사용하여 즉시 UI를 업데이트하고, 에러 시 롤백합니다.
- * - 잠금 상태(locked): lock API 호출
- * - 해제 상태(unlocked): unlock API 호출
+ * - 권한 부여: POST /api/users/{userId}/roles?role=ADMIN
+ * - 권한 제거: DELETE /api/users/{userId}/roles?role=ADMIN
  *
- * @param profileId - 대상 프로필 ID
+ * @param userId - 대상 사용자 ID
  *
  * @example
- * const lockMutation = useProfileLockStatus(userId);
+ * const adminMutation = useAdminPermission(userId);
  *
- * // 잠금 상태로 전환 (현재 해제 상태 → 잠금)
- * lockMutation.mutate(true);
+ * // 관리자 권한 부여 (현재 일반 회원 → 관리자)
+ * adminMutation.mutate(true);
  *
- * // 해제 상태로 전환 (현재 잠금 상태 → 해제)
- * lockMutation.mutate(false);
+ * // 관리자 권한 제거 (현재 관리자 → 일반 회원)
+ * adminMutation.mutate(false);
  */
-export function useProfileLockStatus(profileId: number) {
+export function useAdminPermission(userId: number) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (shouldLock: boolean) => {
-      // shouldLock이 true면 잠금, false면 해제
-      if (shouldLock) {
-        return await lockProfile(profileId);
+    mutationFn: async (shouldGrantAdmin: boolean) => {
+      // shouldGrantAdmin이 true면 권한 부여, false면 권한 제거
+      if (shouldGrantAdmin) {
+        return await grantAdminRole(userId);
       } else {
-        return await unlockProfile(profileId);
+        return await revokeAdminRole(userId);
       }
     },
     // Optimistic Update: 서버 응답 전에 UI 즉시 업데이트
-    onMutate: async (shouldLock: boolean) => {
+    onMutate: async (shouldGrantAdmin: boolean) => {
       // 모든 adminUsers 쿼리 취소 (페이지네이션 포함)
       await queryClient.cancelQueries({ queryKey: ["adminUsers"] });
 
@@ -53,8 +53,13 @@ export function useProfileLockStatus(profileId: number) {
           return {
             ...old,
             content: old.content.map((user) =>
-              user.id === profileId
-                ? { ...user, locked: shouldLock } // locked 필드 업데이트
+              user.id === userId
+                ? {
+                    ...user,
+                    roles: shouldGrantAdmin
+                      ? [...user.roles.filter(r => r !== "ROLE_ADMIN"), "ROLE_ADMIN"] // ADMIN 역할 추가
+                      : user.roles.filter(r => r !== "ROLE_ADMIN"), // ADMIN 역할 제거
+                  }
                 : user
             ),
           };
@@ -66,7 +71,7 @@ export function useProfileLockStatus(profileId: number) {
     },
     // 에러 발생 시 롤백
     onError: (error, _variables, context) => {
-      console.error("프로필 잠금 상태 변경 실패:", error);
+      console.error("관리자 권한 변경 실패:", error);
 
       // 이전 데이터로 복원
       if (context?.previousQueries) {

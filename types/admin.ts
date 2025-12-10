@@ -22,3 +22,49 @@ export type AdminTableResponse = {
   totalPages: number;
   totalCount: number;
 };
+
+// ───────────────── 사용자 관리 타입 ─────────────────
+
+/**
+ * 관리자 - 사용자 목록 단일 항목
+ */
+export type AdminUserItem = {
+  id: number;
+  name: string;
+  phoneNumber: string;
+  email: string;
+  joinedAt: string;
+  roles: string[];
+};
+
+/**
+ * 관리자 - 사용자 목록 응답 (페이지네이션 포함)
+ */
+export type AdminUsersResponse = {
+  totalPages: number;
+  totalElements: number;
+  size: number;
+  content: AdminUserItem[];
+  number: number;
+  sort: {
+    empty: boolean;
+    sorted: boolean;
+    unsorted: boolean;
+  };
+  first: boolean;
+  last: boolean;
+  numberOfElements: number;
+  pageable: {
+    offset: number;
+    sort: {
+      empty: boolean;
+      sorted: boolean;
+      unsorted: boolean;
+    };
+    paged: boolean;
+    pageNumber: number;
+    pageSize: number;
+    unpaged: boolean;
+  };
+  empty: boolean;
+};

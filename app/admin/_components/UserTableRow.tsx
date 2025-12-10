@@ -1,11 +1,12 @@
 import ImageToggleButton from '@/components/ui/ImageToggleButton';
 
 interface UserTableRowProps {
+  id: number;
   name: string;
-  company: string;
+  phoneNumber: string;
   email: string;
   joinDate: string;
-  role: 'admin' | 'normalUser';
+  roles: string[];
   initialAdminPermission?: boolean;
   initialActivePermission?: boolean;
 }
@@ -29,14 +30,18 @@ interface UserTableRowProps {
  * />
  */
 export default function UserTableRow({
+  id,
   name,
-  company,
+  phoneNumber,
   email,
   joinDate,
-  role,
+  roles,
   initialAdminPermission = false,
   initialActivePermission = false,
 }: UserTableRowProps) {
+  // roles 배열에서 admin 여부 확인
+  const isAdmin = roles.includes('ROLE_ADMIN') || roles.includes('ADMIN');
+
   return (
     <tr
       data-state="default"
@@ -47,7 +52,7 @@ export default function UserTableRow({
         {name}
       </td>
       <td className="px-9 py-4 text-neutral-800 text-sm font-normal font-['Pretendard'] leading-5">
-        {company}
+        {phoneNumber}
       </td>
       <td className="px-9 py-4 text-neutral-800 text-sm font-normal font-['Pretendard'] leading-5">
         {email}
@@ -57,14 +62,14 @@ export default function UserTableRow({
       </td>
       <td className="px-9 py-4">
         <span
-          data-type={role}
+          data-type={isAdmin ? 'admin' : 'normalUser'}
           className={`inline-flex px-2.5 py-0.5 rounded justify-center items-center ${
-            role === 'admin'
+            isAdmin
               ? 'bg-red-600/20 text-red-600'
               : 'bg-teal-500/20 text-teal-500'
           } text-sm font-normal font-['Pretendard'] leading-5`}
         >
-          {role === 'admin' ? '관리자' : '일반 회원'}
+          {isAdmin ? '관리자' : '일반 회원'}
         </span>
       </td>
       <td className="px-9 py-4">

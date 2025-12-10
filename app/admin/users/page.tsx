@@ -1,163 +1,58 @@
-import UserTable from '../_components/UserTable';
+"use client";
 
-// Mock data for demonstration
-const mockUsers = [
-  {
-    id: '1',
-    name: '유재민',
-    company: '멋쟁이사자처럼(기업명)',
-    email: '1234@gmail.com',
-    joinDate: '2025. 11.25',
-    role: 'admin' as const,
-    hasAdminPermission: true,
-    isActive: true,
-  },
-  {
-    id: '2',
-    name: '유재민',
-    company: '멋쟁이사자처럼(기업명)',
-    email: '1234@gmail.com',
-    joinDate: '2025. 11.25',
-    role: 'normalUser' as const,
-    hasAdminPermission: false,
-    isActive: true,
-  },
-  {
-    id: '3',
-    name: '유재민',
-    company: '멋쟁이사자처럼(기업명)',
-    email: '1234@gmail.com',
-    joinDate: '2025. 11.25',
-    role: 'normalUser' as const,
-    hasAdminPermission: false,
-    isActive: true,
-  },
-  {
-    id: '4',
-    name: '유재민',
-    company: '멋쟁이사자처럼(기업명)',
-    email: '1234@gmail.com',
-    joinDate: '2025. 11.25',
-    role: 'normalUser' as const,
-    hasAdminPermission: false,
-    isActive: true,
-  },
-  {
-    id: '5',
-    name: '유재민',
-    company: '멋쟁이사자처럼(기업명)',
-    email: '1234@gmail.com',
-    joinDate: '2025. 11.25',
-    role: 'normalUser' as const,
-    hasAdminPermission: false,
-    isActive: true,
-  },
-  {
-    id: '6',
-    name: '유재민',
-    company: '멋쟁이사자처럼(기업명)',
-    email: '1234@gmail.com',
-    joinDate: '2025. 11.25',
-    role: 'normalUser' as const,
-    hasAdminPermission: false,
-    isActive: true,
-  },
-  {
-    id: '7',
-    name: '유재민',
-    company: '멋쟁이사자처럼(기업명)',
-    email: '1234@gmail.com',
-    joinDate: '2025. 11.25',
-    role: 'normalUser' as const,
-    hasAdminPermission: false,
-    isActive: true,
-  },
-  {
-    id: '8',
-    name: '유재민',
-    company: '멋쟁이사자처럼(기업명)',
-    email: '1234@gmail.com',
-    joinDate: '2025. 11.25',
-    role: 'normalUser' as const,
-    hasAdminPermission: false,
-    isActive: true,
-  },
-  {
-    id: '9',
-    name: '유재민',
-    company: '멋쟁이사자처럼(기업명)',
-    email: '1234@gmail.com',
-    joinDate: '2025. 11.25',
-    role: 'normalUser' as const,
-    hasAdminPermission: false,
-    isActive: true,
-  },
-  {
-    id: '10',
-    name: '유재민',
-    company: '멋쟁이사자처럼(기업명)',
-    email: '1234@gmail.com',
-    joinDate: '2025. 11.25',
-    role: 'normalUser' as const,
-    hasAdminPermission: false,
-    isActive: true,
-  },
-  {
-    id: '11',
-    name: '유재민',
-    company: '멋쟁이사자처럼(기업명)',
-    email: '1234@gmail.com',
-    joinDate: '2025. 11.25',
-    role: 'normalUser' as const,
-    hasAdminPermission: false,
-    isActive: true,
-  },
-  {
-    id: '12',
-    name: '유재민',
-    company: '멋쟁이사자처럼(기업명)',
-    email: '1234@gmail.com',
-    joinDate: '2025. 11.25',
-    role: 'normalUser' as const,
-    hasAdminPermission: false,
-    isActive: true,
-  },
-  {
-    id: '13',
-    name: '유재민',
-    company: '멋쟁이사자처럼(기업명)',
-    email: '1234@gmail.com',
-    joinDate: '2025. 11.25',
-    role: 'normalUser' as const,
-    hasAdminPermission: false,
-    isActive: true,
-  },
-  {
-    id: '14',
-    name: '유재민',
-    company: '멋쟁이사자처럼(기업명)',
-    email: '1234@gmail.com',
-    joinDate: '2025. 11.25',
-    role: 'normalUser' as const,
-    hasAdminPermission: false,
-    isActive: true,
-  },
-  {
-    id: '15',
-    name: '유재민',
-    company: '멋쟁이사자처럼(기업명)',
-    email: '1234@gmail.com',
-    joinDate: '2025. 11.25',
-    role: 'normalUser' as const,
-    hasAdminPermission: false,
-    isActive: true,
-  },
-];
+import { useSearchParams } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
+import Pager from "@/components/Pager";
+import UserTable from "../_components/UserTable";
+import { fetchAdminUsers } from "@/lib/api/adminUsers";
 
-function AdminUsers() {
+export default function AdminUsersPage() {
+  const searchParams = useSearchParams();
+
+  // URL에서 page와 size 파라미터 읽기 (기본값: page=1, size=20)
+  const page = searchParams.get("page") ? parseInt(searchParams.get("page")!, 10) : 1;
+  const size = searchParams.get("size") ? parseInt(searchParams.get("size")!, 10) : 20;
+
+  // API는 0-based 인덱싱을 사용하므로 page - 1
+  const apiPage = Math.max(0, page - 1);
+
+  // TanStack Query를 사용한 데이터 패칭
+  const { data, isLoading, isError, error } = useQuery({
+    queryKey: ["adminUsers", apiPage, size],
+    queryFn: () => fetchAdminUsers({ page: apiPage, size }),
+  });
+
+  // 로딩 상태
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-neutral-500">로딩 중...</div>
+      </div>
+    );
+  }
+
+  // 에러 상태
+  if (isError) {
+    console.error("Failed to fetch admin users:", error);
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-red-500">
+          사용자 목록을 불러오는데 실패했습니다.
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <UserTable users={mockUsers} />
+    <>
+      <UserTable users={data?.content || []} />
+      <div className="pt-16 pb-8">
+        <Pager
+          currentPage={page}
+          totalPages={data?.totalPages || 1}
+          pageSize={size}
+        />
+      </div>
+    </>
   );
 }
-
-export default AdminUsers;

@@ -13,7 +13,7 @@ export default function UserTableHeader() {
           이름
         </th>
         <th className="px-9 py-2 text-left text-neutral-800 text-sm font-normal font-['Pretendard'] leading-5">
-          기업명
+          전화번호
         </th>
         <th className="px-9 py-2 text-left text-neutral-800 text-sm font-normal font-['Pretendard'] leading-5">
           이메일

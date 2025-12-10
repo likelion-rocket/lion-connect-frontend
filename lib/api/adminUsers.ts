@@ -1,8 +1,8 @@
 // lib/api/adminUsers.ts
 
 import { API_ENDPOINTS } from "@/constants/api";
-import { get } from "@/lib/apiClient";
-import { AdminUsersResponse } from "@/types/admin";
+import { get, post } from "@/lib/apiClient";
+import { AdminUsersResponse, ProfileLockResponse } from "@/types/admin";
 
 /**
  * 관리자 사용자 목록 조회 파라미터
@@ -28,4 +28,20 @@ export async function fetchAdminUsers({
   const url = `${API_ENDPOINTS.ADMIN.USERS.LIST}?${params.toString()}`;
 
   return get<AdminUsersResponse>(url);
+}
+
+/**
+ * 프로필 잠금 API
+ * POST /api/admin/profiles/{profileId}/lock
+ */
+export async function lockProfile(profileId: number): Promise<ProfileLockResponse> {
+  return post<ProfileLockResponse>(`/admin/profiles/${profileId}/lock`);
+}
+
+/**
+ * 프로필 잠금 해제 API
+ * POST /api/admin/profiles/{profileId}/unlock
+ */
+export async function unlockProfile(profileId: number): Promise<ProfileLockResponse> {
+  return post<ProfileLockResponse>(`/admin/profiles/${profileId}/unlock`);
 }

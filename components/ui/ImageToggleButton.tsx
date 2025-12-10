@@ -4,7 +4,7 @@ import { cn } from "@/utils/utils";
 import Image from "next/image";
 import { useState } from "react";
 
-interface ImageToggleButtonProps {
+interface ImageToggleButtonProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'onClick' | 'onToggle'> {
   /**
    * 초기 활성화 상태 (uncontrolled mode)
    * - true: 주황색 이미지 표시
@@ -32,10 +32,6 @@ interface ImageToggleButtonProps {
    * 이미지 크기 (width, height)
    */
   size?: number;
-  /**
-   * 커스텀 클래스명
-   */
-  className?: string;
   /**
    * 이미지 alt 텍스트
    */
@@ -81,17 +77,21 @@ export default function ImageToggleButton({
   size = 24,
   className,
   alt = "toggle button",
+  disabled = false,
+  ...props
 }: ImageToggleButtonProps) {
   // Uncontrolled mode: 내부 상태 관리
   const [internalActive, setInternalActive] = useState(defaultActive);
-  
+
   // Controlled mode인지 확인
   const isControlled = controlledIsActive !== undefined;
   const isActive = isControlled ? controlledIsActive : internalActive;
 
   const handleClick = () => {
+    if (disabled) return;
+
     const newState = !isActive;
-    
+
     if (isControlled) {
       // Controlled mode: 부모에게 상태 변경 알림
       onToggle?.(newState);
@@ -105,16 +105,20 @@ export default function ImageToggleButton({
     <button
       type="button"
       onClick={handleClick}
+      disabled={disabled}
       data-state={isActive ? "active" : "default"}
       className={cn(
-        "w-10 p-2.5 rounded-lg inline-flex items-center justify-center cursor-pointer transition-colors",
+        "w-10 p-2.5 rounded-lg inline-flex items-center justify-center transition-colors",
+        disabled ? "cursor-not-allowed opacity-50" : "cursor-pointer",
         isActive
-          ? "bg-neutral-100 outline outline-[0.80px] outline-offset-[-0.80px] outline-orange-600"
-          : "bg-white outline outline-1 outline-offset-[-1px] outline-neutral-200",
+          ? "bg-neutral-100 outline-[0.80px] outline-offset-[-0.80px] outline-orange-600"
+          : "bg-white outline-1 -outline-offset-1 outline-neutral-200",
         className
       )}
       aria-pressed={isActive}
       aria-label={alt}
+      aria-disabled={disabled}
+      {...props}
     >
       <Image
         src={isActive ? orangeImageSrc : grayImageSrc}

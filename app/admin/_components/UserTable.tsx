@@ -42,8 +42,8 @@ export default function UserTable({ users }: UserTableProps) {
                 email={user.email}
                 joinDate={formattedDate}
                 roles={user.roles}
+                locked={user.locked}
                 initialAdminPermission={hasAdminRole}
-                initialActivePermission={true}
               />
             );
           })}

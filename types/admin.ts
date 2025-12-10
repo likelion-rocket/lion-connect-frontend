@@ -35,6 +35,7 @@ export type AdminUserItem = {
   email: string;
   joinedAt: string;
   roles: string[];
+  locked?: boolean; // 프로필 잠금 상태
 };
 
 /**
@@ -67,4 +68,21 @@ export type AdminUsersResponse = {
     unpaged: boolean;
   };
   empty: boolean;
+};
+
+/**
+ * 프로필 잠금/해제 응답 타입
+ */
+export type ProfileLockResponse = {
+  id: number;
+  name: string;
+  title: string;
+  introduction: string;
+  storageUrl: string;
+  likelionCode: string;
+  visibility: "PUBLIC" | "PRIVATE";
+  status: "DRAFT" | "PUBLISHED";
+  locked: boolean;
+  createdAt: string;
+  updatedAt: string;
 };

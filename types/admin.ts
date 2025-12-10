@@ -91,12 +91,46 @@ export type ProfileLockResponse = {
 
 /**
  * 관리자 - 기업 회원 목록 단일 항목
- * AdminUserItem과 동일한 구조
+ * AdminUserItem과 유사하나 companyLocked 필드 사용
  */
-export type AdminCompanyItem = AdminUserItem;
+export type AdminCompanyItem = {
+  id: number;
+  name: string;
+  phoneNumber: string;
+  email: string;
+  joinedAt: string;
+  roles: string[];
+  companyLocked?: boolean; // 기업 회원 잠금 상태
+};
 
 /**
  * 관리자 - 기업 회원 목록 응답 (페이지네이션 포함)
- * AdminUsersResponse와 동일한 구조
  */
-export type AdminCompaniesResponse = AdminUsersResponse;
+export type AdminCompaniesResponse = {
+  totalPages: number;
+  totalElements: number;
+  size: number;
+  content: AdminCompanyItem[];
+  number: number;
+  sort: {
+    empty: boolean;
+    sorted: boolean;
+    unsorted: boolean;
+  };
+  first: boolean;
+  last: boolean;
+  numberOfElements: number;
+  pageable: {
+    offset: number;
+    sort: {
+      empty: boolean;
+      sorted: boolean;
+      unsorted: boolean;
+    };
+    paged: boolean;
+    pageNumber: number;
+    pageSize: number;
+    unpaged: boolean;
+  };
+  empty: boolean;
+};

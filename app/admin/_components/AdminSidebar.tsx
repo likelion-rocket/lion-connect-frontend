@@ -10,18 +10,14 @@ const menuItems = [
     label: "기업 문의 리스팅",
     href: "/admin/inquiries",
   },
-  // {
-  //   label: "직군 직무 관리",
-  //   href: "/admin/positions",
-  // },
-  // {
-  //   label: "스킬 성향 경험 관리",
-  //   href: "/admin/attributes",
-  // },
-  // {
-  //   label: "사용자 계정 관리",
-  //   href: "/admin/users",
-  // },
+  {
+    label: "사용자 계정 관리",
+    href: "/admin/users",
+  },
+  {
+    label: "기업 계정 관리",
+    href: "/admin/companies",
+  },
 ];
 
 export function AdminSidebar() {

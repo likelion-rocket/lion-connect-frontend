@@ -1,6 +1,6 @@
 /**
  * 언어 섹션 컴포넌트
- * 필드: languages[].languageName, languages[].level, languages[].issueDate
+ * 필드: languages[].languageName, languages[].issueDate
  * 배열 구조로 여러 개 언어 추가 가능
  * DELETE API: deleteLanguage(id)
  */
@@ -55,7 +55,6 @@ export default function LanguagesSection({ profileId }: LanguagesSectionProps) {
     append({
       id: undefined, // 명시적으로 undefined 설정 - 삭제 후 추가 시 이전 id가 재사용되는 문제 방지
       languageName: "",
-      level: "",
       issueDate: "",
     });
   };
@@ -121,7 +120,7 @@ function LanguageItem({
   });
 
   const hasLanguageValue =
-    languageFields?.languageName || languageFields?.level || languageFields?.issueDate;
+    languageFields?.languageName || languageFields?.issueDate;
 
   // DELETE 핸들러
   const handleDelete = async () => {

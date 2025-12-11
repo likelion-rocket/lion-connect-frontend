@@ -95,14 +95,14 @@
   --text-5xl-size: 3rem; /* 48px */
   --text-5xl-line: 1.1; /* display tighter */
 
-  --font-ko-title: "SUIT", Pretendard, system-ui, "Noto Sans KR", "Malgun Gothic", sans-serif;
-  --font-ko-body: Pretendard, system-ui, "Noto Sans KR", "Malgun Gothic", sans-serif;
+  --font-ko-title: var(--font-suite), Pretendard, system-ui, "Noto Sans KR", "Malgun Gothic", sans-serif;
+  --font-ko-body: var(--font-pretendard), Pretendard, system-ui, "Noto Sans KR", "Malgun Gothic", sans-serif;
 
   --font-en-title: Montserrat, Inter, system-ui, -apple-system, Roboto, sans-serif;
   --font-en-body: Inter, Montserrat, system-ui, -apple-system, Roboto, sans-serif;
 
-  --font-title: "SUIT", Montserrat, Pretendard, Inter, system-ui, sans-serif;
-  --font-body: Pretendard, Inter, system-ui, sans-serif;
+  --font-title: var(--font-suite), Montserrat, Pretendard, Inter, system-ui, sans-serif;
+  --font-body: var(--font-pretendard), Inter, system-ui, sans-serif;
 
   --radius: 0.625rem; /* 10px-ish */
 }
@@ -298,6 +298,22 @@
 }
 
 /* react-fast-marquee 스타일은 라이브러리에서 관리됨 */
+
+/* ============ Common Shadow Utilities ============ */
+/* Card shadow - default state */
+.lc-card-shadow {
+  box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.06), 0px 1px 3px 0px rgba(0, 0, 0, 0.10);
+}
+
+/* Card shadow - with hover effect */
+.lc-card-shadow-hoverable {
+  box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.06), 0px 1px 3px 0px rgba(0, 0, 0, 0.10);
+  transition: box-shadow 0.2s ease-in-out;
+}
+
+.lc-card-shadow-hoverable:hover {
+  box-shadow: 0px 10px 10px -5px rgba(0, 0, 0, 0.04), 0px 20px 25px -5px rgba(0, 0, 0, 0.10);
+}
 
 /* ============ Hero Section Animations ============ */
 @keyframes fadeInZoom {

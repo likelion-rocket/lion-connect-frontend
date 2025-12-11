@@ -2,7 +2,7 @@
 
 import { useQueryParams } from "@/hooks/common/useQueryParams";
 import type { InquiryStatus } from "@/types/inquiry";
-import FilterSelect from "../../../../../components/form/FilterSelect";
+import FilterSelect from "@/components/form/FilterSelect"; 
 import { useState } from "react";
 
 /**

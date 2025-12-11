@@ -1,12 +1,13 @@
 "use client";
 
+import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import Pager from "@/components/Pager";
 import UserTable from "../_components/UserTable";
 import { fetchAdminUsers } from "@/lib/api/adminUsers";
 
-export default function AdminUsersPage() {
+function AdminUsersContent() {
   const searchParams = useSearchParams();
 
   // URL에서 page와 size 파라미터 읽기 (기본값: page=1, size=20)
@@ -54,5 +55,17 @@ export default function AdminUsersPage() {
         />
       </div>
     </>
+  );
+}
+
+export default function AdminUsersPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-neutral-500">로딩 중...</div>
+      </div>
+    }>
+      <AdminUsersContent />
+    </Suspense>
   );
 }

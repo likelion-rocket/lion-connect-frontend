@@ -74,6 +74,27 @@ export default function UserTableRow({
     }
   };
 
+  /**
+   * 계정 활성화/비활성화 토글 핸들러
+   * - 활성화/비활성화 전 confirm 모달 표시
+   */
+  const handleLockToggle = async (willBeActive: boolean) => {
+    const ok = await confirm({
+      title: willBeActive
+        ? "계정을 다시 활성화 하시겠습니까?"
+        : "계정을 비활성화 하시겠습니까?",
+      description: willBeActive
+        ? "확인을 누르면 해당 계정이 다시 활성화 됩니다."
+        : "확인을 누르면 해당 계정은 비활성화 됩니다.",
+      confirmLabel: "확인",
+      cancelLabel: "아니오",
+    });
+
+    if (ok) {
+      lockMutation.mutate(!willBeActive);
+    }
+  };
+
   return (
     <tr data-state="default" data-type="normal" className="bg-white border-b-2 border-neutral-100">
       <td className="px-4 py-4 text-neutral-800 text-sm font-normal font-['Pretendard'] leading-5">
@@ -114,7 +135,7 @@ export default function UserTableRow({
           {/* Active Status Toggle (Lock/Unlock) */}
           <ImageToggleButton
             isActive={!locked}
-            onToggle={(isActive) => lockMutation.mutate(!isActive)}
+            onToggle={handleLockToggle}
             grayImageSrc="/icons/solid-lock-closed.svg"
             orangeImageSrc="/icons/solid-lock-open-orange.svg"
             size={20}

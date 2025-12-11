@@ -2,6 +2,7 @@
 
 import ImageToggleButton from "@/components/ui/ImageToggleButton";
 import { useCompanyLockStatus } from "@/hooks/admin/useCompanyLockStatus";
+import { useConfirm } from "@/contexts/ConfirmContext";
 
 interface CompanyTableRowProps {
   id: number;
@@ -39,18 +40,31 @@ export default function CompanyTableRow({
   joinDate,
   companyLocked = false,
 }: CompanyTableRowProps) {
+  const confirm = useConfirm();
   const lockMutation = useCompanyLockStatus(id);
 
   /**
    * 잠금 토글 핸들러
-   * @param isActive - ImageToggleButton의 현재 active 상태 (토글 전)
-   *                   - true (orange, 잠금 해제): 클릭 시 false로 변경 → 잠금 처리
-   *                   - false (gray, 잠금): 클릭 시 true로 변경 → 잠금 해제 처리
+   * - 활성화/비활성화 전 confirm 모달 표시
+   * @param willBeActive - ImageToggleButton의 토글 후 상태
+   *                       - true (orange, 잠금 해제): 클릭 시 false로 변경 → 잠금 처리
+   *                       - false (gray, 잠금): 클릭 시 true로 변경 → 잠금 해제 처리
    */
-  const handleLockToggle = (isActive: boolean) => {
-    // isActive가 true면 잠금(false), false면 잠금 해제(true)
-    // UserTableRow와 동일한 로직: mutate(!isActive)
-    lockMutation.mutate(!isActive);
+  const handleLockToggle = async (willBeActive: boolean) => {
+    const ok = await confirm({
+      title: willBeActive
+        ? "계정을 다시 활성화 하시겠습니까?"
+        : "계정을 비활성화 하시겠습니까?",
+      description: willBeActive
+        ? "확인을 누르면 해당 계정이 다시 활성화 됩니다."
+        : "확인을 누르면 해당 계정은 비활성화 됩니다.",
+      confirmLabel: "확인",
+      cancelLabel: "아니오",
+    });
+
+    if (ok) {
+      lockMutation.mutate(!willBeActive);
+    }
   };
 
   return (

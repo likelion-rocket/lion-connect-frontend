@@ -3,6 +3,7 @@
 import ImageToggleButton from "@/components/ui/ImageToggleButton";
 import { useProfileLockStatus } from "@/hooks/admin/useProfileLockStatus";
 import { useAdminPermission } from "@/hooks/admin/useAdminPermission";
+import { useConfirm } from "@/contexts/ConfirmContext";
 
 interface UserTableRowProps {
   id: number;
@@ -41,6 +42,8 @@ export default function UserTableRow({
   roles,
   locked = false,
 }: UserTableRowProps) {
+  const confirm = useConfirm();
+
   // 프로필 잠금/해제 mutation
   const lockMutation = useProfileLockStatus(id);
 
@@ -49,6 +52,27 @@ export default function UserTableRow({
 
   // roles 배열에서 admin 여부 확인
   const isAdmin = roles.includes("ROLE_ADMIN") || roles.includes("ADMIN");
+
+  /**
+   * 관리자 권한 토글 핸들러
+   * - 권한 부여/제거 전 confirm 모달 표시
+   */
+  const handleAdminToggle = async (willBeAdmin: boolean) => {
+    const ok = await confirm({
+      title: willBeAdmin
+        ? "관리자 권한을 부여하시겠습니까?"
+        : "관리자 권한을 삭제하시겠습니까?",
+      description: willBeAdmin
+        ? "확인을 누르면 해당 계정에게 관리자 권한이 부여됩니다."
+        : "확인을 누르면 해당 계정의 관리자 권한이 삭제됩니다.",
+      confirmLabel: "확인",
+      cancelLabel: "아니오",
+    });
+
+    if (ok) {
+      adminMutation.mutate(willBeAdmin);
+    }
+  };
 
   return (
     <tr data-state="default" data-type="normal" className="bg-white border-b-2 border-neutral-100">
@@ -79,7 +103,7 @@ export default function UserTableRow({
           {/* Admin Permission Toggle */}
           <ImageToggleButton
             isActive={isAdmin}
-            onToggle={(isActive) => adminMutation.mutate(isActive)}
+            onToggle={handleAdminToggle}
             grayImageSrc="/icons/solid-key.svg"
             orangeImageSrc="/icons/solid-key-orange.svg"
             size={20}

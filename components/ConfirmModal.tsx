@@ -46,11 +46,11 @@ export function ConfirmModal({
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center"
-      onClick={handleBackdropClick}
       role="presentation"
     >
       <div
         className="absolute inset-0 bg-black/50 transition-opacity duration-200"
+        onClick={handleBackdropClick}
         aria-hidden="true"
       />
 

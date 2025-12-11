@@ -8,6 +8,7 @@ import { useMyProfiles } from "@/hooks/talent/queries/useMyProfiles";
 import { createEmptyProfile, updateProfile, deleteProfile } from "@/lib/api/profiles";
 import { useToastStore } from "@/store/toastStore";
 import { useAuthStore } from "@/store/authStore";
+import { useConfirm } from "@/contexts/ConfirmContext";
 
 function ProfilePage() {
   const router = useRouter();
@@ -15,6 +16,7 @@ function ProfilePage() {
   const { data: profiles, isLoading, error } = useMyProfiles();
   const showToast = useToastStore((state) => state.showToast);
   const userId = useAuthStore((state) => state.user?.id);
+  const confirm = useConfirm();
 
   // 신규 이력서 생성 mutation
   const createMutation = useMutation({
@@ -60,9 +62,21 @@ function ProfilePage() {
     createMutation.mutate();
   };
 
-  const handleTogglePublic = (id: string) => {
+  const handleTogglePublic = async (id: string) => {
     const profile = profiles?.find((p) => String(p.id) === id);
     if (!profile) return;
+
+    // 공개하기 → 공개 중으로 변경할 때만 confirm 모달 표시
+    if (profile.visibility === "PRIVATE") {
+      const ok = await confirm({
+        title: `'${profile.title || "이력서"}'를 공개하시겠습니까?`,
+        description: "확인을 누르면 기업이 해당 이력서를 확인할 수 있습니다.",
+        confirmLabel: "공개하기",
+        cancelLabel: "취소",
+      });
+
+      if (!ok) return;
+    }
 
     togglePublicMutation.mutate({ id: Number(id), profile });
   };
@@ -71,8 +85,15 @@ function ProfilePage() {
     router.push(`/profile/${id}`);
   };
 
-  const handleDelete = (id: string) => {
-    if (!confirm("정말 이 이력서를 삭제하시겠습니까?")) return;
+  const handleDelete = async (id: string) => {
+    const ok = await confirm({
+      title: "이력서를 삭제할까요?",
+      description: "삭제 후에는 복구할 수 없습니다.",
+      confirmLabel: "삭제하기",
+      cancelLabel: "취소",
+    });
+
+    if (!ok) return;
     deleteMutation.mutate(Number(id));
   };
 

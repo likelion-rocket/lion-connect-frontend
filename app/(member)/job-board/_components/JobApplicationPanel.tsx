@@ -99,7 +99,23 @@ export default function JobApplicationPanel({
                   >
                     <div className="w-6 h-6 left-0 top-0 absolute" />
                     {selectedResumeId === resume.id ? (
-                      <div className="w-4 h-4 left-[3px] top-[3px] absolute bg-orange-600" />
+                      <div className="w-4 h-4 left-[3px] top-[3px] absolute bg-orange-600 rounded-[3px] flex items-center justify-center">
+                        <svg
+                          width="12"
+                          height="12"
+                          viewBox="0 0 12 12"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M10 3L4.5 8.5L2 6"
+                            stroke="white"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                      </div>
                     ) : (
                       <div className="w-4 h-4 left-[3px] top-[3px] absolute rounded-[3px] border-2 border-neutral-500" />
                     )}

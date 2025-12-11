@@ -11,11 +11,18 @@ export default function JobImageCarousel({ images }: JobImageCarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const handleNext = () => {
-    setCurrentIndex((prev) => (prev + 1) % images.length);
+    setCurrentIndex((prev) => {
+      // 2개씩 보이는 캐러셀이므로 마지막 인덱스는 images.length - 2
+      const maxIndex = Math.max(0, images.length - 2);
+      return prev >= maxIndex ? 0 : prev + 1;
+    });
   };
 
   const handlePrev = () => {
-    setCurrentIndex((prev) => (prev - 1 + images.length) % images.length);
+    setCurrentIndex((prev) => {
+      const maxIndex = Math.max(0, images.length - 2);
+      return prev <= 0 ? maxIndex : prev - 1;
+    });
   };
 
   if (!images || images.length === 0) {

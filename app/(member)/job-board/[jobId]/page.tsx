@@ -17,7 +17,13 @@ const mockJob = {
   id: "1",
   title: "게임 PM(채용 공고 제목)",
   companyName: "멋쟁이사자처럼",
-  imageUrls: ["/images/hero-image.png", "/images/hero-image.png", "/images/hero-image.png"],
+  imageUrls: [
+    "/images/hero-image.png",
+    "/images/hero-image.png",
+    "/images/hero-image.png",
+    "/images/hero-image.png",
+    "/images/hero-image.png",
+  ],
   description: `"Possibility to Reality"
   멋쟁이사자처럼은 AI 시대의 핵심, 'AI 인재'에 집중합니다.우리는 어떻게 하면 더 많은 AI 인재를, 더 잘 육성할 수 있을지 매일 고민합니다.그리고 이들과 함께 AI 생태계를 확장해 나가고자 합니다.우리는 AI 시대의 교육을 새롭게 정의하고,그 교육을 통해 성장한 인재들과 함께 세상의 문제를 해결하는 AI 프로덕트를 만들어냅니다.단순한 교육 회사를 넘어, AI 시대의 주역을 함께 만들어가는 플랫폼을 지향합니다.너무나도 빠르게 변화하는 흐름 속에서 새로운 정답을 함께 찾아가실 분 들과 함께 하고 싶습니다.[합류하게 될 팀을 소개 드려요.]우리는 이제 "무엇을 아는가"보다 "AI를 통해 무엇을 해낼 수 있는가"가 더 중요한 시대를 맞이했어요.멋쟁이사자처럼은 학습을 단순한 지식의 습득이 아니라 '경험'으로 새롭게 정의하며,AI 기반의 초개인화 학습 플랫폼 AXP(AI Experience Platform)를 함께 만들고 있어요.AXP에서는 모든 학습자가 자신만의 속도와 방식으로 배우고 성장할 수 있도록개인에게 최적화된 학습 여정을 만들어나가고 있답니다.우리는 이 비전을 함께 실현하고 기술과 교육의 경계를 허무는 여정에 동참할 DevOps 엔지니어를 모시고 싶어요.이 역할은 단순히 기능을 구현하는 자리가 아니에요.당신은 사람들이 배우는 방식 자체를 새롭게 설계하는 사람이 될 거예요.`,
   responsibilities: `[함께 만들어갈 업무예요.]

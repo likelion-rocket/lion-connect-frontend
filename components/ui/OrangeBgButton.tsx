@@ -69,11 +69,13 @@ export default function OrangeBgButton({
         isLarge && "py-4 text-lg font-bold font-ko-body leading-7",
         isSmall && "w-28 px-6 py-2 text-xs font-bold font-ko-body leading-4",
         // 활성화 상태
-        isActive && "bg-bg-accent text-white hover:bg-brand-06 cursor-pointer",
+        isActive && "bg-bg-accent text-white active:bg-brand-06 cursor-pointer",
         // 비활성화 상태
         !isActive && "bg-neutral-100 text-neutral-400 cursor-not-allowed",
         // small size에만 outline 추가
-        isSmall && isActive && "outline outline-[0.80px] outline-offset-[-0.80px] outline-neutral-300",
+        isSmall &&
+          isActive &&
+          "outline outline-[0.80px] outline-offset-[-0.80px] outline-neutral-300",
         isSmall && !isActive && "outline outline-1 outline-offset-[-1px] outline-neutral-300",
         className
       )}

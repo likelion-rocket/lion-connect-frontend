@@ -8,6 +8,7 @@ import JobImageCarousel from "../_components/JobImageCarousel";
 import JobDetailInfo from "../_components/JobDetailInfo";
 import JobDetailSection from "../_components/JobDetailSection";
 import JobCopyright from "../_components/JobCopyright";
+import OrangeBgButton from "@/components/ui/OrangeBgButton";
 
 // 목데이터
 const mockJob = {
@@ -38,11 +39,11 @@ const mockJob = {
 };
 
 export default function JobDetailPage() {
-// {
-// params,
-// }: {
-//   params: Promise<{ jobId: string }>;
-// }
+  // {
+  // params,
+  // }: {
+  //   params: Promise<{ jobId: string }>;
+  // }
   // const resolvedParams = use(params);
   const router = useRouter();
   // const { data: job, isLoading, error } = useJobPosting(resolvedParams.jobId);
@@ -160,14 +161,9 @@ export default function JobDetailPage() {
 
         {/* 우측 지원하기 버튼 */}
         <div className="sticky top-24">
-          <button
-            onClick={handleApply}
-            className="w-96 px-2.5 py-4 bg-orange-600 rounded-lg flex justify-center items-center gap-2.5 hover:bg-orange-700 transition-colors"
-          >
-            <div className="justify-start text-white text-lg font-bold font-['Pretendard'] leading-7">
-              지원 하기
-            </div>
-          </button>
+          <OrangeBgButton onClick={handleApply} isActive className="w-96">
+            지원 하기
+          </OrangeBgButton>
         </div>
       </div>
     </div>

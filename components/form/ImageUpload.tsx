@@ -10,6 +10,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import Image from "next/image";
 import { cn } from "@/utils/utils";
 
 interface ImageUploadProps {
@@ -94,10 +95,12 @@ export function ImageUpload({
       {/* 업로드된 이미지 미리보기 */}
       {previewUrls.map((url, index) => (
         <div key={index} className="relative w-72 h-44 group">
-          <img
-            className="w-full h-full object-cover rounded-lg"
+          <Image
+            className="object-cover rounded-lg"
             src={url}
             alt={`Preview ${index + 1}`}
+            fill
+            sizes="288px"
           />
           <button
             type="button"

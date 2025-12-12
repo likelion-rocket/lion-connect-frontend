@@ -10,12 +10,14 @@ import type {
   PresignBulkResponse,
   JobImageMetadata,
   JobDetailResponse,
+  ImageUploadCompleteRequest,
+  ImageUploadCompleteResponse,
 } from "@/types/job";
 
 export type { Job, JobDetailResponse };
 
 /**
- * 이미지 프리사인 URL 발급 및 S3 업로드
+ * 이미지 프리사인 URL 발급 → S3 업로드 → 업로드 완료 처리
  */
 async function uploadJobImages(images: File[]): Promise<JobImageMetadata[]> {
   if (images.length === 0) {
@@ -35,11 +37,11 @@ async function uploadJobImages(images: File[]): Promise<JobImageMetadata[]> {
     presignRequest
   );
 
-  // 2. 각 이미지를 S3에 업로드
+  // 2. 각 이미지를 S3에 업로드 → 업로드 완료 처리
   const uploadPromises = presignResponse.uploads.map(async (uploadInfo, index) => {
     const file = images[index];
 
-    // S3에 파일 업로드 (presigned URL 사용)
+    // 2-1. S3에 파일 업로드 (presigned URL 사용)
     const uploadResponse = await fetch(uploadInfo.upload.uploadUrl, {
       method: "PUT",
       body: file,
@@ -52,9 +54,22 @@ async function uploadJobImages(images: File[]): Promise<JobImageMetadata[]> {
       throw new Error(`이미지 업로드 실패: ${file.name}`);
     }
 
-    // 3. 메타데이터 반환
-    return {
+    // 2-2. 업로드 완료 처리 (백엔드에 알림)
+    const completeRequest: ImageUploadCompleteRequest = {
       objectKey: uploadInfo.objectKey,
+      originalFilename: file.name,
+      contentType: file.type,
+      fileSize: file.size,
+    };
+
+    const completeResponse = await post<ImageUploadCompleteResponse>(
+      API_ENDPOINTS.COMPANY_JOB_POSTINGS.IMAGES_UPLOAD_COMPLETE,
+      completeRequest
+    );
+
+    // 3. 메타데이터 반환 (업로드 완료 응답에서 받은 objectKey와 fileUrl 사용)
+    return {
+      objectKey: completeResponse.objectKey,
       contentType: file.type,
       fileSize: file.size,
       originalFilename: file.name,

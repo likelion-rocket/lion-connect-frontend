@@ -28,6 +28,7 @@ export interface JobDetailResponse {
   jobPostingId: number;
   title: string;
   employmentType: EmploymentType;
+  jobRoleId: number;
   jobDescription: string;
   mainTasks: string;
   requirements: string;

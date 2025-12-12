@@ -9,6 +9,40 @@ import {
 } from "@/lib/api/jobPostings";
 import type { JobFormData } from "@/types/job";
 import { useAuthStore } from "@/store/authStore";
+import { get } from "@/lib/apiClient";
+import { API_ENDPOINTS } from "@/constants/api";
+import type { JobPostingsResponse, JobPostingsParams } from "@/types/company-job-posting";
+
+/**
+ * 채용 공고 목록 조회 훅
+ */
+export function useJobPostings(params: JobPostingsParams = {}) {
+  const accessToken = useAuthStore((s) => s.accessToken);
+  const enabled = !!accessToken;
+
+  const { page = 0, size = 10, sort = ["createdAt,desc"], status } = params;
+
+  return useQuery<JobPostingsResponse>({
+    queryKey: ["jobPostings", { page, size, sort, status }],
+    queryFn: async () => {
+      const queryParams = new URLSearchParams();
+      queryParams.append("page", page.toString());
+      queryParams.append("size", size.toString());
+      sort.forEach((s) => queryParams.append("sort", s));
+      if (status) {
+        queryParams.append("status", status);
+      }
+
+      return get<JobPostingsResponse>(
+        `${API_ENDPOINTS.COMPANY_JOB_POSTINGS.LIST}?${queryParams.toString()}`
+      );
+    },
+    enabled,
+    retry: false,
+    staleTime: 30 * 1000, // 30초
+    gcTime: 5 * 60 * 1000, // 5분
+  });
+}
 
 /**
  * 채용 공고 조회 훅

@@ -5,7 +5,8 @@ import {
   createJobPosting,
   updateJobPosting,
   deleteJobPosting,
-  type Job
+  type Job,
+  type JobDetailResponse
 } from "@/lib/api/jobPostings";
 import type { JobFormData, JobPostingResponse } from "@/types/job";
 import { useAuthStore } from "@/store/authStore";
@@ -51,7 +52,7 @@ export function useJobPosting(jobId: string) {
   const accessToken = useAuthStore((s) => s.accessToken);
   const enabled = !!accessToken && jobId !== "new";
 
-  return useQuery<Job>({
+  return useQuery<JobDetailResponse>({
     queryKey: ["jobPosting", jobId],
     queryFn: () => fetchJobPosting(jobId),
     enabled,

@@ -8,6 +8,9 @@
 // API Base URL (환경변수에서 가져오기)
 export const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8090/api";
 
+// S3 Base URL
+export const S3_BASE_URL = "https://lion-connect-files.s3.ap-northeast-2.amazonaws.com";
+
 // API 엔드포인트
 export const API_ENDPOINTS = {
   // 인증 관련

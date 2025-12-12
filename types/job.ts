@@ -22,6 +22,29 @@ export interface JobFormData {
 }
 
 /**
+ * 채용 공고 상세 응답 데이터 (GET /api/company/job-postings/{id})
+ */
+export interface JobDetailResponse {
+  jobPostingId: number;
+  title: string;
+  employmentType: EmploymentType;
+  jobDescription: string;
+  mainTasks: string;
+  requirements: string;
+  preferred: string;
+  benefits: string;
+  hiringProcess: string;
+  workplace: string;
+  companyName: string;
+  courseName: string;
+  courseGeneration: number;
+  jobGroupName: string;
+  jobRoleName: string;
+  publishedAt: string;
+  images: JobImageMetadata[];
+}
+
+/**
  * 채용 공고 응답 데이터 (API에서 받아오는 형태)
  */
 export interface Job extends JobFormData {

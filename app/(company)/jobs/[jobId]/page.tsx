@@ -1,11 +1,12 @@
 "use client";
 
-import { use } from "react";
+import { use, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import BackButton from "@/components/buttons/BackButton";
 import { JobForm } from "@/components/job/JobForm";
 import { useJobPosting, useUpdateJobPosting } from "@/hooks/company/useJobPosting";
 import type { JobFormData } from "@/types/job";
+import { S3_BASE_URL } from "@/constants/api";
 
 export default function EditJobPage({ params }: { params: Promise<{ jobId: string }> }) {
   const { jobId } = use(params);
@@ -16,6 +17,27 @@ export default function EditJobPage({ params }: { params: Promise<{ jobId: strin
 
   // 수정 mutation
   const updateMutation = useUpdateJobPosting(jobId);
+
+  // API 응답을 폼 데이터로 변환
+  const formData = useMemo(() => {
+    if (!jobData) return undefined;
+
+    return {
+      images: [], // 새로 업로드할 이미지는 빈 배열로 시작
+      title: jobData.title,
+      employmentType: jobData.employmentType,
+      jobRoleId: 0, // TODO: jobRoleId 매핑 필요
+      description: jobData.jobDescription,
+      responsibilities: jobData.mainTasks,
+      requirements: jobData.requirements,
+      preferredQualifications: jobData.preferred,
+      benefits: jobData.benefits,
+      hiringProcess: jobData.hiringProcess,
+      location: jobData.workplace,
+      // 기존 이미지 URL들 (ImageUpload에서 사용)
+      imageUrls: jobData.images.map((img) => `${S3_BASE_URL}/${img.objectKey}`),
+    };
+  }, [jobData]);
 
   const handleSubmit = async (data: JobFormData) => {
     try {
@@ -44,7 +66,7 @@ export default function EditJobPage({ params }: { params: Promise<{ jobId: strin
       <BackButton />
       <div className="mt-8 flex justify-center">
         <JobForm
-          initialData={jobData}
+          initialData={formData}
           onSubmit={handleSubmit}
           submitButtonText="채용 공고 수정하기"
         />

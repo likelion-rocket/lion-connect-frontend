@@ -144,7 +144,7 @@ export async function updateJobPosting(
  * 채용 공고 삭제 API
  */
 export function deleteJobPosting(jobId: string): Promise<void> {
-  return del<void>(API_ENDPOINTS.COMPANY_JOB_POSTINGS.UPDATE(jobId));
+  return del<void>(API_ENDPOINTS.COMPANY_JOB_POSTINGS.DELETE(jobId));
 }
 
 /**

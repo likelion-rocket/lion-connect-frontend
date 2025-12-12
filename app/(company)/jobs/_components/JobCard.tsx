@@ -6,6 +6,7 @@ import { JobActionButton } from "@/components/ui/JobActionButton";
 import { EditDeleteButton } from "@/components/ui/EditDeleteButton";
 
 interface JobCardProps {
+  jobPostingId: number;
   title: string;
   category: string;
   isPublished: boolean;
@@ -17,6 +18,7 @@ interface JobCardProps {
 }
 
 export function JobCard({
+  jobPostingId,
   title,
   category,
   isPublished,

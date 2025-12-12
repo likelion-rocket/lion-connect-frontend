@@ -2,7 +2,7 @@
 
 import { useSearchParams } from "next/navigation";
 import { JobListHeader } from "./_components/JobListHeader";
-import { JobCard } from "./_components/JobCard";
+import { JobCardWithDelete } from "./_components/JobCardWithDelete";
 import { useJobPostings } from "@/hooks/company/useJobPosting";
 import Pager from "@/components/Pager";
 
@@ -57,14 +57,14 @@ export default function JobsPage() {
           </div>
         ) : (
           jobs.map((job) => (
-            <JobCard
+            <JobCardWithDelete
               key={job.jobPostingId}
+              jobPostingId={job.jobPostingId}
               title={job.title}
               category={`${job.jobGroupName} · ${job.jobRoleName}`}
               isPublished={job.status === "PUBLISHED"}
               onPublishToggle={() => console.log("Toggle publish", job.jobPostingId)}
               onEdit={() => console.log("Edit", job.jobPostingId)}
-              onDelete={() => console.log("Delete", job.jobPostingId)}
               onViewApplicants={() => console.log("View applicants", job.jobPostingId)}
             />
           ))

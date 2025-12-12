@@ -5,6 +5,7 @@
 
 "use client";
 
+import { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FormInput } from "@/components/form/FormInput";
@@ -12,8 +13,10 @@ import { FormTextarea } from "@/components/form/FormTextarea";
 import { FormField } from "@/components/form/FormField";
 import { RadioGroup, RadioOption } from "@/components/form/RadioGroup";
 import { ImageUpload } from "@/components/form/ImageUpload";
+import { JobCategorySelect } from "@/components/job/JobCategorySelect";
 import { JobFormData } from "@/types/job";
 import { jobFormSchema } from "@/lib/validations/job";
+import { findJobRoleById } from "@/constants/jobMapping";
 
 interface JobFormProps {
   initialData?: Partial<JobFormData>;
@@ -31,10 +34,18 @@ export function JobForm({
   onSubmit,
   submitButtonText = "채용 공고 등록하기",
 }: JobFormProps) {
+  // 직군/직무 선택 상태 관리
+  const initialJobRole = initialData?.jobRoleId ? findJobRoleById(initialData.jobRoleId) : null;
+  const [selectedCategory, setSelectedCategory] = useState<string>(
+    initialJobRole?.group.code || ""
+  );
+  const [selectedRoleId, setSelectedRoleId] = useState<number>(initialData?.jobRoleId || 0);
+
   const {
     register,
     handleSubmit,
     control,
+    setValue,
     formState: { errors, isSubmitting, isValid },
   } = useForm<JobFormData>({
     resolver: zodResolver(jobFormSchema),
@@ -43,6 +54,7 @@ export function JobForm({
       images: [],
       title: "",
       employmentType: "FULL_TIME",
+      jobRoleId: 0,
       description: "",
       responsibilities: "",
       requirements: "",
@@ -53,6 +65,16 @@ export function JobForm({
       ...initialData,
     },
   });
+
+  const handleCategoryChange = (categoryCode: string) => {
+    setSelectedCategory(categoryCode);
+    setSelectedRoleId(0);
+    setValue("jobRoleId", 0, { shouldValidate: true, shouldDirty: true });
+  };
+
+  const handleRoleChange = (roleId: number) => {
+    setSelectedRoleId(roleId);
+  };
 
   const handleFormSubmit = async (data: JobFormData) => {
     await onSubmit(data);
@@ -115,6 +137,16 @@ export function JobForm({
                 )}
               />
             </FormField>
+
+            {/* 직군 및 직무 선택 */}
+            <JobCategorySelect
+              control={control}
+              errors={errors}
+              selectedCategory={selectedCategory}
+              selectedRoleId={selectedRoleId}
+              onCategoryChange={handleCategoryChange}
+              onRoleChange={handleRoleChange}
+            />
 
             {/* 회사/직무 소개 */}
             <FormField

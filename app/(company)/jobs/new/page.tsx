@@ -14,7 +14,7 @@ export default function NewJobPage() {
     try {
       const newJob = await createMutation.mutateAsync(data);
       alert("채용 공고가 등록되었습니다.");
-      router.push(`/jobs/${newJob.id}`);
+      router.push(`/jobs/${newJob.jobPostingId}`);
     } catch (error) {
       console.error("Error creating job:", error);
       alert("채용 공고 등록에 실패했습니다.");

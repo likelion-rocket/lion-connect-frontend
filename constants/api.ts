@@ -131,6 +131,10 @@ export const API_ENDPOINTS = {
   // 채용공고 (기업)
   COMPANY_JOB_POSTINGS: {
     LIST: "/company/job-postings/me", // GET - 내 채용공고 목록
+    CREATE: "/company/job-postings", // POST - 채용공고 등록
+    GET: (jobId: number | string) => `/company/job-postings/${jobId}`, // GET - 채용공고 상세 조회
+    UPDATE: (jobId: number | string) => `/company/job-postings/${jobId}`, // PUT - 채용공고 수정
+    IMAGES_PRESIGN_BULK: "/company/job-postings/images/presign-bulk", // POST - 이미지 프리사인 URL 발급
   },
 } as const;
 

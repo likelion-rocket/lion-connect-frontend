@@ -26,7 +26,7 @@ export default function EditJobPage({ params }: { params: Promise<{ jobId: strin
       images: [], // 새로 업로드할 이미지는 빈 배열로 시작
       title: jobData.title,
       employmentType: jobData.employmentType,
-      jobRoleId: 0, // TODO: jobRoleId 매핑 필요
+      jobRoleId: jobData.jobRoleId,
       description: jobData.jobDescription,
       responsibilities: jobData.mainTasks,
       requirements: jobData.requirements,

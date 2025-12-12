@@ -11,39 +11,18 @@ export default function JobsPage() {
       title: "채용 공고 제목",
       category: "개발 · 프론트엔드",
       isPublished: true,
-      stats: {
-        total: 17,
-        applied: 1,
-        firstInterview: 2,
-        secondInterview: 3,
-        offer: 4,
-      },
     },
     {
       id: 2,
       title: "게임 PM",
       category: "개발 · 프론트엔드",
       isPublished: true,
-      stats: {
-        total: 17,
-        applied: 1,
-        firstInterview: 2,
-        secondInterview: 3,
-        offer: 4,
-      },
     },
     {
       id: 3,
       title: "게임 PM",
       category: "개발 · 프론트엔드",
       isPublished: false,
-      stats: {
-        total: 17,
-        applied: 1,
-        firstInterview: 2,
-        secondInterview: 3,
-        offer: 4,
-      },
     },
   ];
 
@@ -58,7 +37,6 @@ export default function JobsPage() {
             title={job.title}
             category={job.category}
             isPublished={job.isPublished}
-            stats={job.stats}
             onPublishToggle={() => console.log("Toggle publish", job.id)}
             onEdit={() => console.log("Edit", job.id)}
             onDelete={() => console.log("Delete", job.id)}

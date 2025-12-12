@@ -128,6 +128,10 @@ export const API_ENDPOINTS = {
     SUBMIT: "/profile/work-driven/submit", // POST - 테스트 제출
     RESULT: "/profile/work-driven/result", // GET - 결과 조회
   },
+  // 채용공고 (기업)
+  COMPANY_JOB_POSTINGS: {
+    LIST: "/company/job-postings/me", // GET - 내 채용공고 목록
+  },
 } as const;
 
 // HTTP 메서드

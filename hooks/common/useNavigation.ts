@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, useCallback } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 export type NavLink = {
   label: string;
@@ -18,6 +18,7 @@ const BUSINESS_CONNECT_ID = "business-connect";
  */
 export function useNavigation(navLinks: NavLink[]) {
   const pathname = usePathname();
+  const router = useRouter();
   const [activeSection, setActiveSection] = useState<string | null>(null);
   const [indicatorStyle, setIndicatorStyle] = useState({ left: 0, width: 0 });
   const navRefs = useRef<(HTMLAnchorElement | null)[]>([]);
@@ -127,11 +128,26 @@ export function useNavigation(navLinks: NavLink[]) {
           });
         }
       } else {
-        // 다른 페이지: 랜딩 페이지로 이동 후 스크롤
-        window.location.href = "/#business-connect";
+        // 다른 페이지: Next.js 클라이언트 사이드 라우팅으로 이동 (페이지 리로드 방지)
+        router.push("/");
+
+        // 페이지 이동 후 스크롤 (약간의 지연 필요)
+        setTimeout(() => {
+          const element = document.getElementById(BUSINESS_CONNECT_ID);
+          if (element) {
+            const headerHeight = 80;
+            const elementPosition = element.getBoundingClientRect().top;
+            const offsetPosition = elementPosition + window.pageYOffset - headerHeight;
+
+            window.scrollTo({
+              top: offsetPosition,
+              behavior: "smooth",
+            });
+          }
+        }, 100);
       }
     },
-    [pathname]
+    [pathname, router]
   );
 
   return {

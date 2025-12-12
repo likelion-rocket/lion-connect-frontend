@@ -23,6 +23,13 @@ export const jobFormSchema = z.object({
     message: "고용 형태를 선택해주세요",
   }),
 
+  // 직무 ID
+  jobRoleId: z
+    .number({
+      message: "직무를 선택해주세요",
+    })
+    .min(1, "직무를 선택해주세요"),
+
   // 회사/직무 소개
   description: z
     .string()

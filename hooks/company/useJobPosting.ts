@@ -7,7 +7,7 @@ import {
   deleteJobPosting,
   type Job
 } from "@/lib/api/jobPostings";
-import type { JobFormData } from "@/types/job";
+import type { JobFormData, JobPostingResponse } from "@/types/job";
 import { useAuthStore } from "@/store/authStore";
 import { get } from "@/lib/apiClient";
 import { API_ENDPOINTS } from "@/constants/api";
@@ -67,13 +67,13 @@ export function useJobPosting(jobId: string) {
 export function useCreateJobPosting() {
   const queryClient = useQueryClient();
 
-  return useMutation({
+  return useMutation<JobPostingResponse, Error, JobFormData>({
     mutationFn: (data: JobFormData) => createJobPosting(data),
     onSuccess: (newJob) => {
       // 생성 후 목록 쿼리 무효화
       queryClient.invalidateQueries({ queryKey: ["jobPostings"] });
       // 생성된 데이터를 캐시에 저장
-      queryClient.setQueryData(["jobPosting", newJob.id], newJob);
+      queryClient.setQueryData(["jobPosting", newJob.jobPostingId], newJob);
     },
   });
 }
@@ -84,14 +84,14 @@ export function useCreateJobPosting() {
 export function useUpdateJobPosting(jobId: string) {
   const queryClient = useQueryClient();
 
-  return useMutation({
+  return useMutation<JobPostingResponse, Error, JobFormData>({
     mutationFn: (data: JobFormData) => updateJobPosting(jobId, data),
     onSuccess: (updatedJob) => {
       // 수정 후 해당 쿼리와 목록 쿼리 무효화
       queryClient.invalidateQueries({ queryKey: ["jobPosting", jobId] });
       queryClient.invalidateQueries({ queryKey: ["jobPostings"] });
       // 업데이트된 데이터를 캐시에 저장
-      queryClient.setQueryData(["jobPosting", jobId], updatedJob);
+      queryClient.setQueryData(["jobPosting", updatedJob.jobPostingId], updatedJob);
     },
   });
 }

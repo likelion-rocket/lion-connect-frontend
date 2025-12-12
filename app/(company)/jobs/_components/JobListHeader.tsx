@@ -11,7 +11,7 @@ interface JobListHeaderProps {
 
 export function JobListHeader({ disabled = false, className }: JobListHeaderProps) {
   return (
-    <div className={cn("w-full py-[72px] inline-flex justify-between items-center", className)}>
+    <div className={cn("w-full inline-flex justify-between items-center", className)}>
       <h2 className="text-text-primary text-2xl font-bold font-ko-body leading-8">
         채용 공고 관리
       </h2>

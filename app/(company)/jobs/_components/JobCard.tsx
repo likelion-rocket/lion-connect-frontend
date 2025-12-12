@@ -5,19 +5,10 @@ import Image from "next/image";
 import { JobActionButton } from "@/components/ui/JobActionButton";
 import { EditDeleteButton } from "@/components/ui/EditDeleteButton";
 
-interface ApplicantStats {
-  total: number;
-  applied: number;
-  firstInterview: number;
-  secondInterview: number;
-  offer: number;
-}
-
 interface JobCardProps {
   title: string;
   category: string;
   isPublished: boolean;
-  stats: ApplicantStats;
   onPublishToggle?: () => void;
   onEdit?: () => void;
   onDelete?: () => void;
@@ -29,7 +20,6 @@ export function JobCard({
   title,
   category,
   isPublished,
-  stats,
   onPublishToggle,
   onEdit,
   onDelete,
@@ -110,144 +100,14 @@ export function JobCard({
         </div>
       </div>
 
-      {/* Applicant Stats */}
+      {/* View Applicants Section */}
       <div
         data-type={isPublished ? "upload" : "notUpload"}
         className={cn(
-          "w-full px-6 py-4 rounded-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.06)] shadow-[0px_1px_3px_0px_rgba(0,0,0,0.10)] inline-flex justify-start items-center gap-4",
+          "w-full px-6 py-4 rounded-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.06)] shadow-[0px_1px_3px_0px_rgba(0,0,0,0.10)] inline-flex justify-end items-center",
           isPublished ? "bg-orange-50" : "bg-neutral-100"
         )}
       >
-        <div className="flex-1 flex justify-start items-center gap-6">
-          {/* Total */}
-          <div className="flex justify-start items-center gap-2">
-            <span
-              className={cn(
-                "justify-start text-sm font-medium font-ko-body leading-5",
-                isPublished ? "text-neutral-500" : "text-neutral-400"
-              )}
-            >
-              전체
-            </span>
-            <span
-              className={cn(
-                "justify-start text-sm font-bold font-ko-body leading-5",
-                isPublished ? "text-text-primary" : "text-neutral-500"
-              )}
-            >
-              {stats.total}
-            </span>
-          </div>
-
-          <div
-            className={cn(
-              "w-4 h-0 origin-top-left rotate-90 outline outline-[0.80px] outline-offset-[-0.40px]",
-              isPublished ? "outline-text-primary" : "outline-neutral-500"
-            )}
-          />
-
-          {/* Applied */}
-          <div className="flex justify-start items-center gap-2">
-            <span
-              className={cn(
-                "justify-start text-sm font-medium font-ko-body leading-5",
-                isPublished ? "text-neutral-500" : "text-neutral-400"
-              )}
-            >
-              지원 접수
-            </span>
-            <span
-              className={cn(
-                "justify-start text-sm font-bold font-ko-body leading-5",
-                isPublished ? "text-text-primary" : "text-neutral-500"
-              )}
-            >
-              {stats.applied}
-            </span>
-          </div>
-
-          <div
-            className={cn(
-              "w-4 h-0 origin-top-left rotate-90 outline outline-[0.80px] outline-offset-[-0.40px]",
-              isPublished ? "outline-text-primary" : "outline-neutral-500"
-            )}
-          />
-
-          {/* First Interview */}
-          <div className="flex justify-start items-center gap-2">
-            <span
-              className={cn(
-                "justify-start text-sm font-medium font-ko-body leading-5",
-                isPublished ? "text-neutral-500" : "text-neutral-400"
-              )}
-            >
-              1차 인터뷰
-            </span>
-            <span
-              className={cn(
-                "justify-start text-sm font-bold font-ko-body leading-5",
-                isPublished ? "text-text-primary" : "text-neutral-500"
-              )}
-            >
-              {stats.firstInterview}
-            </span>
-          </div>
-
-          <div
-            className={cn(
-              "w-4 h-0 origin-top-left rotate-90 outline outline-[0.80px] outline-offset-[-0.40px]",
-              isPublished ? "outline-text-primary" : "outline-neutral-500"
-            )}
-          />
-
-          {/* Second Interview */}
-          <div className="flex justify-start items-center gap-2">
-            <span
-              className={cn(
-                "justify-start text-sm font-medium font-ko-body leading-5",
-                isPublished ? "text-neutral-500" : "text-neutral-400"
-              )}
-            >
-              2차 인터뷰
-            </span>
-            <span
-              className={cn(
-                "justify-start text-sm font-bold font-ko-body leading-5",
-                isPublished ? "text-text-primary" : "text-neutral-500"
-              )}
-            >
-              {stats.secondInterview}
-            </span>
-          </div>
-
-          <div
-            className={cn(
-              "w-4 h-0 origin-top-left rotate-90 outline outline-[0.80px] outline-offset-[-0.40px]",
-              isPublished ? "outline-text-primary" : "outline-neutral-500"
-            )}
-          />
-
-          {/* Offer */}
-          <div className="flex justify-start items-center gap-2">
-            <span
-              className={cn(
-                "justify-start text-sm font-medium font-ko-body leading-5",
-                isPublished ? "text-neutral-500" : "text-neutral-400"
-              )}
-            >
-              입사 제안
-            </span>
-            <span
-              className={cn(
-                "justify-start text-sm font-bold font-ko-body leading-5",
-                isPublished ? "text-text-primary" : "text-neutral-500"
-              )}
-            >
-              {stats.offer}
-            </span>
-          </div>
-        </div>
-
         {/* View Applicants Link */}
         <button
           data-state="default"

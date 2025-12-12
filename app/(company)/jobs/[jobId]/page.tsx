@@ -35,7 +35,10 @@ export default function EditJobPage({ params }: { params: Promise<{ jobId: strin
       hiringProcess: jobData.hiringProcess,
       location: jobData.workplace,
       // 기존 이미지 URL들 (ImageUpload에서 사용)
-      imageUrls: jobData.images.map((img) => `${S3_BASE_URL}/${img.objectKey}`),
+      // API 응답의 url 또는 fileUrl 사용, 없으면 S3 URL 직접 구성 (fallback)
+      imageUrls: jobData.images.map((img) =>
+        img.url || img.fileUrl || `${S3_BASE_URL}/${img.objectKey}`
+      ),
     };
   }, [jobData]);
 

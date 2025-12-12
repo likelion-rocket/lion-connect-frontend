@@ -66,6 +66,8 @@ export interface JobImageMetadata {
   fileSize: number;
   originalFilename: string;
   sortOrder: number;
+  url?: string; // S3 접근 가능한 URL (presigned URL)
+  fileUrl?: string; // 호환성을 위한 별칭
 }
 
 /**
@@ -128,4 +130,22 @@ export interface PresignBulkResponse {
     upload: PresignUpload;
     fileUrl: string;
   }[];
+}
+
+/**
+ * 이미지 업로드 완료 처리 요청
+ */
+export interface ImageUploadCompleteRequest {
+  objectKey: string;
+  originalFilename: string;
+  contentType: string;
+  fileSize: number;
+}
+
+/**
+ * 이미지 업로드 완료 처리 응답
+ */
+export interface ImageUploadCompleteResponse {
+  objectKey: string;
+  fileUrl: string;
 }

@@ -19,7 +19,7 @@ import { jobFormSchema } from "@/lib/validations/job";
 import { findJobRoleById } from "@/constants/jobMapping";
 
 interface JobFormProps {
-  initialData?: Partial<JobFormData>;
+  initialData?: Partial<JobFormData> & { imageUrls?: string[] };
   onSubmit: (data: JobFormData) => Promise<void>;
   submitButtonText?: string;
 }
@@ -103,6 +103,7 @@ export function JobForm({
                   <ImageUpload
                     value={field.value}
                     onChange={field.onChange}
+                    existingImageUrls={initialData?.imageUrls}
                     error={!!errors.images}
                   />
                 )}

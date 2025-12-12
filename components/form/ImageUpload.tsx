@@ -24,6 +24,11 @@ interface ImageUploadProps {
   onChange?: (files: File[]) => void;
 
   /**
+   * 기존 이미지 URL들 (수정 모드에서 사용)
+   */
+  existingImageUrls?: string[];
+
+  /**
    * 최대 업로드 가능한 이미지 개수
    */
   maxImages?: number;
@@ -37,21 +42,26 @@ interface ImageUploadProps {
 export function ImageUpload({
   value = [],
   onChange,
+  existingImageUrls = [],
   maxImages = 5,
   error
 }: ImageUploadProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [previewUrls, setPreviewUrls] = useState<string[]>([]);
+  // 초기 미리보기 URL은 기존 이미지 URL들로 설정
+  const [previewUrls, setPreviewUrls] = useState<string[]>(existingImageUrls);
 
   const handleFileChange = (files: FileList | null) => {
     if (!files) return;
 
     const newFiles = Array.from(files);
-    const totalFiles = [...value, ...newFiles].slice(0, maxImages);
+    const remainingSlots = maxImages - previewUrls.length;
+    const filesToAdd = newFiles.slice(0, remainingSlots);
 
-    // 미리보기 URL 생성
-    const newPreviewUrls = totalFiles.map(file => URL.createObjectURL(file));
-    setPreviewUrls(newPreviewUrls);
+    const totalFiles = [...value, ...filesToAdd];
+
+    // 새로 추가된 파일들의 미리보기 URL만 생성
+    const newFileUrls = filesToAdd.map(file => URL.createObjectURL(file));
+    setPreviewUrls([...previewUrls, ...newFileUrls]);
 
     onChange?.(totalFiles);
   };
@@ -61,10 +71,22 @@ export function ImageUpload({
   };
 
   const handleRemove = (index: number) => {
-    const newFiles = value.filter((_, i) => i !== index);
-    const newPreviewUrls = previewUrls.filter((_, i) => i !== index);
-    setPreviewUrls(newPreviewUrls);
-    onChange?.(newFiles);
+    // 기존 이미지 URL인지 새로 업로드한 File인지 구분
+    const isExistingImage = index < existingImageUrls.length;
+
+    if (isExistingImage) {
+      // 기존 이미지를 삭제하는 경우: previewUrls만 업데이트
+      const newPreviewUrls = previewUrls.filter((_, i) => i !== index);
+      setPreviewUrls(newPreviewUrls);
+      // TODO: 기존 이미지 삭제 로직 추가 필요 (백엔드 API 연동)
+    } else {
+      // 새로 업로드한 파일을 삭제하는 경우
+      const fileIndex = index - existingImageUrls.length;
+      const newFiles = value.filter((_, i) => i !== fileIndex);
+      const newPreviewUrls = previewUrls.filter((_, i) => i !== index);
+      setPreviewUrls(newPreviewUrls);
+      onChange?.(newFiles);
+    }
   };
 
   return (
@@ -100,7 +122,7 @@ export function ImageUpload({
       ))}
 
       {/* 이미지 업로드 버튼 */}
-      {value.length < maxImages && (
+      {previewUrls.length < maxImages && (
         <button
           type="button"
           onClick={handleClick}

@@ -9,9 +9,10 @@ import type {
   PresignBulkRequest,
   PresignBulkResponse,
   JobImageMetadata,
+  JobDetailResponse,
 } from "@/types/job";
 
-export type { Job };
+export type { Job, JobDetailResponse };
 
 /**
  * 이미지 프리사인 URL 발급 및 S3 업로드
@@ -103,8 +104,8 @@ export async function createJobPosting(data: JobFormData): Promise<JobPostingRes
 /**
  * 채용 공고 조회 API
  */
-export function fetchJobPosting(jobId: string): Promise<Job> {
-  return get<Job>(API_ENDPOINTS.COMPANY_JOB_POSTINGS.GET(jobId));
+export function fetchJobPosting(jobId: string): Promise<JobDetailResponse> {
+  return get<JobDetailResponse>(API_ENDPOINTS.COMPANY_JOB_POSTINGS.GET(jobId));
 }
 
 /**

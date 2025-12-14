@@ -2,7 +2,7 @@
 
 import { useSearchParams, useRouter } from "next/navigation";
 import { JobListHeader } from "./_components/JobListHeader";
-import { JobCardWithDelete } from "./_components/JobCardWithDelete";
+import { JobCardContainer } from "./_components/JobCardContainer";
 import { useJobPostings } from "@/hooks/company/useJobPosting";
 import Pager from "@/components/Pager";
 
@@ -58,7 +58,7 @@ export default function JobsPage() {
           </div>
         ) : (
           jobs.map((job) => (
-            <JobCardWithDelete
+            <JobCardContainer
               key={job.jobPostingId}
               jobPostingId={job.jobPostingId}
               title={job.title}

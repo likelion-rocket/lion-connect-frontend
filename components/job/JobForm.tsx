@@ -95,7 +95,11 @@ export function JobForm({
         <div className="w-[767px] inline-flex flex-col justify-start items-start gap-16">
           {/* 이미지 섹션 */}
           <div className="self-stretch p-8 bg-white rounded-lg outline outline-[0.80px] outline-offset-[-0.80px] outline-neutral-200 flex flex-col justify-start items-start gap-12 overflow-hidden">
-            <FormField label="공고 노출 이미지" required error={errors.images?.message}>
+            <FormField
+              label="공고 노출 이미지 (첫 번째 이미지 대표 이미지로 설정됩니다.)"
+              required
+              error={errors.images?.message}
+            >
               <Controller
                 name="images"
                 control={control}

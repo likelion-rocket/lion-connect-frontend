@@ -19,6 +19,8 @@ export interface JobFormData {
   benefits: string;
   hiringProcess: string;
   location: string;
+  // 수정 모드에서 기존 이미지 메타데이터 전달용 (선택적)
+  existingImages?: JobImageMetadata[];
 }
 
 /**

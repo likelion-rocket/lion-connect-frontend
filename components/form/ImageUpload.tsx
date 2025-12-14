@@ -13,6 +13,8 @@ import { useRef, useState } from "react";
 import Image from "next/image";
 import { cn } from "@/utils/utils";
 
+import type { JobImageMetadata } from "@/types/job";
+
 interface ImageUploadProps {
   /**
    * 현재 선택된 이미지 파일들
@@ -30,6 +32,16 @@ interface ImageUploadProps {
   existingImageUrls?: string[];
 
   /**
+   * 기존 이미지 메타데이터 (수정 모드에서 사용)
+   */
+  existingImageMetadata?: JobImageMetadata[];
+
+  /**
+   * 기존 이미지 메타데이터 변경 콜백
+   */
+  onExistingImagesChange?: (metadata: JobImageMetadata[]) => void;
+
+  /**
    * 최대 업로드 가능한 이미지 개수
    */
   maxImages?: number;
@@ -44,12 +56,17 @@ export function ImageUpload({
   value = [],
   onChange,
   existingImageUrls = [],
+  existingImageMetadata = [],
+  onExistingImagesChange,
   maxImages = 5,
   error
 }: ImageUploadProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   // 초기 미리보기 URL은 기존 이미지 URL들로 설정
   const [previewUrls, setPreviewUrls] = useState<string[]>(existingImageUrls);
+  // 기존 이미지 메타데이터 관리
+  const [currentExistingMetadata, setCurrentExistingMetadata] =
+    useState<JobImageMetadata[]>(existingImageMetadata);
 
   const handleFileChange = (files: FileList | null) => {
     if (!files) return;
@@ -73,18 +90,24 @@ export function ImageUpload({
 
   const handleRemove = (index: number) => {
     // 기존 이미지 URL인지 새로 업로드한 File인지 구분
-    const isExistingImage = index < existingImageUrls.length;
+    const isExistingImage = index < currentExistingMetadata.length;
 
     if (isExistingImage) {
-      // 기존 이미지를 삭제하는 경우: previewUrls만 업데이트
+      // 기존 이미지를 삭제하는 경우
       const newPreviewUrls = previewUrls.filter((_, i) => i !== index);
+      const newExistingMetadata = currentExistingMetadata.filter((_, i) => i !== index);
+
       setPreviewUrls(newPreviewUrls);
-      // TODO: 기존 이미지 삭제 로직 추가 필요 (백엔드 API 연동)
+      setCurrentExistingMetadata(newExistingMetadata);
+
+      // 부모 컴포넌트에 기존 이미지 메타데이터 변경 알림
+      onExistingImagesChange?.(newExistingMetadata);
     } else {
       // 새로 업로드한 파일을 삭제하는 경우
-      const fileIndex = index - existingImageUrls.length;
+      const fileIndex = index - currentExistingMetadata.length;
       const newFiles = value.filter((_, i) => i !== fileIndex);
       const newPreviewUrls = previewUrls.filter((_, i) => i !== index);
+
       setPreviewUrls(newPreviewUrls);
       onChange?.(newFiles);
     }

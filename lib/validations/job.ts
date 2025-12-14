@@ -2,7 +2,7 @@
 import { z } from "zod";
 
 /**
- * 채용 공고 폼 유효성 검증 스키마
+ * 채용 공고 폼 유효성 검증 스키마 (등록용)
  */
 export const jobFormSchema = z.object({
   // 공고 노출 이미지
@@ -81,4 +81,28 @@ export const jobFormSchema = z.object({
     .max(200, "근무지는 최대 200자까지 입력 가능합니다"),
 });
 
+/**
+ * 채용 공고 수정용 스키마
+ * - 수정 모드에서는 기존 이미지가 있으면 새 이미지 업로드가 선택사항
+ */
+export const jobFormEditSchema = jobFormSchema.extend({
+  images: z
+    .array(z.instanceof(File))
+    .max(5, "이미지는 최대 5개까지 업로드 가능합니다")
+    .default([]),
+  // 기존 이미지 URL 추가 (validation에는 사용하지 않음)
+  imageUrls: z.array(z.string()).optional(),
+}).refine(
+  (data) => {
+    // 기존 이미지(imageUrls) + 새 이미지(images) 합쳐서 최소 1개 이상
+    const totalImages = (data.imageUrls?.length || 0) + data.images.length;
+    return totalImages >= 1;
+  },
+  {
+    message: "이미지를 최소 1개 이상 업로드해주세요",
+    path: ["images"],
+  }
+);
+
 export type JobFormSchema = z.infer<typeof jobFormSchema>;
+export type JobFormEditSchema = z.infer<typeof jobFormEditSchema>;

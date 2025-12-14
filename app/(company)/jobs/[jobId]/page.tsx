@@ -36,8 +36,8 @@ export default function EditJobPage({ params }: { params: Promise<{ jobId: strin
       location: jobData.workplace,
       // 기존 이미지 URL들 (ImageUpload에서 사용)
       // API 응답의 url 또는 fileUrl 사용, 없으면 S3 URL 직접 구성 (fallback)
-      imageUrls: jobData.images.map((img) =>
-        img.url || img.fileUrl || `${S3_BASE_URL}/${img.objectKey}`
+      imageUrls: jobData.images.map(
+        (img) => img.url || img.fileUrl || `${S3_BASE_URL}/${img.objectKey}`
       ),
     };
   }, [jobData]);
@@ -53,10 +53,14 @@ export default function EditJobPage({ params }: { params: Promise<{ jobId: strin
     }
   };
 
+  const handleBack = () => {
+    router.push("/jobs");
+  };
+
   if (isLoading) {
     return (
       <div className="container mx-auto py-8">
-        <BackButton />
+        <BackButton onBack={handleBack} />
         <div className="mt-8 flex justify-center">
           <div className="text-neutral-600">로딩 중...</div>
         </div>
@@ -66,7 +70,7 @@ export default function EditJobPage({ params }: { params: Promise<{ jobId: strin
 
   return (
     <div className="container mx-auto py-8">
-      <BackButton />
+      <BackButton onBack={handleBack} />
       <div className="mt-8 flex justify-center">
         <JobForm
           initialData={formData}

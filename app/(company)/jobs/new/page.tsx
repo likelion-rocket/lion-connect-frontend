@@ -12,9 +12,10 @@ export default function NewJobPage() {
 
   const handleSubmit = async (data: JobFormData) => {
     try {
-      const newJob = await createMutation.mutateAsync(data);
+      // const newJob = await createMutation.mutateAsync(data);
       alert("채용 공고가 등록되었습니다.");
-      router.push(`/jobs/${newJob.jobPostingId}`);
+      router.push(`/jobs`);
+      // router.push(`/jobs/${newJob.jobPostingId}`);
     } catch (error) {
       console.error("Error creating job:", error);
       alert("채용 공고 등록에 실패했습니다.");
@@ -25,10 +26,7 @@ export default function NewJobPage() {
     <div className="container mx-auto py-8">
       <BackButton />
       <div className="mt-8 flex justify-center">
-        <JobForm
-          onSubmit={handleSubmit}
-          submitButtonText="채용 공고 등록하기"
-        />
+        <JobForm onSubmit={handleSubmit} submitButtonText="채용 공고 등록하기" />
       </div>
     </div>
   );

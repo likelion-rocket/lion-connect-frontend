@@ -1,6 +1,6 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { JobListHeader } from "./_components/JobListHeader";
 import { JobCardWithDelete } from "./_components/JobCardWithDelete";
 import { useJobPostings } from "@/hooks/company/useJobPosting";
@@ -8,6 +8,7 @@ import Pager from "@/components/Pager";
 
 export default function JobsPage() {
   const searchParams = useSearchParams();
+  const router = useRouter();
 
   // URL 쿼리스트링에서 페이지 정보 가져오기 (1-based)
   const currentPage = Number(searchParams.get("page")) || 1;
@@ -65,7 +66,7 @@ export default function JobsPage() {
               isPublished={job.status === "PUBLISHED"}
               currentItemCount={jobs.length}
               onPublishToggle={() => console.log("Toggle publish", job.jobPostingId)}
-              onEdit={() => console.log("Edit", job.jobPostingId)}
+              onEdit={() => router.push(`/jobs/${job.jobPostingId}`)}
               onViewApplicants={() => console.log("View applicants", job.jobPostingId)}
             />
           ))

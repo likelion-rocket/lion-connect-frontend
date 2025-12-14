@@ -12,7 +12,7 @@ export function JobCard({
   title,
   company,
   location,
-  imageUrl = "/images/hero-image.png",
+  imageUrl = "/images/3_2.png",
   className,
   ...props
 }: JobCardProps) {
@@ -25,13 +25,7 @@ export function JobCard({
       {...props}
     >
       <div className="w-[275px] h-[184px] relative bg-gradient-to-l from-black/10 via-black/0 to-black/20 rounded-lg overflow-hidden">
-        <Image
-          src={imageUrl}
-          alt={title}
-          fill
-          className="object-cover"
-          sizes="275px"
-        />
+        <Image src={imageUrl} alt={title} fill className="object-cover" sizes="275px" />
         <div className="w-6 h-6 left-[222px] top-[10px] absolute" />
       </div>
       <div className="w-full px-1.5 bg-white flex flex-col justify-start items-start gap-2.5 overflow-hidden">

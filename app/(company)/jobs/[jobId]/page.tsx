@@ -46,7 +46,7 @@ export default function EditJobPage({ params }: { params: Promise<{ jobId: strin
     try {
       await updateMutation.mutateAsync(data);
       alert("채용 공고가 수정되었습니다.");
-      router.push(`/jobs/${jobId}`);
+      router.push("/jobs");
     } catch (error) {
       console.error("Error updating job:", error);
       alert("채용 공고 수정에 실패했습니다.");

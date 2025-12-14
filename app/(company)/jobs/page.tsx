@@ -66,7 +66,7 @@ export default function JobsPage() {
               isPublished={job.status === "PUBLISHED"}
               currentItemCount={jobs.length}
               onEdit={() => router.push(`/jobs/${job.jobPostingId}`)}
-              onViewApplicants={() => console.log("View applicants", job.jobPostingId)}
+              onViewApplicants={() => router.push(`/jobs/${job.jobPostingId}/applicants`)}
             />
           ))
         )}

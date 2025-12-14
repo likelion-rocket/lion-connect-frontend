@@ -258,7 +258,7 @@ export function JobForm({
             className={
               !isValid || isSubmitting
                 ? "w-72 h-11 px-2.5 py-2 bg-neutral-200 rounded-lg inline-flex justify-center items-center gap-2.5 cursor-not-allowed"
-                : "w-72 h-11 px-2.5 py-2 bg-neutral-800 hover:bg-neutral-900 rounded-lg inline-flex justify-center items-center gap-2.5 transition-colors"
+                : "w-72 h-11 px-2.5 py-2 bg-neutral-800 hover:bg-neutral-900 rounded-lg inline-flex justify-center items-center gap-2.5 transition-colors cursor-pointer"
             }
           >
             <div

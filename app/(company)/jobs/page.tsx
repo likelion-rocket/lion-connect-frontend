@@ -63,6 +63,7 @@ export default function JobsPage() {
               title={job.title}
               category={`${job.jobGroupName} · ${job.jobRoleName}`}
               isPublished={job.status === "PUBLISHED"}
+              currentItemCount={jobs.length}
               onPublishToggle={() => console.log("Toggle publish", job.jobPostingId)}
               onEdit={() => console.log("Edit", job.jobPostingId)}
               onViewApplicants={() => console.log("View applicants", job.jobPostingId)}

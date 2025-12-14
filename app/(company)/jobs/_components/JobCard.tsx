@@ -69,7 +69,7 @@ export function JobCard({
       {/* Title and Actions */}
       <div className="self-stretch inline-flex justify-between items-center">
         <div className="flex justify-start items-center gap-4">
-          <h3 className="justify-start text-text-primary text-2xl font-bold font-ko-body leading-8">
+          <h3 className="justify-start max-w-[230px] text-text-primary text-2xl font-bold font-ko-body leading-8">
             {title}
           </h3>
           <div

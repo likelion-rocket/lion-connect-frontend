@@ -5,7 +5,7 @@ import { useConfirm } from "@/contexts/ConfirmContext";
 import { JobCard } from "./JobCard";
 import { useRouter, useSearchParams } from "next/navigation";
 
-interface JobCardWithDeleteProps {
+interface JobCardContainerProps {
   jobPostingId: number;
   title: string;
   category: string;
@@ -16,7 +16,7 @@ interface JobCardWithDeleteProps {
   onViewApplicants?: () => void;
 }
 
-export function JobCardWithDelete({
+export function JobCardContainer({
   jobPostingId,
   title,
   category,
@@ -24,7 +24,7 @@ export function JobCardWithDelete({
   currentItemCount,
   onEdit,
   onViewApplicants,
-}: JobCardWithDeleteProps) {
+}: JobCardContainerProps) {
   const confirm = useConfirm();
   const router = useRouter();
   const searchParams = useSearchParams();

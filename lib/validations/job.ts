@@ -34,7 +34,6 @@ export const jobFormSchema = z.object({
   description: z
     .string()
     .min(1, "회사/직무 소개를 입력해주세요")
-    .min(10, "회사/직무 소개는 최소 10자 이상이어야 합니다")
     .max(2000, "회사/직무 소개는 최대 2000자까지 입력 가능합니다")
     .refine(
       (val) => !/https?:\/\//.test(val),
@@ -45,7 +44,6 @@ export const jobFormSchema = z.object({
   responsibilities: z
     .string()
     .min(1, "주요 업무를 입력해주세요")
-    .min(10, "주요 업무는 최소 10자 이상이어야 합니다")
     .max(2000, "주요 업무는 최대 2000자까지 입력 가능합니다")
     .refine(
       (val) => !/https?:\/\//.test(val),
@@ -56,35 +54,30 @@ export const jobFormSchema = z.object({
   requirements: z
     .string()
     .min(1, "자격요건을 입력해주세요")
-    .min(10, "자격요건은 최소 10자 이상이어야 합니다")
     .max(2000, "자격요건은 최대 2000자까지 입력 가능합니다"),
 
   // 우대사항
   preferredQualifications: z
     .string()
     .min(1, "우대사항을 입력해주세요")
-    .min(10, "우대사항은 최소 10자 이상이어야 합니다")
     .max(2000, "우대사항은 최대 2000자까지 입력 가능합니다"),
 
   // 혜택 및 복지
   benefits: z
     .string()
     .min(1, "혜택 및 복지를 입력해주세요")
-    .min(10, "혜택 및 복지는 최소 10자 이상이어야 합니다")
     .max(2000, "혜택 및 복지는 최대 2000자까지 입력 가능합니다"),
 
   // 채용 전형
   hiringProcess: z
     .string()
     .min(1, "채용 전형을 입력해주세요")
-    .min(10, "채용 전형은 최소 10자 이상이어야 합니다")
     .max(2000, "채용 전형은 최대 2000자까지 입력 가능합니다"),
 
   // 근무지
   location: z
     .string()
     .min(1, "근무지를 입력해주세요")
-    .min(5, "근무지는 최소 5자 이상이어야 합니다")
     .max(200, "근무지는 최대 200자까지 입력 가능합니다"),
 });
 

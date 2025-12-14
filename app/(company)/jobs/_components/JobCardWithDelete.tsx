@@ -1,6 +1,6 @@
 "use client";
 
-import { useDeleteJobPosting } from "@/hooks/company/useJobPosting";
+import { useDeleteJobPosting, usePublishJobPosting, useUnpublishJobPosting } from "@/hooks/company/useJobPosting";
 import { useConfirm } from "@/contexts/ConfirmContext";
 import { JobCard } from "./JobCard";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -22,7 +22,6 @@ export function JobCardWithDelete({
   category,
   isPublished,
   currentItemCount,
-  onPublishToggle,
   onEdit,
   onViewApplicants,
 }: JobCardWithDeleteProps) {
@@ -30,6 +29,8 @@ export function JobCardWithDelete({
   const router = useRouter();
   const searchParams = useSearchParams();
   const deleteMutation = useDeleteJobPosting(jobPostingId.toString());
+  const publishMutation = usePublishJobPosting(jobPostingId);
+  const unpublishMutation = useUnpublishJobPosting(jobPostingId);
 
   const handleDelete = async () => {
     const ok = await confirm({
@@ -55,13 +56,41 @@ export function JobCardWithDelete({
     }
   };
 
+  const handlePublishToggle = async () => {
+    if (isPublished) {
+      // 게시 취소
+      const ok = await confirm({
+        title: "채용 공고를 내리시겠습니까?",
+        description: "확인을 누르면 해당 채용 공고가 내려갑니다.",
+        confirmLabel: "확인",
+        cancelLabel: "취소",
+      });
+
+      if (ok) {
+        unpublishMutation.mutate();
+      }
+    } else {
+      // 게시
+      const ok = await confirm({
+        title: "채용 공고를 게시하시겠습니까?",
+        description: "확인을 누르면 채용 공고가 게시됩니다.",
+        confirmLabel: "확인",
+        cancelLabel: "취소",
+      });
+
+      if (ok) {
+        publishMutation.mutate();
+      }
+    }
+  };
+
   return (
     <JobCard
       jobPostingId={jobPostingId}
       title={title}
       category={category}
       isPublished={isPublished}
-      onPublishToggle={onPublishToggle}
+      onPublishToggle={handlePublishToggle}
       onEdit={onEdit}
       onDelete={handleDelete}
       onViewApplicants={onViewApplicants}

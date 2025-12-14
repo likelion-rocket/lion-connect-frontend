@@ -138,6 +138,8 @@ export const API_ENDPOINTS = {
     GET: (jobId: number | string) => `/company/job-postings/${jobId}`, // GET - 채용공고 상세 조회
     UPDATE: (jobId: number | string) => `/company/job-postings/${jobId}`, // PUT - 채용공고 수정
     DELETE: (jobId: number | string) => `/company/job-postings/${jobId}`, // DELETE - 채용공고 삭제
+    PUBLISH: (jobId: number | string) => `/company/job-postings/${jobId}/publish`, // PATCH - 채용공고 게시
+    UNPUBLISH: (jobId: number | string) => `/company/job-postings/${jobId}/unpublish`, // PATCH - 채용공고 게시 취소
     IMAGES_PRESIGN_BULK: "/company/job-postings/images/presign-bulk", // POST - 이미지 프리사인 URL 발급
     IMAGES_UPLOAD_COMPLETE: "/company/job-postings/images", // POST - 이미지 업로드 완료 처리
   },

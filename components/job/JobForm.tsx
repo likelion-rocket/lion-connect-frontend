@@ -14,8 +14,8 @@ import { FormField } from "@/components/form/FormField";
 import { RadioGroup, RadioOption } from "@/components/form/RadioGroup";
 import { ImageUpload } from "@/components/form/ImageUpload";
 import { JobCategorySelect } from "@/components/job/JobCategorySelect";
-import { JobFormData } from "@/types/job";
-import { jobFormSchema } from "@/lib/validations/job";
+import { JobFormData, JobImageMetadata } from "@/types/job";
+import { jobFormSchema, jobFormEditSchema } from "@/lib/validations/job";
 import { findJobRoleById } from "@/constants/jobMapping";
 import { cn } from "@/utils/utils";
 
@@ -42,6 +42,14 @@ export function JobForm({
   );
   const [selectedRoleId, setSelectedRoleId] = useState<number>(initialData?.jobRoleId || 0);
 
+  // 수정 모드 여부 판단 (imageUrls가 있으면 수정 모드)
+  const isEditMode = !!initialData?.imageUrls && initialData.imageUrls.length > 0;
+
+  // 기존 이미지 메타데이터 관리 (수정 모드에서만 사용)
+  const [existingImages, setExistingImages] = useState<JobImageMetadata[]>(
+    initialData?.existingImages || []
+  );
+
   const {
     register,
     handleSubmit,
@@ -49,7 +57,7 @@ export function JobForm({
     setValue,
     formState: { errors, isSubmitting, isValid },
   } = useForm<JobFormData>({
-    resolver: zodResolver(jobFormSchema),
+    resolver: zodResolver(isEditMode ? jobFormEditSchema : jobFormSchema) as any,
     mode: "onChange",
     defaultValues: {
       images: [],
@@ -78,7 +86,12 @@ export function JobForm({
   };
 
   const handleFormSubmit = async (data: JobFormData) => {
-    await onSubmit(data);
+    // 수정 모드일 때 기존 이미지 메타데이터 포함
+    const submitData: JobFormData = {
+      ...data,
+      existingImages: isEditMode ? existingImages : undefined,
+    };
+    await onSubmit(submitData);
   };
 
   return (
@@ -109,6 +122,8 @@ export function JobForm({
                     value={field.value}
                     onChange={field.onChange}
                     existingImageUrls={initialData?.imageUrls}
+                    existingImageMetadata={existingImages}
+                    onExistingImagesChange={setExistingImages}
                     error={!!errors.images}
                   />
                 )}
@@ -258,9 +273,9 @@ export function JobForm({
         <div className="inline-flex flex-col justify-center items-start gap-8">
           <button
             type="submit"
-            disabled={initialData ? isSubmitting : !isValid || isSubmitting}
+            disabled={isEditMode ? isSubmitting : !isValid || isSubmitting}
             data-state={
-              initialData
+              isEditMode
                 ? isSubmitting
                   ? "pressed"
                   : "active"
@@ -271,21 +286,21 @@ export function JobForm({
             className={cn(
               "w-72 h-11 px-2.5 py-2 rounded-lg inline-flex justify-center items-center gap-2.5",
               "text-white text-lg font-bold font-['Pretendard'] leading-7",
-              // 비활성화 상태
-              !initialData &&
+              // 비활성화 상태 (등록 모드에서만)
+              !isEditMode &&
                 (!isValid || isSubmitting) &&
                 "bg-neutral-200 text-neutral-400 cursor-not-allowed",
               // 활성화 상태 (active) - 기본 배경색
-              (initialData ? !isSubmitting : isValid && !isSubmitting) &&
+              (isEditMode ? !isSubmitting : isValid && !isSubmitting) &&
                 "bg-orange-600 cursor-pointer",
               // 마우스로 누르고 있을 때 (active pseudo-class)
-              (initialData ? !isSubmitting : isValid && !isSubmitting) &&
+              (isEditMode ? !isSubmitting : isValid && !isSubmitting) &&
                 "active:text-neutral-300 active:bg-orange-700",
               // 제출 중일 때 (pressed) - 텍스트 색상 변경
-              initialData && isSubmitting && "bg-orange-600 text-neutral-300"
+              isEditMode && isSubmitting && "bg-orange-600 text-neutral-300"
             )}
           >
-            {isSubmitting ? "등록 중..." : submitButtonText}
+            {isSubmitting ? (isEditMode ? "수정 중..." : "등록 중...") : submitButtonText}
           </button>
         </div>
       </div>

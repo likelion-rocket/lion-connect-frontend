@@ -13,6 +13,10 @@ import type {
   ImageUploadCompleteRequest,
   ImageUploadCompleteResponse,
 } from "@/types/job";
+import type {
+  PublicJobPostingsResponse,
+  PublicJobPostingsParams,
+} from "@/types/company-job-posting";
 
 export type { Job, JobDetailResponse };
 
@@ -165,8 +169,36 @@ export function deleteJobPosting(jobId: string): Promise<void> {
 }
 
 /**
- * 채용 공고 목록 조회 API
+ * 채용 공고 목록 조회 API (기업용)
  */
 export function fetchJobPostings(): Promise<Job[]> {
   return get<Job[]>(API_ENDPOINTS.COMPANY_JOB_POSTINGS.LIST);
+}
+
+/**
+ * 공개 채용 공고 목록 조회 API (인재용)
+ */
+export function fetchPublicJobPostings(
+  params: PublicJobPostingsParams
+): Promise<PublicJobPostingsResponse> {
+  const queryParams = new URLSearchParams();
+
+  if (params.jobGroupCode) {
+    queryParams.append("jobGroupCode", params.jobGroupCode);
+  }
+  if (params.jobRoleCode) {
+    queryParams.append("jobRoleCode", params.jobRoleCode);
+  }
+  if (params.page !== undefined) {
+    queryParams.append("page", params.page.toString());
+  }
+  if (params.size !== undefined) {
+    queryParams.append("size", params.size.toString());
+  }
+  if (params.sort && params.sort.length > 0) {
+    params.sort.forEach((s) => queryParams.append("sort", s));
+  }
+
+  const endpoint = `${API_ENDPOINTS.JOB_POSTINGS.LIST}?${queryParams.toString()}`;
+  return get<PublicJobPostingsResponse>(endpoint);
 }

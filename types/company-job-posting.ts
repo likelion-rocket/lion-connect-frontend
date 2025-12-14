@@ -61,3 +61,29 @@ export interface JobPostingsParams {
   sort?: string[];
   status?: JobPostingStatus | null;
 }
+
+// 공개 채용공고 아이템 (인재용)
+export interface PublicJobPosting {
+  jobPostingId: number;
+  title: string;
+  companyName: string;
+  jobGroupName: string;
+  jobRoleName: string;
+  employmentType: "INTERN" | "CONTRACT" | "FULL_TIME";
+  workplaceShort: string;
+  thumbnailImageKey: string | null;
+  thumbnailImageUrl: string | null;
+  publishedAt: string;
+}
+
+// 공개 채용공고 목록 응답 (인재용)
+export type PublicJobPostingsResponse = PagedResponse<PublicJobPosting>;
+
+// 공개 채용공고 목록 요청 파라미터 (인재용)
+export interface PublicJobPostingsParams {
+  jobGroupCode?: string;
+  jobRoleCode?: string;
+  page?: number;
+  size?: number;
+  sort?: string[];
+}

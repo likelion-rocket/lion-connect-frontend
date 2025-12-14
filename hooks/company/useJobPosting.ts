@@ -10,7 +10,7 @@ import {
 } from "@/lib/api/jobPostings";
 import type { JobFormData, JobPostingResponse } from "@/types/job";
 import { useAuthStore } from "@/store/authStore";
-import { get } from "@/lib/apiClient";
+import { get, patch } from "@/lib/apiClient";
 import { API_ENDPOINTS } from "@/constants/api";
 import type { JobPostingsResponse, JobPostingsParams } from "@/types/company-job-posting";
 
@@ -111,6 +111,38 @@ export function useDeleteJobPosting(jobId: string) {
       queryClient.invalidateQueries({ queryKey: ["jobPostings"] });
       // 캐시에서 삭제
       queryClient.removeQueries({ queryKey: ["jobPosting", jobId] });
+    },
+  });
+}
+
+/**
+ * 채용 공고 게시 훅
+ */
+export function usePublishJobPosting(jobId: number) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: () => patch(API_ENDPOINTS.COMPANY_JOB_POSTINGS.PUBLISH(jobId)),
+    onSuccess: () => {
+      // 게시 후 해당 쿼리와 목록 쿼리 무효화
+      queryClient.invalidateQueries({ queryKey: ["jobPosting", jobId.toString()] });
+      queryClient.invalidateQueries({ queryKey: ["jobPostings"] });
+    },
+  });
+}
+
+/**
+ * 채용 공고 게시 취소 훅
+ */
+export function useUnpublishJobPosting(jobId: number) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: () => patch(API_ENDPOINTS.COMPANY_JOB_POSTINGS.UNPUBLISH(jobId)),
+    onSuccess: () => {
+      // 게시 취소 후 해당 쿼리와 목록 쿼리 무효화
+      queryClient.invalidateQueries({ queryKey: ["jobPosting", jobId.toString()] });
+      queryClient.invalidateQueries({ queryKey: ["jobPostings"] });
     },
   });
 }

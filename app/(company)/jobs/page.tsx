@@ -65,7 +65,6 @@ export default function JobsPage() {
               category={`${job.jobGroupName} · ${job.jobRoleName}`}
               isPublished={job.status === "PUBLISHED"}
               currentItemCount={jobs.length}
-              onPublishToggle={() => console.log("Toggle publish", job.jobPostingId)}
               onEdit={() => router.push(`/jobs/${job.jobPostingId}`)}
               onViewApplicants={() => console.log("View applicants", job.jobPostingId)}
             />

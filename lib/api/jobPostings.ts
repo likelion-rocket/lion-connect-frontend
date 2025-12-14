@@ -87,6 +87,9 @@ function convertFormDataToRequest(
   formData: JobFormData,
   imageMetadata: JobImageMetadata[]
 ): JobPostingRequest {
+  // 백엔드로 전송할 때는 url, fileUrl 필드 제거
+  const cleanImageMetadata = imageMetadata.map(({ url, fileUrl, ...metadata }) => metadata);
+
   return {
     title: formData.title,
     employmentType: formData.employmentType,
@@ -99,7 +102,7 @@ function convertFormDataToRequest(
     hiringProcess: formData.hiringProcess,
     workplace: formData.location,
     status: "DRAFT", // 기본값은 임시저장
-    images: imageMetadata,
+    images: cleanImageMetadata,
   };
 }
 
@@ -130,12 +133,26 @@ export async function updateJobPosting(
   jobId: string,
   data: JobFormData
 ): Promise<JobPostingResponse> {
-  // 1. 이미지 업로드 (새로 추가된 이미지만)
-  // TODO: 기존 이미지와 새 이미지 구분 로직 필요
-  const imageMetadata = await uploadJobImages(data.images);
+  // 1. 새로 업로드된 이미지만 S3에 업로드
+  const newImageMetadata = await uploadJobImages(data.images);
 
-  // 2. 채용 공고 수정 요청
-  const requestData = convertFormDataToRequest(data, imageMetadata);
+  // 2. 기존 이미지 + 새 이미지 결합
+  const existingImages = data.existingImages || [];
+
+  // 3. sortOrder 재정렬 (중복 방지 - DB 무결성 제약 조건 위반 해결)
+  const allImageMetadata = [
+    ...existingImages.map((img, index) => ({
+      ...img,
+      sortOrder: index + 1,
+    })),
+    ...newImageMetadata.map((img, index) => ({
+      ...img,
+      sortOrder: existingImages.length + index + 1,
+    })),
+  ];
+
+  // 4. 채용 공고 수정 요청
+  const requestData = convertFormDataToRequest(data, allImageMetadata);
 
   return put<JobPostingResponse>(API_ENDPOINTS.COMPANY_JOB_POSTINGS.UPDATE(jobId), requestData);
 }

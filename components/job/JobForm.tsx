@@ -17,6 +17,7 @@ import { JobCategorySelect } from "@/components/job/JobCategorySelect";
 import { JobFormData } from "@/types/job";
 import { jobFormSchema } from "@/lib/validations/job";
 import { findJobRoleById } from "@/constants/jobMapping";
+import { cn } from "@/utils/utils";
 
 interface JobFormProps {
   initialData?: Partial<JobFormData> & { imageUrls?: string[] };
@@ -257,23 +258,34 @@ export function JobForm({
         <div className="inline-flex flex-col justify-center items-start gap-8">
           <button
             type="submit"
-            disabled={!isValid || isSubmitting}
-            data-state={!isValid || isSubmitting ? "default_disable" : "default"}
-            className={
-              !isValid || isSubmitting
-                ? "w-72 h-11 px-2.5 py-2 bg-neutral-200 rounded-lg inline-flex justify-center items-center gap-2.5 cursor-not-allowed"
-                : "w-72 h-11 px-2.5 py-2 bg-neutral-800 hover:bg-neutral-900 rounded-lg inline-flex justify-center items-center gap-2.5 transition-colors cursor-pointer"
+            disabled={initialData ? isSubmitting : !isValid || isSubmitting}
+            data-state={
+              initialData
+                ? isSubmitting
+                  ? "pressed"
+                  : "active"
+                : !isValid || isSubmitting
+                  ? "default_disable"
+                  : "active"
             }
+            className={cn(
+              "w-72 h-11 px-2.5 py-2 rounded-lg inline-flex justify-center items-center gap-2.5",
+              "text-white text-lg font-bold font-['Pretendard'] leading-7",
+              // 비활성화 상태
+              !initialData &&
+                (!isValid || isSubmitting) &&
+                "bg-neutral-200 text-neutral-400 cursor-not-allowed",
+              // 활성화 상태 (active) - 기본 배경색
+              (initialData ? !isSubmitting : isValid && !isSubmitting) &&
+                "bg-orange-600 cursor-pointer",
+              // 마우스로 누르고 있을 때 (active pseudo-class)
+              (initialData ? !isSubmitting : isValid && !isSubmitting) &&
+                "active:text-neutral-300 active:bg-orange-700",
+              // 제출 중일 때 (pressed) - 텍스트 색상 변경
+              initialData && isSubmitting && "bg-orange-600 text-neutral-300"
+            )}
           >
-            <div
-              className={
-                !isValid || isSubmitting
-                  ? "justify-start text-neutral-400 text-lg font-bold font-['Pretendard'] leading-7"
-                  : "justify-start text-white text-lg font-bold font-['Pretendard'] leading-7"
-              }
-            >
-              {isSubmitting ? "등록 중..." : submitButtonText}
-            </div>
+            {isSubmitting ? "등록 중..." : submitButtonText}
           </button>
         </div>
       </div>

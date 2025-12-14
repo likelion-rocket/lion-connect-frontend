@@ -3,12 +3,14 @@
 import { useDeleteJobPosting } from "@/hooks/company/useJobPosting";
 import { useConfirm } from "@/contexts/ConfirmContext";
 import { JobCard } from "./JobCard";
+import { useRouter, useSearchParams } from "next/navigation";
 
 interface JobCardWithDeleteProps {
   jobPostingId: number;
   title: string;
   category: string;
   isPublished: boolean;
+  currentItemCount: number; // 현재 페이지의 항목 개수
   onPublishToggle?: () => void;
   onEdit?: () => void;
   onViewApplicants?: () => void;
@@ -19,11 +21,14 @@ export function JobCardWithDelete({
   title,
   category,
   isPublished,
+  currentItemCount,
   onPublishToggle,
   onEdit,
   onViewApplicants,
 }: JobCardWithDeleteProps) {
   const confirm = useConfirm();
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const deleteMutation = useDeleteJobPosting(jobPostingId.toString());
 
   const handleDelete = async () => {
@@ -35,7 +40,18 @@ export function JobCardWithDelete({
     });
 
     if (ok) {
-      deleteMutation.mutate();
+      deleteMutation.mutate(undefined, {
+        onSuccess: () => {
+          // 현재 페이지에 이 항목만 남아있었다면 (삭제 후 0개가 됨)
+          // 그리고 현재 페이지가 1보다 크다면 → 이전 페이지로 이동
+          const currentPage = Number(searchParams.get("page")) || 1;
+          if (currentItemCount === 1 && currentPage > 1) {
+            const params = new URLSearchParams(searchParams.toString());
+            params.set("page", String(currentPage - 1));
+            router.push(`?${params.toString()}`);
+          }
+        },
+      });
     }
   };
 

@@ -41,6 +41,7 @@ export interface JobDetailResponse {
   courseName: string;
   courseGeneration: number;
   jobGroupName: string;
+  jobRoleId: number;
   jobRoleName: string;
   publishedAt: string;
   images: JobImageMetadata[];

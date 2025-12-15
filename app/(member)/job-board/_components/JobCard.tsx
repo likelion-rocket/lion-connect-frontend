@@ -9,6 +9,7 @@ interface JobCardProps extends React.HTMLAttributes<HTMLDivElement> {
   title: string;
   company: string;
   location: string;
+  jobRoleName?: string;
   imageUrl?: string;
 }
 
@@ -17,6 +18,7 @@ export function JobCard({
   title,
   company,
   location,
+  jobRoleName,
   imageUrl = "/images/3_2.png",
   className,
   ...props
@@ -43,10 +45,10 @@ export function JobCard({
       <div className="w-full px-1.5 bg-white flex flex-col justify-start items-start gap-2.5 overflow-hidden">
         <div className="w-full flex flex-col justify-start items-start gap-1">
           <div className="w-full justify-start text-neutral-800 text-sm font-semibold font-['Pretendard'] leading-5">
-            {title}
+            {jobRoleName}
           </div>
           <div className="w-full justify-start text-neutral-500 text-xs font-medium font-['Pretendard'] leading-4">
-            {company}
+            {company || "기업"}
           </div>
           <div className="w-full justify-start text-neutral-500 text-xs font-medium font-['Pretendard'] leading-4">
             {location}

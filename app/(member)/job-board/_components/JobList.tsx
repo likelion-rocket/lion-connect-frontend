@@ -68,6 +68,7 @@ export function JobList({
             title={job.title}
             company={job.companyName}
             location={job.workplaceShort}
+            jobRoleName={job.jobRoleName}
             imageUrl={job.thumbnailImageUrl || undefined}
           />
         ))}

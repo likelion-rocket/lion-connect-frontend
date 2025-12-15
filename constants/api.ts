@@ -146,6 +146,7 @@ export const API_ENDPOINTS = {
   // 채용공고 (공개 - 인재)
   JOB_POSTINGS: {
     LIST: "/job-postings", // GET - 채용공고 목록 조회 (jobGroupCode, jobRoleCode 필터 가능)
+    GET: (jobId: number | string) => `/company/job-postings/${jobId}`, // GET - 채용공고 상세 조회
   },
   // 내 지원 현황
   JOB_APPLICATIONS: {

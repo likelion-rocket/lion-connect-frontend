@@ -127,7 +127,7 @@ export async function createJobPosting(data: JobFormData): Promise<JobPostingRes
  * 채용 공고 조회 API
  */
 export function fetchJobPosting(jobId: string): Promise<JobDetailResponse> {
-  return get<JobDetailResponse>(API_ENDPOINTS.COMPANY_JOB_POSTINGS.GET(jobId));
+  return get<JobDetailResponse>(API_ENDPOINTS.JOB_POSTINGS.GET(jobId));
 }
 
 /**

@@ -11,11 +11,7 @@ import JobCopyright from "../_components/JobCopyright";
 import OrangeBgButton from "@/components/ui/OrangeBgButton";
 import JobApplicationPanel from "../_components/JobApplicationPanel";
 
-export default function JobDetailPage({
-  params,
-}: {
-  params: Promise<{ jobId: string }>;
-}) {
+export default function JobDetailPage({ params }: { params: Promise<{ jobId: string }> }) {
   const resolvedParams = use(params);
   const router = useRouter();
   const { data: job, isLoading, error } = useJobPosting(resolvedParams.jobId);
@@ -38,9 +34,7 @@ export default function JobDetailPage({
   if (isLoading) {
     return (
       <div className="w-full min-h-screen bg-white flex justify-center items-center">
-        <div className="text-neutral-500 text-lg font-['Pretendard']">
-          로딩 중...
-        </div>
+        <div className="text-neutral-500 text-lg font-['Pretendard']">로딩 중...</div>
       </div>
     );
   }
@@ -82,10 +76,7 @@ export default function JobDetailPage({
         {/* 좌측 컨텐츠 영역 */}
         <div className="w-[767px] inline-flex flex-col justify-start items-start gap-16 overflow-hidden">
           {/* 회사명 및 공고 제목 */}
-          <JobDetailInfo
-            companyName={job.companyName || "멋쟁이사자처럼"}
-            jobTitle={job.title}
-          />
+          <JobDetailInfo companyName={job.companyName || "기업"} jobTitle={job.title} />
 
           {/* 상세 정보 섹션들 */}
           <div className="self-stretch px-4 flex flex-col justify-start items-start">

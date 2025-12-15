@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import OrangeBgButton from "@/components/ui/OrangeBgButton";
+import Link from "next/link";
 
 interface Resume {
   id: string;
@@ -86,7 +87,7 @@ export default function JobApplicationPanel({
             <div
               key={resume.id}
               data-status={resume.isPublic ? "publicResume" : "notPublicResume"}
-              className="w-80 px-4 py-6 bg-neutral-50 rounded-lg outline outline-[0.80px] outline-offset-[-0.80px] outline-neutral-200 flex flex-col justify-start items-start overflow-hidden cursor-pointer"
+              className="w-full px-4 py-6 bg-neutral-50 rounded-lg outline outline-[0.80px] outline-offset-[-0.80px] outline-neutral-200 flex flex-col justify-start items-start overflow-hidden cursor-pointer"
               onClick={() => handleResumeSelect(resume.id)}
             >
               <div className="self-stretch inline-flex justify-start items-start">
@@ -142,15 +143,15 @@ export default function JobApplicationPanel({
         </div>
 
         {/* 새 이력서 작성 버튼 */}
-        <button
+        <Link
           data-state="default"
-          onClick={handleNewResume}
-          className="w-80 h-14 relative bg-white rounded-lg outline outline-[0.80px] outline-offset-[-0.80px] outline-neutral-300 overflow-hidden cursor-pointer hover:bg-neutral-50 transition-colors"
+          href="/profile"
+          className="w-full h-14 relative bg-white rounded-lg outline outline-[0.80px] outline-offset-[-0.80px] outline-neutral-300 overflow-hidden cursor-pointer hover:bg-neutral-50 transition-colors"
         >
           <div className="left-[121px] top-[17px] absolute justify-start text-orange-600 text-base font-bold font-['Pretendard'] leading-6">
             새 이력서 작성
           </div>
-        </button>
+        </Link>
       </div>
 
       {/* 제출하기 버튼 */}

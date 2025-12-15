@@ -64,6 +64,7 @@ export function JobList({
         {jobs.map((job) => (
           <JobCard
             key={job.jobPostingId}
+            jobPostingId={job.jobPostingId}
             title={job.title}
             company={job.companyName}
             location={job.workplaceShort}

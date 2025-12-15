@@ -1,7 +1,11 @@
+"use client";
+
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { cn } from "@/utils/utils";
 
 interface JobCardProps extends React.HTMLAttributes<HTMLDivElement> {
+  jobPostingId: number;
   title: string;
   company: string;
   location: string;
@@ -9,6 +13,7 @@ interface JobCardProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 export function JobCard({
+  jobPostingId,
   title,
   company,
   location,
@@ -16,12 +21,19 @@ export function JobCard({
   className,
   ...props
 }: JobCardProps) {
+  const router = useRouter();
+
+  const handleClick = () => {
+    router.push(`/job-board/${jobPostingId}`);
+  };
+
   return (
     <div
       className={cn(
         "w-[275px] inline-flex flex-col justify-start items-start gap-2 overflow-hidden cursor-pointer transition-transform hover:scale-[1.02]",
         className
       )}
+      onClick={handleClick}
       {...props}
     >
       <div className="w-[275px] h-[184px] relative bg-gradient-to-l from-black/10 via-black/0 to-black/20 rounded-lg overflow-hidden">

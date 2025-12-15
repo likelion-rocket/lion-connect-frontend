@@ -55,3 +55,16 @@ export interface JobApplicationsRequest {
   size: number;
   sort?: string[];
 }
+
+// 채용공고 지원 요청
+export interface ApplyJobRequest {
+  talentProfileId: number;
+}
+
+// 채용공고 지원 응답
+export interface ApplyJobResponse {
+  jobApplicationId: number;
+  jobPostingId: number;
+  talentProfileId: number;
+  status: JobApplicationStatus;
+}

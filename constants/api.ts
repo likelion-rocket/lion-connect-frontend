@@ -142,6 +142,7 @@ export const API_ENDPOINTS = {
     UNPUBLISH: (jobId: number | string) => `/company/job-postings/${jobId}/unpublish`, // PATCH - 채용공고 게시 취소
     IMAGES_PRESIGN_BULK: "/company/job-postings/images/presign-bulk", // POST - 이미지 프리사인 URL 발급
     IMAGES_UPLOAD_COMPLETE: "/company/job-postings/images", // POST - 이미지 업로드 완료 처리
+    APPLICATIONS: (jobId: number | string) => `/company/job-postings/${jobId}/applications`, // GET - 채용공고 지원자 목록
   },
   // 채용공고 (공개 - 인재)
   JOB_POSTINGS: {

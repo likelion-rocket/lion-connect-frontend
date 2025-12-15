@@ -69,3 +69,29 @@ export interface ApplyJobResponse {
   talentProfileId: number;
   status: JobApplicationStatus;
 }
+
+// 기업 - 지원자 정보
+export interface CompanyApplicant {
+  applicantName: string;
+  jobGroupName: string;
+  jobRoleName: string;
+  appliedAt: string; // ISO 8601 날짜 문자열
+  applicationStatus: JobApplicationStatus;
+  talentProfileId: number;
+  talentProfileTitle: string;
+}
+
+// 기업 - 지원자 목록 응답
+export interface CompanyApplicantsResponse {
+  totalPages: number;
+  totalElements: number;
+  first: boolean;
+  last: boolean;
+  size: number;
+  content: CompanyApplicant[];
+  number: number;
+  sort: Sort;
+  numberOfElements: number;
+  pageable: Pageable;
+  empty: boolean;
+}

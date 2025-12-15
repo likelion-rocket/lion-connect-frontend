@@ -17,6 +17,10 @@ import type {
   PublicJobPostingsResponse,
   PublicJobPostingsParams,
 } from "@/types/company-job-posting";
+import type {
+  CompanyApplicantsResponse,
+  JobApplicationsRequest,
+} from "@/types/jobApplication";
 
 export type { Job, JobDetailResponse };
 
@@ -201,4 +205,24 @@ export function fetchPublicJobPostings(
 
   const endpoint = `${API_ENDPOINTS.JOB_POSTINGS.LIST}?${queryParams.toString()}`;
   return get<PublicJobPostingsResponse>(endpoint);
+}
+
+/**
+ * 채용 공고 지원자 목록 조회 API (기업용)
+ */
+export function fetchJobApplicants(
+  jobId: string,
+  params: JobApplicationsRequest
+): Promise<CompanyApplicantsResponse> {
+  const queryParams = new URLSearchParams();
+
+  queryParams.append("page", params.page.toString());
+  queryParams.append("size", params.size.toString());
+
+  if (params.sort && params.sort.length > 0) {
+    params.sort.forEach((s) => queryParams.append("sort", s));
+  }
+
+  const endpoint = `${API_ENDPOINTS.COMPANY_JOB_POSTINGS.APPLICATIONS(jobId)}?${queryParams.toString()}`;
+  return get<CompanyApplicantsResponse>(endpoint);
 }

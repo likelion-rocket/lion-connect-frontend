@@ -51,7 +51,7 @@ export default function JobImageCarousel({ images }: JobImageCarouselProps) {
         ))}
       </div>
 
-      {images.length > 1 && (
+      {images.length > 2 && (
         <button
           onClick={handleNext}
           className="w-12 h-12 cursor-pointer absolute right-6 top-[168px] bg-white/90 backdrop-blur-sm rounded-full shadow-lg hover:bg-white hover:shadow-xl transition-all duration-200 flex justify-center items-center group"

@@ -31,6 +31,11 @@ export interface JobDetailResponse {
   title: string;
   employmentType: EmploymentType;
   jobRoleId: number;
+  jobGroupName: string;
+  jobRoleName: string;
+  status: "DRAFT" | "PUBLISHED" | "CLOSED";
+  publishedAt: string;
+  createdAt: string;
   jobDescription: string;
   mainTasks: string;
   requirements: string;
@@ -38,13 +43,11 @@ export interface JobDetailResponse {
   benefits: string;
   hiringProcess: string;
   workplace: string;
-  companyName: string;
-  courseName: string;
-  courseGeneration: number;
-  jobGroupName: string;
-  jobRoleName: string;
-  publishedAt: string;
   images: JobImageMetadata[];
+  totalApplicationsCount: number;
+  companyName?: string;
+  courseName?: string;
+  courseGeneration?: number;
 }
 
 /**

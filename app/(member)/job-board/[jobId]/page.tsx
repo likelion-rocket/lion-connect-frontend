@@ -3,6 +3,8 @@
 import { useState, use } from "react";
 import { useRouter } from "next/navigation";
 import { useJobPosting } from "@/hooks/company/useJobPosting";
+import { useApplyToJob } from "@/hooks/useJobApplications";
+import { useConfirm } from "@/contexts/ConfirmContext";
 import BackButton from "@/components/buttons/BackButton";
 import JobImageCarousel from "../_components/JobImageCarousel";
 import JobDetailInfo from "../_components/JobDetailInfo";
@@ -14,7 +16,9 @@ import JobApplicationPanel from "../_components/JobApplicationPanel";
 export default function JobDetailPage({ params }: { params: Promise<{ jobId: string }> }) {
   const resolvedParams = use(params);
   const router = useRouter();
+  const confirm = useConfirm();
   const { data: job, isLoading, error } = useJobPosting(resolvedParams.jobId);
+  const { mutateAsync: applyToJob, isPending } = useApplyToJob();
   const [isApplicationPanelOpen, setIsApplicationPanelOpen] = useState(false);
 
   const handleApply = () => {
@@ -25,10 +29,29 @@ export default function JobDetailPage({ params }: { params: Promise<{ jobId: str
     setIsApplicationPanelOpen(false);
   };
 
-  const handleSubmitApplication = (resumeId: string) => {
-    // TODO: 지원하기 API 호출
-    console.log("지원하기 제출:", resumeId);
-    setIsApplicationPanelOpen(false);
+  const handleSubmitApplication = async (resumeId: string) => {
+    try {
+      // 지원하기 API 호출
+      await applyToJob({
+        jobId: resolvedParams.jobId,
+        data: { talentProfileId: Number(resumeId) },
+      });
+
+      // 확인 모달 표시
+      const goToApplications = await confirm({
+        title: "지원 접수 되었습니다.",
+        description: "지원 현황 페이지로 이동하시겠습니까?",
+        confirmLabel: "지원 현황 바로가기",
+        cancelLabel: "취소",
+      });
+
+      if (goToApplications) {
+        router.push("/applications");
+      }
+    } catch (error) {
+      console.error("지원하기 실패:", error);
+      // TODO: 에러 처리 (토스트 메시지 등)
+    }
   };
 
   if (isLoading) {
@@ -133,14 +156,21 @@ export default function JobDetailPage({ params }: { params: Promise<{ jobId: str
         {/* 우측 지원하기 영역 */}
         <div className="sticky top-24">
           {!isApplicationPanelOpen ? (
-            <OrangeBgButton onClick={handleApply} isActive className="w-96">
-              지원 하기
+            <OrangeBgButton
+              onClick={handleApply}
+              isActive={!job.applied}
+              disabled={job.applied}
+              className="w-96"
+            >
+              {job.applied ? "지원 완료" : "지원 하기"}
             </OrangeBgButton>
           ) : (
             <JobApplicationPanel
               isOpen={isApplicationPanelOpen}
               onClose={handleClosePanel}
               onSubmit={handleSubmitApplication}
+              isSubmitting={isPending}
+              isApplied={job.applied}
             />
           )}
         </div>

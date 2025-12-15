@@ -35,6 +35,7 @@ export interface ProfileListResponse {
   likelionCode: string | null;
   visibility: "PUBLIC" | "PRIVATE";
   status: "DRAFT" | "COMPLETED";
+  locked: boolean;
   createdAt: string;
   updatedAt: string;
 }

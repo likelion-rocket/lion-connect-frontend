@@ -111,7 +111,7 @@ export default function ApplicationsTable() {
       <thead>
         <tr className="bg-neutral-50 border-b-[0.80px] border-neutral-300">
           <th className="px-8 py-4 text-center text-neutral-800 text-sm font-semibold font-['Pretendard'] leading-5 w-48">
-            지원자
+            지원 회사
           </th>
           <th className="px-8 py-4 text-center text-neutral-800 text-sm font-semibold font-['Pretendard'] leading-5 w-48">
             지원 포지션
@@ -120,7 +120,7 @@ export default function ApplicationsTable() {
             지원 일시
           </th>
           <th className="px-8 py-4 text-center text-neutral-800 text-sm font-semibold font-['Pretendard'] leading-5 w-48">
-            이력서 바로가기
+            해당 공고 바로가기
           </th>
         </tr>
       </thead>
@@ -149,10 +149,10 @@ export default function ApplicationsTable() {
             </td>
             <td className="px-8 py-4 text-center">
               <Link
-                href={`/resumes/${applicant.id}`}
-                className="bg-orange-600 w-[128px] h-[41px] rounded-lg inline-flex justify-center items-center px-5 py-2.5 text-white hover:shadow-[0px_4px_6px_-2px_rgba(255,96,0,0.05),0px_10px_15px_-3px_rgba(255,96,0,0.20)] active:text-neutral-300 text-sm font-bold font-['Pretendard'] leading-5"
+                href={`/job-board/${applicant.id}`}
+                className="bg-orange-600 w-[150px] h-[41px] rounded-lg inline-flex justify-center items-center px-5 py-2.5 text-white hover:shadow-[0px_4px_6px_-2px_rgba(255,96,0,0.05),0px_10px_15px_-3px_rgba(255,96,0,0.20)] active:text-neutral-300 text-sm font-bold font-['Pretendard'] leading-5 active:bg-orange-700"
               >
-                이력서 바로가기
+                해당 공고 바로가기
               </Link>
             </td>
           </tr>

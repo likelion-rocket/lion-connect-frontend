@@ -8,6 +8,7 @@ export type JobApplicationStatus = "APPLIED" | "DOCUMENT_PASS" | "FINAL_PASS" | 
 // 지원 현황 아이템
 export interface JobApplication {
   jobApplicationId: number;
+  jobPostingId: number;
   status: JobApplicationStatus;
   appliedAt: string; // ISO 8601 날짜 문자열
   canceledAt: string | null; // ISO 8601 날짜 문자열

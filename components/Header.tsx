@@ -27,13 +27,21 @@ const navLinks: RoleBasedNavLink[] = [
     href: "/#business-connect",
   },
 
-  { label: "채용", href: "/job-board", requiredRoles: [UserRole.ADMIN, UserRole.USER] },
+  {
+    label: "채용",
+    href: "/job-board",
+    requiredRoles: [UserRole.ADMIN, UserRole.USER, UserRole.JOINEDUSER],
+  },
   {
     label: "이력서",
     href: "/profile",
-    requiredRoles: [UserRole.ADMIN, UserRole.USER],
+    requiredRoles: [UserRole.ADMIN, UserRole.USER, UserRole.JOINEDUSER],
   },
-  { label: "지원 현황", href: "/applications", requiredRoles: [UserRole.ADMIN, UserRole.USER] },
+  {
+    label: "지원 현황",
+    href: "/applications",
+    requiredRoles: [UserRole.ADMIN, UserRole.USER, UserRole.JOINEDUSER],
+  },
   {
     label: "채용 등록",
     href: "/jobs",

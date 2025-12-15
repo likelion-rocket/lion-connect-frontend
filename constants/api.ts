@@ -147,6 +147,10 @@ export const API_ENDPOINTS = {
   JOB_POSTINGS: {
     LIST: "/job-postings", // GET - 채용공고 목록 조회 (jobGroupCode, jobRoleCode 필터 가능)
   },
+  // 내 지원 현황
+  JOB_APPLICATIONS: {
+    LIST: "/me/job-applications", // GET - 내 지원 현황 목록 조회 (pageable)
+  },
 } as const;
 
 // HTTP 메서드

@@ -91,7 +91,7 @@ export default function ApplicationsTable({ page = 0, size = 10 }: ApplicationsT
             </td>
             <td className="px-8 py-4 text-center">
               <Link
-                href={`/job-board/${application.jobApplicationId}`}
+                href={`/job-board/${application.jobPostingId}`}
                 className="bg-orange-600 w-[150px] h-[41px] rounded-lg inline-flex justify-center items-center px-5 py-2.5 text-white hover:shadow-[0px_4px_6px_-2px_rgba(255,96,0,0.05),0px_10px_15px_-3px_rgba(255,96,0,0.20)] active:text-neutral-300 text-sm font-bold font-['Pretendard'] leading-5 active:bg-orange-700"
               >
                 해당 공고 바로가기

@@ -26,6 +26,9 @@ export default function JobApplicationPanel({
   // 프로필(이력서) 목록 조회
   const { data: profiles, isLoading, error } = useMyProfiles();
 
+  // COMPLETED 상태인 프로필만 필터링
+  const completedProfiles = profiles?.filter(profile => profile.status === "COMPLETED") || [];
+
   const handleResumeSelect = (resumeId: string) => {
     if (!isApplied) {
       setSelectedResumeId(resumeId);
@@ -88,9 +91,9 @@ export default function JobApplicationPanel({
         )}
 
         {/* 이력서 목록 */}
-        {!isLoading && !error && profiles && profiles.length > 0 && (
+        {!isLoading && !error && completedProfiles && completedProfiles.length > 0 && (
           <div className="self-stretch flex flex-col justify-start items-start gap-8">
-            {profiles.map((profile) => (
+            {completedProfiles.map((profile) => (
               <div
                 key={profile.id}
                 data-status={profile.visibility === "PUBLIC" ? "publicResume" : "notPublicResume"}
@@ -150,10 +153,10 @@ export default function JobApplicationPanel({
           </div>
         )}
 
-        {/* 이력서가 없는 경우 */}
-        {!isLoading && !error && profiles && profiles.length === 0 && (
+        {/* 완료된 이력서가 없는 경우 */}
+        {!isLoading && !error && completedProfiles && completedProfiles.length === 0 && (
           <div className="self-stretch flex justify-center items-center py-8">
-            <div className="text-neutral-500 text-base">등록된 이력서가 없습니다.</div>
+            <div className="text-neutral-500 text-base">작성 완료된 이력서만 제출할 수 있습니다.</div>
           </div>
         )}
 

@@ -2,110 +2,40 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useJobApplications } from "@/hooks/useJobApplications";
+import type { JobApplication } from "@/types/jobApplication";
 
-type ApplicationStatus = "지원 접수" | "서류 통과" | "최종 합격" | "불합격";
-
-interface Application {
-  id: number;
-  name: string;
-  profileImage: string;
-  position: string;
-  appliedDate: string;
-  status: ApplicationStatus;
+interface ApplicationsTableProps {
+  page: number;
+  size: number;
 }
 
-const MOCK_DATA: Application[] = [
-  {
-    id: 1,
-    name: "최유진",
-    profileImage: "/images/companyLogo.png",
-    position: "주니어 디자이너",
-    appliedDate: "2024. 03. 15",
-    status: "지원 접수",
-  },
-  {
-    id: 2,
-    name: "홍길동",
-    profileImage: "/images/companyLogo.png",
-    position: "주니어 디자이너",
-    appliedDate: "YYYY. MM. DD",
-    status: "서류 통과",
-  },
-  {
-    id: 3,
-    name: "김철수",
-    profileImage: "/images/companyLogo.png",
-    position: "주니어 디자이너",
-    appliedDate: "YYYY. MM. DD",
-    status: "서류 통과",
-  },
-  {
-    id: 4,
-    name: "김하나",
-    profileImage: "/images/companyLogo.png",
-    position: "주니어 디자이너",
-    appliedDate: "YYYY. MM. DD",
-    status: "불합격",
-  },
-  {
-    id: 5,
-    name: "신동엽",
-    profileImage: "/images/companyLogo.png",
-    position: "주니어 디자이너",
-    appliedDate: "YYYY. MM. DD",
-    status: "지원 접수",
-  },
-  {
-    id: 6,
-    name: "류진아",
-    profileImage: "/images/companyLogo.png",
-    position: "주니어 디자이너",
-    appliedDate: "YYYY. MM. DD",
-    status: "지원 접수",
-  },
-  {
-    id: 7,
-    name: "신현준",
-    profileImage: "/images/companyLogo.png",
-    position: "주니어 디자이너",
-    appliedDate: "YYYY. MM. DD",
-    status: "지원 접수",
-  },
-  {
-    id: 8,
-    name: "손동엽",
-    profileImage: "/images/companyLogo.png",
-    position: "주니어 디자이너",
-    appliedDate: "YYYY. MM. DD",
-    status: "서류 통과",
-  },
-  {
-    id: 9,
-    name: "손동엽",
-    profileImage: "/images/companyLogo.png",
-    position: "주니어 디자이너",
-    appliedDate: "YYYY. MM. DD",
-    status: "서류 통과",
-  },
-  {
-    id: 10,
-    name: "손하엽",
-    profileImage: "/images/companyLogo.png",
-    position: "주니어 디자이너",
-    appliedDate: "YYYY. MM. DD",
-    status: "서류 통과",
-  },
-  {
-    id: 11,
-    name: "손동엽",
-    profileImage: "/images/companyLogo.png",
-    position: "주니어 디자이너",
-    appliedDate: "YYYY. MM. DD",
-    status: "서류 통과",
-  },
-];
+export default function ApplicationsTable({ page = 0, size = 10 }: ApplicationsTableProps) {
+  const { data, isLoading, error } = useJobApplications({ page, size });
 
-export default function ApplicationsTable() {
+  if (isLoading) {
+    return (
+      <div className="w-full py-20 text-center text-neutral-500">
+        <p>로딩 중...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="w-full py-20 text-center text-red-500">
+        <p>데이터를 불러오는데 실패했습니다.</p>
+      </div>
+    );
+  }
+
+  if (!data || data.content.length === 0) {
+    return (
+      <div className="w-full py-20 text-center text-neutral-500">
+        <p>지원 내역이 없습니다.</p>
+      </div>
+    );
+  }
   return (
     <table className="w-full border-collapse">
       <thead>
@@ -125,31 +55,31 @@ export default function ApplicationsTable() {
         </tr>
       </thead>
       <tbody>
-        {MOCK_DATA.map((applicant) => (
-          <tr key={applicant.id} className="bg-white border-b-[0.80px] border-neutral-300">
+        {data.content.map((application: JobApplication) => (
+          <tr key={application.jobApplicationId} className="bg-white border-b-[0.80px] border-neutral-300">
             <td className="px-8 py-4">
               <div className="flex justify-start items-center gap-4">
                 <Image
                   className="w-6 h-6 relative rounded"
-                  src={applicant.profileImage}
-                  alt={applicant.name}
+                  src="/images/companyLogo.png"
+                  alt={application.companyName}
                   width={24}
                   height={24}
                 />
                 <span className="text-neutral-800 text-sm font-normal font-['Pretendard'] leading-5">
-                  {applicant.name}
+                  {application.companyName}
                 </span>
               </div>
             </td>
             <td className="px-8 py-4 text-center text-neutral-800 text-sm font-normal font-['Pretendard'] leading-5">
-              {applicant.position}
+              {application.jobGroupName}/{application.jobRoleName}
             </td>
             <td className="px-8 py-4 text-center text-neutral-800 text-sm font-normal font-['Pretendard'] leading-5">
-              {applicant.appliedDate}
+              {application.appliedAt}
             </td>
             <td className="px-8 py-4 text-center">
               <Link
-                href={`/job-board/${applicant.id}`}
+                href={`/job-board/${application.jobApplicationId}`}
                 className="bg-orange-600 w-[150px] h-[41px] rounded-lg inline-flex justify-center items-center px-5 py-2.5 text-white hover:shadow-[0px_4px_6px_-2px_rgba(255,96,0,0.05),0px_10px_15px_-3px_rgba(255,96,0,0.20)] active:text-neutral-300 text-sm font-bold font-['Pretendard'] leading-5 active:bg-orange-700"
               >
                 해당 공고 바로가기

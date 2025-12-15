@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useJobApplications } from "@/hooks/useJobApplications";
+import { formatDate } from "@/utils/utils";
 import type { JobApplication } from "@/types/jobApplication";
 
 interface ApplicationsTableProps {
@@ -50,13 +51,19 @@ export default function ApplicationsTable({ page = 0, size = 10 }: ApplicationsT
             지원 일시
           </th>
           <th className="px-8 py-4 text-center text-neutral-800 text-sm font-semibold font-['Pretendard'] leading-5 w-48">
+            지원 취소
+          </th>
+          <th className="px-8 py-4 text-center text-neutral-800 text-sm font-semibold font-['Pretendard'] leading-5 w-48">
             해당 공고 바로가기
           </th>
         </tr>
       </thead>
       <tbody>
         {data.content.map((application: JobApplication) => (
-          <tr key={application.jobApplicationId} className="bg-white border-b-[0.80px] border-neutral-300">
+          <tr
+            key={application.jobApplicationId}
+            className="bg-white border-b-[0.80px] border-neutral-300"
+          >
             <td className="px-8 py-4">
               <div className="flex justify-start items-center gap-4">
                 <Image
@@ -75,7 +82,12 @@ export default function ApplicationsTable({ page = 0, size = 10 }: ApplicationsT
               {application.jobGroupName}/{application.jobRoleName}
             </td>
             <td className="px-8 py-4 text-center text-neutral-800 text-sm font-normal font-['Pretendard'] leading-5">
-              {application.appliedAt}
+              {formatDate(application.appliedAt)}
+            </td>
+            <td className="px-8 py-4 text-center text-neutral-800 text-sm font-normal font-['Pretendard'] leading-5">
+              <button className="cursor-pointer">
+                <span className="text-orange-600 hover:underline">지원 취소</span>
+              </button>
             </td>
             <td className="px-8 py-4 text-center">
               <Link

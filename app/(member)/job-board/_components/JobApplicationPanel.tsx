@@ -9,13 +9,17 @@ import { useMyProfiles } from "@/hooks/talent/queries/useMyProfiles";
 interface JobApplicationPanelProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (resumeId: string) => void;
+  onSubmit: (resumeId: string) => Promise<void>;
+  isSubmitting?: boolean;
+  isApplied?: boolean;
 }
 
 export default function JobApplicationPanel({
   isOpen,
   onClose,
   onSubmit,
+  isSubmitting = false,
+  isApplied = false,
 }: JobApplicationPanelProps) {
   const [selectedResumeId, setSelectedResumeId] = useState<string | null>(null);
 
@@ -23,12 +27,14 @@ export default function JobApplicationPanel({
   const { data: profiles, isLoading, error } = useMyProfiles();
 
   const handleResumeSelect = (resumeId: string) => {
-    setSelectedResumeId(resumeId);
+    if (!isApplied) {
+      setSelectedResumeId(resumeId);
+    }
   };
 
-  const handleSubmit = () => {
-    if (selectedResumeId) {
-      onSubmit(selectedResumeId);
+  const handleSubmit = async () => {
+    if (selectedResumeId && !isApplied) {
+      await onSubmit(selectedResumeId);
     }
   };
 
@@ -165,11 +171,16 @@ export default function JobApplicationPanel({
 
       {/* 제출하기 버튼 */}
       <div
-        data-state={selectedResumeId ? "active" : "default_disable"}
+        data-state={selectedResumeId && !isApplied ? "active" : "default_disable"}
         className="self-stretch px-5 py-6 rounded-bl-lg rounded-br-lg outline outline-[0.80px] outline-offset-[-0.80px] outline-neutral-200 flex flex-col justify-start items-start gap-2.5 overflow-hidden"
       >
-        <OrangeBgButton isActive={!!selectedResumeId} onClick={handleSubmit} className="w-full">
-          제출하기
+        <OrangeBgButton
+          isActive={!!selectedResumeId && !isApplied && !isSubmitting}
+          onClick={handleSubmit}
+          className="w-full"
+          disabled={isApplied || isSubmitting}
+        >
+          {isApplied ? "지원 완료" : isSubmitting ? "제출 중..." : "제출하기"}
         </OrangeBgButton>
       </div>
     </div>

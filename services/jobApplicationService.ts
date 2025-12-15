@@ -2,7 +2,7 @@
  * 지원 현황 API 서비스
  */
 
-import { get, post } from "@/lib/apiClient";
+import { get, post, patch } from "@/lib/apiClient";
 import { API_ENDPOINTS } from "@/constants/api";
 import type {
   JobApplicationsResponse,
@@ -42,4 +42,13 @@ export async function applyToJob(
   data: ApplyJobRequest
 ): Promise<ApplyJobResponse> {
   return post<ApplyJobResponse>(API_ENDPOINTS.JOB_APPLICATIONS.APPLY(jobId), data);
+}
+
+/**
+ * 지원 취소
+ */
+export async function cancelJobApplication(
+  jobApplicationId: number | string
+): Promise<void> {
+  return patch<void>(API_ENDPOINTS.JOB_APPLICATIONS.CANCEL(jobApplicationId));
 }

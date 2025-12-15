@@ -152,6 +152,7 @@ export const API_ENDPOINTS = {
   JOB_APPLICATIONS: {
     LIST: "/me/job-applications", // GET - 내 지원 현황 목록 조회 (pageable)
     APPLY: (jobId: number | string) => `/job-postings/${jobId}/apply`, // POST - 채용공고 지원
+    CANCEL: (jobApplicationId: number | string) => `/me/job-applications/${jobApplicationId}/cancel`, // PATCH - 지원 취소
   },
 } as const;
 

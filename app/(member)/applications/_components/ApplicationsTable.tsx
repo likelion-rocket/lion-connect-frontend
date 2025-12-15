@@ -2,7 +2,8 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useJobApplications } from "@/hooks/useJobApplications";
+import { useJobApplications, useCancelJobApplication } from "@/hooks/useJobApplications";
+import { useConfirm } from "@/contexts/ConfirmContext";
 import { formatDate } from "@/utils/utils";
 import type { JobApplication } from "@/types/jobApplication";
 
@@ -13,6 +14,21 @@ interface ApplicationsTableProps {
 
 export default function ApplicationsTable({ page = 0, size = 10 }: ApplicationsTableProps) {
   const { data, isLoading, error } = useJobApplications({ page, size });
+  const cancelMutation = useCancelJobApplication();
+  const confirm = useConfirm();
+
+  const handleCancel = async (application: JobApplication) => {
+    const ok = await confirm({
+      title: `${application.companyName}에 지원을 취소하시겠습니까?`,
+      description: "확인을 누르면 지원이 취소됩니다.",
+      confirmLabel: "확인",
+      cancelLabel: "취소",
+    });
+
+    if (ok) {
+      cancelMutation.mutate(application.jobApplicationId);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -85,8 +101,14 @@ export default function ApplicationsTable({ page = 0, size = 10 }: ApplicationsT
               {formatDate(application.appliedAt)}
             </td>
             <td className="px-8 py-4 text-center text-neutral-800 text-sm font-normal font-['Pretendard'] leading-5">
-              <button className="cursor-pointer">
-                <span className="text-orange-600 hover:underline">지원 취소</span>
+              <button
+                onClick={() => handleCancel(application)}
+                disabled={cancelMutation.isPending}
+                className="cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <span className="text-orange-600 hover:underline">
+                  {cancelMutation.isPending ? "취소 중..." : "지원 취소"}
+                </span>
               </button>
             </td>
             <td className="px-8 py-4 text-center">

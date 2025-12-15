@@ -3,18 +3,18 @@
 import Image from "next/image";
 import Link from "next/link";
 
-type ApplicantStatus = "지원 접수" | "서류 통과" | "최종 합격" | "불합격";
+type ApplicationStatus = "지원 접수" | "서류 통과" | "최종 합격" | "불합격";
 
-interface Applicant {
+interface Application {
   id: number;
   name: string;
   profileImage: string;
   position: string;
   appliedDate: string;
-  status: ApplicantStatus;
+  status: ApplicationStatus;
 }
 
-const MOCK_DATA: Applicant[] = [
+const MOCK_DATA: Application[] = [
   {
     id: 1,
     name: "최유진",
@@ -105,7 +105,7 @@ const MOCK_DATA: Applicant[] = [
   },
 ];
 
-export default function ApplicantTable() {
+export default function ApplicationsTable() {
   return (
     <table className="w-full border-collapse">
       <thead>

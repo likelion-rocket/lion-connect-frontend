@@ -1,4 +1,5 @@
-import ApplicationsTable from "@/components/ApplicationsTable";
+import ApplicationsTable from "./_components/ApplicationsTable";
+import BackButton from "@/components/buttons/BackButton";
 import Pager from "@/components/Pager";
 
 // 목 데이터
@@ -56,12 +57,13 @@ const mockApplications = [
 
 export default function ApplicationsPage() {
   return (
-    <div className="flex flex-col gap-8 w-[1160px]">
-      <div className="w-[1157.56px] inline-flex justify-between items-center">
-    <div className="justify-start text-neutral-800 text-xl font-bold font-['Pretendard'] leading-7">지원 현황</div>
-</div>
-      <ApplicationsTable applications={mockApplications} />
-      <Pager currentPage={1} totalPages={5} className="mt-8" />
+    <div className="w-full min-h-screen bg-white pb-[168px]">
+      <div className="max-w-[1160px] mx-auto px-4 py-8 flex flex-col gap-12">
+        <BackButton />
+        <h1 className="text-2xl font-bold text-neutral-800">지원자 현황</h1>
+        <ApplicationsTable />
+        <Pager currentPage={1} totalPages={1} />
+      </div>
     </div>
   );
 }

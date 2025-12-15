@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useSearchParams, useRouter } from "next/navigation";
 import { JobSelector } from "@/components/ui/job-selector";
@@ -8,7 +8,7 @@ import { JobList } from "./_components/JobList";
 import { fetchPublicJobPostings } from "@/lib/api/jobPostings";
 import { findJobGroupById, findJobRoleById } from "@/constants/jobMapping";
 
-export default function JobBoardPage() {
+function JobBoardContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -61,5 +61,13 @@ export default function JobBoardPage() {
         <JobList data={data} isLoading={isLoading} error={error} currentPage={pageFromUrl} />
       </div>
     </div>
+  );
+}
+
+export default function JobBoardPage() {
+  return (
+    <Suspense fallback={<div className="container mx-auto pt-[80px] pb-[90px]" />}>
+      <JobBoardContent />
+    </Suspense>
   );
 }

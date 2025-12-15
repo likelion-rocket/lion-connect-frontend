@@ -1,12 +1,13 @@
 "use client";
 
+import { Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { JobListHeader } from "./_components/JobListHeader";
 import { JobCardContainer } from "./_components/JobCardContainer";
 import { useJobPostings } from "@/hooks/company/useJobPosting";
 import Pager from "@/components/Pager";
 
-export default function JobsPage() {
+function JobsContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -77,5 +78,13 @@ export default function JobsPage() {
         pageSize={data?.size ?? 10}
       />
     </div>
+  );
+}
+
+export default function JobsPage() {
+  return (
+    <Suspense fallback={<div className="container w-[1158px] mx-auto mb-[191px]" />}>
+      <JobsContent />
+    </Suspense>
   );
 }

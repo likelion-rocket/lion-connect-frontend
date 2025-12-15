@@ -1,12 +1,13 @@
 "use client";
 
+import { Suspense } from "react";
 import ApplicationsTable from "./_components/ApplicationsTable";
 import BackButton from "@/components/buttons/BackButton";
 import Pager from "@/components/Pager";
 import { useJobApplications } from "@/hooks/useJobApplications";
 import { useSearchParams } from "next/navigation";
 
-export default function ApplicationsPage() {
+function ApplicationsContent() {
   const searchParams = useSearchParams();
   const currentPage = parseInt(searchParams.get("page") || "1", 10);
   const pageSize = parseInt(searchParams.get("size") || "10", 10);
@@ -26,5 +27,13 @@ export default function ApplicationsPage() {
         />
       </div>
     </div>
+  );
+}
+
+export default function ApplicationsPage() {
+  return (
+    <Suspense fallback={<div className="w-full min-h-screen bg-white" />}>
+      <ApplicationsContent />
+    </Suspense>
   );
 }

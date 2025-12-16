@@ -37,11 +37,11 @@ const navLinks: RoleBasedNavLink[] = [
     href: "/profile",
     requiredRoles: [UserRole.ADMIN, UserRole.USER, UserRole.JOINEDUSER],
   },
-  {
-    label: "지원 현황",
-    href: "/applications",
-    requiredRoles: [UserRole.ADMIN, UserRole.USER, UserRole.JOINEDUSER],
-  },
+  // {
+  //   label: "지원 현황",
+  //   href: "/applications",
+  //   requiredRoles: [UserRole.ADMIN, UserRole.USER, UserRole.JOINEDUSER],
+  // },
   {
     label: "채용 등록",
     href: "/jobs",

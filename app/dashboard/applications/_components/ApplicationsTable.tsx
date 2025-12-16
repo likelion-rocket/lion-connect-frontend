@@ -85,7 +85,7 @@ export default function ApplicationsTable({ page = 0, size = 10 }: ApplicationsT
                 <Image
                   className="w-6 h-6 relative rounded"
                   src="/images/companyLogo.png"
-                  alt={application.companyName}
+                  alt={application.companyName || ""}
                   width={24}
                   height={24}
                 />

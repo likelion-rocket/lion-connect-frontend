@@ -28,11 +28,18 @@ export default function LoginForm() {
         // 1. Server Action으로 쿠키 설정 (서버에서 HttpOnly, Secure 플래그와 함께 설정)
         await setAuthCookies(data.user.roles);
 
-        // 3. 서버 컴포넌트 캐시 갱신 (새 쿠키 값 인식)
+        // 2. 서버 컴포넌트 캐시 갱신 (새 쿠키 값 인식)
         router.refresh();
 
-        // 4. 쿠키 설정 완료 후 리다이렉트 (타이밍 이슈 해결)
-        router.push("/");
+        // 3. 역할 기반 리다이렉션
+        const isMemberUser = data.user.roles.some(role =>
+          ['USER', 'JOINEDUSER'].includes(role)
+        );
+
+        const defaultHome = isMemberUser ? '/dashboard' : '/';
+
+        // 4. 쿠키 설정 완료 후 리다이렉트
+        router.push(defaultHome);
       } catch (e) {
         console.error("로그인 후처리 실패:", e);
         // 쿠키 설정 실패 시에도 일단 홈으로 이동 (백엔드 JWT가 더 중요)

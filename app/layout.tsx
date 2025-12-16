@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
-import Header from "@/components/Header";
 import { Providers } from "./providers";
-import { rootMetadata } from "./seo";
+import { rootMetadata } from "./(company)/seo";
 import "./globals.css";
 
 // Pretendard Variable 폰트 설정
@@ -67,7 +66,6 @@ export default function RootLayout({
     <html lang="ko" className={`${pretendard.variable} ${suite.variable}`}>
       <body className={pretendard.className}>
         <Providers>
-          <Header />
           {children}
         </Providers>
       </body>

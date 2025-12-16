@@ -36,7 +36,13 @@ const PROTECTED_ROUTES: ProtectedRoute[] = [
   {
     path: "/talents",
     roles: [UserRole.ADMIN, UserRole.COMPANY, UserRole.JOINEDCOMPANY],
-    redirectTo: "/",
+    redirectTo: "/dashboard",
+  },
+  // 채용 등록 - 기업 전용
+  {
+    path: "/jobs",
+    roles: [UserRole.ADMIN, UserRole.COMPANY, UserRole.JOINEDCOMPANY],
+    redirectTo: "/dashboard",
   },
   // 관리자 페이지
   {
@@ -44,17 +50,17 @@ const PROTECTED_ROUTES: ProtectedRoute[] = [
     roles: [UserRole.ADMIN],
     redirectTo: "/",
   },
-  // 필요시 추가...
 ];
 
 /**
  * 로그인이 필요한 경로 (역할 무관)
  */
 const AUTH_REQUIRED_PATHS = [
-  "/profile",
+  "/dashboard/profile",
+  "/dashboard/applications",
   "/talents",
+  "/jobs",
   "/admin",
-  // 필요시 추가...
 ];
 
 /**
@@ -95,9 +101,30 @@ export function middleware(request: NextRequest) {
   const userRoles = parseRolesFromCookie(rolesCookie?.value);
   const isLoggedIn = userRoles.length > 0;
 
+  // 0. 레거시 URL 리다이렉션 (기존 멤버 경로 → dashboard)
+  const LEGACY_MEMBER_ROUTES = ["/job-board", "/profile", "/applications"];
+  for (const route of LEGACY_MEMBER_ROUTES) {
+    if (pathname.startsWith(route)) {
+      return NextResponse.redirect(new URL(`/dashboard${pathname}`, request.url));
+    }
+  }
+
   // 1. 게스트 전용 경로 체크 (로그인한 사용자는 접근 불가)
   if (isLoggedIn && GUEST_ONLY_PATHS.some((path) => pathname.startsWith(path))) {
-    return NextResponse.redirect(new URL("/", request.url));
+    // 로그인한 사용자 역할에 따라 적절한 홈으로 리다이렉트
+    const isMemberUser = hasAnyRole(userRoles, [UserRole.USER, UserRole.JOINEDUSER]);
+    const homeUrl = isMemberUser ? "/dashboard" : "/";
+    return NextResponse.redirect(new URL(homeUrl, request.url));
+  }
+
+  // 1.5. 루트 경로 접근 시 역할별 리다이렉션
+  if (pathname === "/") {
+    if (isLoggedIn) {
+      const isMemberUser = hasAnyRole(userRoles, [UserRole.USER, UserRole.JOINEDUSER]);
+      if (isMemberUser) {
+        return NextResponse.redirect(new URL("/dashboard", request.url));
+      }
+    }
   }
 
   // 2. 인증 필요 경로 체크

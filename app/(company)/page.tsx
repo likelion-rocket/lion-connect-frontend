@@ -1,4 +1,3 @@
-import Footer from "@/components/Footer";
 import ScrollToHash from "@/components/ScrollToHash";
 import ScrollToTopButton from "@/components/ScrollToTopButton";
 import { Metadata } from "next";
@@ -55,9 +54,6 @@ export default function Home() {
       <div className="pt-60 pb-[127px]">
         <BusinessConnect />
       </div>
-
-      {/* Footer */}
-      <Footer />
     </main>
   );
 }

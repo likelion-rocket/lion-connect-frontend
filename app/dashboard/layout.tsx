@@ -1,20 +1,20 @@
-import CompanyHeader from "@/components/headers/CompanyHeader";
+import MemberHeader from "@/components/headers/MemberHeader";
 import Footer from "@/components/Footer";
 
 /**
- * 기업용 레이아웃
- * - CompanyHeader: 기업 전용 네비게이션
+ * 인재용 레이아웃
+ * - MemberHeader: 인재 전용 네비게이션
  * - Footer: 공통 푸터
  * - pt-20: Header의 고정 높이만큼 상단 패딩
  */
-export default function CompanyLayout({
+export default function DashboardLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
     <>
-      <CompanyHeader />
+      <MemberHeader />
       <div className="pt-20">{children}</div>
       <Footer />
     </>

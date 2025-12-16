@@ -57,8 +57,8 @@ export default function PersonalSignupStep2Page() {
     if (joinedUserSignup.isSuccess || normalSignup.isSuccess) {
       // Step 1 데이터 삭제
       clearPersonalStep1();
-      // 완료 페이지로 이동
-      router.push("/signup/complete");
+      // 완료 페이지로 이동 (개인 회원임을 표시)
+      router.push("/signup/complete?type=personal");
     }
   }, [joinedUserSignup.isSuccess, normalSignup.isSuccess, clearPersonalStep1, router]);
 

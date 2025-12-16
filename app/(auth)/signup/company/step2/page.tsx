@@ -83,8 +83,8 @@ export default function CompanySignupStep2Page() {
     if (companySignup.isSuccess) {
       // Step 1 데이터 삭제
       clearCompanyStep1();
-      // 완료 페이지로 이동
-      router.push("/signup/complete");
+      // 완료 페이지로 이동 (기업 회원임을 표시)
+      router.push("/signup/complete?type=company");
     }
   }, [companySignup.isSuccess, clearCompanyStep1, router]);
 

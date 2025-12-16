@@ -14,8 +14,19 @@ export type SignupFormData = {
   agreeTerms: boolean;
 };
 
+// 일반 회원가입 폼 데이터 타입 (이름 포함)
+export type PersonalSignupFormData = {
+  name: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+  phoneNumber: string;
+  agreeTerms: boolean;
+};
+
 // 회원가입 API 요청 타입 (서버로 전송되는 데이터)
 export type SignupRequestData = {
+  name: string;
   email: string;
   password: string;
   phoneNumber: string;
@@ -35,6 +46,7 @@ export type JoinedUserSignupFormData = {
 
 // 멋사 수료자 회원가입 API 요청 타입
 export type JoinedUserSignupRequestData = {
+  name: string;
   email: string;
   password: string;
   phoneNumber: string;

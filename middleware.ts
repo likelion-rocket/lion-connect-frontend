@@ -117,11 +117,26 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL(homeUrl, request.url));
   }
 
-  // 1.5. 루트 경로 접근 시 역할별 리다이렉션
-  if (pathname === "/") {
-    if (isLoggedIn) {
+  // 1.5. 루트 하위 경로는 기업 사용자 전용
+  // - 루트 경로 자체(/)는 모두 접근 가능
+  // - 하위 경로(예: /about, /services 등)는 기업 사용자만 접근 가능
+  // - ADMIN은 모든 경로 접근 가능
+  // - 정적 파일(이미지, svg 등)은 제외
+  const isStaticFile = /\.(svg|png|jpg|jpeg|gif|webp|ico|pdf)$/i.test(pathname);
+
+  if (pathname !== "/" && pathname.startsWith("/") && !pathname.startsWith("/dashboard") && !isStaticFile) {
+    // 이미 보호된 경로(/talents, /jobs, /admin 등)는 PROTECTED_ROUTES에서 처리
+    // /login, /signup은 GUEST_ONLY_PATHS에서 처리
+    const isProtectedRoute = PROTECTED_ROUTES.some(route => pathname.startsWith(route.path));
+    const isGuestOnlyPath = GUEST_ONLY_PATHS.some(path => pathname.startsWith(path));
+
+    // 보호된 경로나 게스트 전용 경로가 아닌 루트 하위 경로 체크
+    if (!isProtectedRoute && !isGuestOnlyPath && isLoggedIn) {
       const isMemberUser = hasAnyRole(userRoles, [UserRole.USER, UserRole.JOINEDUSER]);
-      if (isMemberUser) {
+      const isAdmin = hasAnyRole(userRoles, [UserRole.ADMIN]);
+
+      // 회원 사용자는 dashboard로 리다이렉트, ADMIN은 접근 허용
+      if (isMemberUser && !isAdmin) {
         return NextResponse.redirect(new URL("/dashboard", request.url));
       }
     }

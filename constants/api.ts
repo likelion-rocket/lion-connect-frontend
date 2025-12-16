@@ -8,6 +8,9 @@
 // API Base URL (환경변수에서 가져오기)
 export const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8090/api";
 
+// S3 Base URL
+export const S3_BASE_URL = "https://lion-connect-files.s3.ap-northeast-2.amazonaws.com";
+
 // API 엔드포인트
 export const API_ENDPOINTS = {
   // 인증 관련
@@ -127,6 +130,30 @@ export const API_ENDPOINTS = {
   WORK_DRIVEN: {
     SUBMIT: "/profile/work-driven/submit", // POST - 테스트 제출
     RESULT: "/profile/work-driven/result", // GET - 결과 조회
+  },
+  // 채용공고 (기업)
+  COMPANY_JOB_POSTINGS: {
+    LIST: "/company/job-postings/me", // GET - 내 채용공고 목록
+    CREATE: "/company/job-postings", // POST - 채용공고 등록
+    GET: (jobId: number | string) => `/company/job-postings/${jobId}`, // GET - 채용공고 상세 조회
+    UPDATE: (jobId: number | string) => `/company/job-postings/${jobId}`, // PUT - 채용공고 수정
+    DELETE: (jobId: number | string) => `/company/job-postings/${jobId}`, // DELETE - 채용공고 삭제
+    PUBLISH: (jobId: number | string) => `/company/job-postings/${jobId}/publish`, // PATCH - 채용공고 게시
+    UNPUBLISH: (jobId: number | string) => `/company/job-postings/${jobId}/unpublish`, // PATCH - 채용공고 게시 취소
+    IMAGES_PRESIGN_BULK: "/company/job-postings/images/presign-bulk", // POST - 이미지 프리사인 URL 발급
+    IMAGES_UPLOAD_COMPLETE: "/company/job-postings/images", // POST - 이미지 업로드 완료 처리
+    APPLICATIONS: (jobId: number | string) => `/company/job-postings/${jobId}/applications`, // GET - 채용공고 지원자 목록
+  },
+  // 채용공고 (공개 - 인재)
+  JOB_POSTINGS: {
+    LIST: "/job-postings", // GET - 채용공고 목록 조회 (jobGroupCode, jobRoleCode 필터 가능)
+    GET: (jobId: number | string) => `/job-postings/${jobId}`, // GET - 채용공고 상세 조회
+  },
+  // 내 지원 현황
+  JOB_APPLICATIONS: {
+    LIST: "/me/job-applications", // GET - 내 지원 현황 목록 조회 (pageable)
+    APPLY: (jobId: number | string) => `/job-postings/${jobId}/apply`, // POST - 채용공고 지원
+    CANCEL: (jobApplicationId: number | string) => `/me/job-applications/${jobApplicationId}/cancel`, // PATCH - 지원 취소
   },
 } as const;
 

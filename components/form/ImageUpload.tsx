@@ -10,7 +10,10 @@
 "use client";
 
 import { useRef, useState } from "react";
+import Image from "next/image";
 import { cn } from "@/utils/utils";
+
+import type { JobImageMetadata } from "@/types/job";
 
 interface ImageUploadProps {
   /**
@@ -22,6 +25,21 @@ interface ImageUploadProps {
    * 이미지 변경 콜백
    */
   onChange?: (files: File[]) => void;
+
+  /**
+   * 기존 이미지 URL들 (수정 모드에서 사용)
+   */
+  existingImageUrls?: string[];
+
+  /**
+   * 기존 이미지 메타데이터 (수정 모드에서 사용)
+   */
+  existingImageMetadata?: JobImageMetadata[];
+
+  /**
+   * 기존 이미지 메타데이터 변경 콜백
+   */
+  onExistingImagesChange?: (metadata: JobImageMetadata[]) => void;
 
   /**
    * 최대 업로드 가능한 이미지 개수
@@ -37,21 +55,31 @@ interface ImageUploadProps {
 export function ImageUpload({
   value = [],
   onChange,
+  existingImageUrls = [],
+  existingImageMetadata = [],
+  onExistingImagesChange,
   maxImages = 5,
   error
 }: ImageUploadProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [previewUrls, setPreviewUrls] = useState<string[]>([]);
+  // 초기 미리보기 URL은 기존 이미지 URL들로 설정
+  const [previewUrls, setPreviewUrls] = useState<string[]>(existingImageUrls);
+  // 기존 이미지 메타데이터 관리
+  const [currentExistingMetadata, setCurrentExistingMetadata] =
+    useState<JobImageMetadata[]>(existingImageMetadata);
 
   const handleFileChange = (files: FileList | null) => {
     if (!files) return;
 
     const newFiles = Array.from(files);
-    const totalFiles = [...value, ...newFiles].slice(0, maxImages);
+    const remainingSlots = maxImages - previewUrls.length;
+    const filesToAdd = newFiles.slice(0, remainingSlots);
 
-    // 미리보기 URL 생성
-    const newPreviewUrls = totalFiles.map(file => URL.createObjectURL(file));
-    setPreviewUrls(newPreviewUrls);
+    const totalFiles = [...value, ...filesToAdd];
+
+    // 새로 추가된 파일들의 미리보기 URL만 생성
+    const newFileUrls = filesToAdd.map(file => URL.createObjectURL(file));
+    setPreviewUrls([...previewUrls, ...newFileUrls]);
 
     onChange?.(totalFiles);
   };
@@ -61,10 +89,28 @@ export function ImageUpload({
   };
 
   const handleRemove = (index: number) => {
-    const newFiles = value.filter((_, i) => i !== index);
-    const newPreviewUrls = previewUrls.filter((_, i) => i !== index);
-    setPreviewUrls(newPreviewUrls);
-    onChange?.(newFiles);
+    // 기존 이미지 URL인지 새로 업로드한 File인지 구분
+    const isExistingImage = index < currentExistingMetadata.length;
+
+    if (isExistingImage) {
+      // 기존 이미지를 삭제하는 경우
+      const newPreviewUrls = previewUrls.filter((_, i) => i !== index);
+      const newExistingMetadata = currentExistingMetadata.filter((_, i) => i !== index);
+
+      setPreviewUrls(newPreviewUrls);
+      setCurrentExistingMetadata(newExistingMetadata);
+
+      // 부모 컴포넌트에 기존 이미지 메타데이터 변경 알림
+      onExistingImagesChange?.(newExistingMetadata);
+    } else {
+      // 새로 업로드한 파일을 삭제하는 경우
+      const fileIndex = index - currentExistingMetadata.length;
+      const newFiles = value.filter((_, i) => i !== fileIndex);
+      const newPreviewUrls = previewUrls.filter((_, i) => i !== index);
+
+      setPreviewUrls(newPreviewUrls);
+      onChange?.(newFiles);
+    }
   };
 
   return (
@@ -72,10 +118,12 @@ export function ImageUpload({
       {/* 업로드된 이미지 미리보기 */}
       {previewUrls.map((url, index) => (
         <div key={index} className="relative w-72 h-44 group">
-          <img
-            className="w-full h-full object-cover rounded-lg"
+          <Image
+            className="object-cover rounded-lg"
             src={url}
             alt={`Preview ${index + 1}`}
+            fill
+            sizes="288px"
           />
           <button
             type="button"
@@ -100,7 +148,7 @@ export function ImageUpload({
       ))}
 
       {/* 이미지 업로드 버튼 */}
-      {value.length < maxImages && (
+      {previewUrls.length < maxImages && (
         <button
           type="button"
           onClick={handleClick}

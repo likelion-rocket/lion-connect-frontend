@@ -80,6 +80,7 @@ export default function PersonalSignupStep2Page() {
     } else {
       // 일반 회원가입
       const normalSignupData = {
+        name: personalStep1?.name || "",
         email: data.email,
         password: data.password,
         confirmPassword: data.passwordConfirm,

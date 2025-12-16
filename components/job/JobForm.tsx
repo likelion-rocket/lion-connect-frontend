@@ -5,6 +5,7 @@
 
 "use client";
 
+import { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FormInput } from "@/components/form/FormInput";
@@ -12,11 +13,14 @@ import { FormTextarea } from "@/components/form/FormTextarea";
 import { FormField } from "@/components/form/FormField";
 import { RadioGroup, RadioOption } from "@/components/form/RadioGroup";
 import { ImageUpload } from "@/components/form/ImageUpload";
-import { JobFormData } from "@/types/job";
-import { jobFormSchema } from "@/lib/validations/job";
+import { JobCategorySelect } from "@/components/job/JobCategorySelect";
+import { JobFormData, JobImageMetadata } from "@/types/job";
+import { jobFormSchema, jobFormEditSchema } from "@/lib/validations/job";
+import { findJobRoleById } from "@/constants/jobMapping";
+import { cn } from "@/utils/utils";
 
 interface JobFormProps {
-  initialData?: Partial<JobFormData>;
+  initialData?: Partial<JobFormData> & { imageUrls?: string[] };
   onSubmit: (data: JobFormData) => Promise<void>;
   submitButtonText?: string;
 }
@@ -31,18 +35,35 @@ export function JobForm({
   onSubmit,
   submitButtonText = "채용 공고 등록하기",
 }: JobFormProps) {
+  // 직군/직무 선택 상태 관리
+  const initialJobRole = initialData?.jobRoleId ? findJobRoleById(initialData.jobRoleId) : null;
+  const [selectedCategory, setSelectedCategory] = useState<string>(
+    initialJobRole?.group.code || ""
+  );
+  const [selectedRoleId, setSelectedRoleId] = useState<number>(initialData?.jobRoleId || 0);
+
+  // 수정 모드 여부 판단 (imageUrls가 있으면 수정 모드)
+  const isEditMode = !!initialData?.imageUrls && initialData.imageUrls.length > 0;
+
+  // 기존 이미지 메타데이터 관리 (수정 모드에서만 사용)
+  const [existingImages, setExistingImages] = useState<JobImageMetadata[]>(
+    initialData?.existingImages || []
+  );
+
   const {
     register,
     handleSubmit,
     control,
+    setValue,
     formState: { errors, isSubmitting, isValid },
   } = useForm<JobFormData>({
-    resolver: zodResolver(jobFormSchema),
+    resolver: zodResolver(isEditMode ? jobFormEditSchema : jobFormSchema) as any,
     mode: "onChange",
     defaultValues: {
       images: [],
       title: "",
       employmentType: "FULL_TIME",
+      jobRoleId: 0,
       description: "",
       responsibilities: "",
       requirements: "",
@@ -54,8 +75,23 @@ export function JobForm({
     },
   });
 
+  const handleCategoryChange = (categoryCode: string) => {
+    setSelectedCategory(categoryCode);
+    setSelectedRoleId(0);
+    setValue("jobRoleId", 0, { shouldValidate: true, shouldDirty: true });
+  };
+
+  const handleRoleChange = (roleId: number) => {
+    setSelectedRoleId(roleId);
+  };
+
   const handleFormSubmit = async (data: JobFormData) => {
-    await onSubmit(data);
+    // 수정 모드일 때 기존 이미지 메타데이터 포함
+    const submitData: JobFormData = {
+      ...data,
+      existingImages: isEditMode ? existingImages : undefined,
+    };
+    await onSubmit(submitData);
   };
 
   return (
@@ -73,7 +109,11 @@ export function JobForm({
         <div className="w-[767px] inline-flex flex-col justify-start items-start gap-16">
           {/* 이미지 섹션 */}
           <div className="self-stretch p-8 bg-white rounded-lg outline outline-[0.80px] outline-offset-[-0.80px] outline-neutral-200 flex flex-col justify-start items-start gap-12 overflow-hidden">
-            <FormField label="공고 노출 이미지" required error={errors.images?.message}>
+            <FormField
+              label="공고 노출 이미지 (첫 번째 이미지 대표 이미지로 설정됩니다.)"
+              required
+              error={errors.images?.message}
+            >
               <Controller
                 name="images"
                 control={control}
@@ -81,6 +121,9 @@ export function JobForm({
                   <ImageUpload
                     value={field.value}
                     onChange={field.onChange}
+                    existingImageUrls={initialData?.imageUrls}
+                    existingImageMetadata={existingImages}
+                    onExistingImagesChange={setExistingImages}
                     error={!!errors.images}
                   />
                 )}
@@ -115,6 +158,16 @@ export function JobForm({
                 )}
               />
             </FormField>
+
+            {/* 직군 및 직무 선택 */}
+            <JobCategorySelect
+              control={control}
+              errors={errors}
+              selectedCategory={selectedCategory}
+              selectedRoleId={selectedRoleId}
+              onCategoryChange={handleCategoryChange}
+              onRoleChange={handleRoleChange}
+            />
 
             {/* 회사/직무 소개 */}
             <FormField
@@ -220,23 +273,34 @@ export function JobForm({
         <div className="inline-flex flex-col justify-center items-start gap-8">
           <button
             type="submit"
-            disabled={!isValid || isSubmitting}
-            data-state={!isValid || isSubmitting ? "default_disable" : "default"}
-            className={
-              !isValid || isSubmitting
-                ? "w-72 h-11 px-2.5 py-2 bg-neutral-200 rounded-lg inline-flex justify-center items-center gap-2.5 cursor-not-allowed"
-                : "w-72 h-11 px-2.5 py-2 bg-neutral-800 hover:bg-neutral-900 rounded-lg inline-flex justify-center items-center gap-2.5 transition-colors"
+            disabled={isEditMode ? isSubmitting : !isValid || isSubmitting}
+            data-state={
+              isEditMode
+                ? isSubmitting
+                  ? "pressed"
+                  : "active"
+                : !isValid || isSubmitting
+                  ? "default_disable"
+                  : "active"
             }
+            className={cn(
+              "w-72 h-11 px-2.5 py-2 rounded-lg inline-flex justify-center items-center gap-2.5",
+              "text-white text-lg font-bold font-['Pretendard'] leading-7",
+              // 비활성화 상태 (등록 모드에서만)
+              !isEditMode &&
+                (!isValid || isSubmitting) &&
+                "bg-neutral-200 text-neutral-400 cursor-not-allowed",
+              // 활성화 상태 (active) - 기본 배경색
+              (isEditMode ? !isSubmitting : isValid && !isSubmitting) &&
+                "bg-orange-600 cursor-pointer",
+              // 마우스로 누르고 있을 때 (active pseudo-class)
+              (isEditMode ? !isSubmitting : isValid && !isSubmitting) &&
+                "active:text-neutral-300 active:bg-orange-700",
+              // 제출 중일 때 (pressed) - 텍스트 색상 변경
+              isEditMode && isSubmitting && "bg-orange-600 text-neutral-300"
+            )}
           >
-            <div
-              className={
-                !isValid || isSubmitting
-                  ? "justify-start text-neutral-400 text-lg font-bold font-['Pretendard'] leading-7"
-                  : "justify-start text-white text-lg font-bold font-['Pretendard'] leading-7"
-              }
-            >
-              {isSubmitting ? "등록 중..." : submitButtonText}
-            </div>
+            {isSubmitting ? (isEditMode ? "수정 중..." : "등록 중...") : submitButtonText}
           </button>
         </div>
       </div>

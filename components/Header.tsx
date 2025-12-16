@@ -13,7 +13,7 @@ import { UserRole, RoleBasedItem, filterByRole } from "@/utils/rbac";
 type RoleBasedNavLink = RoleBasedItem<NavLink>;
 
 /**
- * 네비게이션 링크 정의 - 순서대로 정의 (인재탐색 → 기업문의 → 이력서 → 어드민)
+ * 네비게이션 링크 정의 - 순서대로 정의 (인재탐색 → 기업문의 → 이력서 → 채용 등록 → 어드민)
  * requiredRoles가 없으면 모든 사용자에게 표시 (SSR 안전)
  */
 const navLinks: RoleBasedNavLink[] = [
@@ -22,8 +22,31 @@ const navLinks: RoleBasedNavLink[] = [
     href: "/talents",
     requiredRoles: [UserRole.ADMIN, UserRole.JOINEDCOMPANY, UserRole.COMPANY],
   },
-  { label: "기업 문의", href: "/#business-connect" },
-  { label: "이력서", href: "/profile" },
+  {
+    label: "기업 문의",
+    href: "/#business-connect",
+  },
+
+  {
+    label: "채용",
+    href: "/job-board",
+    requiredRoles: [UserRole.ADMIN, UserRole.USER, UserRole.JOINEDUSER],
+  },
+  {
+    label: "이력서",
+    href: "/profile",
+    requiredRoles: [UserRole.ADMIN, UserRole.USER, UserRole.JOINEDUSER],
+  },
+  {
+    label: "지원 현황",
+    href: "/applications",
+    requiredRoles: [UserRole.ADMIN, UserRole.USER, UserRole.JOINEDUSER],
+  },
+  {
+    label: "채용 등록",
+    href: "/jobs",
+    requiredRoles: [UserRole.ADMIN, UserRole.JOINEDCOMPANY, UserRole.COMPANY],
+  },
   { label: "어드민", href: "/admin", requiredRoles: [UserRole.ADMIN] },
 ];
 

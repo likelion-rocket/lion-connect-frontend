@@ -27,11 +27,11 @@ const navLinks: RoleBasedNavLink[] = [
     href: "/#business-connect",
   },
 
-  {
-    label: "채용",
-    href: "/job-board",
-    requiredRoles: [UserRole.ADMIN, UserRole.USER, UserRole.JOINEDUSER],
-  },
+  // {
+  //   label: "채용",
+  //   href: "/job-board",
+  //   requiredRoles: [UserRole.ADMIN, UserRole.USER, UserRole.JOINEDUSER],
+  // },
   {
     label: "이력서",
     href: "/profile",
@@ -125,7 +125,7 @@ export default function Header() {
           {mounted && user ? (
             <>
               {/* Bell Icon */}
-              <Image src="/icons/bell.svg" alt="Notifications" width={24} height={24} />
+              {/* <Image src="/icons/bell.svg" alt="Notifications" width={24} height={24} /> */}
 
               {/* User Name Display */}
               <div className="px-3.5 py-1.5 rounded-lg">

@@ -39,11 +39,11 @@ export default function LoginForm() {
         if (returnTo) {
           router.push(returnTo);
         } else {
-          const isMemberUser = data.user.roles.some(role =>
-            ['USER', 'JOINEDUSER'].includes(role)
+          const isMemberUser = data.user.roles.some((role) =>
+            ["USER", "JOINEDUSER"].includes(role)
           );
 
-          const defaultHome = isMemberUser ? '/dashboard' : '/';
+          const defaultHome = isMemberUser ? "/dashboard" : "/";
           router.push(defaultHome);
         }
       } catch (e) {
@@ -157,17 +157,17 @@ export default function LoginForm() {
         </div>
         <div className="flex justify-start items-center gap-8">
           <Link
-            href="/auth/forgot-password"
+            href="/auth/forgot-email"
             className="justify-start text-neutral-800 text-sm font-medium font-['Pretendard'] leading-5 pr-8 border-r border-neutral-800 hover:opacity-80 transition-opacity"
           >
-            계정 찾기
+            이메일 찾기
           </Link>
 
           <Link
             href="/auth/forgot-password"
             className="justify-start text-neutral-800 text-sm font-medium font-['Pretendard'] leading-5 hover:opacity-80 transition-opacity"
           >
-            비밀번호 재설정
+            비밀번호 찾기
           </Link>
         </div>
       </div>

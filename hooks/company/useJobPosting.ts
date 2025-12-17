@@ -20,12 +20,13 @@ import type { JobPostingsResponse, JobPostingsParams } from "@/types/company-job
  */
 export function useJobPostings(params: JobPostingsParams = {}) {
   const accessToken = useAuthStore((s) => s.accessToken);
+  const userId = useAuthStore((s) => s.user?.id);
   const enabled = !!accessToken;
 
   const { page = 0, size = 10, sort = ["createdAt,desc"], status } = params;
 
   return useQuery<JobPostingsResponse>({
-    queryKey: ["jobPostings", { page, size, sort, status }],
+    queryKey: ["jobPostings", userId, { page, size, sort, status }],
     queryFn: async () => {
       const queryParams = new URLSearchParams();
       queryParams.append("page", page.toString());
@@ -42,7 +43,7 @@ export function useJobPostings(params: JobPostingsParams = {}) {
     enabled,
     retry: false,
     staleTime: 30 * 1000, // 30초
-    gcTime: 5 * 60 * 1000, // 5분
+    gcTime: 60 * 1000, // 1분
   });
 }
 

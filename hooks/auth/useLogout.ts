@@ -1,6 +1,6 @@
 "use client";
 
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { logoutAPI } from "@/lib/api/auth";
 import { useAuthStore } from "@/store/authStore";
 import { useRouter, usePathname } from "next/navigation";
@@ -19,6 +19,7 @@ export function useLogout() {
   const clearAuth = useAuthStore((state) => state.clearAuth);
   const router = useRouter();
   const pathname = usePathname();
+  const queryClient = useQueryClient();
 
   const mutation = useMutation({
     mutationFn: async () => {
@@ -26,6 +27,9 @@ export function useLogout() {
       await logoutAPI();
     },
     onSuccess: async () => {
+      // TanStack Query 캐시 완전 초기화 (다른 유저 데이터 제거)
+      queryClient.clear();
+
       // Zustand 상태 초기화 (액세스 토큰, 사용자 정보 삭제)
       clearAuth();
 
@@ -43,6 +47,9 @@ export function useLogout() {
     },
     onError: async (error: Error) => {
       console.error("Logout error:", error.message);
+
+      // TanStack Query 캐시 완전 초기화 (다른 유저 데이터 제거)
+      queryClient.clear();
 
       // 에러가 발생해도 클라이언트 상태는 초기화
       clearAuth();

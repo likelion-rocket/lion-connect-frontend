@@ -157,14 +157,14 @@ export default function LoginForm() {
         </div>
         <div className="flex justify-start items-center gap-8">
           <Link
-            href="/auth/forgot-email"
+            href="/forgot-email"
             className="justify-start text-neutral-800 text-sm font-medium font-['Pretendard'] leading-5 pr-8 border-r border-neutral-800 hover:opacity-80 transition-opacity"
           >
             이메일 찾기
           </Link>
 
           <Link
-            href="/auth/forgot-password"
+            href="/forgot-password"
             className="justify-start text-neutral-800 text-sm font-medium font-['Pretendard'] leading-5 hover:opacity-80 transition-opacity"
           >
             비밀번호 찾기

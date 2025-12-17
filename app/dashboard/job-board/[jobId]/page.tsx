@@ -64,27 +64,27 @@ export default function JobDetailPage({ params }: { params: Promise<{ jobId: str
       setIsApplicationPanelOpen(false);
     }
   };
-
-  if (isLoading || !job) {
-    return (
-      <div className="w-full min-h-screen bg-white flex justify-center items-center">
-        <div className="text-neutral-500 text-lg font-['Pretendard']">로딩 중...</div>
-      </div>
-    );
-  }
-
   if (error) {
+    // ApiError에서 message 추출
+    const errorMessage = (error as any)?.message || "채용 공고를 불러올 수 없습니다.";
+
     return (
       <div className="w-full min-h-screen bg-white flex flex-col justify-center items-center gap-4">
-        <div className="text-neutral-800 text-lg font-['Pretendard']">
-          채용 공고를 불러올 수 없습니다.
-        </div>
+        <div className="text-neutral-800 text-lg font-['Pretendard']">{errorMessage}</div>
         <button
           onClick={() => router.back()}
           className="px-6 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors"
         >
           돌아가기
         </button>
+      </div>
+    );
+  }
+
+  if (isLoading || !job) {
+    return (
+      <div className="w-full min-h-screen bg-white flex justify-center items-center">
+        <div className="text-neutral-500 text-lg font-['Pretendard']">로딩 중...</div>
       </div>
     );
   }

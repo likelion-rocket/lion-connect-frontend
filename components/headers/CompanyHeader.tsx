@@ -81,34 +81,33 @@ export default function CompanyHeader() {
 
         {/* Right Section */}
         <div className="absolute right-8 top-1/2 -translate-y-1/2 flex items-center gap-5">
-          {mounted &&
-            (user ? (
-              <>
-                {/* User Name Display */}
-                <div className="px-3.5 py-1.5 rounded-lg">
-                  <span className="text-text-primary text-xs font-semibold font-ko-title">
-                    {user.email}
-                  </span>
-                </div>
+          {!mounted ? null : user ? (
+            <>
+              {/* User Name Display */}
+              <div className="px-3.5 py-1.5 rounded-lg">
+                <span className="text-text-primary text-xs font-semibold font-ko-title">
+                  {user.email}
+                </span>
+              </div>
 
-                {/* Logout Button */}
-                <button
-                  onClick={() => logout()}
-                  className="px-3.5 py-1.5 cursor-pointer rounded-lg border border-border-primary hover:bg-bg-secondary transition-colors"
-                >
-                  <span className="text-text-primary text-xs font-semibold font-ko-title">
-                    로그아웃
-                  </span>
-                </button>
-              </>
-            ) : (
-              <Link
-                href={`/login?returnTo=${encodeURIComponent(pathname || "/")}`}
-                className="px-4 py-2 bg-accent rounded-lg text-text-inverse-primary text-sm font-semibold font-ko-title hover:opacity-90 transition-opacity"
+              {/* Logout Button */}
+              <button
+                onClick={() => logout()}
+                className="px-3.5 py-1.5 cursor-pointer rounded-lg border border-border-primary hover:bg-bg-secondary transition-colors"
               >
-                로그인/회원가입
-              </Link>
-            ))}
+                <span className="text-text-primary text-xs font-semibold font-ko-title">
+                  로그아웃
+                </span>
+              </button>
+            </>
+          ) : (
+            <Link
+              href={`/login?returnTo=${encodeURIComponent(pathname || "/")}`}
+              className="px-4 py-2 bg-accent rounded-lg text-text-inverse-primary text-sm font-semibold font-ko-title hover:opacity-90 transition-opacity"
+            >
+              로그인/회원가입
+            </Link>
+          )}
         </div>
       </div>
     </header>

@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { ResumeList, Resume } from "./_components/ResumeList";
 import { ResumeListHeader } from "./_components/ResumeListHeader";
+import { ResumeCardSkeleton } from "./_components/ResumeCardSkeleton";
 import { useMyProfiles } from "@/hooks/talent/queries/useMyProfiles";
 import { createEmptyProfile, updateProfile, deleteProfile } from "@/lib/api/profiles";
 import { useToastStore } from "@/store/toastStore";
@@ -111,11 +112,18 @@ function ProfilePage() {
       isViewing: false, // 필요시 로직 추가
     })) ?? [];
 
-  // ✅ 로딩/에러 상태 처리
-  if (isLoading) {
+  // ✅ 로딩 중이거나 데이터가 아직 없는 경우 스켈레톤 표시
+  if (isLoading || !profiles) {
     return (
-      <div className="min-h-screen bg-page p-8 flex justify-center items-center">
-        <div>로딩 중...</div>
+      <div className="min-h-screen bg-page p-8 flex justify-center">
+        <div className="w-full max-w-[1158px] flex flex-col gap-16">
+          <ResumeListHeader onRegister={handleRegister} disabled={true} />
+          <div className="w-full max-w-[1158px] inline-flex flex-col justify-start items-start gap-16">
+            {Array.from({ length: 2 }).map((_, index) => (
+              <ResumeCardSkeleton key={index} />
+            ))}
+          </div>
+        </div>
       </div>
     );
   }

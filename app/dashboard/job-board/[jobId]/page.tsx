@@ -2,7 +2,7 @@
 
 import { useState, use } from "react";
 import { useRouter } from "next/navigation";
-import { useJobPosting } from "@/hooks/company/useJobPosting";
+import { usePublicJobPosting } from "@/hooks/company/useJobPosting";
 import { useApplyToJob } from "@/hooks/useJobApplications";
 import { useConfirm } from "@/contexts/ConfirmContext";
 import { useToastStore } from "@/store/toastStore";
@@ -19,7 +19,7 @@ export default function JobDetailPage({ params }: { params: Promise<{ jobId: str
   const router = useRouter();
   const confirm = useConfirm();
   const showToast = useToastStore((state) => state.showToast);
-  const { data: job, isLoading, error } = useJobPosting(resolvedParams.jobId);
+  const { data: job, isLoading, error } = usePublicJobPosting(resolvedParams.jobId);
   const { mutateAsync: applyToJob, isPending } = useApplyToJob();
   const [isApplicationPanelOpen, setIsApplicationPanelOpen] = useState(false);
 

@@ -128,9 +128,16 @@ export async function createJobPosting(data: JobFormData): Promise<JobPostingRes
 }
 
 /**
- * 채용 공고 조회 API
+ * 채용 공고 조회 API (기업용 - 인증 필요)
  */
 export function fetchJobPosting(jobId: string): Promise<JobDetailResponse> {
+  return get<JobDetailResponse>(API_ENDPOINTS.COMPANY_JOB_POSTINGS.GET(jobId));
+}
+
+/**
+ * 공개 채용 공고 상세 조회 API (인재용 - 인증 불필요)
+ */
+export function fetchPublicJobPosting(jobId: string): Promise<JobDetailResponse> {
   return get<JobDetailResponse>(API_ENDPOINTS.JOB_POSTINGS.GET(jobId));
 }
 

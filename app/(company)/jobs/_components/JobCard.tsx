@@ -31,7 +31,7 @@ export function JobCard({
   return (
     <div
       className={cn(
-        "self-stretch px-8 pt-8 bg-white rounded-lg flex flex-col justify-start items-start gap-8 overflow-hidden transition-all",
+        "self-stretch p-8 bg-white rounded-lg flex flex-col justify-start items-start gap-8 overflow-hidden transition-all",
         "outline outline-[0.80px] outline-offset-[-0.80px] outline-neutral-200",
         isPublished ? "lc-card-shadow-hoverable hover:outline-accent" : "lc-card-shadow",
         className
@@ -102,32 +102,28 @@ export function JobCard({
         </div>
       </div>
 
-      {/* View Applicants Section */}
-      <div
-        data-type={isPublished ? "upload" : "notUpload"}
+      {/* View Applicants Button */}
+      <button
+        data-state="default"
+        onClick={onViewApplicants}
         className={cn(
-          "w-full px-6 py-4 rounded-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.06)] shadow-[0px_1px_3px_0px_rgba(0,0,0,0.10)] inline-flex justify-end items-center",
-          isPublished ? "bg-orange-50" : "bg-neutral-100"
+          "w-60 h-12 px-6 py-4 cursor-pointer rounded-lg shadow-[0px_1px_3px_0px_rgba(0,0,0,0.10)] inline-flex justify-center items-center gap-2 transition-all",
+          isPublished
+            ? "bg-orange-500 active:bg-orange-600 active:text-[#d4d4d4]"
+            : "bg-neutral-300"
         )}
       >
-        {/* View Applicants Link */}
-        <button
-          data-state="default"
-          onClick={onViewApplicants}
-          className="h-5 cursor-pointer flex justify-start items-center gap-2 hover:opacity-70 transition-opacity"
-        >
-          <span className="justify-start text-neutral-500 text-sm font-medium font-ko-body leading-5">
-            지원자 현황 바로가기
-          </span>
-          <Image
-            src="/icons/outline-cheveron-right.svg"
-            alt="Arrow right"
-            width={18}
-            height={18}
-            className="w-[18px] h-[18px]"
-          />
-        </button>
-      </div>
+        <span className="text-white text-base font-bold font-ko-body leading-6">
+          지원자 현황 바로가기
+        </span>
+        <Image
+          src="/icons/outline-cheveron-right.svg"
+          alt="Arrow right"
+          width={16}
+          height={16}
+          className="w-4 h-4 brightness-0 invert"
+        />
+      </button>
     </div>
   );
 }

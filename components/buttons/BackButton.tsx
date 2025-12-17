@@ -21,7 +21,7 @@ export default function BackButton({ onBack }: BackButtonProps) {
   return (
     <button
       onClick={handleBack}
-      className="h-14 pr-8 cursor-pointer inline-flex justify-start items-center gap-1"
+      className="h-14 pr-8 w-full cursor-pointer inline-flex justify-start items-center gap-1"
     >
       <div className="w-36 flex justify-start items-center gap-4">
         <div className="w-6 h-6 relative overflow-hidden">

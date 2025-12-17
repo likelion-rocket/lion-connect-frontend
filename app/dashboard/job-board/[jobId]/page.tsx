@@ -65,7 +65,7 @@ export default function JobDetailPage({ params }: { params: Promise<{ jobId: str
     }
   };
 
-  if (isLoading) {
+  if (isLoading || !job) {
     return (
       <div className="w-full min-h-screen bg-white flex justify-center items-center">
         <div className="text-neutral-500 text-lg font-['Pretendard']">로딩 중...</div>
@@ -73,7 +73,7 @@ export default function JobDetailPage({ params }: { params: Promise<{ jobId: str
     );
   }
 
-  if (error || !job) {
+  if (error) {
     return (
       <div className="w-full min-h-screen bg-white flex flex-col justify-center items-center gap-4">
         <div className="text-neutral-800 text-lg font-['Pretendard']">

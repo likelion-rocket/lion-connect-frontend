@@ -71,7 +71,7 @@ export default function EditJobPage({ params }: { params: Promise<{ jobId: strin
   }
 
   return (
-    <div className="container mx-auto py-8">
+    <div className="container w-[1224px] mx-auto p-8">
       <BackButton onBack={handleBack} />
       <div className="mt-8 flex justify-center">
         <JobForm

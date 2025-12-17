@@ -11,7 +11,10 @@ import { useSearchParams } from "next/navigation";
  */
 function AuthHeaderContent() {
   const searchParams = useSearchParams();
-  const returnTo = searchParams.get("returnTo") || "/";
+  const returnTo = searchParams.get("returnTo");
+
+  // returnTo가 /dashboard로 시작하면 dashboard로, 아니면 홈으로
+  const logoHref = returnTo?.startsWith("/dashboard") ? "/dashboard" : "/";
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 w-full bg-bg-primary border-b border-border-accent">
@@ -24,7 +27,7 @@ function AuthHeaderContent() {
             width={32}
             height={32}
           />
-          <Link href={returnTo} className="text-text-accent text-2xl font-black font-ko-title">
+          <Link href={logoHref} className="text-text-accent text-2xl font-black font-ko-title">
             라이언 커넥트
           </Link>
         </div>
@@ -32,7 +35,7 @@ function AuthHeaderContent() {
         {/* Right Section: 로그인 버튼 */}
         <div className="absolute right-8 top-1/2 -translate-y-1/2">
           <Link
-            href={`/login${returnTo !== "/" ? `?returnTo=${encodeURIComponent(returnTo)}` : ""}`}
+            href={`/login${returnTo ? `?returnTo=${encodeURIComponent(returnTo)}` : ""}`}
             className="px-4 py-2 bg-accent rounded-lg text-text-inverse-primary text-sm font-semibold font-ko-title hover:opacity-90 transition-opacity"
           >
             로그인/회원가입

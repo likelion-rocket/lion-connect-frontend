@@ -145,7 +145,7 @@ export function middleware(request: NextRequest) {
   // 2. 인증 필요 경로 체크
   if (!isLoggedIn && AUTH_REQUIRED_PATHS.some((path) => pathname.startsWith(path))) {
     const loginUrl = new URL("/login", request.url);
-    loginUrl.searchParams.set("callbackUrl", pathname);
+    loginUrl.searchParams.set("returnTo", pathname);
     return NextResponse.redirect(loginUrl);
   }
 
@@ -155,7 +155,7 @@ export function middleware(request: NextRequest) {
       // 로그인하지 않은 경우
       if (!isLoggedIn) {
         const loginUrl = new URL("/login", request.url);
-        loginUrl.searchParams.set("callbackUrl", pathname);
+        loginUrl.searchParams.set("returnTo", pathname);
         return NextResponse.redirect(loginUrl);
       }
 

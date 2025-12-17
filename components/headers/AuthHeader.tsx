@@ -2,14 +2,14 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 
 /**
- * 인증(로그인/회원가입) 페이지용 헤더
- * - 로고와 로그인 버튼만 표시
- * - returnTo 쿼리 파라미터로 이전 페이지로 복귀 지원
+ * 인증(로그인/회원가입) 페이지용 헤더 내부 컴포넌트
+ * - useSearchParams를 사용하므로 Suspense로 감싸야 함
  */
-export default function AuthHeader() {
+function AuthHeaderContent() {
   const searchParams = useSearchParams();
   const returnTo = searchParams.get("returnTo") || "/";
 
@@ -40,5 +40,22 @@ export default function AuthHeader() {
         </div>
       </div>
     </header>
+  );
+}
+
+/**
+ * 인증(로그인/회원가입) 페이지용 헤더
+ * - 로고와 로그인 버튼만 표시
+ * - returnTo 쿼리 파라미터로 이전 페이지로 복귀 지원
+ */
+export default function AuthHeader() {
+  return (
+    <Suspense fallback={
+      <header className="fixed top-0 left-0 right-0 z-50 w-full bg-bg-primary border-b border-border-accent">
+        <div className="w-[1440px] h-20 mx-auto px-8" />
+      </header>
+    }>
+      <AuthHeaderContent />
+    </Suspense>
   );
 }

@@ -6,6 +6,7 @@ import Image from "next/image";
 import { useNavigation, NavLink } from "@/hooks/common/useNavigation";
 import { useAuthStore } from "@/store/authStore";
 import { UserRole, RoleBasedItem, filterByRole } from "@/utils/rbac";
+import { useLogout } from "@/hooks/auth/useLogout";
 
 /**
  * 네비게이션 링크 타입 (역할 기반 접근 제어 적용)
@@ -58,6 +59,7 @@ const navLinks: RoleBasedNavLink[] = [
 export default function Header() {
   const { user } = useAuthStore();
   const [mounted, setMounted] = useState(false);
+  const { logout } = useLogout();
 
   useEffect(() => {
     setMounted(true);
@@ -69,17 +71,6 @@ export default function Header() {
     : navLinks.filter((link) => !link.requiredRoles?.length);
 
   const { navRefs, handleNavClick, isLinkActive } = useNavigation(visibleLinks);
-
-  // 로그아웃 핸들러
-  const handleLogout = async () => {
-    try {
-      await fetch("/api/auth/logout", { method: "POST" });
-      useAuthStore.getState().clearAuth();
-      window.location.href = "/";
-    } catch (error) {
-      console.error("Logout failed:", error);
-    }
-  };
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 w-full bg-bg-primary border-b border-border-accent">
@@ -136,7 +127,7 @@ export default function Header() {
 
               {/* Logout Button */}
               <button
-                onClick={handleLogout}
+                onClick={() => logout()}
                 className="px-3.5 py-1.5 cursor-pointer rounded-lg border border-border-primary hover:bg-bg-secondary transition-colors"
               >
                 <span className="text-text-primary text-xs font-semibold font-ko-title">

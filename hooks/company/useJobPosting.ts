@@ -2,6 +2,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   fetchJobPosting,
+  fetchPublicJobPosting,
   createJobPosting,
   updateJobPosting,
   deleteJobPosting,
@@ -19,12 +20,13 @@ import type { JobPostingsResponse, JobPostingsParams } from "@/types/company-job
  */
 export function useJobPostings(params: JobPostingsParams = {}) {
   const accessToken = useAuthStore((s) => s.accessToken);
+  const userId = useAuthStore((s) => s.user?.id);
   const enabled = !!accessToken;
 
   const { page = 0, size = 10, sort = ["createdAt,desc"], status } = params;
 
   return useQuery<JobPostingsResponse>({
-    queryKey: ["jobPostings", { page, size, sort, status }],
+    queryKey: ["jobPostings", userId, { page, size, sort, status }],
     queryFn: async () => {
       const queryParams = new URLSearchParams();
       queryParams.append("page", page.toString());
@@ -41,12 +43,12 @@ export function useJobPostings(params: JobPostingsParams = {}) {
     enabled,
     retry: false,
     staleTime: 30 * 1000, // 30초
-    gcTime: 5 * 60 * 1000, // 5분
+    gcTime: 60 * 1000, // 1분
   });
 }
 
 /**
- * 채용 공고 조회 훅
+ * 채용 공고 조회 훅 (기업용 - 인증 필요)
  */
 export function useJobPosting(jobId: string) {
   const accessToken = useAuthStore((s) => s.accessToken);
@@ -56,6 +58,20 @@ export function useJobPosting(jobId: string) {
     queryKey: ["jobPosting", jobId],
     queryFn: () => fetchJobPosting(jobId),
     enabled,
+    retry: false,
+    staleTime: 5 * 60 * 1000, // 5분
+    gcTime: 10 * 60 * 1000, // 10분
+  });
+}
+
+/**
+ * 공개 채용 공고 상세 조회 훅 (인재용 - 인증 불필요)
+ */
+export function usePublicJobPosting(jobId: string) {
+  return useQuery<JobDetailResponse>({
+    queryKey: ["publicJobPosting", jobId],
+    queryFn: () => fetchPublicJobPosting(jobId),
+    enabled: jobId !== "new",
     retry: false,
     staleTime: 5 * 60 * 1000, // 5분
     gcTime: 10 * 60 * 1000, // 10분

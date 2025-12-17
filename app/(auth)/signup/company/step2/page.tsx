@@ -1,9 +1,9 @@
 "use client";
 
+import { Suspense, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Input from "@/app/(auth)/_components/Input";
 import { z } from "zod";
 import { useSignupStore } from "@/store/signupStore";
@@ -32,8 +32,10 @@ const companyStep2Schema = z
 
 type CompanyStep2Type = z.infer<typeof companyStep2Schema>;
 
-export default function CompanySignupStep2Page() {
+function CompanySignupStep2Content() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const returnTo = searchParams.get("returnTo");
   const companyStep1 = useSignupStore((state) => state.companyStep1);
   const clearCompanyStep1 = useSignupStore((state) => state.clearCompanyStep1);
 
@@ -83,10 +85,13 @@ export default function CompanySignupStep2Page() {
     if (companySignup.isSuccess) {
       // Step 1 데이터 삭제
       clearCompanyStep1();
-      // 완료 페이지로 이동
-      router.push("/signup/complete");
+      // 완료 페이지로 이동 (기업 회원임을 표시)
+      const completeUrl = returnTo
+        ? `/signup/complete?type=company&returnTo=${encodeURIComponent(returnTo)}`
+        : "/signup/complete?type=company";
+      router.push(completeUrl);
     }
-  }, [companySignup.isSuccess, clearCompanyStep1, router]);
+  }, [companySignup.isSuccess, clearCompanyStep1, router, returnTo]);
 
   // 이메일 변경 핸들러
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -102,7 +107,10 @@ export default function CompanySignupStep2Page() {
 
   const onSubmit = async (data: CompanyStep2Type) => {
     if (!companyStep1) {
-      router.push("/signup/company/step1");
+      const step1Url = returnTo
+        ? `/signup/company/step1?returnTo=${encodeURIComponent(returnTo)}`
+        : "/signup/company/step1";
+      router.push(step1Url);
       return;
     }
 
@@ -294,7 +302,12 @@ export default function CompanySignupStep2Page() {
           <div className="self-stretch inline-flex justify-start items-center gap-5">
             <button
               type="button"
-              onClick={() => router.push("/signup/company/step1")}
+              onClick={() => {
+                const step1Url = returnTo
+                  ? `/signup/company/step1?returnTo=${encodeURIComponent(returnTo)}`
+                  : "/signup/company/step1";
+                router.push(step1Url);
+              }}
               className="w-44 px-8 py-4 bg-white rounded-lg outline outline-[0.80px] outline-offset-[-0.80px] outline-neutral-300 flex justify-center items-center gap-2.5 cursor-pointer hover:bg-neutral-50 transition-colors"
             >
               <div className="justify-center text-orange-600 text-lg font-bold font-['Pretendard'] leading-7">
@@ -322,5 +335,13 @@ export default function CompanySignupStep2Page() {
         </form>
       </div>
     </main>
+  );
+}
+
+export default function CompanySignupStep2Page() {
+  return (
+    <Suspense fallback={<div className="flex justify-center items-center min-h-screen">로딩 중...</div>}>
+      <CompanySignupStep2Content />
+    </Suspense>
   );
 }

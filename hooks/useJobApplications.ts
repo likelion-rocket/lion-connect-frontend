@@ -21,9 +21,17 @@ export function useJobApplications(params: JobApplicationsRequest) {
  * 채용공고 지원 훅
  */
 export function useApplyToJob() {
+  const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: ({ jobId, data }: { jobId: number | string; data: ApplyJobRequest }) =>
       applyToJob(jobId, data),
+    onSuccess: (_data, variables) => {
+      // 지원 현황 목록 쿼리 무효화하여 자동 새로고침
+      queryClient.invalidateQueries({ queryKey: ["jobApplications"] });
+      // 해당 채용공고 쿼리 무효화 (applied 상태 업데이트를 위해)
+      queryClient.invalidateQueries({ queryKey: ["jobPosting", variables.jobId.toString()] });
+    },
   });
 }
 

@@ -2,9 +2,10 @@
 
 import { useState, use } from "react";
 import { useRouter } from "next/navigation";
-import { useJobPosting } from "@/hooks/company/useJobPosting";
+import { usePublicJobPosting } from "@/hooks/company/useJobPosting";
 import { useApplyToJob } from "@/hooks/useJobApplications";
 import { useConfirm } from "@/contexts/ConfirmContext";
+import { useToastStore } from "@/store/toastStore";
 import BackButton from "@/components/buttons/BackButton";
 import JobImageCarousel from "../_components/JobImageCarousel";
 import JobDetailInfo from "../_components/JobDetailInfo";
@@ -17,7 +18,8 @@ export default function JobDetailPage({ params }: { params: Promise<{ jobId: str
   const resolvedParams = use(params);
   const router = useRouter();
   const confirm = useConfirm();
-  const { data: job, isLoading, error } = useJobPosting(resolvedParams.jobId);
+  const showToast = useToastStore((state) => state.showToast);
+  const { data: job, isLoading, error } = usePublicJobPosting(resolvedParams.jobId);
   const { mutateAsync: applyToJob, isPending } = useApplyToJob();
   const [isApplicationPanelOpen, setIsApplicationPanelOpen] = useState(false);
 
@@ -48,13 +50,22 @@ export default function JobDetailPage({ params }: { params: Promise<{ jobId: str
       if (goToApplications) {
         router.push("/applications");
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("지원하기 실패:", error);
-      // TODO: 에러 처리 (토스트 메시지 등)
+
+      // 500 에러인 경우 토스트 메시지 표시
+      if (error?.response?.status === 500) {
+        showToast("취소한 요청에는 다시 지원할 수 없습니다.", "error");
+      } else {
+        showToast("지원하기에 실패했습니다. 다시 시도해주세요.", "error");
+      }
+
+      // 패널 닫기
+      setIsApplicationPanelOpen(false);
     }
   };
 
-  if (isLoading) {
+  if (isLoading || !job) {
     return (
       <div className="w-full min-h-screen bg-white flex justify-center items-center">
         <div className="text-neutral-500 text-lg font-['Pretendard']">로딩 중...</div>
@@ -62,7 +73,7 @@ export default function JobDetailPage({ params }: { params: Promise<{ jobId: str
     );
   }
 
-  if (error || !job) {
+  if (error) {
     return (
       <div className="w-full min-h-screen bg-white flex flex-col justify-center items-center gap-4">
         <div className="text-neutral-800 text-lg font-['Pretendard']">

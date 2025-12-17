@@ -22,7 +22,7 @@ export default function BusinessConnectButton() {
   return (
     <button
       onClick={handleBusinessConnectClick}
-      className="h-12 px-8 bg-white/10 rounded-full outline-[0.80px] outline-offset-[-0.80px] outline-white/30 inline-flex justify-center items-center hover:bg-white/20 transition-colors text-text-inverse-primary text-lg font-semibold leading-7"
+      className="h-12 px-8 cursor-pointer bg-white/10 rounded-full outline-[0.80px] outline-offset-[-0.80px] outline-white/30 inline-flex justify-center items-center hover:bg-white/20 transition-colors text-text-inverse-primary text-lg font-semibold leading-7"
     >
       기업 문의하기
     </button>

@@ -104,7 +104,7 @@ export function JobForm({
         채용 공고 등록
       </div>
 
-      <div className="self-stretch inline-flex justify-between items-start">
+      <div className="self-stretch w-[1160px] inline-flex justify-between items-start">
         {/* 폼 영역 */}
         <div className="w-[767px] inline-flex flex-col justify-start items-start gap-16">
           {/* 이미지 섹션 */}

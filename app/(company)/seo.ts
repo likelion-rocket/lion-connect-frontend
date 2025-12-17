@@ -23,13 +23,13 @@ export const SEO = {
     "테크 인재",
     "개발자 구인",
   ] as string[],
-  url: "https://lionconnect.com", // TODO: 실제 도메인으로 변경
+  url: "https://like-lion.netlify.app/", // TODO: 실제 도메인으로 변경
   siteName: "라이언 커넥트",
   locale: "ko_KR" as const,
   type: "website" as const,
   images: {
-    ogImage: "/og-image.png", // TODO: 실제 OG 이미지 추가 필요 (1200x630)
-    twitterImage: "/twitter-image.png", // TODO: 실제 트위터 이미지 추가 필요 (800x418)
+    ogImage: "/meta/1200x630.png",
+    twitterImage: "/meta/800x418.png",
   },
 };
 

@@ -22,7 +22,7 @@ export default function NewJobPage() {
   };
 
   return (
-    <div className="container mx-auto py-8">
+    <div className="container w-[1224px] mx-auto p-8">
       <BackButton />
       <div className="mt-8 flex justify-center">
         <JobForm onSubmit={handleSubmit} submitButtonText="채용 공고 등록하기" />

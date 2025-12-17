@@ -26,7 +26,7 @@ export function JobCard({
   const router = useRouter();
 
   const handleClick = () => {
-    router.push(`/job-board/${jobPostingId}`);
+    router.push(`/dashboard/job-board/${jobPostingId}`);
   };
 
   return (

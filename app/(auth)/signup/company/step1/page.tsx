@@ -1,8 +1,9 @@
 "use client";
 
+import { Suspense } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Input from "@/app/(auth)/_components/Input";
 import { z } from "zod";
 import { useSignupStore } from "@/store/signupStore";
@@ -18,8 +19,10 @@ const companyStep1Schema = z.object({
 
 type CompanyStep1Type = z.infer<typeof companyStep1Schema>;
 
-export default function CompanySignupStep1Page() {
+function CompanySignupStep1Content() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const returnTo = searchParams.get("returnTo");
   const setCompanyStep1 = useSignupStore((state) => state.setCompanyStep1);
 
   const {
@@ -40,11 +43,17 @@ export default function CompanySignupStep1Page() {
     // Zustand 스토어에 저장
     setCompanyStep1(data);
     // Step 2로 이동
-    router.push("/signup/company/step2");
+    const step2Url = returnTo
+      ? `/signup/company/step2?returnTo=${encodeURIComponent(returnTo)}`
+      : "/signup/company/step2";
+    router.push(step2Url);
   };
 
   const handleCancel = () => {
-    router.push("/signup");
+    const signupUrl = returnTo
+      ? `/signup?returnTo=${encodeURIComponent(returnTo)}`
+      : "/signup";
+    router.push(signupUrl);
   };
 
   return (
@@ -159,5 +168,13 @@ export default function CompanySignupStep1Page() {
         </form>
       </div>
     </main>
+  );
+}
+
+export default function CompanySignupStep1Page() {
+  return (
+    <Suspense fallback={<div className="flex justify-center items-center min-h-screen">로딩 중...</div>}>
+      <CompanySignupStep1Content />
+    </Suspense>
   );
 }

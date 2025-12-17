@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { loginSchema, LoginSchemaType } from "@/schemas/auth/loginSchema";
 import { useLogin } from "@/hooks/auth/useLogin";
 import { setAuthCookies } from "@/actions/auth";
@@ -19,7 +19,11 @@ import OrangeBgButton from "@/components/ui/OrangeBgButton";
  */
 export default function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [showPassword, setShowPassword] = useState(false);
+
+  // returnTo 파라미터 확인
+  const returnTo = searchParams.get("returnTo");
 
   // useLogin 훅에 onSuccess 콜백 전달
   const { login, isLoading, error } = useLogin({
@@ -28,15 +32,24 @@ export default function LoginForm() {
         // 1. Server Action으로 쿠키 설정 (서버에서 HttpOnly, Secure 플래그와 함께 설정)
         await setAuthCookies(data.user.roles);
 
-        // 3. 서버 컴포넌트 캐시 갱신 (새 쿠키 값 인식)
+        // 2. 서버 컴포넌트 캐시 갱신 (새 쿠키 값 인식)
         router.refresh();
 
-        // 4. 쿠키 설정 완료 후 리다이렉트 (타이밍 이슈 해결)
-        router.push("/");
+        // 3. returnTo 파라미터가 있으면 해당 경로로, 없으면 역할 기반 리다이렉션
+        if (returnTo) {
+          router.push(returnTo);
+        } else {
+          const isMemberUser = data.user.roles.some((role) =>
+            ["USER", "JOINEDUSER"].includes(role)
+          );
+
+          const defaultHome = isMemberUser ? "/dashboard" : "/";
+          router.push(defaultHome);
+        }
       } catch (e) {
         console.error("로그인 후처리 실패:", e);
         // 쿠키 설정 실패 시에도 일단 홈으로 이동 (백엔드 JWT가 더 중요)
-        router.push("/");
+        router.push(returnTo || "/");
       }
     },
   });
@@ -136,7 +149,7 @@ export default function LoginForm() {
       <div className="self-stretch inline-flex justify-between items-center">
         <div className="flex justify-center items-center">
           <Link
-            href="/signup"
+            href={`/signup${returnTo ? `?returnTo=${encodeURIComponent(returnTo)}` : ""}`}
             className="justify-start text-orange-600 text-sm font-medium font-['Pretendard'] leading-5 hover:opacity-80 transition-opacity"
           >
             회원가입
@@ -144,17 +157,17 @@ export default function LoginForm() {
         </div>
         <div className="flex justify-start items-center gap-8">
           <Link
-            href="/auth/forgot-password"
+            href="/auth/forgot-email"
             className="justify-start text-neutral-800 text-sm font-medium font-['Pretendard'] leading-5 pr-8 border-r border-neutral-800 hover:opacity-80 transition-opacity"
           >
-            계정 찾기
+            이메일 찾기
           </Link>
 
           <Link
             href="/auth/forgot-password"
             className="justify-start text-neutral-800 text-sm font-medium font-['Pretendard'] leading-5 hover:opacity-80 transition-opacity"
           >
-            비밀번호 재설정
+            비밀번호 찾기
           </Link>
         </div>
       </div>

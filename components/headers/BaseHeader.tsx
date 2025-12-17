@@ -3,72 +3,30 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import { useNavigation, NavLink } from "@/hooks/common/useNavigation";
 import { useAuthStore } from "@/store/authStore";
-import { UserRole, RoleBasedItem, filterByRole } from "@/utils/rbac";
 import { useLogout } from "@/hooks/auth/useLogout";
 
-/**
- * 네비게이션 링크 타입 (역할 기반 접근 제어 적용)
- */
-type RoleBasedNavLink = RoleBasedItem<NavLink>;
+export interface BaseHeaderProps {
+  visibleLinks: NavLink[];
+  logoHref?: string;
+}
 
 /**
- * 네비게이션 링크 정의 - 순서대로 정의 (인재탐색 → 기업문의 → 이력서 → 채용 등록 → 어드민)
- * requiredRoles가 없으면 모든 사용자에게 표시 (SSR 안전)
+ * 베이스 헤더 컴포넌트
+ * - CompanyHeader, MemberHeader에서 공통으로 사용하는 UI 로직
+ * - SSR 안전: mounted 상태로 로그인 UI 조건부 렌더링
  */
-const navLinks: RoleBasedNavLink[] = [
-  {
-    label: "인재 탐색",
-    href: "/talents",
-    requiredRoles: [UserRole.ADMIN, UserRole.JOINEDCOMPANY, UserRole.COMPANY],
-  },
-  {
-    label: "기업 문의",
-    href: "/#business-connect",
-  },
-
-  // {
-  //   label: "채용",
-  //   href: "/job-board",
-  //   requiredRoles: [UserRole.ADMIN, UserRole.USER, UserRole.JOINEDUSER],
-  // },
-  {
-    label: "이력서",
-    href: "/profile",
-    requiredRoles: [UserRole.ADMIN, UserRole.USER, UserRole.JOINEDUSER],
-  },
-  // {
-  //   label: "지원 현황",
-  //   href: "/applications",
-  //   requiredRoles: [UserRole.ADMIN, UserRole.USER, UserRole.JOINEDUSER],
-  // },
-  {
-    label: "채용 등록",
-    href: "/jobs",
-    requiredRoles: [UserRole.ADMIN, UserRole.JOINEDCOMPANY, UserRole.COMPANY],
-  },
-  { label: "어드민", href: "/admin", requiredRoles: [UserRole.ADMIN] },
-];
-
-/**
- * 헤더 컴포넌트
- * - SSR: 기본 네비게이션 + 로그인 버튼 표시
- * - CSR: 역할 기반 추가 링크 + 실제 로그인 상태 반영
- */
-export default function Header() {
+export default function BaseHeader({ visibleLinks, logoHref = "/" }: BaseHeaderProps) {
   const { user } = useAuthStore();
   const [mounted, setMounted] = useState(false);
   const { logout } = useLogout();
+  const pathname = usePathname();
 
   useEffect(() => {
     setMounted(true);
   }, []);
-
-  // SSR: requiredRoles 없는 링크만 / CSR: 역할 기반 필터링 (순서 유지)
-  const visibleLinks: NavLink[] = mounted
-    ? filterByRole(navLinks, user?.roles)
-    : navLinks.filter((link) => !link.requiredRoles?.length);
 
   const { navRefs, handleNavClick, isLinkActive } = useNavigation(visibleLinks);
 
@@ -83,12 +41,12 @@ export default function Header() {
             width={32}
             height={32}
           />
-          <Link href="/" className="text-text-accent text-2xl font-black font-ko-title">
+          <Link href={logoHref} className="text-text-accent text-2xl font-black font-ko-title">
             라이언 커넥트
           </Link>
         </div>
 
-        {/* Navigation Links - SSR에서도 기본 링크 렌더링 */}
+        {/* Navigation Links */}
         <nav className="absolute left-[340px] top-1/2 -translate-y-1/2 flex items-center gap-10">
           {visibleLinks.map((link, index) => {
             const isActive = isLinkActive(link);
@@ -116,7 +74,7 @@ export default function Header() {
           {mounted && user ? (
             <>
               {/* Bell Icon */}
-              {/* <Image src="/icons/bell.svg" alt="Notifications" width={24} height={24} /> */}
+              <Image src="/icons/bell.svg" alt="Notifications" width={24} height={24} />
 
               {/* User Name Display */}
               <div className="px-3.5 py-1.5 rounded-lg">
@@ -138,7 +96,7 @@ export default function Header() {
           ) : (
             /* Login Button - SSR과 비로그인 상태 모두 동일 */
             <Link
-              href="/login"
+              href={`/login?returnTo=${encodeURIComponent(pathname || "/")}`}
               className="px-4 py-2 bg-accent rounded-lg text-text-inverse-primary text-sm font-semibold font-ko-title hover:opacity-90 transition-opacity"
             >
               로그인/회원가입

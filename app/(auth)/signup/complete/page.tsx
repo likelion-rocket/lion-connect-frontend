@@ -1,11 +1,20 @@
 "use client";
 
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 
 /**
- * 회원가입 완료 페이지
+ * 회원가입 완료 페이지 컨텐츠
  */
-export default function SignupCompletePage() {
+function SignupCompleteContent() {
+  const searchParams = useSearchParams();
+  const userType = searchParams.get("type"); // "company" 또는 "personal"
+  const returnTo = searchParams.get("returnTo");
+
+  // returnTo가 있으면 해당 경로로, 없으면 회원 유형에 따라 메인 페이지 URL 결정
+  const mainPageUrl = returnTo || (userType === "company" ? "/" : "/dashboard");
+
   return (
     <main className="relative min-h-screen bg-bg-primary">
       <div className="absolute left-1/2 top-[229px] -translate-x-1/2 flex flex-col gap-12 items-center">
@@ -21,9 +30,9 @@ export default function SignupCompletePage() {
 
         {/* 버튼 섹션 */}
         <div className="flex flex-col gap-6 w-[442px]">
-          {/* 메인으로 돌아가기 버튼 */}
+          {/* 메인으로 돌아가기 버튼 - 회원 유형에 따라 다른 페이지로 이동 */}
           <Link
-            href="/"
+            href={mainPageUrl}
             className="bg-bg-accent rounded-xl py-4 flex items-center justify-center transition-colors hover:bg-[#e05600]"
           >
             <span className="font-bold text-lg leading-normal text-text-inverse-primary">
@@ -33,7 +42,7 @@ export default function SignupCompletePage() {
 
           {/* 로그인으로 돌아가기 링크 */}
           <Link
-            href="/login"
+            href={`/login${returnTo ? `?returnTo=${encodeURIComponent(returnTo)}` : ""}`}
             className="font-normal text-lg leading-normal text-text-accent text-center transition-colors hover:text-[#e05600]"
           >
             로그인으로 돌아가기
@@ -46,5 +55,16 @@ export default function SignupCompletePage() {
         </p>
       </div>
     </main>
+  );
+}
+
+/**
+ * 회원가입 완료 페이지
+ */
+export default function SignupCompletePage() {
+  return (
+    <Suspense fallback={<div className="relative min-h-screen bg-bg-primary" />}>
+      <SignupCompleteContent />
+    </Suspense>
   );
 }

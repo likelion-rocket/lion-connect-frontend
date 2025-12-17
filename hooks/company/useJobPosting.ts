@@ -2,6 +2,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   fetchJobPosting,
+  fetchPublicJobPosting,
   createJobPosting,
   updateJobPosting,
   deleteJobPosting,
@@ -46,7 +47,7 @@ export function useJobPostings(params: JobPostingsParams = {}) {
 }
 
 /**
- * 채용 공고 조회 훅
+ * 채용 공고 조회 훅 (기업용 - 인증 필요)
  */
 export function useJobPosting(jobId: string) {
   const accessToken = useAuthStore((s) => s.accessToken);
@@ -56,6 +57,20 @@ export function useJobPosting(jobId: string) {
     queryKey: ["jobPosting", jobId],
     queryFn: () => fetchJobPosting(jobId),
     enabled,
+    retry: false,
+    staleTime: 5 * 60 * 1000, // 5분
+    gcTime: 10 * 60 * 1000, // 10분
+  });
+}
+
+/**
+ * 공개 채용 공고 상세 조회 훅 (인재용 - 인증 불필요)
+ */
+export function usePublicJobPosting(jobId: string) {
+  return useQuery<JobDetailResponse>({
+    queryKey: ["publicJobPosting", jobId],
+    queryFn: () => fetchPublicJobPosting(jobId),
+    enabled: jobId !== "new",
     retry: false,
     staleTime: 5 * 60 * 1000, // 5분
     gcTime: 10 * 60 * 1000, // 10분

@@ -4,6 +4,7 @@ import { Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { JobListHeader } from "./_components/JobListHeader";
 import { JobCardContainer } from "./_components/JobCardContainer";
+import { JobCardSkeleton } from "./_components/JobCardSkeleton";
 import { useJobPostings } from "@/hooks/company/useJobPosting";
 import Pager from "@/components/Pager";
 
@@ -22,12 +23,15 @@ function JobsContent() {
     sort: ["createdAt,desc"],
   });
 
-  if (isLoading) {
+  // 로딩 중이거나 데이터가 아직 없는 경우 스켈레톤 표시
+  if (isLoading || !data) {
     return (
-      <div className="container w-[1158px] mx-auto mb-[191px]">
+      <div className="container flex flex-col gap-16 w-[1158px] mx-auto p-[72px]">
         <JobListHeader />
-        <div className="w-full flex justify-center items-center py-20">
-          <p className="text-gray-500">로딩 중...</p>
+        <div className="w-full inline-flex flex-col justify-start items-start gap-16">
+          {Array.from({ length: 3 }).map((_, index) => (
+            <JobCardSkeleton key={index} />
+          ))}
         </div>
       </div>
     );

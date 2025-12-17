@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import { Suspense } from "react";
 import LoginForm from "../_components/LoginForm";
 
 export const metadata: Metadata = {
@@ -26,7 +27,9 @@ export default function SignInPage() {
           </div>
 
           {/* 로그인 폼 */}
-          <LoginForm />
+          <Suspense fallback={<div className="self-stretch flex justify-center items-center py-8">로딩 중...</div>}>
+            <LoginForm />
+          </Suspense>
         </div>
       </main>
     </>

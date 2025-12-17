@@ -10,9 +10,10 @@ import { Suspense } from "react";
 function SignupCompleteContent() {
   const searchParams = useSearchParams();
   const userType = searchParams.get("type"); // "company" 또는 "personal"
+  const returnTo = searchParams.get("returnTo");
 
-  // 회원 유형에 따라 메인 페이지 URL 결정
-  const mainPageUrl = userType === "company" ? "/" : "/dashboard";
+  // returnTo가 있으면 해당 경로로, 없으면 회원 유형에 따라 메인 페이지 URL 결정
+  const mainPageUrl = returnTo || (userType === "company" ? "/" : "/dashboard");
 
   return (
     <main className="relative min-h-screen bg-bg-primary">
@@ -41,7 +42,7 @@ function SignupCompleteContent() {
 
           {/* 로그인으로 돌아가기 링크 */}
           <Link
-            href="/login"
+            href={`/login${returnTo ? `?returnTo=${encodeURIComponent(returnTo)}` : ""}`}
             className="font-normal text-lg leading-normal text-text-accent text-center transition-colors hover:text-[#e05600]"
           >
             로그인으로 돌아가기

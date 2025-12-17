@@ -1,9 +1,9 @@
 "use client";
 
+import { Suspense, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Input from "@/app/(auth)/_components/Input";
 import { z } from "zod";
 import { useSignupStore } from "@/store/signupStore";
@@ -30,8 +30,10 @@ const personalStep2Schema = z
 
 type PersonalStep2Type = z.infer<typeof personalStep2Schema>;
 
-export default function PersonalSignupStep2Page() {
+function PersonalSignupStep2Content() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const returnTo = searchParams.get("returnTo");
   const { personalStep1, clearPersonalStep1 } = useSignupStore();
   const joinedUserSignup = useJoinedUserSignup();
   const normalSignup = useSignup();
@@ -58,9 +60,12 @@ export default function PersonalSignupStep2Page() {
       // Step 1 데이터 삭제
       clearPersonalStep1();
       // 완료 페이지로 이동 (개인 회원임을 표시)
-      router.push("/signup/complete?type=personal");
+      const completeUrl = returnTo
+        ? `/signup/complete?type=personal&returnTo=${encodeURIComponent(returnTo)}`
+        : "/signup/complete?type=personal";
+      router.push(completeUrl);
     }
-  }, [joinedUserSignup.isSuccess, normalSignup.isSuccess, clearPersonalStep1, router]);
+  }, [joinedUserSignup.isSuccess, normalSignup.isSuccess, clearPersonalStep1, router, returnTo]);
 
   const onSubmit = (data: PersonalStep2Type) => {
     // Step 1에 courseName과 courseNumber가 모두 있으면 멋사 수료자 회원가입
@@ -221,7 +226,12 @@ export default function PersonalSignupStep2Page() {
           <div className="self-stretch inline-flex justify-start items-center gap-5">
             <button
               type="button"
-              onClick={() => router.push("/signup/personal/step1")}
+              onClick={() => {
+                const step1Url = returnTo
+                  ? `/signup/personal/step1?returnTo=${encodeURIComponent(returnTo)}`
+                  : "/signup/personal/step1";
+                router.push(step1Url);
+              }}
               className="w-44 px-8 py-4 bg-white rounded-lg outline outline-[0.80px] outline-offset-[-0.80px] outline-neutral-300 flex justify-center items-center gap-2.5 cursor-pointer hover:bg-neutral-50 transition-colors"
             >
               <div className="justify-center text-orange-600 text-lg font-bold font-['Pretendard'] leading-7">
@@ -249,5 +259,13 @@ export default function PersonalSignupStep2Page() {
         </form>
       </div>
     </main>
+  );
+}
+
+export default function PersonalSignupStep2Page() {
+  return (
+    <Suspense fallback={<div className="flex justify-center items-center min-h-screen">로딩 중...</div>}>
+      <PersonalSignupStep2Content />
+    </Suspense>
   );
 }

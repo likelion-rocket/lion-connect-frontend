@@ -1,12 +1,12 @@
 "use client";
 
+import { Suspense, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Input from "@/app/(auth)/_components/Input";
 import { z } from "zod";
 import { useSignupStore } from "@/store/signupStore";
-import { useEffect } from "react";
 
 // Step 1 schema: 기본 정보
 const personalStep1Schema = z.object({
@@ -17,8 +17,10 @@ const personalStep1Schema = z.object({
 
 type PersonalStep1Type = z.infer<typeof personalStep1Schema>;
 
-export default function PersonalSignupStep1Page() {
+function PersonalSignupStep1Content() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const returnTo = searchParams.get("returnTo");
   const { personalStep1, setPersonalStep1 } = useSignupStore();
 
   const {
@@ -47,11 +49,17 @@ export default function PersonalSignupStep1Page() {
     // Zustand 스토어에 저장 (localStorage에 자동 persist)
     setPersonalStep1(data);
     // Step 2로 이동
-    router.push("/signup/personal/step2");
+    const step2Url = returnTo
+      ? `/signup/personal/step2?returnTo=${encodeURIComponent(returnTo)}`
+      : "/signup/personal/step2";
+    router.push(step2Url);
   };
 
   const handleCancel = () => {
-    router.push("/signup");
+    const signupUrl = returnTo
+      ? `/signup?returnTo=${encodeURIComponent(returnTo)}`
+      : "/signup";
+    router.push(signupUrl);
   };
 
   return (
@@ -164,5 +172,13 @@ export default function PersonalSignupStep1Page() {
         </form>
       </div>
     </main>
+  );
+}
+
+export default function PersonalSignupStep1Page() {
+  return (
+    <Suspense fallback={<div className="flex justify-center items-center min-h-screen">로딩 중...</div>}>
+      <PersonalSignupStep1Content />
+    </Suspense>
   );
 }

@@ -101,10 +101,12 @@ export async function logoutAPI(): Promise<{ success: boolean; message: string }
  * - 비밀번호는 서버에서 해싱 처리 필요
  * - HTTPS 통신 필수 (프로덕션 환경)
  */
-export async function signupAPI(data: SignupFormData | PersonalSignupFormData): Promise<SignupResponse> {
+export async function signupAPI(
+  data: SignupFormData | PersonalSignupFormData
+): Promise<SignupResponse> {
   // 서버로 전송할 데이터만 추출 (confirmPassword, agreeTerms 제외)
   const requestData: SignupRequestData = {
-    name: 'name' in data ? data.name : "",
+    name: "name" in data ? data.name : "",
     email: data.email,
     password: data.password,
     phoneNumber: data.phoneNumber,

@@ -54,7 +54,9 @@ export function ResumeCard({
       {/* 헤더: 이름, 상태, 버튼들 */}
       <div className="self-stretch inline-flex justify-between items-center">
         <div className="flex justify-start items-center gap-4">
-          <h3 className="text-primary text-3xl font-bold font-ko-body leading-9">{title}</h3>
+          <h3 className="text-primary max-w-[610px] text-3xl font-bold font-ko-body leading-9">
+            {title}
+          </h3>
           <span className="text-quaternary text-base font-normal font-ko-body leading-6">
             {status}
           </span>

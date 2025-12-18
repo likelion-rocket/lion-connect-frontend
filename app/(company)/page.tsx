@@ -3,7 +3,7 @@ import ScrollToTopButton from "@/components/ScrollToTopButton";
 import { Metadata } from "next";
 import dynamic from "next/dynamic";
 import HeroSection from "./_components/HeroSection";
-import { landingMetadata } from "./seo";
+import { landingMetadata } from "./seo/index";
 import Banner from "./_components/Banner";
 
 const BenefitsSection = dynamic(() => import("./_components/BenefitsSection"));

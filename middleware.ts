@@ -124,11 +124,16 @@ export function middleware(request: NextRequest) {
   // - 정적 파일(이미지, svg 등)은 제외
   const isStaticFile = /\.(svg|png|jpg|jpeg|gif|webp|ico|pdf)$/i.test(pathname);
 
-  if (pathname !== "/" && pathname.startsWith("/") && !pathname.startsWith("/dashboard") && !isStaticFile) {
+  if (
+    pathname !== "/" &&
+    pathname.startsWith("/") &&
+    !pathname.startsWith("/dashboard") &&
+    !isStaticFile
+  ) {
     // 이미 보호된 경로(/talents, /jobs, /admin 등)는 PROTECTED_ROUTES에서 처리
     // /login, /signup은 GUEST_ONLY_PATHS에서 처리
-    const isProtectedRoute = PROTECTED_ROUTES.some(route => pathname.startsWith(route.path));
-    const isGuestOnlyPath = GUEST_ONLY_PATHS.some(path => pathname.startsWith(path));
+    const isProtectedRoute = PROTECTED_ROUTES.some((route) => pathname.startsWith(route.path));
+    const isGuestOnlyPath = GUEST_ONLY_PATHS.some((path) => pathname.startsWith(path));
 
     // 보호된 경로나 게스트 전용 경로가 아닌 루트 하위 경로 체크
     if (!isProtectedRoute && !isGuestOnlyPath && isLoggedIn) {

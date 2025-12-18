@@ -5,6 +5,7 @@ import { useToastStore } from "@/store/toastStore";
 import { useRouter } from "next/navigation";
 import { useFormContext, useWatch } from "react-hook-form";
 import { talentRegisterTempSaveSchema } from "@/schemas/talent/talentRegisterSchema";
+import { useRef } from "react";
 
 interface TalentRegisterNavProps extends React.HTMLAttributes<HTMLElement> {
   onTempSave?: () => void;
@@ -25,6 +26,10 @@ export default function TalentRegisterNav({
   const router = useRouter();
   const { register, control, getValues } = useFormContext();
 
+  // Debounce를 위한 ref
+  const tempSaveTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const submitTimerRef = useRef<NodeJS.Timeout | null>(null);
+
   // Watch the title value from the form using useWatch
   const titleValue = useWatch({ control, name: "profile.title" }) || "인재 등록";
 
@@ -34,19 +39,41 @@ export default function TalentRegisterNav({
 
   const handleTempSave = async () => {
     if (onTempSave) {
-      // 임시저장 전 검증 수행
-      const currentValues = getValues();
-      const validationResult = talentRegisterTempSaveSchema.safeParse(currentValues);
-
-      if (!validationResult.success) {
-        // 첫 번째 에러 메시지 표시
-        const firstError = validationResult.error.issues[0];
-        showToast(firstError.message, "error");
-        return;
+      // 이미 대기 중인 타이머가 있으면 취소
+      if (tempSaveTimerRef.current) {
+        clearTimeout(tempSaveTimerRef.current);
       }
 
-      await onTempSave();
-      showToast("임시 저장되었습니다!");
+      // 1초 후 실행되도록 타이머 설정
+      tempSaveTimerRef.current = setTimeout(async () => {
+        // 임시저장 전 검증 수행
+        const currentValues = getValues();
+        const validationResult = talentRegisterTempSaveSchema.safeParse(currentValues);
+
+        if (!validationResult.success) {
+          // 첫 번째 에러 메시지 표시
+          const firstError = validationResult.error.issues[0];
+          showToast(firstError.message, "error");
+          return;
+        }
+
+        await onTempSave();
+        showToast("임시 저장되었습니다!");
+      }, 1000);
+    }
+  };
+
+  const handleSubmit = () => {
+    if (onSubmit) {
+      // 이미 대기 중인 타이머가 있으면 취소
+      if (submitTimerRef.current) {
+        clearTimeout(submitTimerRef.current);
+      }
+
+      // 1초 후 실행되도록 타이머 설정
+      submitTimerRef.current = setTimeout(() => {
+        onSubmit();
+      }, 1000);
     }
   };
 

@@ -229,6 +229,16 @@ export default function TalentRegisterPage({ params }: { params: Promise<{ profi
   }
 
   /**
+   * 폼 내 input에서 엔터키 누를 때 제출 방지
+   * textarea는 엔터를 허용하고, 일반 input만 차단
+   */
+  const handleFormKeyDown = (e: React.KeyboardEvent<HTMLFormElement>) => {
+    if (e.key === "Enter" && (e.target as HTMLElement).tagName !== "TEXTAREA") {
+      e.preventDefault();
+    }
+  };
+
+  /**
    * 폼 제출 핸들러
    * submitTalentRegister 액션을 호출하여 처리
    */
@@ -335,6 +345,7 @@ export default function TalentRegisterPage({ params }: { params: Promise<{ profi
           <form
             id="talent-register-form"
             onSubmit={methods.handleSubmit(onSubmit, onError)}
+            onKeyDown={handleFormKeyDown}
             className="talent-register-form max-w-[1142px] mx-auto flex flex-col gap-60"
           >
             {/* 프로필 사진 섹션 */}

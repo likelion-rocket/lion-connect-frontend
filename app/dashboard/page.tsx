@@ -51,6 +51,7 @@ function DashboardContent() {
 
   return (
     <div className="container mx-auto pt-[80px] pb-[90px]">
+      <h1 className="sr-only">라이언 커넥트 인재 대시보드</h1>
       <div className="w-[1160px] mx-auto">
         <JobSelector
           selectedJobGroupId={selectedJobGroupId}

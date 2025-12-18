@@ -22,14 +22,14 @@ export const dashboardMetadata: Metadata = {
     "개발자 구직",
     "부트캠프 수료생",
     "주니어 개발자 채용",
+    "멋쟁이사자처럼",
   ] as string[],
   openGraph: {
     type: "website",
     locale: SEO.locale,
     url: `${SEO.url}/dashboard`,
     title: "채용 공고 탐색 - 라이언 커넥트",
-    description:
-      "멋쟁이사자처럼 출신 IT 인재를 위한 맞춤 채용 공고를 탐색하세요.",
+    description: "멋쟁이사자처럼 출신 IT 인재를 위한 맞춤 채용 공고를 탐색하세요.",
     siteName: SEO.siteName,
     images: [
       {
@@ -43,8 +43,7 @@ export const dashboardMetadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "채용 공고 탐색 - 라이언 커넥트",
-    description:
-      "멋쟁이사자처럼 출신 IT 인재를 위한 맞춤 채용 공고를 탐색하세요.",
+    description: "멋쟁이사자처럼 출신 IT 인재를 위한 맞춤 채용 공고를 탐색하세요.",
     images: [SEO.images.twitterImage],
   },
   alternates: {

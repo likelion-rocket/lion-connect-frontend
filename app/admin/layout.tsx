@@ -1,5 +1,13 @@
 import Footer from "@/components/Footer";
 import { AdminSidebar } from "./_components/AdminSidebar";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   return (

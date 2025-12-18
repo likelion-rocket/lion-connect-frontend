@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import { Providers } from "./providers";
-import { rootMetadata } from "./(company)/seo";
+import { rootMetadata } from "./(company)/seo/index";
 import "./globals.css";
 
 // Pretendard Variable 폰트 설정

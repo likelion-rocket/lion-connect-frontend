@@ -7,7 +7,7 @@
 
 // API Base URL (환경변수에서 가져오기)
 export const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_BASE_URL || "https://api.maple109.store/api/";
+  process.env.NEXT_PUBLIC_API_BASE_URL || "https://api.maple109.store/api";
 
 // S3 Base URL
 export const S3_BASE_URL = "https://lion-connect-files.s3.ap-northeast-2.amazonaws.com";

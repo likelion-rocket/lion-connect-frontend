@@ -30,7 +30,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
     const jobRoutes: MetadataRoute.Sitemap = jobsResponse.content.map((job) => ({
       url: `${baseUrl}/dashboard/job-board/${job.jobPostingId}`,
-      lastModified: new Date(job.publishedAt || job.updatedAt),
+      lastModified: new Date(job.publishedAt),
       changeFrequency: "weekly",
       priority: 0.8,
     }));

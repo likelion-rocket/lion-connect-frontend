@@ -1,6 +1,7 @@
 "use client";
 
 import { JobCard } from "./JobCard";
+import { JobCardSkeleton } from "./JobCardSkeleton";
 import Pager from "@/components/Pager";
 import { cn } from "@/utils/utils";
 import type { PublicJobPostingsResponse } from "@/types/company-job-posting";
@@ -25,12 +26,14 @@ export function JobList({
   const jobs = data?.content || [];
   const totalPages = data?.totalPages || 0;
 
-  // 로딩 상태
-  if (isLoading) {
+  // 로딩 중이거나 데이터가 아직 없는 경우 스켈레톤 표시
+  if (isLoading || !data) {
     return (
       <div className={cn("flex flex-col gap-[233px] pt-[52px]", className)} {...props}>
-        <div className="w-[1160px] inline-flex justify-center items-center h-[400px]">
-          <p className="text-text-secondary">채용공고를 불러오는 중...</p>
+        <div className="w-[1160px] inline-flex justify-start items-start gap-5 flex-wrap content-start">
+          {Array.from({ length: 12 }).map((_, index) => (
+            <JobCardSkeleton key={index} />
+          ))}
         </div>
       </div>
     );

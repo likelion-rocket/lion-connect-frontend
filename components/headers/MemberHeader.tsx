@@ -81,7 +81,7 @@ export default function MemberHeader() {
 
         {/* Right Section */}
         <div className="absolute right-8 top-1/2 -translate-y-1/2 flex items-center gap-5">
-          {mounted && user ? (
+          {!mounted ? null : user ? (
             <>
               {/* User Name Display */}
               <div className="px-3.5 py-1.5 rounded-lg">

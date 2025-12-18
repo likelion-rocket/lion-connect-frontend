@@ -26,10 +26,11 @@ export default function TalentDetailPage() {
   }
 
   if (error) {
+    const errorMessage = (error as Error)?.message || "데이터를 불러오는 중 오류가 발생했습니다.";
     return (
       <div className="w-full text-black mt-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-screen flex items-center justify-center">
-          <p className="text-lg text-red-500">데이터를 불러오는 중 오류가 발생했습니다.</p>
+          <p className="text-lg text-red-500">{errorMessage}</p>
         </div>
       </div>
     );

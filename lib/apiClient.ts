@@ -36,24 +36,8 @@ type RequestOptions = RequestInit & {
   _isRetry?: boolean; // 내부 플래그: 이미 재시도한 요청인지 표시 (무한 루프 방지)
 };
 
-// 리프레시 토큰 요청 중 플래그 (중복 방지)
-let isRefreshing: boolean = false;
-let refreshSubscribers: ((token: string) => void)[] = [];
-
-/**
- * 리프레시 완료 후 대기 중인 요청들에게 새 토큰 전달
- */
-function onRefreshed(token: string) {
-  refreshSubscribers.forEach((callback) => callback(token));
-  refreshSubscribers = [];
-}
-
-/**
- * 리프레시 대기열에 추가
- */
-function addRefreshSubscriber(callback: (token: string) => void) {
-  refreshSubscribers.push(callback);
-}
+// 리프레시 토큰 요청 중복 방지를 위한 Promise 캐싱
+let refreshPromise: Promise<string> | null = null;
 
 /**
  * 타임아웃 기능이 있는 fetch 래퍼
@@ -145,53 +129,71 @@ async function handleResponseError(response: Response): Promise<never> {
  * 토큰 리프레시 함수
  * - Authorization 헤더 우선, 없으면 응답 body에서 추출
  * - 앱 초기화(useInitializeAuth)와 401 자동 재시도에서 모두 사용
+ * - 중복 요청 방지: 이미 리프레시 중이면 기존 Promise 재사용
  */
 export async function refreshAccessToken(): Promise<string> {
-  const response = await fetch(`${API_BASE_URL}${API_ENDPOINTS.AUTH.REFRESH_TOKEN}`, {
-    method: "POST",
-    credentials: "include", // 리프레시 토큰 쿠키 포함
-  });
-
-  if (!response.ok) {
-    // 에러 메시지 추출
-    const errorData = await response.json().catch(() => ({}));
-    const errorMessage = errorData.message || "세션이 만료되었습니다. 다시 로그인해주세요.";
-
-    console.error("❌ [refreshAccessToken] 리프레시 실패:", {
-      status: response.status,
-      message: errorMessage,
-      errorData,
-    });
-
-    // 리프레시 실패 시 로그아웃 처리
-    useAuthStore.getState().clearAuth();
-
-    throw new ApiError(errorMessage, response.status, "REFRESH_FAILED");
+  // 이미 리프레시 중이면 기존 Promise 재사용 (중복 요청 방지)
+  if (refreshPromise) {
+    console.log("✅ [refreshAccessToken] 이미 진행 중인 리프레시 재사용");
+    return refreshPromise;
   }
 
-  // 1순위: Authorization 헤더에서 토큰 추출
-  const authHeader = response.headers.get("Authorization");
-  let newAccessToken = authHeader?.replace("Bearer ", "") || "";
-
-  // 2순위: 응답 body에서 토큰 추출 (헤더에 없는 경우)
-  if (!newAccessToken) {
+  // 새로운 리프레시 Promise 생성
+  refreshPromise = (async () => {
     try {
-      const responseData = await response.json();
-      newAccessToken = responseData.accessToken || "";
-    } catch (error) {
-      console.error("❌ [refreshAccessToken] JSON 파싱 실패:", error);
+      const response = await fetch(`${API_BASE_URL}${API_ENDPOINTS.AUTH.REFRESH_TOKEN}`, {
+        method: "POST",
+        credentials: "include", // 리프레시 토큰 쿠키 포함
+      });
+
+      if (!response.ok) {
+        // 에러 메시지 추출
+        const errorData = await response.json().catch(() => ({}));
+        const errorMessage = errorData.message || "세션이 만료되었습니다. 다시 로그인해주세요.";
+
+        console.error("❌ [refreshAccessToken] 리프레시 실패:", {
+          status: response.status,
+          message: errorMessage,
+          errorData,
+        });
+
+        // 리프레시 실패 시 로그아웃 처리
+        useAuthStore.getState().clearAuth();
+
+        throw new ApiError(errorMessage, response.status, "REFRESH_FAILED");
+      }
+
+      // 1순위: Authorization 헤더에서 토큰 추출
+      const authHeader = response.headers.get("Authorization");
+      let newAccessToken = authHeader?.replace("Bearer ", "") || "";
+
+      // 2순위: 응답 body에서 토큰 추출 (헤더에 없는 경우)
+      if (!newAccessToken) {
+        try {
+          const responseData = await response.json();
+          newAccessToken = responseData.accessToken || "";
+        } catch (error) {
+          console.error("❌ [refreshAccessToken] JSON 파싱 실패:", error);
+        }
+      }
+
+      if (!newAccessToken) {
+        console.error("❌ [refreshAccessToken] 토큰을 찾을 수 없음");
+        throw new ApiError("토큰 갱신에 실패했습니다.", 401, "NO_ACCESS_TOKEN");
+      }
+
+      // Zustand에 새 토큰 저장
+      useAuthStore.getState().updateAccessToken(newAccessToken);
+
+      console.log("✅ [refreshAccessToken] 토큰 갱신 성공");
+      return newAccessToken;
+    } finally {
+      // 완료 후 Promise 초기화 (성공/실패 무관)
+      refreshPromise = null;
     }
-  }
+  })();
 
-  if (!newAccessToken) {
-    console.error("❌ [refreshAccessToken] 토큰을 찾을 수 없음");
-    throw new ApiError("토큰 갱신에 실패했습니다.", 401, "NO_ACCESS_TOKEN");
-  }
-
-  // Zustand에 새 토큰 저장
-  useAuthStore.getState().updateAccessToken(newAccessToken);
-
-  return newAccessToken;
+  return refreshPromise;
 }
 
 /**
@@ -236,63 +238,9 @@ export async function apiRequest<T>(endpoint: string, options: RequestOptions = 
     // 401 Unauthorized 처리 (토큰 만료)
     // _isRetry가 true면 이미 재시도한 요청이므로 무한 루프 방지
     if (response.status === HTTP_STATUS.UNAUTHORIZED && !options.skipAuth && !options._isRetry) {
-      // 이미 리프레시 중이면 대기
-      if (isRefreshing) {
-        return new Promise((resolve, reject) => {
-          addRefreshSubscriber((token: string) => {
-            // 새 토큰으로 재시도
-            headers["Authorization"] = `Bearer ${token}`;
-            fetchWithTimeout(url, {
-              ...options,
-              headers,
-              credentials: options.skipCredentials ? "omit" : "include",
-              _isRetry: true, // 재시도 플래그 설정
-            })
-              .then(async (retryResponse) => {
-                if (!retryResponse.ok) {
-                  return handleResponseError(retryResponse);
-                }
-
-                // 204 No Content 처리
-                if (retryResponse.status === HTTP_STATUS.NO_CONTENT) {
-                  return {} as T;
-                }
-
-                // 빈 응답 처리
-                const contentType = retryResponse.headers.get("content-type");
-                const contentLength = retryResponse.headers.get("content-length");
-
-                if (contentLength === "0" || !contentType?.includes("application/json")) {
-                  const text = await retryResponse.text();
-                  if (!text || text.trim() === "") {
-                    return {} as T;
-                  }
-                  try {
-                    return JSON.parse(text) as T;
-                  } catch {
-                    return {} as T;
-                  }
-                }
-
-                try {
-                  return await retryResponse.json();
-                } catch {
-                  return {} as T;
-                }
-              })
-              .then(resolve)
-              .catch(reject);
-          });
-        });
-      }
-
-      // 리프레시 시작
-      isRefreshing = true;
-
       try {
+        // refreshAccessToken 내부에서 중복 요청을 처리하므로 바로 호출
         const newAccessToken = await refreshAccessToken();
-        isRefreshing = false;
-        onRefreshed(newAccessToken);
 
         // 새 토큰으로 원래 요청 재시도
         headers["Authorization"] = `Bearer ${newAccessToken}`;
@@ -335,8 +283,7 @@ export async function apiRequest<T>(endpoint: string, options: RequestOptions = 
           return {} as T;
         }
       } catch (refreshError) {
-        isRefreshing = false;
-        refreshSubscribers = [];
+        // 리프레시 실패 시 에러 전파 (clearAuth는 refreshAccessToken 내부에서 처리)
         throw refreshError;
       }
     }

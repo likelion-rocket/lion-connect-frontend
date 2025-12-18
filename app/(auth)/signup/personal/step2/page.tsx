@@ -67,6 +67,16 @@ function PersonalSignupStep2Content() {
     }
   }, [joinedUserSignup.isSuccess, normalSignup.isSuccess, clearPersonalStep1, router, returnTo]);
 
+  // 회원가입 에러 처리
+  useEffect(() => {
+    if (joinedUserSignup.error) {
+      alert(joinedUserSignup.error);
+    }
+    if (normalSignup.error) {
+      alert(normalSignup.error);
+    }
+  }, [joinedUserSignup.error, normalSignup.error]);
+
   const onSubmit = (data: PersonalStep2Type) => {
     // Step 1에 courseName과 courseNumber가 모두 있으면 멋사 수료자 회원가입
     if (personalStep1?.courseName && personalStep1?.courseNumber) {

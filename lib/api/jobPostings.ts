@@ -1,5 +1,6 @@
 // lib/api/jobPostings.ts
 import { post, get, put, del } from "@/lib/apiClient";
+import { serverGet } from "@/lib/serverApiClient";
 import { API_ENDPOINTS } from "@/constants/api";
 import type {
   Job,
@@ -136,8 +137,13 @@ export function fetchJobPosting(jobId: string): Promise<JobDetailResponse> {
 
 /**
  * 공개 채용 공고 상세 조회 API (인재용 - 인증 불필요)
+ * Server-side에서 호출 시 serverGet 사용
  */
 export function fetchPublicJobPosting(jobId: string): Promise<JobDetailResponse> {
+  // Server-side인지 확인
+  if (typeof window === "undefined") {
+    return serverGet<JobDetailResponse>(API_ENDPOINTS.JOB_POSTINGS.GET(jobId));
+  }
   return get<JobDetailResponse>(API_ENDPOINTS.JOB_POSTINGS.GET(jobId));
 }
 

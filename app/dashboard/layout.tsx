@@ -1,5 +1,8 @@
 import MemberHeader from "@/components/headers/MemberHeader";
 import Footer from "@/components/Footer";
+import { dashboardMetadata } from "@/app/(company)/seo/metadata";
+
+export const metadata = dashboardMetadata;
 
 /**
  * 인재용 레이아웃

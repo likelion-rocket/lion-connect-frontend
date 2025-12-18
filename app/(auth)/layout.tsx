@@ -1,5 +1,13 @@
 import AuthHeader from "@/components/headers/AuthHeader";
 import Footer from "@/components/Footer";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (

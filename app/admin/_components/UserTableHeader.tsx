@@ -9,7 +9,7 @@ export default function UserTableHeader() {
   return (
     <thead className="bg-neutral-50 rounded-tl-lg rounded-tr-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.06)] shadow-[0px_1px_3px_0px_rgba(0,0,0,0.10)]">
       <tr className="h-20">
-        <th className="px-4 py-2 text-left text-neutral-800 text-sm font-normal font-['Pretendard'] leading-5">
+        <th className="px-2 py-2 text-left text-neutral-800 text-sm font-normal font-['Pretendard'] leading-5">
           이름
         </th>
         <th className="px-4 py-2 text-left text-neutral-800 text-sm font-normal font-['Pretendard'] leading-5">
@@ -18,7 +18,7 @@ export default function UserTableHeader() {
         <th className="px-4 py-2 text-left text-neutral-800 text-sm font-normal font-['Pretendard'] leading-5">
           이메일
         </th>
-        <th className="px-4 py-2 text-left text-neutral-800 text-sm font-normal font-['Pretendard'] leading-5">
+        <th className="px-2 py-2 text-left text-neutral-800 text-sm font-normal font-['Pretendard'] leading-5">
           가입일
         </th>
         <th className="px-4 py-2 text-left text-neutral-800 text-sm font-normal font-['Pretendard'] leading-5">

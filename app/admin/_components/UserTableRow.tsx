@@ -13,6 +13,8 @@ interface UserTableRowProps {
   joinDate: string;
   roles: string[];
   locked?: boolean; // 프로필 잠금 상태
+  courseName?: string; // 수료 과정
+  courseGeneration?: number; // 기수
 }
 
 /**
@@ -41,6 +43,8 @@ export default function UserTableRow({
   joinDate,
   roles,
   locked = false,
+  courseName,
+  courseGeneration,
 }: UserTableRowProps) {
   const confirm = useConfirm();
 
@@ -108,6 +112,12 @@ export default function UserTableRow({
       </td>
       <td className="px-4 py-4 text-neutral-800 text-sm font-normal font-['Pretendard'] leading-5">
         {joinDate}
+      </td>
+      <td className="px-4 py-4 text-neutral-800 text-sm font-normal font-['Pretendard'] leading-5">
+        {courseName || "-"}
+      </td>
+      <td className="px-4 py-4 text-neutral-800 text-sm font-normal font-['Pretendard'] leading-5">
+        {courseGeneration ? `${courseGeneration}기` : "-"}
       </td>
       <td className="px-4 py-4">
         <span

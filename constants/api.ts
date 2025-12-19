@@ -95,6 +95,10 @@ export const API_ENDPOINTS = {
     COMPANIES: {
       LIST: "/admin/companies", // GET - 기업 회원 목록 조회
     },
+    JOB_POSTINGS: {
+      LIST: "/admin/job-postings", // GET - 관리자 채용공고 목록 조회 (status, pageable)
+      APPLICATIONS: (jobId: number | string) => `/admin/job-postings/${jobId}/applications`, // GET - 채용공고 지원자 목록
+    },
   },
   JOBS: {
     GET: "/profile/job-categories-with-groups", // GET

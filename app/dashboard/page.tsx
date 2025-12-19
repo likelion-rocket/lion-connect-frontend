@@ -67,7 +67,7 @@ function DashboardContent() {
 
 export default function DashboardPage() {
   return (
-    <Suspense fallback={<div className="container mx-auto pt-[80px] pb-[90px]" />}>
+    <Suspense fallback={<div className="container mx-auto pt-[80px] pb-[90px] min-h-screen" />}>
       <DashboardContent />
     </Suspense>
   );

@@ -1,12 +1,12 @@
 "use client";
 
-import { JobCard } from "./JobCard";
-import { JobCardSkeleton } from "./JobCardSkeleton";
+import { JobCard } from "@/app/dashboard/job-board/_components/JobCard";
+import { JobCardSkeleton } from "@/app/dashboard/job-board/_components/JobCardSkeleton";
 import Pager from "@/components/Pager";
 import { cn } from "@/utils/utils";
 import type { PublicJobPostingsResponse } from "@/types/company-job-posting";
 
-interface JobListProps extends React.HTMLAttributes<HTMLDivElement> {
+interface AdminJobListProps extends React.HTMLAttributes<HTMLDivElement> {
   data?: PublicJobPostingsResponse;
   isLoading?: boolean;
   error?: Error | null;
@@ -15,14 +15,14 @@ interface JobListProps extends React.HTMLAttributes<HTMLDivElement> {
 
 const ITEMS_PER_PAGE = 12;
 
-export function JobList({
+export function AdminJobList({
   data,
   isLoading,
   error,
   currentPage,
   className,
   ...props
-}: JobListProps) {
+}: AdminJobListProps) {
   const jobs = data?.content || [];
   const totalPages = data?.totalPages || 0;
 
@@ -30,7 +30,7 @@ export function JobList({
   if (isLoading || !data) {
     return (
       <div className={cn("flex flex-col gap-[233px] pt-[52px]", className)} {...props}>
-        <div className="w-[1160px] inline-flex justify-start items-start gap-5 flex-wrap content-start">
+        <div className="w-[1043px] grid grid-cols-3 gap-5">
           {Array.from({ length: 12 }).map((_, index) => (
             <JobCardSkeleton key={index} />
           ))}
@@ -43,7 +43,7 @@ export function JobList({
   if (error) {
     return (
       <div className={cn("flex flex-col gap-[233px] pt-[52px]", className)} {...props}>
-        <div className="w-[1160px] inline-flex justify-center items-center h-[400px]">
+        <div className="w-[1043px] inline-flex justify-center items-center h-[400px]">
           <p className="text-text-secondary">채용공고를 불러오는 중 오류가 발생했습니다.</p>
         </div>
       </div>
@@ -54,7 +54,7 @@ export function JobList({
   if (jobs.length === 0) {
     return (
       <div className={cn("flex flex-col gap-[233px] pt-[52px]", className)} {...props}>
-        <div className="w-[1160px] inline-flex justify-center items-center h-[400px]">
+        <div className="w-[1043px] inline-flex justify-center items-center h-[400px]">
           <p className="text-text-secondary">등록된 채용공고가 없습니다.</p>
         </div>
       </div>
@@ -63,7 +63,7 @@ export function JobList({
 
   return (
     <div className={cn("flex flex-col gap-[233px] pt-[52px]", className)} {...props}>
-      <div className="w-[1160px] inline-flex justify-start items-start gap-5 flex-wrap content-start">
+      <div className="w-[1043px] grid grid-cols-3 gap-5">
         {jobs.map((job) => (
           <JobCard
             key={job.jobPostingId}
@@ -73,7 +73,7 @@ export function JobList({
             location={job.workplaceShort}
             jobRoleName={job.jobRoleName}
             imageUrl={job.thumbnailImageUrl || undefined}
-            basePath="/dashboard/job-board"
+            basePath="/admin/applications"
           />
         ))}
       </div>

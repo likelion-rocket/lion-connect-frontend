@@ -7,6 +7,7 @@ import { useConfirm } from "@/contexts/ConfirmContext";
 interface CompanyTableRowProps {
   id: number;
   name: string;
+  companyName: string;
   phoneNumber: string;
   email: string;
   joinDate: string;
@@ -35,6 +36,7 @@ interface CompanyTableRowProps {
 export default function CompanyTableRow({
   id,
   name,
+  companyName,
   phoneNumber,
   email,
   joinDate,
@@ -71,6 +73,9 @@ export default function CompanyTableRow({
     <tr data-state="state3" data-type="company" className="bg-white border-b-2 border-neutral-100">
       <td className="px-4 py-4 text-neutral-800 text-sm font-normal font-['Pretendard'] leading-5">
         {name}
+      </td>
+      <td className="px-4 py-4 text-neutral-800 text-sm font-normal font-['Pretendard'] leading-5">
+        {companyName}
       </td>
       <td className="px-4 py-4 text-neutral-800 text-sm font-normal font-['Pretendard'] leading-5">
         {phoneNumber}

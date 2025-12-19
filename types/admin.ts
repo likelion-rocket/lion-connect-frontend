@@ -96,6 +96,7 @@ export type ProfileLockResponse = {
 export type AdminCompanyItem = {
   id: number;
   name: string;
+  companyName: string;
   phoneNumber: string;
   email: string;
   joinedAt: string;

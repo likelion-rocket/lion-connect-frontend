@@ -46,7 +46,13 @@ export default function JobImageCarousel({ images }: JobImageCarouselProps) {
                   : ""
             }`}
           >
-            <Image src={image} alt={`채용 이미지 ${index + 1}`} fill className="object-cover" />
+            <div className="absolute inset-0 bg-neutral-200 animate-pulse" />
+            <Image
+              src={image}
+              alt={`채용 이미지 ${index + 1}`}
+              fill
+              className="object-cover relative z-10"
+            />
           </div>
         ))}
       </div>

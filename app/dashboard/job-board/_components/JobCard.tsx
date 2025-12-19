@@ -11,6 +11,7 @@ interface JobCardProps extends React.HTMLAttributes<HTMLDivElement> {
   location: string;
   jobRoleName?: string;
   imageUrl?: string;
+  basePath?: string;
 }
 
 export function JobCard({
@@ -20,13 +21,14 @@ export function JobCard({
   location,
   jobRoleName,
   imageUrl = "/images/3_2.png",
+  basePath = "/dashboard/job-board",
   className,
   ...props
 }: JobCardProps) {
   const router = useRouter();
 
   const handleClick = () => {
-    router.push(`/dashboard/job-board/${jobPostingId}`);
+    router.push(`${basePath}/${jobPostingId}`);
   };
 
   return (

@@ -73,6 +73,7 @@ export function JobList({
             location={job.workplaceShort}
             jobRoleName={job.jobRoleName}
             imageUrl={job.thumbnailImageUrl || undefined}
+            basePath="/dashboard/job-board"
           />
         ))}
       </div>

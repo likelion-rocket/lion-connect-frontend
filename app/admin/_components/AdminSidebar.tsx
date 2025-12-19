@@ -18,6 +18,10 @@ const menuItems = [
     label: "기업 계정 관리",
     href: "/admin/companies",
   },
+  {
+    label: "지원 현황 트래킹",
+    href: "/admin/applications",
+  },
 ];
 
 export function AdminSidebar() {

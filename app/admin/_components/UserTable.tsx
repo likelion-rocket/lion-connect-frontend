@@ -40,6 +40,8 @@ export default function UserTable({ users }: UserTableProps) {
                 joinDate={formattedDate}
                 roles={user.roles}
                 locked={user.locked}
+                courseName={user.courseName}
+                courseGeneration={user.courseGeneration}
               />
             );
           })}

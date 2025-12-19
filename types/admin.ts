@@ -36,6 +36,8 @@ export type AdminUserItem = {
   joinedAt: string;
   roles: string[];
   locked?: boolean; // 프로필 잠금 상태
+  courseName?: string; // 수료 과정
+  courseGeneration?: number; // 기수
 };
 
 /**

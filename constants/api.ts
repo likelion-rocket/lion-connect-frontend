@@ -97,6 +97,7 @@ export const API_ENDPOINTS = {
     },
     JOB_POSTINGS: {
       LIST: "/admin/job-postings", // GET - 관리자 채용공고 목록 조회 (status, pageable)
+      APPLICATIONS: (jobId: number | string) => `/admin/job-postings/${jobId}/applications`, // GET - 채용공고 지원자 목록
     },
   },
   JOBS: {

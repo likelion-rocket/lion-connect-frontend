@@ -99,14 +99,35 @@ export default function MemberHeader() {
                   로그아웃
                 </span>
               </button>
+
+              {/* Enterprise Service Button */}
+              <Link
+                href="/"
+                className="px-3.5 py-1.5 cursor-pointer rounded-lg border border-border-primary hover:bg-bg-secondary transition-colors"
+              >
+                <span className="text-text-primary text-xs font-semibold font-ko-title">
+                  기업 서비스
+                </span>
+              </Link>
             </>
           ) : (
-            <Link
-              href={`/login?returnTo=${encodeURIComponent(pathname || "/")}`}
-              className="px-4 py-2 bg-accent rounded-lg text-text-inverse-primary text-sm font-semibold font-ko-title hover:opacity-90 transition-opacity"
-            >
-              로그인/회원가입
-            </Link>
+            <div className="flex items-center gap-2">
+              <Link
+                href={`/login?returnTo=${encodeURIComponent(pathname || "/")}`}
+                className="px-4 py-2 bg-accent rounded-lg text-text-inverse-primary text-sm font-semibold font-ko-title hover:opacity-90 transition-opacity"
+              >
+                로그인/회원가입
+              </Link>
+              {/* Enterprise Service Button */}
+              <Link
+                href="/"
+                className="px-3.5 py-1.5 cursor-pointer rounded-lg border border-border-primary hover:bg-bg-secondary transition-colors"
+              >
+                <span className="text-text-primary text-xs font-semibold font-ko-title">
+                  기업 서비스
+                </span>
+              </Link>
+            </div>
           )}
         </div>
       </div>

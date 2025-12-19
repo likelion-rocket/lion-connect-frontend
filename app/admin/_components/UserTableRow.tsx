@@ -63,9 +63,7 @@ export default function UserTableRow({
    */
   const handleAdminToggle = async (willBeAdmin: boolean) => {
     const ok = await confirm({
-      title: willBeAdmin
-        ? "관리자 권한을 부여하시겠습니까?"
-        : "관리자 권한을 삭제하시겠습니까?",
+      title: willBeAdmin ? "관리자 권한을 부여하시겠습니까?" : "관리자 권한을 삭제하시겠습니까?",
       description: willBeAdmin
         ? "확인을 누르면 해당 계정에게 관리자 권한이 부여됩니다."
         : "확인을 누르면 해당 계정의 관리자 권한이 삭제됩니다.",
@@ -84,9 +82,7 @@ export default function UserTableRow({
    */
   const handleLockToggle = async (willBeActive: boolean) => {
     const ok = await confirm({
-      title: willBeActive
-        ? "계정을 다시 활성화 하시겠습니까?"
-        : "계정을 비활성화 하시겠습니까?",
+      title: willBeActive ? "계정을 다시 활성화 하시겠습니까?" : "계정을 비활성화 하시겠습니까?",
       description: willBeActive
         ? "확인을 누르면 해당 계정이 다시 활성화 됩니다."
         : "확인을 누르면 해당 계정은 비활성화 됩니다.",
@@ -101,7 +97,7 @@ export default function UserTableRow({
 
   return (
     <tr data-state="default" data-type="normal" className="bg-white border-b-2 border-neutral-100">
-      <td className="px-4 py-4 text-neutral-800 text-sm font-normal font-['Pretendard'] leading-5">
+      <td className="px-2 py-4 w-[65px] text-neutral-800 text-sm font-normal font-['Pretendard'] leading-5">
         {name}
       </td>
       <td className="px-4 py-4 text-neutral-800 text-sm font-normal font-['Pretendard'] leading-5">
@@ -110,7 +106,7 @@ export default function UserTableRow({
       <td className="px-4 py-4 text-neutral-800 text-sm font-normal font-['Pretendard'] leading-5">
         {email}
       </td>
-      <td className="px-4 py-4 text-neutral-800 text-sm font-normal font-['Pretendard'] leading-5">
+      <td className="px-2 w-[100px] py-4 text-neutral-800 text-sm font-normal font-['Pretendard'] leading-5">
         {joinDate}
       </td>
       <td className="px-4 py-4 text-neutral-800 text-sm font-normal font-['Pretendard'] leading-5">

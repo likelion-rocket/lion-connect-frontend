@@ -66,7 +66,7 @@ function JobBoardContent() {
 
 export default function JobBoardPage() {
   return (
-    <Suspense fallback={<div className="container mx-auto pt-[80px] pb-[90px]" />}>
+    <Suspense fallback={<div className="container mx-auto pt-[80px] pb-[90px] min-h-screen" />}>
       <JobBoardContent />
     </Suspense>
   );

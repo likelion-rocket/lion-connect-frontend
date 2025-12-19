@@ -10,6 +10,7 @@ import { createEmptyProfile, updateProfile, deleteProfile } from "@/lib/api/prof
 import { useToastStore } from "@/store/toastStore";
 import { useAuthStore } from "@/store/authStore";
 import { useConfirm } from "@/contexts/ConfirmContext";
+import { useDebounce } from "@/hooks/common/useDebounce";
 
 function ProfilePage() {
   const router = useRouter();
@@ -59,8 +60,34 @@ function ProfilePage() {
     },
   });
 
-  const handleRegister = () => {
+  // 디바운싱 적용된 mutation 호출
+  const debouncedCreateMutate = useDebounce(() => {
     createMutation.mutate();
+  }, 300);
+
+  const debouncedToggleMutate = useDebounce(
+    (id: number, profile: any) => {
+      togglePublicMutation.mutate({ id, profile });
+    },
+    300
+  );
+
+  const debouncedDeleteMutate = useDebounce(
+    (id: number) => {
+      deleteMutation.mutate(id);
+    },
+    300
+  );
+
+  const debouncedPush = useDebounce(
+    (path: string) => {
+      router.push(path);
+    },
+    300
+  );
+
+  const handleRegister = () => {
+    debouncedCreateMutate();
   };
 
   const handleTogglePublic = async (id: string) => {
@@ -79,11 +106,11 @@ function ProfilePage() {
       if (!ok) return;
     }
 
-    togglePublicMutation.mutate({ id: Number(id), profile });
+    debouncedToggleMutate(Number(id), profile);
   };
 
   const handleEdit = (id: string) => {
-    router.push(`/profile/${id}`);
+    debouncedPush(`/profile/${id}`);
   };
 
   const handleDelete = async (id: string) => {
@@ -95,7 +122,7 @@ function ProfilePage() {
     });
 
     if (!ok) return;
-    deleteMutation.mutate(Number(id));
+    debouncedDeleteMutate(Number(id));
   };
 
   const handleCloseAlert = (id: string) => {

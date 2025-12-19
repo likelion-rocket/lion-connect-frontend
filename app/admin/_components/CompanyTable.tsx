@@ -1,4 +1,4 @@
-import UserTableHeader from "./UserTableHeader";
+import CompanyTableHeader from "./CompanyTableHeader";
 import CompanyTableRow from "./CompanyTableRow";
 import { AdminCompanyItem } from "@/types/admin";
 
@@ -20,7 +20,7 @@ export default function CompanyTable({ companies }: CompanyTableProps) {
   return (
     <div className="w-full overflow-x-auto">
       <table className="w-full border-collapse">
-        <UserTableHeader />
+        <CompanyTableHeader />
         <tbody className="bg-white rounded-bl-lg rounded-br-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.06)] shadow-[0px_1px_3px_0px_rgba(0,0,0,0.10)]">
           {companies.map((company) => {
             // joinedAt을 "YYYY. MM.DD" 형식으로 변환
@@ -35,6 +35,7 @@ export default function CompanyTable({ companies }: CompanyTableProps) {
                 key={company.id}
                 id={company.id}
                 name={company.name}
+                companyName={company.companyName}
                 phoneNumber={company.phoneNumber}
                 email={company.email}
                 joinDate={formattedDate}

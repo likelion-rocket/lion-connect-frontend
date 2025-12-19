@@ -39,8 +39,16 @@ export function JobCard({
       {...props}
     >
       <div className="w-[275px] h-[184px] relative bg-gradient-to-l from-black/10 via-black/0 to-black/20 rounded-lg overflow-hidden">
-        <Image src={imageUrl} alt={title} fill className="object-cover" sizes="275px" />
-        <div className="w-6 h-6 left-[222px] top-[10px] absolute" />
+        <div className="absolute inset-0 bg-neutral-200 animate-pulse" />
+        <Image
+          src={imageUrl}
+          alt={title}
+          fill
+          className="object-cover relative z-10"
+          sizes="275px"
+          priority={false}
+        />
+        <div className="w-6 h-6 left-[222px] top-[10px] absolute z-20" />
       </div>
       <div className="w-full px-1.5 bg-white flex flex-col justify-start items-start gap-2.5 overflow-hidden">
         <div className="w-full flex flex-col justify-start items-start gap-1">

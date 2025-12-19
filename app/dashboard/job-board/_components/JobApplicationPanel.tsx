@@ -138,8 +138,8 @@ export default function JobApplicationPanel({
                         {profile.title || profile.name}
                       </div>
                       {profile.visibility === "PUBLIC" && (
-                        <div className="px-2 py-0.5 bg-orange-50 rounded flex justify-center items-center gap-2.5">
-                          <div className="justify-start text-orange-600 text-xs font-semibold font-['Pretendard'] leading-4">
+                        <div className="px-2 py-0. w-[60px] bg-orange-50 rounded flex justify-center items-center gap-2.5">
+                          <div className="justify-start w-[60px] text-orange-600 text-xs font-semibold font-['Pretendard'] leading-4">
                             공개 중
                           </div>
                         </div>

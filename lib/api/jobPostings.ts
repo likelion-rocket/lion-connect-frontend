@@ -270,3 +270,23 @@ export function fetchAdminJobPostings(
   const endpoint = `${API_ENDPOINTS.ADMIN.JOB_POSTINGS.LIST}?${queryParams.toString()}`;
   return get<PublicJobPostingsResponse>(endpoint);
 }
+
+/**
+ * 관리자용 채용공고 지원자 목록 조회 API
+ */
+export function fetchAdminJobApplicants(
+  jobId: string,
+  params: JobApplicationsRequest
+): Promise<CompanyApplicantsResponse> {
+  const queryParams = new URLSearchParams();
+
+  queryParams.append("page", params.page.toString());
+  queryParams.append("size", params.size.toString());
+
+  if (params.sort && params.sort.length > 0) {
+    params.sort.forEach((s) => queryParams.append("sort", s));
+  }
+
+  const endpoint = `${API_ENDPOINTS.ADMIN.JOB_POSTINGS.APPLICATIONS(jobId)}?${queryParams.toString()}`;
+  return get<CompanyApplicantsResponse>(endpoint);
+}

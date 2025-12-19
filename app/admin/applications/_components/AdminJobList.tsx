@@ -73,6 +73,7 @@ export function AdminJobList({
             location={job.workplaceShort}
             jobRoleName={job.jobRoleName}
             imageUrl={job.thumbnailImageUrl || undefined}
+            basePath="/admin/applications"
           />
         ))}
       </div>

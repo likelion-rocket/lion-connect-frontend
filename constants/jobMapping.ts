@@ -22,8 +22,8 @@ export const JOB_GROUPS: JobGroup[] = [
     name: "개발",
     code: "development",
     roles: [
-      { id: 1, name: "프론트앤드", code: "frontend" },
-      { id: 2, name: "백앤드", code: "backend" },
+      { id: 1, name: "프론트엔드", code: "frontend" },
+      { id: 2, name: "백엔드", code: "backend" },
       { id: 3, name: "IOS", code: "ios" },
       { id: 4, name: "Android", code: "android" },
       { id: 5, name: "Unity", code: "unity" },

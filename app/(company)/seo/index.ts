@@ -54,9 +54,14 @@ export const rootMetadata: Metadata = {
   title: SEO.title,
   description: SEO.description,
   keywords: SEO.keywords,
-  authors: [{ name: "멋쟁이사자처럼" }],
-  creator: "멋쟁이사자처럼",
+  applicationName: "라이언 커넥트",
+  authors: [{ name: "라이언 커넥트" }],
+  creator: "라이언 커넥트",
   publisher: "라이언 커넥트",
+  icons: {
+    icon: "/favicon.ico",
+    shortcut: "/favicon.ico",
+  },
   robots: {
     index: true,
     follow: true,
@@ -90,6 +95,7 @@ export const rootMetadata: Metadata = {
     description: SEO.description,
     images: [SEO.images.twitterImage],
     creator: "@likelion_korea",
+    site: "@likelion_korea",
   },
   verification: {
     google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
@@ -102,17 +108,18 @@ export const rootMetadata: Metadata = {
  * - IT 인재 탐색 및 채용 서비스 홍보
  */
 export const landingMetadata: Metadata = {
-  title: "[기업용] IT 인재 탐색 및 채용",
+  title: "라이언 커넥트: [기업용] IT 인재 탐색 및 채용",
   description:
-    "[기업 채용담당자용] 멋쟁이사자처럼 14,000명 이상의 IT 인재와 연결하세요. 탈잉, 그리팅, 자소설닷컴을 만든 우수 인재들이 여기 있습니다. 지금 바로 적합한 개발자, 기획자, 디자이너를 탐색하세요.",
+    "왜 라이언 커넥트를 사용해야 할까요? 적합한 인재 탐색, 멋쟁이사자처럼 14,000명 이상. 멋사 부트캠프 누적 수강생 15,000명 이상. 개발자, 기획자, 디자이너 등 우수한 실무형 인재를 탐색하고 채용하세요.",
   keywords: [
+    "라이언 커넥트 기업",
+    "라이언 커넥트 기업용",
     "IT 인재 채용",
     "개발자 채용",
     "기업 채용",
     "인재 탐색",
     "개발자 구인",
-    "멋쟁이사자처럼",
-    "라이언 커넥트",
+    "멋쟁이사자처럼 채용",
     "신입 개발자 채용",
     "주니어 개발자 채용",
     "부트캠프 수료생 채용",
@@ -120,7 +127,7 @@ export const landingMetadata: Metadata = {
     "디자이너 채용",
   ] as string[],
   openGraph: {
-    title: "라이언 커넥트 - IT 인재 탐색 및 채용 플랫폼",
+    title: "라이언 커넥트: [기업용] IT 인재 탐색 및 채용 플랫폼",
     description:
       "멋쟁이사자처럼 14,000명 이상의 IT 인재와 연결하세요. 개발자, 기획자, 디자이너 등 우수한 실무형 인재를 만나보세요.",
     url: `${SEO.url}/`,
@@ -129,9 +136,16 @@ export const landingMetadata: Metadata = {
         url: SEO.images.ogImage,
         width: 1200,
         height: 630,
-        alt: "라이언 커넥트 - 멋쟁이사자처럼 IT 인재 플랫폼",
+        alt: "라이언 커넥트: [기업용] IT 인재 채용 플랫폼",
       },
     ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "라이언 커넥트: [기업용] IT 인재 탐색 및 채용",
+    description:
+      "멋쟁이사자처럼 14,000명 이상의 IT 인재와 연결하세요. 개발자, 기획자, 디자이너 등 우수한 실무형 인재를 만나보세요.",
+    images: [SEO.images.twitterImage],
   },
   alternates: {
     canonical: `${SEO.url}/`,

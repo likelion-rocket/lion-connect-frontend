@@ -11,13 +11,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       url: `${baseUrl}/dashboard`,
       lastModified: new Date(),
       changeFrequency: "daily",
-      priority: 1.0, // 최우선 (인재용 랜딩)
+      priority: 1.0, // 최우선 (인재용 메인 페이지)
     },
     {
       url: `${baseUrl}/`,
       lastModified: new Date(),
-      changeFrequency: "daily",
-      priority: 0.9, // 기업용 랜딩
+      changeFrequency: "weekly",
+      priority: 0.7, // 기업용 랜딩 (우선순위 낮춤)
     },
   ];
 
